@@ -43,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         new CountdownCounter().execute(120D);
+        //Notifications regularly: How long do you need to work today or similar and easy type in maybe in notification bar!
+        //motivational notifications: just 2 hours to go! etc.
+        //Drink a glass of water and the day goes by faster etc.
     }
 
 
@@ -139,7 +142,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("calculateParams","Hours: "+this.hours+" // Left seconds: "+this.seconds);
                 this.minutes = this.seconds / 60; this.seconds -= (this.minutes > 0) ? (60)*this.minutes : 0;
                 Log.d("calculateParams","Minutes: "+this.minutes+" // Left seconds: "+this.seconds);
-                //TODO: big countdown seconds one too much (do not just decrement because then you get -1 sometimes!)
                 //Seconds has the rest!
             }
         }
