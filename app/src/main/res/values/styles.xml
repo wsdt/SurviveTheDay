@@ -17,16 +17,45 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <!-- MainPage - CountdownList MainActivity -->
+    <style name="page">
+        <item name="android:textColor">#eee</item>
+        <item name="android:background">#111</item>
+    </style>
+    <style name="heading" parent="page">
+        <item name="android:textSize">40sp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">20dp</item>
+    </style>
+    <style name="text">
+        <item name="android:textColor">#eee</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:gravity">center_horizontal</item>
 
+    </style>
+    <style name="countdownNode" parent="page">
+        <item name="android:background">#666</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
 
     <!-- COUNTDOWN VIEW -->
     <style name="ContentMain">
         <item name="android:background">#111</item>
     </style>
+
     <style name="Countdown">
         <item name="android:textSize">55sp</item>
         <item name="android:textColor">#ee0000</item>
     </style>
+
     <style name="CountdownSmall">
         <item name="android:textColor">#eee</item>
         <item name="android:textSize">20sp</item>

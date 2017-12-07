@@ -1,56 +1,41 @@
 package kevkevin.wsdt.tagueberstehen;
 
+import android.app.IntentService;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.AttributeSet;
+import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
-    private EditText countdownAdd;
-    private RelativeLayout contentMain;
-    private Context thisContext;
+/**
+ * Created by kevin on 07.12.2017.
+ */
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        //Get main content view
-        contentMain = (RelativeLayout) findViewById(R.id.content_main);
-        thisContext = this; //set context globally
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Currently you only can add specific countdowns!", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        new CountdownCounter().execute(120D);
-        //Notifications regularly: How long do you need to work today or similar and easy type in maybe in notification bar!
-        //motivational notifications: just 2 hours to go! etc.
-        //Drink a glass of water and the day goes by faster etc.
+public class CountdownService extends IntentService {
+    private static String serviceName = "CountdownService";
+    private Context targetContext;
+    /**
+     * Creates an IntentService.  Invoked by your subclass's constructor.
+     *
+     *  Used to name the worker thread, important only for debugging.
+     */
+    public CountdownService(Context targetContext) {
+        super(serviceName);
+        this.targetContext = targetContext;
+    }
+    public CountdownService() {
+        super(serviceName);
     }
 
+    @Override
+    protected void onHandleIntent(@Nullable Intent intent) {
+        new CountdownCounterService().execute(intent.getDoubleExtra("TOTAL_SECONDS",0D));
+    }
 
     //IMPORTANT: Use by: new CountdownCounter().execute(Übergabeparameter Long);
-    public class CountdownCounter extends AsyncTask<Double,Double,Double> {
+    public class CountdownCounterService extends AsyncTask<Double,Double,Double> {
         protected Double totalSeconds = 0D;
         protected Double totalMinutes = 0D;
         protected Double totalHours = 0D;
@@ -73,13 +58,18 @@ public class MainActivity extends AppCompatActivity {
             this.totalSeconds = totalSeconds[0];
 
             do {
-                calculateParams(--this.totalSeconds);
-                publishProgress(this.totalSeconds); //refresh countdown
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    Log.e("CountdownCounter","Thread Sleep interrupted in doInBackground()!");
-                    e.printStackTrace();
+                if (!isCancelled()) { //examine whether asynctask is stopped so we have to stop the thread manually
+                    calculateParams(--this.totalSeconds);
+                    publishProgress(this.totalSeconds); //refresh countdown
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        Log.e("CountdownCounter", "Thread Sleep interrupted in doInBackground()! ");
+                        e.printStackTrace();
+                    }
+                } else {
+                    this.totalSeconds = 0D;
+                    Log.d("doInBackground","AsyncTask successfully stopped.");
                 }
             } while (this.totalSeconds > 0);
 
@@ -96,23 +86,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(Double... totalSeconds) {
             //values[0] set Progress
-            //Change Countdown values
-            ((TextView) findViewById(R.id.countdownCounterSeconds)).setText(String.format("%.2f",this.totalSeconds));
-            ((TextView) findViewById(R.id.countdownCounterMinutes)).setText(String.format("%.4f",this.totalMinutes));
-            ((TextView) findViewById(R.id.countdownCounterHours)).setText(String.format("%.6f",this.totalHours));
-            ((TextView) findViewById(R.id.countdownCounterDays)).setText(String.format("%.8f",this.totalDays));
-            ((TextView) findViewById(R.id.countdownCounterWeeks)).setText(String.format("%.10f",this.totalWeeks));
-            ((TextView) findViewById(R.id.countdownCounterMonths)).setText(String.format("%.12f",this.totalMonths));
-            ((TextView) findViewById(R.id.countdownCounterYears)).setText(String.format("%.15f",this.totalYears));
+            //Call random motivational notifications etc.
+            Notification tmp = new Notification(targetContext,Countdown.class,(NotificationManager) getSystemService(NOTIFICATION_SERVICE),0);
+            tmp.issueNotification(tmp.createNotification("TEST","SERVICE TRIGGERED",R.drawable.campfire_black));
 
-            ((TextView) findViewById(R.id.countdownCounter)).setText(
-                    this.years+":"+
-                    this.months+":"+
-                    this.weeks+":"+
-                    this.days+":"+
-                    this.hours+":"+
-                    this.minutes+":"+
-                    this.seconds);
         }
 
         protected void calculateParams(Double totalSeconds) {
@@ -146,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-
         private void setZeroForAll() {
             this.totalSeconds = 0D;
             this.totalMinutes = 0D;
@@ -164,5 +140,10 @@ public class MainActivity extends AppCompatActivity {
             this.years = 0L;
         }
 
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            setZeroForAll();
+        }
     }
 }
