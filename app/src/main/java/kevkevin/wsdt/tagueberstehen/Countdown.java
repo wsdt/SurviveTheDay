@@ -65,7 +65,9 @@ public class Countdown extends AppCompatActivity {
         int countdownId = intent.getIntExtra("COUNTDOWN_ID",-1); //0 is default value
         if (countdownId >= 0) {
             //search in storage and get total seconds then start countdown
-            countdownCounter = new CountdownCounter().execute(loadCountdownFromSharedPreferences(countdownId));
+            CountdownCounter tmp = new CountdownCounter();
+            //tmp.countdownContext = this.thisContext;
+            countdownCounter = tmp.execute(loadCountdownFromSharedPreferences(countdownId));
         } else {
             //else everything is implicit 0!
             Toast.makeText(this,"Countdown not found :/",Toast.LENGTH_LONG).show();
@@ -84,9 +86,13 @@ public class Countdown extends AppCompatActivity {
         return totalSeconds;
     }
 
+    public void startCountdownService() {
+
+    }
 
     //IMPORTANT: Use by: new CountdownCounter().execute(Übergabeparameter Long);
     public class CountdownCounter extends AsyncTask<Double,Double,Double> {
+        //public Context countdownContext;
         protected Double totalSeconds = 0D;
         protected Double totalMinutes = 0D;
         protected Double totalHours = 0D;
@@ -104,9 +110,12 @@ public class Countdown extends AppCompatActivity {
         private Long months = 0L; // [0-11]
         private Long years = 0L; // [0 - /]
 
+        private Double serviceOrActivity = 0D;
+
         @Override
         protected Double doInBackground(Double... totalSeconds) {
             this.totalSeconds = totalSeconds[0];
+            this.serviceOrActivity = (totalSeconds[1] != 0D) ? 1D : 0D; //0 for loading into UI / 1 for service
 
             do {
                 if (!isCancelled()) { //examine whether asynctask is stopped so we have to stop the thread manually
@@ -137,23 +146,29 @@ public class Countdown extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(Double... totalSeconds) {
             //values[0] set Progress
-            //Change Countdown values
-            ((TextView) findViewById(R.id.countdownCounterSeconds)).setText(String.format("%.2f",this.totalSeconds));
-            ((TextView) findViewById(R.id.countdownCounterMinutes)).setText(String.format("%.4f",this.totalMinutes));
-            ((TextView) findViewById(R.id.countdownCounterHours)).setText(String.format("%.6f",this.totalHours));
-            ((TextView) findViewById(R.id.countdownCounterDays)).setText(String.format("%.8f",this.totalDays));
-            ((TextView) findViewById(R.id.countdownCounterWeeks)).setText(String.format("%.10f",this.totalWeeks));
-            ((TextView) findViewById(R.id.countdownCounterMonths)).setText(String.format("%.12f",this.totalMonths));
-            ((TextView) findViewById(R.id.countdownCounterYears)).setText(String.format("%.15f",this.totalYears));
+            if (this.serviceOrActivity == 0D) {
+                //Change Countdown values
+                ((TextView) findViewById(R.id.countdownCounterSeconds)).setText(String.format("%.2f", this.totalSeconds));
+                ((TextView) findViewById(R.id.countdownCounterMinutes)).setText(String.format("%.4f", this.totalMinutes));
+                ((TextView) findViewById(R.id.countdownCounterHours)).setText(String.format("%.6f", this.totalHours));
+                ((TextView) findViewById(R.id.countdownCounterDays)).setText(String.format("%.8f", this.totalDays));
+                ((TextView) findViewById(R.id.countdownCounterWeeks)).setText(String.format("%.10f", this.totalWeeks));
+                ((TextView) findViewById(R.id.countdownCounterMonths)).setText(String.format("%.12f", this.totalMonths));
+                ((TextView) findViewById(R.id.countdownCounterYears)).setText(String.format("%.15f", this.totalYears));
 
-            ((TextView) findViewById(R.id.countdownCounter)).setText(
-                    this.years+":"+
-                    this.months+":"+
-                    this.weeks+":"+
-                    this.days+":"+
-                    this.hours+":"+
-                    this.minutes+":"+
-                    this.seconds);
+                ((TextView) findViewById(R.id.countdownCounter)).setText(
+                        this.years + ":" +
+                                this.months + ":" +
+                                this.weeks + ":" +
+                                this.days + ":" +
+                                this.hours + ":" +
+                                this.minutes + ":" +
+                                this.seconds);
+            } else {
+                //service
+                Notification tmp = new Notification(thisContext,Countdown.class,(NotificationManager) getSystemService(NOTIFICATION_SERVICE),0);
+                tmp.issueNotification(tmp.createNotification("TEST","TESTTEXT",R.drawable.campfire_red));
+            }
         }
 
         protected void calculateParams(Double totalSeconds) {
@@ -210,6 +225,7 @@ public class Countdown extends AppCompatActivity {
             setZeroForAll();
         }
     }
+
 
     @Override
     protected void onPause() { //no onstop necessary because it comes after pause
