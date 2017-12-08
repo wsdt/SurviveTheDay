@@ -9,12 +9,12 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 
-public class CountdownService extends Service {
+public class old_CountdownService extends Service {
     private Intent callingActivity;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d("CountdownService","Service started.");
+        Log.d("old_CountdownService","Service started.");
         this.setCallingActivity(intent);
 
         try {
@@ -56,12 +56,12 @@ public class CountdownService extends Service {
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
-                        Log.e("CountdownService", "Thread Sleep interrupted in doInBackground()! ");
+                        Log.e("old_CountdownService", "Thread Sleep interrupted in doInBackground()! ");
                         e.printStackTrace();
                     }
                 /*} else {
                     this.totalSeconds = 0D;
-                    Log.d("CountdownService","AsyncTask successfully stopped.");
+                    Log.d("old_CountdownService","AsyncTask successfully stopped.");
                 }*/
             } while (this.totalSeconds > 0);
 
@@ -127,7 +127,7 @@ public class CountdownService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d("CountdownService","Service exited.");
+        Log.d("old_CountdownService","Service exited.");
     }
 
     // GETTER/SETTER -----------------------------------
