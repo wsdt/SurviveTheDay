@@ -79,6 +79,8 @@ public class CountdownService extends Service {
         protected void onProgressUpdate(Double... totalSeconds) {
             //values[0] set Progress
 
+            //TODO: Logic service
+            //TODO: Schedule notifications with Alarm Manager
             //service
             Notification tmp = new Notification(getApplicationContext(),Countdown.class,(NotificationManager) getSystemService(NOTIFICATION_SERVICE),0);
             tmp.issueNotification(tmp.createNotification("TEST"+this.totalSeconds,"TESTTEXT",R.drawable.campfire_black));
