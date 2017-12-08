@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/countdownId_0"
+    style="@style/countdownNode"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
+    android:onClick="onClick"
+    android:tag="COUNTDOWN_0">
+
+    <TextView
+        android:id="@+id/CountdownHeading"
+        style="@style/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:text="Countdown 1 - Work" />
+
+    <ImageButton
+        android:id="@+id/countdownStopStartToggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true" />
+
+    <ImageButton
+        android:id="@+id/countdownMuteMotivateToggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp" />
+
+    <ImageButton
+        android:id="@+id/countdownEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="40dp" />
+
+    <TextView
+        android:id="@+id/Countdown"
+        style="@style/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/CountdownHeading"
+        android:layout_margin="5dp"
+        android:text="00:00:00:00:00"
+        android:textSize="25sp" />
+</RelativeLayout>
