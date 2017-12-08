@@ -1,7 +1,5 @@
 package kevkevin.wsdt.tagueberstehen;
 
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -43,9 +41,11 @@ public class Countdown extends AppCompatActivity {
 
 
         //Start Service
-        Intent service = new Intent(getBaseContext(),CountdownService.class);
+        SchedulePersistCountdown countdownManager = new SchedulePersistCountdown(getSharedPreferences("COUNTDOWN_"+0,MODE_PRIVATE));
+
+        /*Intent service = new Intent(getBaseContext(),old_CountdownService.class);
         service.putExtra("TOTAL_SECONDS",60D);
-        startService(service);
+        startService(service);*/
 
 
 

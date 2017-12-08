@@ -24,10 +24,10 @@
             android:label="@string/title_activity_credits"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <service
-            android:name=".CountdownService"
+        <!--<service
+            android:name=".old_CountdownService"
             android:process=":SurviveTheDayCountdownService"
             android:stopWithTask="false"
-            android:exported="false"/>
+            android:exported="false"/>-->
     </application>
 </manifest>
