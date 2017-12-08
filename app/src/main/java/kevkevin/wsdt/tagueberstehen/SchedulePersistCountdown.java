@@ -57,8 +57,13 @@ public class SchedulePersistCountdown {
         return formatGregorianDate(new GregorianCalendar(year,month,day,hour,minute,second));
     }
 
-    private String formatGregorianDate(GregorianCalendar c) {
-        return c.get(Calendar.DAY_OF_MONTH)+"."+c.get(Calendar.MONTH)+"."+c.get(Calendar.YEAR)+"_"+c.get(Calendar.HOUR)+":"+c.get(Calendar.MINUTE)+":"+c.get(Calendar.SECOND);
+    private GregorianCalendar getFinishDateTime(String formattedDate) {
+        String[] dateArr = formattedDate.split("\\.");
+        //return new GregorianCalendar(//TODO: extract here);
+    }
+
+    private String formatGregorianDate(GregorianCalendar c) { //IMPORTANT: Separation of dot must be the same for all attributes
+        return c.get(Calendar.DAY_OF_MONTH)+"."+c.get(Calendar.MONTH)+"."+c.get(Calendar.YEAR)+"."+c.get(Calendar.HOUR)+"."+c.get(Calendar.MINUTE)+"."+c.get(Calendar.SECOND);
     }
 
     // GETTER / SETTER ++++++++++++++++++++++++++++++++++++++++++++
