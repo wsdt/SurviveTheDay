@@ -26,6 +26,8 @@
 
         <service
             android:name=".CountdownService"
+            android:process=":SurviveTheDayCountdownService"
+            android:stopWithTask="false"
             android:exported="false"/>
     </application>
 </manifest>

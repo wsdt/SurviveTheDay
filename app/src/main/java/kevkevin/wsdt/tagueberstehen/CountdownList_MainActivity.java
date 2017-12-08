@@ -5,9 +5,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
-public class CountdownList_MainActivity extends AppCompatActivity {
+public class CountdownList_MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,12 +22,19 @@ public class CountdownList_MainActivity extends AppCompatActivity {
             Log.e("CountdownList","Actionbar could not be hidden, because already null!");
         }
 
-
+        LinearLayout nodeList = (LinearLayout) findViewById(R.id.nodeList);
+        /*Node countdown0 = new Node(this);
+        countdown0.setOnClickListener(this);
+        nodeList.addView(countdown0);
+*/
+        RelativeLayout countdown0 = (RelativeLayout) getLayoutInflater().inflate(R.layout.node_template,null);
+        nodeList.addView(countdown0);
 
     }
 
-    public void onNodeClick(View view) {
-        String nodeTag = (String) view.getTag(); //COUNTDOWN_N  --> N = Countdown ID
+    @Override
+    public void onClick(View v) {
+        String nodeTag = (String) v.getTag(); //COUNTDOWN_N  --> N = Countdown ID
         if (nodeTag.length() >= 11) {
             try {
                 int nodeId = Integer.parseInt(nodeTag.substring(10));

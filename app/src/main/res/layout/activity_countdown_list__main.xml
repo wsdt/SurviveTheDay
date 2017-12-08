@@ -2,66 +2,31 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/page"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    style="@style/page"
     tools:context="kevkevin.wsdt.tagueberstehen.CountdownList_MainActivity">
 
     <TextView
         android:id="@+id/mainHeading"
-        android:text="Survive The Day"
-        style="@style/heading" />
+        style="@style/heading"
+        android:text="Survive The Day" />
 
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <!-- This part should be added programmatically later / Tag identifies COUNTDOWN! -->
-        <RelativeLayout
-            android:id="@+id/countdownId_0"
-            android:tag="COUNTDOWN_0"
-            style="@style/countdownNode"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:onClick="onNodeClick"
+        <LinearLayout
+            android:id="@+id/nodeList"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/CountdownHeading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:text="Countdown 1 - Work"
-                style="@style/text" />
-            <ImageButton
-                android:id="@+id/countdownStopStartToggle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true" />
-            <ImageButton
-                android:id="@+id/countdownMuteMotivateToggle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
-                android:layout_alignParentRight="true" />
-            <ImageButton
-                android:id="@+id/countdownEdit"
-                android:layout_width="wrap_content"
-                android:layout_marginRight="40dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true" />
-            <TextView
-                android:id="@+id/Countdown"
-                android:layout_margin="5dp"
-                android:textSize="25sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/text"
-                android:layout_below="@id/CountdownHeading"
-                android:layout_alignParentRight="true"
-                android:text="00:00:00:00:00"/>
-        </RelativeLayout>
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+
+        </LinearLayout>
     </ScrollView>
 
 </LinearLayout>

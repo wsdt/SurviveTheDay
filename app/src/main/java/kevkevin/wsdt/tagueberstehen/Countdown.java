@@ -19,7 +19,6 @@ import android.widget.Toast;
 public class Countdown extends AppCompatActivity {
     private EditText countdownAdd;
     private RelativeLayout contentMain;
-    public Context thisContext;
     private AsyncTask<Double,Double,Double> countdownCounter;
 
     @Override
@@ -31,7 +30,6 @@ public class Countdown extends AppCompatActivity {
 
         //Get main content view
         contentMain = (RelativeLayout) findViewById(R.id.content_main);
-        thisContext = this; //set context globally
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -45,9 +43,8 @@ public class Countdown extends AppCompatActivity {
 
 
         //Start Service
-        Intent service = new Intent(this,CountdownService.class);
+        Intent service = new Intent(getBaseContext(),CountdownService.class);
         service.putExtra("TOTAL_SECONDS",60D);
-        //TODO: Context noch zu übergeben
         startService(service);
 
 
@@ -65,9 +62,7 @@ public class Countdown extends AppCompatActivity {
         int countdownId = intent.getIntExtra("COUNTDOWN_ID",-1); //0 is default value
         if (countdownId >= 0) {
             //search in storage and get total seconds then start countdown
-            CountdownCounter tmp = new CountdownCounter();
-            //tmp.countdownContext = this.thisContext;
-            countdownCounter = tmp.execute(loadCountdownFromSharedPreferences(countdownId));
+            countdownCounter = startCountdownService(loadCountdownFromSharedPreferences(countdownId));
         } else {
             //else everything is implicit 0!
             Toast.makeText(this,"Countdown not found :/",Toast.LENGTH_LONG).show();
@@ -77,7 +72,7 @@ public class Countdown extends AppCompatActivity {
 
     public Double loadCountdownFromSharedPreferences(int countdownId) {
         Double totalSeconds = 0D; //intial value
-        //TODO: search in storage and return total seconds
+        //TODO: search in storage and return Date and Timestamp --> calculate totalseconds for current session! (because what if app stopps!)
 
         if (countdownId == 0) {
             totalSeconds = 135D;
@@ -86,12 +81,12 @@ public class Countdown extends AppCompatActivity {
         return totalSeconds;
     }
 
-    public void startCountdownService() {
-
+    public AsyncTask<Double,Double,Double> startCountdownService(Double totalSeconds) {
+        return new CountdownCounter().execute(totalSeconds);
     }
 
     //IMPORTANT: Use by: new CountdownCounter().execute(Übergabeparameter Long);
-    public class CountdownCounter extends AsyncTask<Double,Double,Double> {
+    private class CountdownCounter extends AsyncTask<Double,Double,Double> {
         //public Context countdownContext;
         protected Double totalSeconds = 0D;
         protected Double totalMinutes = 0D;
@@ -110,12 +105,12 @@ public class Countdown extends AppCompatActivity {
         private Long months = 0L; // [0-11]
         private Long years = 0L; // [0 - /]
 
-        private Double serviceOrActivity = 0D;
+        //private Double serviceOrActivity = 0D;
 
         @Override
         protected Double doInBackground(Double... totalSeconds) {
             this.totalSeconds = totalSeconds[0];
-            this.serviceOrActivity = (totalSeconds[1] != 0D) ? 1D : 0D; //0 for loading into UI / 1 for service
+            //this.serviceOrActivity = (totalSeconds[1] != 0D) ? 1D : 0D; //0 for loading into UI / 1 for service
 
             do {
                 if (!isCancelled()) { //examine whether asynctask is stopped so we have to stop the thread manually
@@ -146,7 +141,6 @@ public class Countdown extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(Double... totalSeconds) {
             //values[0] set Progress
-            if (this.serviceOrActivity == 0D) {
                 //Change Countdown values
                 ((TextView) findViewById(R.id.countdownCounterSeconds)).setText(String.format("%.2f", this.totalSeconds));
                 ((TextView) findViewById(R.id.countdownCounterMinutes)).setText(String.format("%.4f", this.totalMinutes));
@@ -164,11 +158,11 @@ public class Countdown extends AppCompatActivity {
                                 this.hours + ":" +
                                 this.minutes + ":" +
                                 this.seconds);
-            } else {
+             /* } else {
                 //service
-                Notification tmp = new Notification(thisContext,Countdown.class,(NotificationManager) getSystemService(NOTIFICATION_SERVICE),0);
+                Notification tmp = new Notification(this,Countdown.class,(NotificationManager) getSystemService(NOTIFICATION_SERVICE),0);
                 tmp.issueNotification(tmp.createNotification("TEST","TESTTEXT",R.drawable.campfire_red));
-            }
+            }*/
         }
 
         protected void calculateParams(Double totalSeconds) {
