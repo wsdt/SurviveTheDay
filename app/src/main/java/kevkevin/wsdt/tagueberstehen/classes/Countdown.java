@@ -1,4 +1,4 @@
-package kevkevin.wsdt.tagueberstehen;
+package kevkevin.wsdt.tagueberstehen.classes;
 
 import android.app.AlarmManager;
 import android.app.NotificationManager;
@@ -17,8 +17,11 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
 
+import kevkevin.wsdt.tagueberstehen.CountdownActivity;
+import kevkevin.wsdt.tagueberstehen.R;
 
-public class SchedulePersistCountdown {
+
+public class Countdown {
     private int countdownId;
     private String untilDateTime;
     private String category;
@@ -29,24 +32,24 @@ public class SchedulePersistCountdown {
     private static NotificationManager notificationManager;
     private static HashMap<String,ArrayList<Integer>> notificationsSeparatedByCategory; //associative list: notificationsSeparatedByCategory.get("WORK") contains an ArrayList<Integer> of schedulable Notifications (IDs of them are stored there)
 
-    public SchedulePersistCountdown() {
-        Log.w("SchedulePersistCountd.","Used default constructor of SchedulePersistCountdown! Do not do this because this can cause NullpointerExceptions! \nThis method should only be used by the broadcast receiver.");
+    public Countdown() {
+        Log.w("SchedulePersistCountd.","Used default constructor of Countdown! Do not do this because this can cause NullpointerExceptions! \nThis method should only be used by the broadcast receiver.");
     }
 
 
-    public SchedulePersistCountdown(@NonNull Context context, @NonNull SharedPreferences allCountdowns, @NonNull NotificationManager notificationManager, @NonNull AlarmManager alarmManager , int countdownId, String untilDateTime, String category) {
+    public Countdown(@NonNull Context context, @NonNull SharedPreferences allCountdowns, @NonNull NotificationManager notificationManager, @NonNull AlarmManager alarmManager , int countdownId, String untilDateTime, String category) {
         //IMPORTANT: notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE) !
         // alarmManager = (AlarmManger) context.getSystemService(Context.ALARM_SERVICE);
-        if (SchedulePersistCountdown.getAllCountdowns() == null) {
-            SchedulePersistCountdown.setAllCountdowns(allCountdowns);
+        if (Countdown.getAllCountdowns() == null) {
+            Countdown.setAllCountdowns(allCountdowns);
             Log.d("SchedPersCountdown","Sharedpreferences initialized.");
         }
         this.setContext(context);
         this.setCountdownId(countdownId);
         this.setUntilDateTime(untilDateTime);
         this.setCategory(category);
-        SchedulePersistCountdown.setAlarmManager(alarmManager);
-        SchedulePersistCountdown.setNotificationManager(notificationManager);
+        Countdown.setAlarmManager(alarmManager);
+        Countdown.setNotificationManager(notificationManager);
     }
 
 
@@ -54,7 +57,7 @@ public class SchedulePersistCountdown {
     public void scheduleNotificationList() {
         if (getNotificationsSeparatedByCategory() != null) {
             Long delayedMilliSeconds = 10000L; //10 seconds
-            SchedulePersistCountdown.getAlarmManager().set(AlarmManager.RTC_WAKEUP, delayedMilliSeconds , this.getNotificationBuilder().getResultPendingIntent());
+            Countdown.getAlarmManager().set(AlarmManager.RTC_WAKEUP, delayedMilliSeconds , this.getNotificationBuilder().getResultPendingIntent());
         } else {
             try {
                 throw new NullPointerException("notificationsSeparatedByCategory threw NullpointerException in scheduleNotificationList()!");
@@ -71,11 +74,11 @@ public class SchedulePersistCountdown {
         ALSO DO NOT call any this Getters here, because you would save there values of this instance and maybe not of the countdown it is supposed to! */
 
         setNotificationsSeparatedByCategory(new HashMap<String, ArrayList<Integer>>());
-        this.setNotificationBuilder(new Notification(this.getContext(),Countdown.class,SchedulePersistCountdown.getNotificationManager(),this.getCountdownId()));
+        this.setNotificationBuilder(new Notification(this.getContext(),CountdownActivity.class, Countdown.getNotificationManager(),this.getCountdownId()));
 
         // CATEGORY: WORK ########################################################
         ArrayList<Integer> work = new ArrayList<>();
-        work.add(getNotificationBuilder().createNotification("Test1","NId: 1 - Category: Work",R.drawable.campfire_black));
+        work.add(getNotificationBuilder().createNotification("Test1","NId: 1 - Category: Work", R.drawable.campfire_black));
         //TODO: add here more notifications
         getNotificationsSeparatedByCategory().put("WORK",work);
         work = null;
@@ -198,7 +201,7 @@ public class SchedulePersistCountdown {
     }
 
     public static void setNotificationManager(NotificationManager notificationManager) {
-        SchedulePersistCountdown.notificationManager = notificationManager;
+        Countdown.notificationManager = notificationManager;
     }
 
     public static SharedPreferences getAllCountdowns() {
@@ -206,7 +209,7 @@ public class SchedulePersistCountdown {
     }
 
     public static void setAllCountdowns(SharedPreferences allCountdowns) {
-        SchedulePersistCountdown.allCountdowns = allCountdowns;
+        Countdown.allCountdowns = allCountdowns;
     }
 
     public Context getContext() {
@@ -222,7 +225,7 @@ public class SchedulePersistCountdown {
     }
 
     public static void setAlarmManager(AlarmManager alarmManager) {
-        SchedulePersistCountdown.alarmManager = alarmManager;
+        Countdown.alarmManager = alarmManager;
     }
 
     public Notification getNotificationBuilder() {
@@ -238,7 +241,7 @@ public class SchedulePersistCountdown {
     }
 
     public static void setNotificationsSeparatedByCategory(HashMap<String, ArrayList<Integer>> notificationsSeparatedByCategory) {
-        SchedulePersistCountdown.notificationsSeparatedByCategory = notificationsSeparatedByCategory;
+        Countdown.notificationsSeparatedByCategory = notificationsSeparatedByCategory;
     }
 
     // ESCAPE METHODS FOR SHARED PREFERENCES ------------------------------------

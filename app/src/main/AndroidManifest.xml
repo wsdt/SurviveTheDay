@@ -10,28 +10,38 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <receiver android:name=".BCReceiver_NotificationService">
+        <!--<receiver android:name=".clasold_BCReceiver_NotificationServicevice">
             <intent-filter>
                 <action android:name="android.media.action.DISPLAY_NOTIFICATION" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </receiver>
+        </receiver>-->
 
-        <activity android:name=".CountdownList_MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".Countdown"
+            android:name=".CountdownActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
-            android:name=".Credits"
+            android:name=".CreditsActivity"
             android:label="@string/title_activity_credits"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <service android:name=".classes.NotificationService"
+            android:stopWithTask="false"
+            android:exported="false"
+            android:process=":remote"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name=".classes.NotificationService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
         <!--<service
             android:name=".old_CountdownService"
             android:process=":SurviveTheDayCountdownService"

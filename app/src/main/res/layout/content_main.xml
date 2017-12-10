@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="kevkevin.wsdt.tagueberstehen.Countdown"
+    tools:context="kevkevin.wsdt.tagueberstehen.CountdownActivity"
     android:id="@+id/content_main"
     style="@style/ContentMain"
-    tools:showIn="@layout/activity_main">
+    tools:showIn="@layout/activity_countdown">
 
     <TextView
         android:layout_width="wrap_content"

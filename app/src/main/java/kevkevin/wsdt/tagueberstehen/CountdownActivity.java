@@ -16,7 +16,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Countdown extends AppCompatActivity {
+import kevkevin.wsdt.tagueberstehen.classes.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.Notification;
+import kevkevin.wsdt.tagueberstehen.classes.NotificationService;
+
+public class CountdownActivity extends AppCompatActivity {
     private EditText countdownAdd;
     private RelativeLayout contentMain;
     private AsyncTask<Double,Double,Double> countdownCounter;
@@ -24,7 +28,7 @@ public class Countdown extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_countdown);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -43,19 +47,11 @@ public class Countdown extends AppCompatActivity {
 
 
         //Start Service
-        SchedulePersistCountdown countdownManager = new SchedulePersistCountdown(this,getSharedPreferences("ALL_COUNTDOWNS",MODE_PRIVATE),
-                (NotificationManager) getSystemService(NOTIFICATION_SERVICE),(AlarmManager) getSystemService(ALARM_SERVICE), 0, "09.12.2017 22:15:00","WORK");
-        countdownManager.defineNotificationList();
-        countdownManager.scheduleNotificationList();
-
-        /*Intent service = new Intent(getBaseContext(),old_CountdownService.class);
-        service.putExtra("TOTAL_SECONDS",60D);
-        startService(service);*/
+        Intent service = new Intent(getApplicationContext(), NotificationService.class);
+        //service.putExtra("notificationManager",new Notification(this,CountdownActivity.class,(NotificationManager) getSystemService(NOTIFICATION_SERVICE),0));
+        startService(service);
 
 
-
-        //Notification tmp = new Notification(this,Countdown.class,(NotificationManager) getSystemService(NOTIFICATION_SERVICE),0);
-        //tmp.issueNotification(tmp.createNotification("TEST","TESTTEXT",R.drawable.campfire_red));
 
         //Notifications regularly: How long do you need to work today or similar and easy type in maybe in notification bar!
         //motivational notifications: just 2 hours to go! etc.
@@ -70,10 +66,11 @@ public class Countdown extends AppCompatActivity {
             countdownCounter = startCountdownService(loadCountdownFromSharedPreferences(countdownId));
         } else {
             //else everything is implicit 0!
-            Toast.makeText(this,"Countdown not found :/",Toast.LENGTH_LONG).show();
-            Log.e("getIntentCountdownId","Countdown not found. ID: "+countdownId);
+            Toast.makeText(this,"CountdownActivity not found :/",Toast.LENGTH_LONG).show();
+            Log.e("getIntentCountdownId","CountdownActivity not found. ID: "+countdownId);
         }
     }
+
 
     public Double loadCountdownFromSharedPreferences(int countdownId) {
         Double totalSeconds = 0D; //intial value
@@ -134,7 +131,7 @@ public class Countdown extends AppCompatActivity {
             } while (this.totalSeconds > 0);
 
             //publishProgress(count) for calling onProgressUpdate()
-            return 0D; //Countdown at the end is always 0 (after that onPostExecute() ist started)
+            return 0D; //CountdownActivity at the end is always 0 (after that onPostExecute() ist started)
         }
 
         @Override
@@ -146,7 +143,7 @@ public class Countdown extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(Double... totalSeconds) {
             //values[0] set Progress
-                //Change Countdown values
+                //Change CountdownActivity values
                 ((TextView) findViewById(R.id.countdownCounterSeconds)).setText(String.format("%.2f", this.totalSeconds));
                 ((TextView) findViewById(R.id.countdownCounterMinutes)).setText(String.format("%.4f", this.totalMinutes));
                 ((TextView) findViewById(R.id.countdownCounterHours)).setText(String.format("%.6f", this.totalHours));
@@ -165,7 +162,7 @@ public class Countdown extends AppCompatActivity {
                                 this.seconds);
              /* } else {
                 //service
-                Notification tmp = new Notification(this,Countdown.class,(NotificationManager) getSystemService(NOTIFICATION_SERVICE),0);
+                Notification tmp = new Notification(this,CountdownActivity.class,(NotificationManager) getSystemService(NOTIFICATION_SERVICE),0);
                 tmp.issueNotification(tmp.createNotification("TEST","TESTTEXT",R.drawable.campfire_red));
             }*/
         }
