@@ -1,4 +1,4 @@
-package kevkevin.wsdt.tagueberstehen;
+package kevkevin.wsdt.tagueberstehen.classes;
 
 
 import android.app.NotificationManager;
@@ -9,7 +9,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import java.util.ArrayList;
 
-public class Notification { //one instance for every countdown or similar
+public class Notification /*implements Parcelable*/ { //one instance for every countdown or similar
     private Context activityThisTarget;
     private Intent resultIntent;
     private int mNotificationId = 0; //start with 0 should be first notification (index starts at 0)
@@ -17,13 +17,13 @@ public class Notification { //one instance for every countdown or similar
     private NotificationManager mNotifyMgr;
     private PendingIntent resultPendingIntent; //open countdown of current notifications
 
-    public Notification (Context activityThisTarget,Class targetActivityClass, NotificationManager mNotifyMgr, int CountdownId) { //(NotifyManager) getSystemService(Notification_Service);
+    public Notification (Context activityThisTarget,Class targetActivityClass, NotificationManager mNotifyMgr, int countdownId) { //(NotifyManager) getSystemService(Notification_Service);
         this.setActivityThisTarget(activityThisTarget);
         this.setmNotifyMgr(mNotifyMgr);
 
         //With countdown ID we are able to look in our persistent storage for the right countdown
         Intent tmp = new Intent(this.getActivityThisTarget(),targetActivityClass);
-        tmp.putExtra("COUNTDOWN_ID",CountdownId);
+        tmp.putExtra("COUNTDOWN_ID",countdownId);
         this.setResultIntent(tmp);
         this.setResultPendingIntent(
                 PendingIntent.getActivity(
@@ -107,4 +107,26 @@ public class Notification { //one instance for every countdown or similar
     public void setResultIntent(Intent resultIntent) {
         this.resultIntent = resultIntent;
     }
+
+
+
+    // INTERFACE METHODS : Essential to put extra as obj to service
+    /*@Override
+    public int describeContents() {
+        return 0; //auto generated
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        /*private Context activityThisTarget;
+    private Intent resultIntent;
+    private int mNotificationId = 0; //start with 0 should be first notification (index starts at 0)
+    private ArrayList<NotificationCompat.Builder> notifications = new ArrayList<>(); //NOT static, because every instance should have own Arraylist!
+    private NotificationManager mNotifyMgr;
+    private PendingIntent resultPendingIntent;*/
+
+    /*dest.writeString(jfjfjs);*
+
+
+    }*/
 }

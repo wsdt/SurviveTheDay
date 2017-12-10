@@ -1,33 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/page"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="kevkevin.wsdt.tagueberstehen.Countdown">
+    android:orientation="vertical"
+    tools:context="kevkevin.wsdt.tagueberstehen.MainActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <TextView
+        android:id="@+id/mainHeading"
+        style="@style/heading"
+        android:text="Survive The Day" />
+
+    <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        android:layout_height="wrap_content">
+        <!-- This part should be added programmatically later / Tag identifies COUNTDOWN! -->
+        <LinearLayout
+            android:id="@+id/nodeList"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    </android.support.design.widget.AppBarLayout>
 
-    <include android:id="@+id/content_main" layout="@layout/content_main" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_menu_manage" />
+        </LinearLayout>
+    </ScrollView>
 
-</android.support.design.widget.CoordinatorLayout>
+</LinearLayout>
