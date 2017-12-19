@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -22,11 +23,12 @@ public class NotificationService extends Service {
     private Notification notificationManager;
     //private static ArrayList<String[]> activeServices; //every String[]: [0]:COUNTDOWNID / [1]:STARTID (every countdown id should only occur once!)
     private int thisService; //contains the serviceStartId
-    private static SharedPreferences activeServices; //TODO: eigenes public sharedpreferences für nur active countdowns (foreach string)
+    private static SharedPreferences activeServices; //eigenes public sharedpreferences für nur active countdowns (foreach string)
     private ArrayList<Timer> timer; //do not make that static
     private ArrayList<TimerTask> timerTask;
     private ArrayList<Integer> intervalSeconds; // = 5; //default
     private /*final*/ ArrayList<Handler> handler; // = new Handler(); //use of handler to be able to run in our TimerTask
+    private ArrayList<Countdown> activeCountdownObjs;
     private final String nameSharedPreferences = "ACTIVE_COUNTDOWNS";
 
 
@@ -93,6 +95,7 @@ public class NotificationService extends Service {
         this.intervalSeconds = new ArrayList<>();
         this.timer = new ArrayList<>();
         this.timerTask = new ArrayList<>();
+        this.activeCountdownObjs = new ArrayList<>();
 
         startTimer(); //this function starts all countdowns
 
@@ -116,16 +119,22 @@ public class NotificationService extends Service {
         Log.d(TAG, "Executed startTimer().");
         //set a new timer
 
-        //TODO: for each countdown do that following
-        this.timer.add(new Timer());
-        this.intervalSeconds.add(5);
-        this.handler.add(new Handler());
-        //initialize TimerTask's job
-        initializeTimer();
-
-        //schedule the timer, after the first 5000ms the TimerTask will run every x Milliseconds
-        this.timer.get(0).schedule(this.timerTask.get(0), 5000, this.intervalSeconds.get(0) * 1000);
-
+        //for each countdown do that following
+        //iterate through all countdown data sets
+        for (String countdownId : getActiveServices().getString(nameSharedPreferences,"").split(";")) {
+            if (!countdownId.equals("")) {
+                Log.d(TAG,"Countdown-Id: "+countdownId);
+                int indexCountdownId = Integer.parseInt(countdownId);
+                this.timer.add(indexCountdownId, new Timer());
+                this.intervalSeconds.add(indexCountdownId, 5);
+                this.handler.add(indexCountdownId, new Handler());
+                initializeTimer(indexCountdownId);
+                //delay, time after interval starts
+                this.timer.get(indexCountdownId).schedule(this.timerTask.get(indexCountdownId), 5000, this.intervalSeconds.get(indexCountdownId) * 1000);
+            } else {
+                Log.e(TAG,"Could not fetch countdownId: "+countdownId);
+            }
+        }
         // END - FOR EACH COUNTDOWN
     }
 
@@ -142,12 +151,12 @@ public class NotificationService extends Service {
         }
     }
 
-    public void initializeTimer() {
+    public void initializeTimer(final int countdownId) {
         Log.d(TAG, "Executed initializeTimer().");
-        this.timerTask.add(new TimerTask() {
+        this.timerTask.add(countdownId,new TimerTask() {
             @Override
             public void run() {
-                handler.get(0).post(new Runnable() {
+                handler.get(countdownId).post(new Runnable() {
                     @Override
                     public void run() {
                         //TODO: call notification function
