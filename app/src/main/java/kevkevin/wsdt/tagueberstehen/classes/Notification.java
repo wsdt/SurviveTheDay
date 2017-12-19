@@ -25,7 +25,7 @@ public class Notification /*implements Parcelable*/ { //one instance for every c
         Intent tmp = new Intent(this.getActivityThisTarget(),targetActivityClass);
         tmp.putExtra("COUNTDOWN_ID",countdownId);
         this.setResultIntent(tmp);
-        this.setResultPendingIntent(
+        this.setResultPendingIntent( //TODO: https://stackoverflow.com/questions/36902667/how-to-schedule-notification-in-android
                 PendingIntent.getActivity(
                         this.getActivityThisTarget(),
                         0,

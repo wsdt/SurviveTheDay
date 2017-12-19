@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.R;
@@ -23,12 +24,12 @@ import kevkevin.wsdt.tagueberstehen.R;
 
 public class Countdown {
     private int countdownId;
+    private String countdownDescription;
     private String untilDateTime;
     private String category;
     private Context context;
     private Notification notificationBuilder;
     private static SharedPreferences allCountdowns;
-    private static AlarmManager alarmManager;
     private static NotificationManager notificationManager;
     private static HashMap<String,ArrayList<Integer>> notificationsSeparatedByCategory; //associative list: notificationsSeparatedByCategory.get("WORK") contains an ArrayList<Integer> of schedulable Notifications (IDs of them are stored there)
 
@@ -37,36 +38,41 @@ public class Countdown {
     }
 
 
-    public Countdown(@NonNull Context context, @NonNull SharedPreferences allCountdowns, @NonNull NotificationManager notificationManager, @NonNull AlarmManager alarmManager , int countdownId, String untilDateTime, String category) {
+    public Countdown(Context context, SharedPreferences allCountdowns, NotificationManager notificationManager, int countdownId, String countdownDescription, String untilDateTime, String category) {
         //IMPORTANT: notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE) !
-        // alarmManager = (AlarmManger) context.getSystemService(Context.ALARM_SERVICE);
         if (Countdown.getAllCountdowns() == null) {
             Countdown.setAllCountdowns(allCountdowns);
             Log.d("SchedPersCountdown","Sharedpreferences initialized.");
         }
-        this.setContext(context);
-        this.setCountdownId(countdownId);
-        this.setUntilDateTime(untilDateTime);
-        this.setCategory(category);
-        Countdown.setAlarmManager(alarmManager);
-        Countdown.setNotificationManager(notificationManager);
-    }
+        if (Countdown.getNotificationManager() == null) {
+            Countdown.setNotificationManager(notificationManager);
+        }
 
 
-
-    public void scheduleNotificationList() {
-        if (getNotificationsSeparatedByCategory() != null) {
-            Long delayedMilliSeconds = 10000L; //10 seconds
-            Countdown.getAlarmManager().set(AlarmManager.RTC_WAKEUP, delayedMilliSeconds , this.getNotificationBuilder().getResultPendingIntent());
+        if (!doesCountdownAlreadyExist(countdownId)) {
+            this.setContext(context);
+            this.setCountdownId(countdownId);
+            this.setCountdownDescription(countdownDescription);
+            this.setUntilDateTime(untilDateTime);
+            this.setCategory(category);
         } else {
-            try {
-                throw new NullPointerException("notificationsSeparatedByCategory threw NullpointerException in scheduleNotificationList()!");
-            } catch (NullPointerException e) {
-                Log.e("scheduleNotificationL.","notificationsSeparatedByCategory threw NullpointerException in scheduleNotificationList()!");
-                e.printStackTrace();
-            }
+            Log.w("Countdown","Countdown does already exist and given values got ignored, Countdown-ID: "+countdownId);
         }
     }
+
+    private boolean doesCountdownAlreadyExist(int countdownId) {
+        boolean doesExist = false;
+
+        //iterate through all countdown data sets
+        Map<String,?> savedCountdowns = getAllCountdowns().getAll();
+        for (Map.Entry<String,?> entry : savedCountdowns.entrySet()) {
+            if (entry.getKey().equals("COUNTDOWN_"+countdownId)) {
+                doesExist = true;
+            }
+        }
+        return doesExist;
+    }
+
 
     public HashMap<String, ArrayList<Integer>> defineNotificationList() {
         /*
@@ -98,19 +104,37 @@ public class Countdown {
         getNotificationsSeparatedByCategory().put("SCHOOL",school);
         school = null;
 
-
         return getNotificationsSeparatedByCategory();
     }
 
     public void saveCountdown() {
         SharedPreferences.Editor editor = getAllCountdowns().edit();
         // ; will be the splitter! So there is no ; in the strings allowed! This will be escaped to , automatically by escapeForSharedPreferences()
-        editor.putString("COUNTDOWN_"+this.getCountdownId(),this.getCountdownId()+";"+this.getCurrentDateTime()+";"+this.getUntilDateTime()+";"+this.getCategory()); //Current Timestamp with date: DD.MM.YYYY hh:mm:ss
+        editor.putString("COUNTDOWN_"+this.getCountdownId(),this.getCountdownId()+";"+this.getCountdownDescription()+";"+this.getCurrentDateTime()+";"+this.getUntilDateTime()+";"+this.getCategory()); //Current Timestamp with date: DD.MM.YYYY hh:mm:ss
         editor.apply();
     }
 
-    public String getCountdown(@NonNull String countdownId) { //e.g. COUNTDOWN_1 ...
-        return getAllCountdowns().getString(countdownId,"empty;empty;empty;empty"); //same format as in saveCountdown()
+    private static String getCountdownString(int countdownId) { //e.g. COUNTDOWN_1 ...
+        if (getAllCountdowns() == null) {
+            Log.e("getCountdownString","Could not load Countdown. Never made an Instance of Countdown before. Please set Sharedpreferences.");
+            return null;
+        }
+        return getAllCountdowns().getString("COUNTDOWN_"+countdownId,"empty;empty;empty;empty;empty"); //same format as in saveCountdown()
+    }
+
+    public static Countdown getCountdownObj(int countdownId) {
+        if (getAllCountdowns() == null) {
+            Log.e("getCountdownObj","Could not load Countdown. Never made an Instance of Countdown before. Please set Sharedpreferences.");
+        } else {
+            try {
+                String[] countdown = getCountdownString(countdownId).split(";");
+                return new Countdown(null,null,null,Integer.parseInt(countdown[0]),countdown[1],countdown[2],countdown[3]);
+            } catch (Exception e) {
+                Log.e("getCountdownObj","Exception while parsing Countdown to Object.");
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     public Long getTotalSeconds() {
@@ -123,13 +147,6 @@ public class Countdown {
         }
         return totalSeconds;
     }
-
-    // PERSIST COUNTDOWNS (SAVE TIMESTAMP WITH DATE, so only one time to save or when user edited it)
-    /* TODO
-    public void saveCountdowns(arr);
-    public void getCountdowns();*/
-
-    //public void scheduleCountdownNotifications() { }
 
 
 
@@ -220,13 +237,6 @@ public class Countdown {
         this.context = context;
     }
 
-    public static AlarmManager getAlarmManager() {
-        return alarmManager;
-    }
-
-    public static void setAlarmManager(AlarmManager alarmManager) {
-        Countdown.alarmManager = alarmManager;
-    }
 
     public Notification getNotificationBuilder() {
         return notificationBuilder;
@@ -244,6 +254,14 @@ public class Countdown {
         Countdown.notificationsSeparatedByCategory = notificationsSeparatedByCategory;
     }
 
+    public String getCountdownDescription() {
+        return countdownDescription;
+    }
+
+    public void setCountdownDescription(String countdownDescription) {
+        this.countdownDescription = escapeForSharedPreferences(countdownDescription); //so no ; allowed in String
+    }
+
     // ESCAPE METHODS FOR SHARED PREFERENCES ------------------------------------
     private String escapeForSharedPreferences(@NonNull String string) {
         if (string.contains(";")) {
@@ -251,8 +269,5 @@ public class Countdown {
         }
         return string;
     }
-
-
-
 
 }

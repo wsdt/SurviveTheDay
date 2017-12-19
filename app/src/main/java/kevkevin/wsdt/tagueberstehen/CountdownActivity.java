@@ -1,7 +1,5 @@
 package kevkevin.wsdt.tagueberstehen;
 
-import android.app.AlarmManager;
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,9 +13,6 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import kevkevin.wsdt.tagueberstehen.classes.Countdown;
-import kevkevin.wsdt.tagueberstehen.classes.Notification;
 import kevkevin.wsdt.tagueberstehen.classes.NotificationService;
 
 public class CountdownActivity extends AppCompatActivity {
@@ -48,6 +43,7 @@ public class CountdownActivity extends AppCompatActivity {
 
         //Start Service
         Intent service = new Intent(getApplicationContext(), NotificationService.class);
+        service.putExtra("COUNTDOWN_ID",0);
         //service.putExtra("notificationManager",new Notification(this,CountdownActivity.class,(NotificationManager) getSystemService(NOTIFICATION_SERVICE),0));
         startService(service);
 
@@ -75,7 +71,7 @@ public class CountdownActivity extends AppCompatActivity {
     public Double loadCountdownFromSharedPreferences(int countdownId) {
         Double totalSeconds = 0D; //intial value
         //TODO: search in storage and return Date and Timestamp --> calculate totalseconds for current session! (because what if app stopps!)
-
+        //TODO: COUNTDOWNS as name of sharedpreferences
         if (countdownId == 0) {
             totalSeconds = 135D;
         }
