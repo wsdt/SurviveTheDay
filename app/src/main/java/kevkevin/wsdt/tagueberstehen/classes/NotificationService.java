@@ -10,26 +10,27 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.R;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
 
 
 public class NotificationService extends Service {
     private static final String TAG = "NotificationService";
     private Notification notificationManager;
     //private static ArrayList<String[]> activeServices; //every String[]: [0]:COUNTDOWNID / [1]:STARTID (every countdown id should only occur once!)
-    private int thisService; //contains the serviceStartId
-    private static SharedPreferences activeServices; //eigenes public sharedpreferences für nur active countdowns (foreach string)
+    private InternalStorageMgr storageMgr;
     private ArrayList<Timer> timer; //do not make that static
     private ArrayList<TimerTask> timerTask;
     private ArrayList<Integer> intervalSeconds; // = 5; //default
     private /*final*/ ArrayList<Handler> handler; // = new Handler(); //use of handler to be able to run in our TimerTask
-    private ArrayList<Countdown> activeCountdownObjs;
-    private final String nameSharedPreferences = "ACTIVE_COUNTDOWNS";
+    private int startId;
 
 
     @Nullable
@@ -42,15 +43,18 @@ public class NotificationService extends Service {
         boolean isServiceRunning = false; //being optimistic, to do anything in case of failure
 
         try {
-            String[] strarrCountdownIds = (getActiveServices().getString(nameSharedPreferences, "")).split(";");
-            for (String strCountdownId : strarrCountdownIds) {
-                if (Integer.parseInt(strCountdownId) == countdownId) {
-                    isServiceRunning = true;
+            for (Integer intCountdownId : getActiveServicesIntegerArr()) {
+                Log.d(TAG,"IntegerCountdownId: "+intCountdownId);
+                if (intCountdownId != null) { //Prevent sys error
+                    if (intCountdownId == countdownId) {
+                        isServiceRunning = true;
+                    }
                 }
             }
         } catch (Exception e) {
             Log.e(TAG,"SharedPreferences of Countdowns could not be fetched/parsed. Maybe there is NO countdown active.");
             e.printStackTrace();
+            isServiceRunning = true; //set to true, to prevent maybe that unparseable countdown to be added
         }
 
         //service seems not to run, also when error occured then maybe NO services are running
@@ -58,36 +62,17 @@ public class NotificationService extends Service {
     }
 
 
+
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "Executed onStartCommand(). StartId: " + startId);
         super.onStartCommand(intent, flags, startId);
 
-        //Ensure that sharedPreferences is initialized
-        if (NotificationService.getActiveServices() == null) {
-            NotificationService.setActiveServices(getSharedPreferences("COUNTDOWNS", MODE_PRIVATE)); /*new ArrayList<String[]>()*/
-        }
-
-        //Define instance identifiers / startId is Übergabewert
-        if (intent != null) {
-            //Ignore 'new' service countdown sharedpreferences instance, when intent not null (which means it got explicitely called)
-            int countdownId = intent.getIntExtra("COUNTDOWN_ID", -1);
-            if (countdownId < 0) {
-                Log.d(TAG, "Could not fetch Countdown id from intent: "+countdownId);
-            } else if (isServiceForThatCountdownRunning(countdownId)) {
-                Log.d(TAG, "This countdown already runs in service and will be ignored. Countdown-ID: " + countdownId + " / StartId: " + startId);
-            } else {
-                //Add countdown id to sharedPreferences
-                SharedPreferences.Editor editor = NotificationService.getActiveServices().edit();
-                //WARNING: Countdown IDs not ordered! At least do not assume it.
-                editor.putString(nameSharedPreferences,NotificationService.getActiveServices().getString(nameSharedPreferences,"")+";"+countdownId);
-                editor.apply();
-                Log.d(TAG, "Tried to add new CountdownId to ActiveCountdown SharedPreferences.");
-            }
-        }
 
 
-        this.thisService = startId; //save current service instance in variable
+        this.storageMgr = new InternalStorageMgr(this);
+        this.startId = startId; //save current service instance in variable
 
         //Set Notification Manager etc. for Countdown
         this.notificationManager = new Notification(this, CountdownActivity.class, (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE), 0); //intent.getParcelableExtra("notificationManager");
@@ -95,7 +80,6 @@ public class NotificationService extends Service {
         this.intervalSeconds = new ArrayList<>();
         this.timer = new ArrayList<>();
         this.timerTask = new ArrayList<>();
-        this.activeCountdownObjs = new ArrayList<>();
 
         startTimer(); //this function starts all countdowns
 
@@ -121,7 +105,7 @@ public class NotificationService extends Service {
 
         //for each countdown do that following
         //iterate through all countdown data sets
-        for (String countdownId : getActiveServices().getString(nameSharedPreferences,"").split(";")) {
+        for (Countdown countdown : this.storageMgr.getAllCountdowns(true)) {
             if (!countdownId.equals("")) {
                 Log.d(TAG,"Countdown-Id: "+countdownId);
                 int indexCountdownId = Integer.parseInt(countdownId);
@@ -175,5 +159,41 @@ public class NotificationService extends Service {
 
     public static void setActiveServices(SharedPreferences activeServices) {
         NotificationService.activeServices = activeServices;
+    }
+
+    public static ArrayList<Integer> getActiveServicesIntegerArr() {
+        if (activeServicesIntegerArr == null) {
+            ArrayList<Integer> result = new ArrayList<>();
+            int counter = 0;
+            try {
+                for (String strCountdownId : (getActiveServices().getString(nameSharedPreferences, "")).split(";")) {
+                    Log.d(TAG, "strCountdownId: " + strCountdownId);
+                    if (strCountdownId != null && !strCountdownId.equals("")) { //Prevent sys error
+                        result.add(Integer.parseInt(strCountdownId));
+                        counter++;
+                    }
+                }
+            } catch (Exception e) {
+                Log.e(TAG,"Could not extract countdowns from Sharedpreferences!");
+                e.printStackTrace();
+            }
+            if (counter <= 0) {
+                Log.d(TAG,"No Countdown Ids in SharedPreferences.");
+                return activeServicesIntegerArr;
+            } else {
+                //remove duplicates from arraylist
+                Set<Integer> tmp = new HashSet<>();
+                tmp.addAll(result); // add all values to set
+                result.clear(); //empty old list
+                result.addAll(tmp); //add set distincted back to list
+                return result; //return created arraylist
+            }
+        } else {
+            return activeServicesIntegerArr;
+        }
+    }
+
+    public static void setActiveServicesIntegerArr(ArrayList<Integer> activeServicesIntegerArr) {
+        NotificationService.activeServicesIntegerArr = activeServicesIntegerArr;
     }
 }
