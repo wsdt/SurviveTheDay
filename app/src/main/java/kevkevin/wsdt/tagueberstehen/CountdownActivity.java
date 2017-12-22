@@ -45,7 +45,7 @@ public class CountdownActivity extends AppCompatActivity {
         Intent service = new Intent(getApplicationContext(), NotificationService.class);
         service.putExtra("COUNTDOWN_ID",0);
         //service.putExtra("notificationManager",new Notification(this,CountdownActivity.class,(NotificationManager) getSystemService(NOTIFICATION_SERVICE),0));
-        startService(service);
+        startService(service); //this line should be only called once maybe make a singleton
 
 
 
