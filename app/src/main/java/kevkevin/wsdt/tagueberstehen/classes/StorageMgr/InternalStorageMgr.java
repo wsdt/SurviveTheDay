@@ -61,6 +61,7 @@ public class InternalStorageMgr {
     }
 
     public void setSaveCountdown(Countdown countdown, boolean saveToPreferences) {
+        //IMPORTANT: This function should ensure that the arraylist and hence the sharedpreferences are distinct
         try {
             if (this.allCountdowns.get(countdown.getCountdownId()) != null) {
                 Log.d(TAG,"setSaveCountdown: Entry does exist in list and we override it with set.");
