@@ -10,7 +10,7 @@
     android:tag="COUNTDOWN_0">
 
     <TextView
-        android:id="@+id/CountdownHeading"
+        android:id="@+id/countdownTitle"
         style="@style/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -18,33 +18,42 @@
         android:text="Countdown 1 - Work" />
 
     <ImageButton
+        android:contentDescription="stopStartToggle"
         android:id="@+id/countdownStopStartToggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
 
     <ImageButton
+        android:contentDescription="muteMotivateToggle"
         android:id="@+id/countdownMuteMotivateToggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="20dp" />
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginEnd="20dp"/>
 
     <ImageButton
         android:id="@+id/countdownEdit"
+        android:contentDescription="editButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="40dp" />
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="40dp"
+        android:layout_marginEnd="40dp"/>
 
     <TextView
-        android:id="@+id/Countdown"
+        android:id="@+id/untilDateTime"
         style="@style/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@id/CountdownHeading"
+        android:layout_below="@id/countdownTitle"
         android:layout_margin="5dp"
-        android:text="00:00:00:00:00"
+        android:text="31.12.2017"
         android:textSize="25sp" />
 </RelativeLayout>

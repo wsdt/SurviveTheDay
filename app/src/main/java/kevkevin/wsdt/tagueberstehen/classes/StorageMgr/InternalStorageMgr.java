@@ -21,8 +21,10 @@ public class InternalStorageMgr {
 
     public InternalStorageMgr(Context context) {
         setAllCountdowns_SharedPref(context.getSharedPreferences("COUNTDOWNS",Context.MODE_PRIVATE));
+
         this.setContext(context);
     }
+
 
     // GETTER/SETTER --------------------------------------------------------------------
     public ArrayList<Countdown> getAllCountdowns(boolean onlyActiveCountdowns) { //Maps sharedpreferences on an arraylist of countdowns
