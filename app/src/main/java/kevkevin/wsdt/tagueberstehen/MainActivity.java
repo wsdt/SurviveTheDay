@@ -6,6 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -18,16 +21,16 @@ import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private LinearLayout nodeList;
+    private static final String TAG = "MainActivity";
+
+    /*
+    TODO: Vulgaritätsschieberegler (umso höher desto vulgärer oder ausfälliger Sprüche
+    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        /*try {
-            getSupportActionBar().hide();
-        } catch (NullPointerException e) {
-            Log.e("CountdownList","Actionbar could not be hidden, because already null!");
-        }*/
 
         //Nodelist
         nodeList = (LinearLayout) findViewById(R.id.nodeList);
@@ -78,5 +81,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ((TextView)countdownView.findViewById(R.id.countdownTitle)).setText(countdown.getCountdownTitle());
         ((TextView)countdownView.findViewById(R.id.untilDateTime)).setText(countdown.getUntilDateTime());
         nodeList.addView(countdownView);
+    }
+
+    // ACTION BAR ------------------------------------------------------------
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_addCountdown:
+                Intent createCountdownAct = new Intent(this,ModifyCountdownActivity.class);
+                createCountdownAct.putExtra("CRUD","C");
+                startActivity(createCountdownAct);
+                break;
+            default: Log.e(TAG,"onOptionsItemSelected: Button does not exist: "+item.getItemId());
+        }
+        return true;
     }
 }
