@@ -1,32 +1,56 @@
 package kevkevin.wsdt.tagueberstehen;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import kevkevin.wsdt.tagueberstehen.classes.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+    private LinearLayout nodeList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        try {
+        /*try {
             getSupportActionBar().hide();
         } catch (NullPointerException e) {
             Log.e("CountdownList","Actionbar could not be hidden, because already null!");
-        }
+        }*/
+
+        //Nodelist
+        nodeList = (LinearLayout) findViewById(R.id.nodeList);
 
         // CREATE NODE LIST -------------------------------------------------------------------
-        LinearLayout nodeList = (LinearLayout) findViewById(R.id.nodeList);
+        //Create for each saved countdown one node
+        InternalStorageMgr storageMgr = new InternalStorageMgr(this);
+        int anzahlCountdowns = 0;
+        for (Countdown countdown : storageMgr.getAllCountdowns(false)) {
+            createAddNodeToLayout(countdown);
+            anzahlCountdowns++;
+        }
+        if (anzahlCountdowns <= 0) {
+            //add plus icon or similar to add new countdown
+            TextView noCountdownsFound = new TextView(this);
+            noCountdownsFound.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            noCountdownsFound.setText("No countdowns found.");
+            noCountdownsFound.setTextSize(20);
+            noCountdownsFound.setTextColor(Color.WHITE);
+            noCountdownsFound.setGravity(Gravity.CENTER);
+            nodeList.addView(noCountdownsFound);
+        }
 
-        //Node 0
-        RelativeLayout countdown0 = (RelativeLayout) getLayoutInflater().inflate(R.layout.node_template,null);
-        nodeList.addView(countdown0);
         // CREATE NODE LIST - END -------------------------------------------------------------
     }
 
@@ -47,5 +71,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.e("onNodeClick","Node-Tag WRONG labelled: "+nodeTag);
             Toast.makeText(this,"Could not open CountdownActivity.",Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void createAddNodeToLayout(Countdown countdown) {
+        RelativeLayout countdownView = (RelativeLayout) getLayoutInflater().inflate(R.layout.node_template,null);
+        ((TextView)countdownView.findViewById(R.id.countdownTitle)).setText(countdown.getCountdownTitle());
+        ((TextView)countdownView.findViewById(R.id.untilDateTime)).setText(countdown.getUntilDateTime());
+        nodeList.addView(countdownView);
     }
 }
