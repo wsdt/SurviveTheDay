@@ -1,6 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainActionbar"
     tools:context="kevkevin.wsdt.tagueberstehen.MainActivity">
 
 
@@ -11,7 +12,8 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/addCountdown"
+        android:id="@+id/action_addCountdown"
+        android:orderInCategory="0"
         android:icon="@drawable/plus"
         android:title="Add new countdown"
         app:showAsAction="ifRoom" />
