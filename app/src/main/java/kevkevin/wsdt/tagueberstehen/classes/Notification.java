@@ -108,25 +108,4 @@ public class Notification /*implements Parcelable*/ { //one instance for every c
         this.resultIntent = resultIntent;
     }
 
-
-
-    // INTERFACE METHODS : Essential to put extra as obj to service
-    /*@Override
-    public int describeContents() {
-        return 0; //auto generated
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        /*private Context activityThisTarget;
-    private Intent resultIntent;
-    private int mNotificationId = 0; //start with 0 should be first notification (index starts at 0)
-    private ArrayList<NotificationCompat.Builder> notifications = new ArrayList<>(); //NOT static, because every instance should have own Arraylist!
-    private NotificationManager mNotifyMgr;
-    private PendingIntent resultPendingIntent;*/
-
-    /*dest.writeString(jfjfjs);*
-
-
-    }*/
 }

@@ -28,19 +28,39 @@ public class Countdown {
     private int countdownId; //unique id of countdown
     private String countdownTitle; //name of countdown
     private String countdownDescription; //description for countdown
+    private String startDateTime; //when countdown needs to start counting, could be now
     private String untilDateTime; //when is countdown 0
     private String createdDateTime; //when was countdown firstly created
     private String lastEditDateTime; //last edit of countdown
     private String category; //work, school, university etc.
     private boolean isActive;
     private static final String DATE_FORMAT = "dd.MM.yyyy hh:mm:ss";
+    public static final String DATE_FORMAT_REGEX = "\\d{2}\\.\\d{2}\\.\\d{4} \\d{2}:\\d{2}:\\d{2}"; //mainly for other classes
+
+    //TODO: make constructor for without countdownId so autoincrement
 
 
-    public Countdown(Context context, int countdownId, String countdownTitle, String countdownDescription, String untilDateTime, String createdDateTime, String lastEditDateTime, String category, boolean isActive) {
+    //Constructor for lastEdit/createdDateTime automatically
+    public Countdown(Context context, int countdownId, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String category, boolean isActive) {
+        this.setContext(context);
+        this.setCountdownId(countdownId);
+        this.setCountdownTitle(countdownTitle);
+        this.setCountdownDescription(countdownDescription);
+        this.setStartDateTime(startDateTime);
+        this.setUntilDateTime(untilDateTime);
+        this.setCreatedDateTime(getCurrentDateTimeStr());
+        this.setLastEditDateTime(getCurrentDateTimeStr());
+        this.setCategory(category);
+        this.setActive(isActive);
+    }
+
+    //Constructor for all fields
+    public Countdown(Context context, int countdownId, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String createdDateTime, String lastEditDateTime, String category, boolean isActive) {
             this.setContext(context);
             this.setCountdownId(countdownId);
             this.setCountdownTitle(countdownTitle);
             this.setCountdownDescription(countdownDescription);
+            this.setStartDateTime(startDateTime);
             this.setUntilDateTime(untilDateTime);
             this.setCreatedDateTime(createdDateTime);
             this.setLastEditDateTime(lastEditDateTime);
@@ -178,5 +198,13 @@ public class Countdown {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public String getStartDateTime() {
+        return startDateTime;
+    }
+
+    public void setStartDateTime(String startDateTime) {
+        this.startDateTime = escapeForSharedPreferences(startDateTime);
     }
 }
