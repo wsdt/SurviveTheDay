@@ -1,78 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:layout_marginEnd="5dp"
     android:layout_marginRight="5dp"
+    android:layout_marginStart="5dp"
+    android:layout_marginLeft="5dp"
+    android:columnCount="2"
     tools:context="kevkevin.wsdt.tagueberstehen.ModifyCountdownActivity">
 
-
-    <LinearLayout
-        android:id="@+id/countdownTitle"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        <!-- TITLE -->
         <TextView
+            android:layout_gravity="start|top"
             android:layout_width="120dp"
-            android:layout_height="match_parent"
             style="@style/textForForm"
-            android:textAlignment="center"
             android:layout_marginTop="5dp"
-            android:text="Titel: "/>
+            android:text="Title: "/>
         <EditText
+            android:layout_gravity="start|top"
             android:id="@+id/countdownTitleValue"
             style="@style/textForForm"
             android:hint="Saturday Work - IKEA"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_width="match_parent"
             android:ems="10"
             android:inputType="textCapCharacters"
-            android:text="Countdown title" />
-    </LinearLayout>
-    <LinearLayout
-        android:id="@+id/countdownDescription"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+            android:text="Work" />
+    <!-- DESCRIPTION -->
         <TextView
+            android:layout_gravity="start|top"
             android:layout_width="120dp"
-            android:layout_height="match_parent"
             style="@style/textForForm"
-            android:textAlignment="center"
             android:layout_marginTop="5dp"
             android:text="Description: "/>
         <EditText
+            android:layout_gravity="start|top"
             android:id="@+id/countdownDescriptionValue"
             style="@style/textForForm"
             android:hint="Working from 8 a.m - 6 p.m."
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:ems="10"
+            android:layout_width="match_parent"
             android:inputType="textCapCharacters"
-            android:text="Countdown description" />
-    </LinearLayout>
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <DatePicker
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
-        <TimePicker
-            android:id="@+id/untilDateTimeValue"
-            style="@style/textForForm"
-            android:hint="Working from 8 a.m - 6 p.m."
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="datetime"
-            android:text="Countdown until" />
-    </LinearLayout>
-</LinearLayout>
+            android:text="Job at IKEA" />
+    <!-- Start Datetime -->
+    <TextView
+        android:layout_gravity="start|top"
+        android:layout_width="120dp"
+        style="@style/textForForm"
+        android:layout_marginTop="5dp"
+        android:text="From: "/>
+    <EditText
+        android:layout_gravity="start|top"
+        android:id="@+id/startDateTimeValue"
+        style="@style/textForForm"
+        android:hint="dd.MM.YYYY hh:mm:ss"
+        android:layout_width="match_parent"
+        android:inputType="datetime"
+        android:text="15.12.2017 08:00" />
+    <!-- Until Datetime
+    TODO: http://www.truiton.com/2013/03/android-pick-date-time-from-edittext-onclick-event/ >>> super Lösung
+    -->
+    <TextView
+        android:layout_gravity="start|top"
+        android:layout_width="120dp"
+        style="@style/textForForm"
+        android:layout_marginTop="5dp"
+        android:text="Until: "/>
+    <EditText
+        android:layout_gravity="start|top"
+        android:id="@+id/untilDateTimeValue"
+        style="@style/textForForm"
+        android:hint="dd.MM.YYYY hh:mm:ss"
+        android:layout_width="match_parent"
+        android:inputType="datetime"
+        android:text="15.12.2017 15:00" />
+    <!-- Category -->
+    <TextView
+        android:layout_gravity="start|top"
+        android:layout_width="120dp"
+        style="@style/textForForm"
+        android:layout_marginTop="5dp"
+        android:text="Category: "/>
+    <EditText
+        android:layout_gravity="start|top"
+        android:id="@+id/categoryValue"
+        style="@style/textForForm"
+        android:hint="work, school etc."
+        android:layout_width="match_parent"
+        android:inputType="numberDecimal"
+        android:text="work" />
+    <Button
+        android:id="@+id/saveCountdown"
+        android:text="Save"
+        android:onClick="onSaveClick"
+        android:padding="5dp" />
+    <Button
+        android:id="@+id/abortCountdown"
+        android:text="Abort"
+        android:padding="5dp" />
+</GridLayout>

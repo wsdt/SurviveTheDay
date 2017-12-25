@@ -41,10 +41,10 @@ public class InternalStorageMgr {
                 //Countdown Id determines indexposition of that element in arraylist!
                 if (onlyActiveCountdowns) {
                     if (Boolean.parseBoolean(lineArr[7])) { //is this specific countdown active? only then add it, because we only want active countdowns
-                        allCountdowns.add(Integer.parseInt(lineArr[0]), new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], Boolean.parseBoolean(lineArr[7])));
+                        allCountdowns.add(Integer.parseInt(lineArr[0]), new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[7])));
                     }
                 } else {
-                    allCountdowns.add(Integer.parseInt(lineArr[0]), new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], Boolean.parseBoolean(lineArr[7])));
+                    allCountdowns.add(Integer.parseInt(lineArr[0]), new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[7])));
                 }
             }
         } catch (NumberFormatException e) {
@@ -91,7 +91,7 @@ public class InternalStorageMgr {
         //Map arraylist onto sharedpreferences
         SharedPreferences.Editor editor = getAllCountdowns_SharedPref().edit();
         for (Countdown countdown : this.allCountdowns) {
-            String countdownString = countdown.getCountdownId()+";"+countdown.getCountdownTitle()+";"+countdown.getCountdownDescription()+";"+countdown.getUntilDateTime()+";"+countdown.getCreatedDateTime()+";"+countdown.getLastEditDateTime()+";"+countdown.getCategory()+";"+countdown.isActive();
+            String countdownString = countdown.getCountdownId()+";"+countdown.getCountdownTitle()+";"+countdown.getCountdownDescription()+";"+countdown.getStartDateTime()+";"+countdown.getUntilDateTime()+";"+countdown.getCreatedDateTime()+";"+countdown.getLastEditDateTime()+";"+countdown.getCategory()+";"+countdown.isActive();
             Log.d(TAG,"setSaveAllCountdowns: Saved string is COUNTDOWN_"+countdown.getCountdownId()+"/"+countdownString);
             editor.putString("COUNTDOWN_"+countdown.getCountdownId(),countdownString);
         }
