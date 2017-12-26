@@ -11,7 +11,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -20,6 +19,7 @@ import android.widget.Toast;
 import java.util.Map;
 
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.NotificationService;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -38,11 +38,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Nodelist
         nodeList = (LinearLayout) findViewById(R.id.nodeList);
 
-        // CREATE NODE LIST -------------------------------------------------------------------
         //Create for each saved countdown one node
         loadAddNodes();
 
-        // CREATE NODE LIST - END -------------------------------------------------------------
+        //Start Service
+        startService(new Intent(getApplicationContext(),NotificationService.class)); //this line should be only called once
+
     }
 
     @Override

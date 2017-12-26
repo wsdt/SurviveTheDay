@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
@@ -56,6 +57,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         this.setStartDateTime(((TextView) findViewById(R.id.startDateTimeValue)).getText().toString());
         this.setUntilDateTime(((TextView) findViewById(R.id.untilDateTimeValue)).getText().toString());
         this.setCategory(((TextView) findViewById(R.id.categoryValue)).getText().toString());
+        this.setActive(((ToggleButton) findViewById(R.id.isActive)).isChecked());
     }
 
     //GETTER/SETTER -----------------------------------------------------

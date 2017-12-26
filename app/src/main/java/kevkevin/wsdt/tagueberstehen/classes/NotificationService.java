@@ -1,5 +1,6 @@
 package kevkevin.wsdt.tagueberstehen.classes;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -26,10 +28,10 @@ public class NotificationService extends Service {
     private Notification notificationManager;
     //private static ArrayList<String[]> activeServices; //every String[]: [0]:COUNTDOWNID / [1]:STARTID (every countdown id should only occur once!)
     private InternalStorageMgr storageMgr;
-    private ArrayList<Timer> timer; //do not make that static
-    private ArrayList<TimerTask> timerTask;
-    private ArrayList<Integer> intervalSeconds; // = 5; //default
-    private /*final*/ ArrayList<Handler> handler; // = new Handler(); //use of handler to be able to run in our TimerTask
+    private HashMap<Integer,Timer> timer; //do not make that static
+    private HashMap<Integer,TimerTask> timerTask;
+    private HashMap<Integer,Integer> intervalSeconds; // = 5; //default
+    private /*final*/ HashMap<Integer,Handler> handler; // = new Handler(); //use of handler to be able to run in our TimerTask
     private int startId;
 
 
@@ -40,6 +42,7 @@ public class NotificationService extends Service {
     }
 
 
+    @SuppressLint("UseSparseArrays")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "Executed onStartCommand(). StartId: " + startId);
@@ -51,10 +54,10 @@ public class NotificationService extends Service {
 
         //Set Notification Manager etc. for Countdown
         this.notificationManager = new Notification(this, CountdownActivity.class, (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE), 0); //intent.getParcelableExtra("notificationManager");
-        this.handler = new ArrayList<>();
-        this.intervalSeconds = new ArrayList<>();
-        this.timer = new ArrayList<>();
-        this.timerTask = new ArrayList<>();
+        this.handler = new HashMap<>();
+        this.intervalSeconds = new HashMap<>();
+        this.timer = new HashMap<>();
+        this.timerTask = new HashMap<>();
 
         startTimer(); //this function starts all countdowns
 
@@ -82,9 +85,9 @@ public class NotificationService extends Service {
         //iterate through all countdown data sets
         for (Map.Entry<Integer,Countdown> countdown : this.storageMgr.getAllCountdowns(true).entrySet()) {
             Log.d(TAG, "Countdown-Id: " + countdown.getValue().getCountdownId());
-            this.timer.add(countdown.getValue().getCountdownId(), new Timer());
-            this.intervalSeconds.add(countdown.getValue().getCountdownId(), 5);
-            this.handler.add(countdown.getValue().getCountdownId(), new Handler());
+            this.timer.put(countdown.getValue().getCountdownId(), new Timer());
+            this.intervalSeconds.put(countdown.getValue().getCountdownId(), 5);
+            this.handler.put(countdown.getValue().getCountdownId(), new Handler());
             initializeTimer(countdown.getValue().getCountdownId());
             //delay, time after interval starts
             this.timer.get(countdown.getValue().getCountdownId()).schedule(this.timerTask.get(countdown.getValue().getCountdownId()), 5000, this.intervalSeconds.get(countdown.getValue().getCountdownId()) * 1000);
@@ -96,10 +99,10 @@ public class NotificationService extends Service {
         Log.d(TAG, "Executed stopTimer().");
         //stop timer, if it's not already null for all countdowns!
         if (this.timer != null) {
-            for (Timer timerInstance : this.timer) {
-                if (timerInstance != null) {
-                    timerInstance.cancel();
-                    timerInstance = null;
+            for (Map.Entry<Integer, Timer> timerInstance : this.timer.entrySet()) {
+                if (timerInstance.getValue() != null) {
+                    timerInstance.getValue().cancel();
+                    timerInstance.setValue(null);
                 }
             }
         }
@@ -107,7 +110,7 @@ public class NotificationService extends Service {
 
     public void initializeTimer(final int countdownId) {
         Log.d(TAG, "Executed initializeTimer().");
-        this.timerTask.add(countdownId, new TimerTask() {
+        this.timerTask.put(countdownId, new TimerTask() {
             @Override
             public void run() {
                 handler.get(countdownId).post(new Runnable() {
