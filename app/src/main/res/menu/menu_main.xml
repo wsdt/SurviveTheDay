@@ -17,4 +17,10 @@
         android:icon="@drawable/plus"
         android:title="Add new countdown"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_removeAllCountdowns"
+        android:orderInCategory="1"
+        android:icon="@drawable/delete"
+        android:title="Delete all countdowns"
+        app:showAsAction="ifRoom" />
 </menu>

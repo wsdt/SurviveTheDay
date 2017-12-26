@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.nfc.FormatException;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,7 +38,7 @@ public class Countdown {
     private boolean isActive;
     private static final String TAG = "Countdown";
     private static final String DATE_FORMAT = "dd.MM.yyyy hh:mm:ss";
-    public static final String DATE_FORMAT_REGEX = "\\d{2}\\.\\d{2}\\.\\d{4} \\d{2}:\\d{2}:\\d{2}"; //mainly for other classes
+    public static final String DATE_FORMAT_REGEX = "\\d{1,2}\\.\\d{1,2}\\.\\d{4} \\d{1,2}:\\d{1,2}:\\d{1,2}"; //mainly for other classes
 
     //TODO: make constructor for without countdownId so autoincrement
 
@@ -77,14 +79,26 @@ public class Countdown {
 
 
 
-    public Long getTotalSeconds() {
-        Long totalSeconds = 0L;
+    public Double getTotalSeconds() {
+        Double totalSeconds = 0D;
         try {
-            totalSeconds = (getDateTime(getUntilDateTime()).getTimeInMillis() - getCurrentDateTime().getTimeInMillis()) / 1000;
+            if (getDateTime(getStartDateTime()).compareTo(getCurrentDateTime()) > 0) {
+                //date is in the future
+                Toast.makeText(this.getContext(),"Countdown starts at: "+this.getStartDateTime(),Toast.LENGTH_LONG).show();
+                totalSeconds = 0D; //prevent from counting to infinity (because negative)
+            } else {
+                //date is in the past and countdown started already
+                totalSeconds = Long.valueOf((getDateTime(getUntilDateTime()).getTimeInMillis() - getCurrentDateTime().getTimeInMillis()) / 1000).doubleValue();
+            }
         } catch (NullPointerException e) {
             Log.e("getTotalSeconds","totalSeconds could not be calculated. Nullpointerexception!");
             e.printStackTrace();
         }
+        if (totalSeconds < 0) {
+            Toast.makeText(this.getContext(),"Countdown starts at: "+this.getStartDateTime(),Toast.LENGTH_LONG).show();
+            totalSeconds = 0D; //prevent from counting to infinity (because negative)
+        }
+
         return totalSeconds;
     }
 

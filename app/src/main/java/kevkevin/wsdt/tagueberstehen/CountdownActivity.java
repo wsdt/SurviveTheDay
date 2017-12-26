@@ -14,31 +14,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import kevkevin.wsdt.tagueberstehen.classes.NotificationService;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
 
 public class CountdownActivity extends AppCompatActivity {
-    private EditText countdownAdd;
-    private RelativeLayout contentMain;
     private AsyncTask<Double,Double,Double> countdownCounter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_countdown);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        //Get main content view
-        contentMain = (RelativeLayout) findViewById(R.id.content_main);
-
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Currently this option is disabled.", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
 
         //Start Service
@@ -69,14 +54,7 @@ public class CountdownActivity extends AppCompatActivity {
 
 
     public Double loadCountdownFromSharedPreferences(int countdownId) {
-        Double totalSeconds = 0D; //intial value
-        //TODO: search in storage and return Date and Timestamp --> calculate totalseconds for current session! (because what if app stopps!)
-        //TODO: COUNTDOWNS as name of sharedpreferences
-        if (countdownId == 0) {
-            totalSeconds = 135D;
-        }
-
-        return totalSeconds;
+        return new InternalStorageMgr(this).getCountdown(countdownId).getTotalSeconds();
     }
 
     public AsyncTask<Double,Double,Double> startCountdownService(Double totalSeconds) {
@@ -172,7 +150,7 @@ public class CountdownActivity extends AppCompatActivity {
                 this.totalHours = (this.totalMinutes) / 60;
                 this.totalDays = (this.totalHours) / 24;
                 this.totalWeeks = (this.totalDays) / 7;
-                this.totalMonths = (this.totalWeeks) / 30; //pauschal mit 30 Tagen pro Monat gerechnet
+                this.totalMonths = (this.totalDays) / 30; //pauschal mit 30 Tagen pro Monat gerechnet
                 this.totalYears = (this.totalMonths) / 12;
 
                 //Calculation for big countdown
