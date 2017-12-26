@@ -56,22 +56,6 @@ public class InternalStorageMgr {
         } else {
             Log.d(TAG, "getNextCountdownId: Found next countdown id within loop (filled gap): "+newCountdownId);
         }
-
-
-        /*for (Map.Entry<Integer, Countdown> countdown : countdowns.entrySet()) {//Countdown countdown : countdowns) {
-            if ((i++) != countdown.getValue().getCountdownId()) {
-                Log.d(TAG, "getNextCountdownId: Next countdown id at: "+(i-1));
-                newCountdownId = (i-1); //get previous evaluated id from counter
-                break;
-            }
-        }*/
-        //Take current index number (already incremented from loop so just take it IF no countdown id gap in between found
-        /*if (newCountdownId < 0) {
-            newCountdownId = i; //already incremented in loop
-            Log.e(TAG,"getNextCountdownId: Found next countdown id after loop (just incremented): "+newCountdownId);
-        } else {
-            Log.d(TAG, "getNextCountdownId: Found next countdown id within loop (filled gap): "+newCountdownId);
-        }*/
         return newCountdownId;
     }
 
@@ -95,15 +79,11 @@ public class InternalStorageMgr {
                 String[] lineArr = (entry.getValue()).toString().split(";"); //split entryvalue "1;title;descr;etc..." into array
                 //Countdown Id determines indexposition of that element in arraylist!
                 if (onlyActiveCountdowns) {
-                    if (Boolean.parseBoolean(lineArr[7])) { //is this specific countdown active? only then add it, because we only want active countdowns
-                        allCountdowns.put(Integer.parseInt(lineArr[0]),new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[7])));
-                        //allCountdowns = addArbitrary(allCountdowns,Integer.parseInt(lineArr[0]),new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[7])));
-                        //allCountdowns.add(Integer.parseInt(lineArr[0]), new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[7])));
-                    }
+                    if (Boolean.parseBoolean(lineArr[8])) { //is this specific countdown active? only then add it, because we only want active countdowns
+                            allCountdowns.put(Integer.parseInt(lineArr[0]),new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[8])));
+                       }
                 } else {
-                    allCountdowns.put(Integer.parseInt(lineArr[0]),new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[7])));
-                    //allCountdowns = addArbitrary(allCountdowns,Integer.parseInt(lineArr[0]),new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[7])));
-                    //allCountdowns.add(Integer.parseInt(lineArr[0]), new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[7])));
+                    allCountdowns.put(Integer.parseInt(lineArr[0]),new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[8])));
                 }
             }
         } catch (NumberFormatException e) {
@@ -116,40 +96,19 @@ public class InternalStorageMgr {
             Log.e(TAG, "Index does not exist! Maybe wrong implemented.");
             e.printStackTrace();
         }
-
         Log.d(TAG,"getAllCountdowns: Length of returned arraylist is "+allCountdowns.size());
         return allCountdowns; //IMPORTANT: It is extremely important that the arraylist is ordered (for that we assign objects with index = countdown id
     }
 
-    /*public static HashMap<Integer,Countdown> addArbitrary(SparseIntArray countdowns, int targetIndex, Countdown newElement) {
-        /*if (countdowns.size() > targetIndex) {
-            Log.d(TAG, "Filled arraylist with dummy values.");
-            countdowns.addAll(Collections.<Countdown>nCopies(targetIndex-countdowns.size(),null));
-        }*
-        countdowns.put()
-        countdowns.put(targetIndex,newElement);
-        return countdowns;
-    }*/
 
     public void setSaveCountdown(Countdown countdown, boolean saveToPreferences) {
-        //IMPORTANT: This function should ensure that the arraylist and hence the sharedpreferences are distinct
-        if (this.allCountdowns == null) { //initialize arraylist if null (no countdowns do exist)
+        if (this.allCountdowns == null) { //initialize hashmap if null (no countdowns do exist)
             this.allCountdowns = this.getAllCountdowns(false);
         }
 
-        /*try {
-            if (this.allCountdowns.get(countdown.getCountdownId()) != null) {*/
         Log.d(TAG, "setSaveCountdown: Entry might be replaced if it exists already.");
         this.allCountdowns.put(countdown.getCountdownId(), countdown);
-            /*} else {
-                Log.e(TAG,"setSaveCountdown: This error should not occur!");
-            }
-        } catch (IndexOutOfBoundsException e) {
-            //means that entry does not exist yet so we use add instead of set
-            Log.e(TAG,"setSaveCountdown: Entry does not exist in list yet so we added it to list.");
-            addArbitrary(this.allCountdowns,countdown.getCountdownId(),countdown);
-            //this.allCountdowns.add(countdown.getCountdownId(),countdown);
-        }*/
+
         if (saveToPreferences) {
             Log.d(TAG,"setSaveCountdown: Saved countdown not only to list, but also to sharedpreferences.");
             setSaveAllCountdowns(); //save modified arraylist to shared preferences
@@ -165,7 +124,7 @@ public class InternalStorageMgr {
         //Map arraylist onto sharedpreferences
         SharedPreferences.Editor editor = getAllCountdowns_SharedPref().edit();
         for (Map.Entry<Integer,Countdown> countdown : this.allCountdowns.entrySet()) {
-            String countdownString = countdown.getValue().getCountdownId()+";"+countdown.getValue().getCountdownTitle()+";"+countdown.getValue().getCountdownDescription()+";"+countdown.getValue().getStartDateTime()+";"+countdown.getValue().getUntilDateTime()+";"+countdown.getValue().getCreatedDateTime()+";"+countdown.getValue().getLastEditDateTime()+";"+countdown.getValue().getCategory()+";"+countdown.getValue().isActive();
+            String countdownString = countdown.getValue().getCountdownId()+";"+countdown.getValue().getCountdownTitle()+";"+countdown.getValue().getCountdownDescription()+";"+countdown.getValue().getStartDateTime()+";"+countdown.getValue().getUntilDateTime()+";"+countdown.getValue().getCreatedDateTime()+";"+countdown.getValue().getLastEditDateTime()+";"+countdown.getValue().getCategory()+";"+Boolean.toString(countdown.getValue().isActive()); //save boolean as String so String.valueOf()
             Log.d(TAG,"setSaveAllCountdowns: Saved string is COUNTDOWN_"+countdown.getValue().getCountdownId()+"/"+countdownString);
             editor.putString("COUNTDOWN_"+countdown.getValue().getCountdownId(),countdownString);
         }

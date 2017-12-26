@@ -90,6 +90,22 @@
         android:layout_width="match_parent"
         android:inputType="numberDecimal"
         android:text="work" />
+    <!-- isActive -->
+    <TextView
+        android:layout_gravity="start|top"
+        android:layout_width="120dp"
+        style="@style/textForForm"
+        android:layout_marginTop="5dp"
+        android:text="Motivate me: "/>
+
+    <ToggleButton
+        android:id="@+id/isActive"
+        style="@style/textForForm"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_gravity="start|top"
+        android:hint="Should countdown also be added in service?"
+        android:text="Motivate me" />
     <Button
         android:id="@+id/saveCountdown"
         android:text="Save"
