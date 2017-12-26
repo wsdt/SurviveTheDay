@@ -2,6 +2,7 @@ package kevkevin.wsdt.tagueberstehen.classes.StorageMgr;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.util.SparseIntArray;
@@ -14,6 +15,8 @@ import java.util.Map;
 import java.util.Set;
 
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.Notification;
+import kevkevin.wsdt.tagueberstehen.classes.NotificationService;
 
 
 public class InternalStorageMgr {
@@ -129,6 +132,11 @@ public class InternalStorageMgr {
             editor.putString("COUNTDOWN_"+countdown.getValue().getCountdownId(),countdownString);
         }
         editor.apply();
+
+        //TODO:Restart service (because new/less services etc. / changed settings)
+        /*this.getContext().stopService(new Intent(this.getContext(),NotificationService.class));
+        this.getContext().startService(new Intent(this.getContext(), NotificationService.class));
+        Log.d(TAG, "Tried to restart service.");*/
     }
 
 

@@ -125,5 +125,6 @@ public class NotificationService extends Service {
         });
     }
 
+
     //NO GETTER / SETTER useful, because startService only allows putExtra
 }
