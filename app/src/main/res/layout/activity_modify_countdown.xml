@@ -57,7 +57,7 @@
         android:hint="dd.MM.YYYY hh:mm:ss"
         android:layout_width="match_parent"
         android:inputType="datetime"
-        android:text="15.12.2017 08:00" />
+        android:text="15.12.2017 08:00:00" />
     <!-- Until Datetime
     TODO: http://www.truiton.com/2013/03/android-pick-date-time-from-edittext-onclick-event/ >>> super Lösung
     -->
@@ -74,7 +74,7 @@
         android:hint="dd.MM.YYYY hh:mm:ss"
         android:layout_width="match_parent"
         android:inputType="datetime"
-        android:text="15.12.2017 15:00" />
+        android:text="15.12.2018 15:00:00" />
     <!-- Category -->
     <TextView
         android:layout_gravity="start|top"

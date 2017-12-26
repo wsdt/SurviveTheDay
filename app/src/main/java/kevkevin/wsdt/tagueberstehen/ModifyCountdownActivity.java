@@ -28,9 +28,11 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     public void onSaveClick(View view) {
         //Get values from form
         loadFormValues();
+        validateFormValues();
         InternalStorageMgr storageMgr = new InternalStorageMgr(this);
         storageMgr.setSaveCountdown(new Countdown(this,this.getCountdownTitle(),this.getCountdownDescription(),this.getStartDateTime(),this.getUntilDateTime(),this.getCategory(),this.isActive()),true);
         Log.d(TAG, "onSaveClick: Tried to save new countdown.");
+        finish(); //go back to main
     }
 
     public void onAbortClick(View view) {

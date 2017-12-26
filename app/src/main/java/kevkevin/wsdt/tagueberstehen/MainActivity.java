@@ -11,10 +11,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Map;
 
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
@@ -37,12 +40,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // CREATE NODE LIST -------------------------------------------------------------------
         //Create for each saved countdown one node
+        loadAddNodes();
+
+        // CREATE NODE LIST - END -------------------------------------------------------------
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //reload all nodes from sharedpreferences (remove them beforehand)
+        removeAllNodesFromLayout();
+        loadAddNodes();
+    }
+
+    private void loadAddNodes() {
         InternalStorageMgr storageMgr = new InternalStorageMgr(this);
         int anzahlCountdowns = 0;
-        for (Countdown countdown : storageMgr.getAllCountdowns(false)) {
-            createAddNodeToLayout(countdown);
+        for (Map.Entry<Integer,Countdown> countdown : storageMgr.getAllCountdowns(false).entrySet()) {
+            createAddNodeToLayout(countdown.getValue());
             anzahlCountdowns++;
         }
+
         if (anzahlCountdowns <= 0) {
             //add plus icon or similar to add new countdown
             TextView noCountdownsFound = new TextView(this);
@@ -53,8 +71,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             noCountdownsFound.setGravity(Gravity.CENTER);
             nodeList.addView(noCountdownsFound);
         }
-
-        // CREATE NODE LIST - END -------------------------------------------------------------
     }
 
     @Override
@@ -80,7 +96,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         RelativeLayout countdownView = (RelativeLayout) getLayoutInflater().inflate(R.layout.node_template,null);
         ((TextView)countdownView.findViewById(R.id.countdownTitle)).setText(countdown.getCountdownTitle());
         ((TextView)countdownView.findViewById(R.id.untilDateTime)).setText(countdown.getUntilDateTime());
+        countdownView.setTag("COUNTDOWN_"+countdown.getCountdownId()); //to determine what countdown to open in CountdownActivity
         nodeList.addView(countdownView);
+    }
+
+    private void removeAllNodesFromLayout() {
+        if (nodeList == null) {
+            this.nodeList = (LinearLayout) findViewById(R.id.nodeList);
+        }
+        nodeList.removeAllViews();
     }
 
     // ACTION BAR ------------------------------------------------------------
@@ -98,6 +122,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent createCountdownAct = new Intent(this,ModifyCountdownActivity.class);
                 createCountdownAct.putExtra("CRUD","C");
                 startActivity(createCountdownAct);
+                break;
+            case R.id.action_removeAllCountdowns:
+                InternalStorageMgr storageMgr = new InternalStorageMgr(this);
+                storageMgr.deleteAllCountdowns();
+                this.removeAllNodesFromLayout();
+                loadAddNodes(); //load current nodes (normally there should not be any ones)
+                Toast.makeText(this,"Deleted all countdowns.",Toast.LENGTH_LONG).show();
                 break;
             default: Log.e(TAG,"onOptionsItemSelected: Button does not exist: "+item.getItemId());
         }

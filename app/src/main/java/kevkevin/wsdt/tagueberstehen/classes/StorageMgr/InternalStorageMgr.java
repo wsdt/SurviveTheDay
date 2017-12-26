@@ -1,10 +1,14 @@
 package kevkevin.wsdt.tagueberstehen.classes.StorageMgr;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.util.SparseIntArray;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -15,14 +19,18 @@ import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 public class InternalStorageMgr {
     private SharedPreferences allCountdowns_SharedPref;
     private static final String TAG = "InternalStorageMgr";
-    private ArrayList<Countdown> allCountdowns;
+    private HashMap<Integer,Countdown> allCountdowns;
     private Context context;
 
 
     public InternalStorageMgr(Context context) {
         setAllCountdowns_SharedPref(context.getSharedPreferences("COUNTDOWNS",Context.MODE_PRIVATE));
-
         this.setContext(context);
+    }
+
+    public void deleteAllCountdowns() {
+        //Deletes all countdowns ("COUNTDOWNS")
+        this.getAllCountdowns_SharedPref().edit().clear().apply();
     }
 
     public int getNextCountdownId() {
@@ -33,30 +41,50 @@ public class InternalStorageMgr {
         * */
         int newCountdownId = (-1);
         //Load saved countdowns
-        ArrayList<Countdown> countdowns = this.getAllCountdowns(false);
-        int i = 0; //counter
-        for (Countdown countdown : countdowns) {
-            if ((i++) != countdown.getCountdownId()) {
+        HashMap<Integer,Countdown> countdowns = this.getAllCountdowns(false);
+        //int i = 0; //counter
+        for (int i = 0; i < countdowns.size(); i++) {
+            if (!countdowns.containsKey(i)) {
+                Log.d(TAG, "getNextCountdownId: Next countdown id at: "+i);
+                newCountdownId = i;
+                break;
+            }
+        }
+        if (newCountdownId < countdowns.size()) {
+            newCountdownId = countdowns.size();
+            Log.d(TAG, "getNextCountdownId: Found next countdown id after loop (just incremented/used from size): "+newCountdownId);
+        } else {
+            Log.d(TAG, "getNextCountdownId: Found next countdown id within loop (filled gap): "+newCountdownId);
+        }
+
+
+        /*for (Map.Entry<Integer, Countdown> countdown : countdowns.entrySet()) {//Countdown countdown : countdowns) {
+            if ((i++) != countdown.getValue().getCountdownId()) {
                 Log.d(TAG, "getNextCountdownId: Next countdown id at: "+(i-1));
                 newCountdownId = (i-1); //get previous evaluated id from counter
                 break;
             }
-        }
+        }*/
         //Take current index number (already incremented from loop so just take it IF no countdown id gap in between found
-        if (newCountdownId < 0) {
+        /*if (newCountdownId < 0) {
             newCountdownId = i; //already incremented in loop
             Log.e(TAG,"getNextCountdownId: Found next countdown id after loop (just incremented): "+newCountdownId);
         } else {
             Log.d(TAG, "getNextCountdownId: Found next countdown id within loop (filled gap): "+newCountdownId);
-        }
+        }*/
         return newCountdownId;
     }
 
 
     // GETTER/SETTER --------------------------------------------------------------------
-    public ArrayList<Countdown> getAllCountdowns(boolean onlyActiveCountdowns) { //Maps sharedpreferences on an arraylist of countdowns
+    public Countdown getCountdown(int countdownId) {
+        return getAllCountdowns(false).get(countdownId);
+    }
+
+    @SuppressLint("UseSparseArrays")
+    public HashMap<Integer, Countdown> getAllCountdowns(boolean onlyActiveCountdowns) { //Maps sharedpreferences on an arraylist of countdowns
         //Override also if already loaded
-        allCountdowns = new ArrayList<>(); //delete list directly not over setter because this would also delete preferences!
+        allCountdowns = new HashMap<>(); //delete list directly not over setter because this would also delete preferences!
 
         //Create for each entry an own Countdown instance and save it into arraylist
         Map<String,?> keys = getAllCountdowns_SharedPref().getAll();
@@ -68,10 +96,14 @@ public class InternalStorageMgr {
                 //Countdown Id determines indexposition of that element in arraylist!
                 if (onlyActiveCountdowns) {
                     if (Boolean.parseBoolean(lineArr[7])) { //is this specific countdown active? only then add it, because we only want active countdowns
-                        allCountdowns.add(Integer.parseInt(lineArr[0]), new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[7])));
+                        allCountdowns.put(Integer.parseInt(lineArr[0]),new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[7])));
+                        //allCountdowns = addArbitrary(allCountdowns,Integer.parseInt(lineArr[0]),new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[7])));
+                        //allCountdowns.add(Integer.parseInt(lineArr[0]), new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[7])));
                     }
                 } else {
-                    allCountdowns.add(Integer.parseInt(lineArr[0]), new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[7])));
+                    allCountdowns.put(Integer.parseInt(lineArr[0]),new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[7])));
+                    //allCountdowns = addArbitrary(allCountdowns,Integer.parseInt(lineArr[0]),new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[7])));
+                    //allCountdowns.add(Integer.parseInt(lineArr[0]), new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[7])));
                 }
             }
         } catch (NumberFormatException e) {
@@ -80,8 +112,8 @@ public class InternalStorageMgr {
         } catch (NullPointerException e) {
             Log.e(TAG,"Entry or a splitted index of array is null!");
             e.printStackTrace();
-        } catch (ArrayIndexOutOfBoundsException e) {
-            Log.e(TAG, "Array index does not exist! Maybe wrong implemented.");
+        } catch (IndexOutOfBoundsException e) {
+            Log.e(TAG, "Index does not exist! Maybe wrong implemented.");
             e.printStackTrace();
         }
 
@@ -89,20 +121,35 @@ public class InternalStorageMgr {
         return allCountdowns; //IMPORTANT: It is extremely important that the arraylist is ordered (for that we assign objects with index = countdown id
     }
 
+    /*public static HashMap<Integer,Countdown> addArbitrary(SparseIntArray countdowns, int targetIndex, Countdown newElement) {
+        /*if (countdowns.size() > targetIndex) {
+            Log.d(TAG, "Filled arraylist with dummy values.");
+            countdowns.addAll(Collections.<Countdown>nCopies(targetIndex-countdowns.size(),null));
+        }*
+        countdowns.put()
+        countdowns.put(targetIndex,newElement);
+        return countdowns;
+    }*/
+
     public void setSaveCountdown(Countdown countdown, boolean saveToPreferences) {
         //IMPORTANT: This function should ensure that the arraylist and hence the sharedpreferences are distinct
-        try {
-            if (this.allCountdowns.get(countdown.getCountdownId()) != null) {
-                Log.d(TAG,"setSaveCountdown: Entry does exist in list and we override it with set.");
-                this.allCountdowns.set(countdown.getCountdownId(),countdown);
-            } else {
+        if (this.allCountdowns == null) { //initialize arraylist if null (no countdowns do exist)
+            this.allCountdowns = this.getAllCountdowns(false);
+        }
+
+        /*try {
+            if (this.allCountdowns.get(countdown.getCountdownId()) != null) {*/
+        Log.d(TAG, "setSaveCountdown: Entry might be replaced if it exists already.");
+        this.allCountdowns.put(countdown.getCountdownId(), countdown);
+            /*} else {
                 Log.e(TAG,"setSaveCountdown: This error should not occur!");
             }
         } catch (IndexOutOfBoundsException e) {
             //means that entry does not exist yet so we use add instead of set
             Log.e(TAG,"setSaveCountdown: Entry does not exist in list yet so we added it to list.");
-            this.allCountdowns.add(countdown.getCountdownId(),countdown);
-        }
+            addArbitrary(this.allCountdowns,countdown.getCountdownId(),countdown);
+            //this.allCountdowns.add(countdown.getCountdownId(),countdown);
+        }*/
         if (saveToPreferences) {
             Log.d(TAG,"setSaveCountdown: Saved countdown not only to list, but also to sharedpreferences.");
             setSaveAllCountdowns(); //save modified arraylist to shared preferences
@@ -117,10 +164,10 @@ public class InternalStorageMgr {
 
         //Map arraylist onto sharedpreferences
         SharedPreferences.Editor editor = getAllCountdowns_SharedPref().edit();
-        for (Countdown countdown : this.allCountdowns) {
-            String countdownString = countdown.getCountdownId()+";"+countdown.getCountdownTitle()+";"+countdown.getCountdownDescription()+";"+countdown.getStartDateTime()+";"+countdown.getUntilDateTime()+";"+countdown.getCreatedDateTime()+";"+countdown.getLastEditDateTime()+";"+countdown.getCategory()+";"+countdown.isActive();
-            Log.d(TAG,"setSaveAllCountdowns: Saved string is COUNTDOWN_"+countdown.getCountdownId()+"/"+countdownString);
-            editor.putString("COUNTDOWN_"+countdown.getCountdownId(),countdownString);
+        for (Map.Entry<Integer,Countdown> countdown : this.allCountdowns.entrySet()) {
+            String countdownString = countdown.getValue().getCountdownId()+";"+countdown.getValue().getCountdownTitle()+";"+countdown.getValue().getCountdownDescription()+";"+countdown.getValue().getStartDateTime()+";"+countdown.getValue().getUntilDateTime()+";"+countdown.getValue().getCreatedDateTime()+";"+countdown.getValue().getLastEditDateTime()+";"+countdown.getValue().getCategory()+";"+countdown.getValue().isActive();
+            Log.d(TAG,"setSaveAllCountdowns: Saved string is COUNTDOWN_"+countdown.getValue().getCountdownId()+"/"+countdownString);
+            editor.putString("COUNTDOWN_"+countdown.getValue().getCountdownId(),countdownString);
         }
         editor.apply();
     }

@@ -80,14 +80,14 @@ public class NotificationService extends Service {
 
         //for each countdown do that following
         //iterate through all countdown data sets
-        for (Countdown countdown : this.storageMgr.getAllCountdowns(true)) {
-            Log.d(TAG, "Countdown-Id: " + countdown.getCountdownId());
-            this.timer.add(countdown.getCountdownId(), new Timer());
-            this.intervalSeconds.add(countdown.getCountdownId(), 5);
-            this.handler.add(countdown.getCountdownId(), new Handler());
-            initializeTimer(countdown.getCountdownId());
+        for (Map.Entry<Integer,Countdown> countdown : this.storageMgr.getAllCountdowns(true).entrySet()) {
+            Log.d(TAG, "Countdown-Id: " + countdown.getValue().getCountdownId());
+            this.timer.add(countdown.getValue().getCountdownId(), new Timer());
+            this.intervalSeconds.add(countdown.getValue().getCountdownId(), 5);
+            this.handler.add(countdown.getValue().getCountdownId(), new Handler());
+            initializeTimer(countdown.getValue().getCountdownId());
             //delay, time after interval starts
-            this.timer.get(countdown.getCountdownId()).schedule(this.timerTask.get(countdown.getCountdownId()), 5000, this.intervalSeconds.get(countdown.getCountdownId()) * 1000);
+            this.timer.get(countdown.getValue().getCountdownId()).schedule(this.timerTask.get(countdown.getValue().getCountdownId()), 5000, this.intervalSeconds.get(countdown.getValue().getCountdownId()) * 1000);
         }
         // END - FOR EACH COUNTDOWN
     }
