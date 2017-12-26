@@ -34,6 +34,7 @@ public class Countdown {
     private String lastEditDateTime; //last edit of countdown
     private String category; //work, school, university etc.
     private boolean isActive;
+    private static final String TAG = "Countdown";
     private static final String DATE_FORMAT = "dd.MM.yyyy hh:mm:ss";
     public static final String DATE_FORMAT_REGEX = "\\d{2}\\.\\d{2}\\.\\d{4} \\d{2}:\\d{2}:\\d{2}"; //mainly for other classes
 
@@ -41,9 +42,9 @@ public class Countdown {
 
 
     //Constructor for lastEdit/createdDateTime automatically
-    public Countdown(Context context, int countdownId, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String category, boolean isActive) {
+    public Countdown(Context context, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String category, boolean isActive) {
         this.setContext(context);
-        this.setCountdownId(countdownId);
+        this.setCountdownId((new InternalStorageMgr(context)).getNextCountdownId()); //get next countdown id (fill gap from deleted countdown or just increment)
         this.setCountdownTitle(countdownTitle);
         this.setCountdownDescription(countdownDescription);
         this.setStartDateTime(startDateTime);

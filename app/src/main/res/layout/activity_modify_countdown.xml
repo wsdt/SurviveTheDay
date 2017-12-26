@@ -97,6 +97,7 @@
         android:padding="5dp" />
     <Button
         android:id="@+id/abortCountdown"
+        android:onClick="onAbortClick"
         android:text="Abort"
         android:padding="5dp" />
 </GridLayout>

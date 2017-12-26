@@ -25,6 +25,33 @@ public class InternalStorageMgr {
         this.setContext(context);
     }
 
+    public int getNextCountdownId() {
+        /* Returns Integer value of not existing countown id e.g.:
+        * --> 1,2,3,4 [next: 5]
+        * --> 1,2,4,5 [next: 3]
+        * By filling the gaps we do not need to resave all countdowns when deleting a countdown
+        * */
+        int newCountdownId = (-1);
+        //Load saved countdowns
+        ArrayList<Countdown> countdowns = this.getAllCountdowns(false);
+        int i = 0; //counter
+        for (Countdown countdown : countdowns) {
+            if ((i++) != countdown.getCountdownId()) {
+                Log.d(TAG, "getNextCountdownId: Next countdown id at: "+(i-1));
+                newCountdownId = (i-1); //get previous evaluated id from counter
+                break;
+            }
+        }
+        //Take current index number (already incremented from loop so just take it IF no countdown id gap in between found
+        if (newCountdownId < 0) {
+            newCountdownId = i; //already incremented in loop
+            Log.e(TAG,"getNextCountdownId: Found next countdown id after loop (just incremented): "+newCountdownId);
+        } else {
+            Log.d(TAG, "getNextCountdownId: Found next countdown id within loop (filled gap): "+newCountdownId);
+        }
+        return newCountdownId;
+    }
+
 
     // GETTER/SETTER --------------------------------------------------------------------
     public ArrayList<Countdown> getAllCountdowns(boolean onlyActiveCountdowns) { //Maps sharedpreferences on an arraylist of countdowns
@@ -59,7 +86,7 @@ public class InternalStorageMgr {
         }
 
         Log.d(TAG,"getAllCountdowns: Length of returned arraylist is "+allCountdowns.size());
-        return allCountdowns;
+        return allCountdowns; //IMPORTANT: It is extremely important that the arraylist is ordered (for that we assign objects with index = countdown id
     }
 
     public void setSaveCountdown(Countdown countdown, boolean saveToPreferences) {

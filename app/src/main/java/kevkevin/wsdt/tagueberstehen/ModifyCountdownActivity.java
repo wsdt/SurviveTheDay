@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
 
 public class ModifyCountdownActivity extends AppCompatActivity {
     private String countdownTitle;
@@ -14,6 +15,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     private String startDateTime;
     private String untilDateTime;
     private String category;
+    private boolean isActive;
     private static final String TAG = "ModifyCountdownActivity";
 
     @Override
@@ -21,14 +23,14 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modify_countdown);
 
-        //TODO: createCountdownAct.putExtra("CRUD","C"); --> get extra each letter (except read)
     }
 
     public void onSaveClick(View view) {
         //Get values from form
         loadFormValues();
-
-
+        InternalStorageMgr storageMgr = new InternalStorageMgr(this);
+        storageMgr.setSaveCountdown(new Countdown(this,this.getCountdownTitle(),this.getCountdownDescription(),this.getStartDateTime(),this.getUntilDateTime(),this.getCategory(),this.isActive()),true);
+        Log.d(TAG, "onSaveClick: Tried to save new countdown.");
     }
 
     public void onAbortClick(View view) {
@@ -93,5 +95,13 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }
