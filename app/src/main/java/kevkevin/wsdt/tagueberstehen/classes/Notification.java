@@ -63,33 +63,64 @@ public class Notification /*implements Parcelable*/ { //one instance for every c
 
     public int createRandomNotification(Countdown countdown) {
         //Creates a suitable random notification for a specific countdown
-        String title = "", text = "";
-        int icon = R.drawable.warning;
+        NotificationContent randomNotification;
 
         /*different kinds of random notifications
         *       GENERIC (0)
-        *       TIME-BASED (1)
-        *       CATEGORY-BASED (2) */
+        *       TIMEBASED (1)
+        *       CATEGORYBASED (2) */
 
         Random random = new Random();
         //Decide which type of random notification (generic, time-based, ...)
         switch (random.nextInt(2-0)+0) {
             case 0: //GENERIC
                 Log.d(TAG, "createRandomNotification: Chose random notification from GENERIC.");
+                randomNotification = createRandomNotification_GENERIC(countdown);
                 break;
-            case 1: //TIME-BASED
-                Log.d(TAG, "createRandomNotification: Chose random notification from TIME-BASED.");
+            case 1: //TIMEBASED
+                Log.d(TAG, "createRandomNotification: Chose random notification from TIMEBASED.");
+                randomNotification = createRandomNotification_TIMEBASED(countdown);
                 break;
-            case 2: //CATEGORY-BASED
-                Log.d(TAG, "createRandomNotification: Chose random notification from CATEGORY-BASED.");
+            case 2: //CATEGORYBASED
+                Log.d(TAG, "createRandomNotification: Chose random notification from CATEGORYBASED.");
+                randomNotification = createRandomNotification_CATEGORYBASED(countdown);
                 break;
             default:
                 Log.e(TAG, "createRandomNotification: Could not determine random notification type!");
-                title = "System Error"; text = "Please contact administrator.";
-                //Icon is by default a warning sign
+                return createNotification("System Error", "Please contact administrator. ", R.drawable.warning);
         }
-        return createNotification(title,text,icon);
+        //Extract values from innerclass instance and create Notification in next method
+        return createNotification(randomNotification.title,randomNotification.text,randomNotification.icon);
     }
+
+    // PRIVATE METHODS FOR CREATERANDOMNOTIFICATION(COUNTDOWN countdown) {} - START ####################################################
+    private class NotificationContent {
+        //Used for bundling resources (easier to give back to createNotification()
+        String title;
+        String text;
+        int icon;
+    }
+
+    private NotificationContent createRandomNotification_GENERIC(Countdown countdown) {
+        NotificationContent randomNotification = new NotificationContent();
+
+        return randomNotification;
+    }
+
+    private NotificationContent createRandomNotification_TIMEBASED(Countdown countdown) {
+        NotificationContent randomNotification = new NotificationContent();
+
+        return randomNotification;
+    }
+
+    private NotificationContent createRandomNotification_CATEGORYBASED(Countdown countdown) {
+        NotificationContent randomNotification = new NotificationContent();
+
+        return randomNotification;
+    }
+
+    // PRIVATE METHODS FOR CREATERANDOMNOTIFICATION(COUNTDOWN countdown) {} - END ####################################################
+
 
     //GETTER / SETTER +++++++++++++++++++++++++
     public Context getActivityThisTarget() {
