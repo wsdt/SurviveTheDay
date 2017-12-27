@@ -75,6 +75,8 @@ public class NotificationService extends Service {
         Log.d(TAG, "Executed onDestroy().");
         stopTimer();
         super.onDestroy();
+        Log.d(TAG, "onDestroy: Tried to kill service ungracefully.");
+        android.os.Process.killProcess(android.os.Process.myPid()); //Important: Otherwise service would not stop because sth will still run in this instance
     }
 
     public void startTimer() {
@@ -100,9 +102,11 @@ public class NotificationService extends Service {
         //stop timer, if it's not already null for all countdowns!
         if (this.timer != null) {
             for (Map.Entry<Integer, Timer> timerInstance : this.timer.entrySet()) {
+                Log.d(TAG, "stopTimer: Tried to stop timerinstance. ");
                 if (timerInstance.getValue() != null) {
                     timerInstance.getValue().cancel();
                     timerInstance.setValue(null);
+                    Log.d(TAG, "stopTimer: Stopped timerinstance.");
                 }
             }
         }

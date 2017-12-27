@@ -34,6 +34,9 @@ public class InternalStorageMgr {
     public void deleteAllCountdowns() {
         //Deletes all countdowns ("COUNTDOWNS")
         this.getAllCountdowns_SharedPref().edit().clear().apply();
+
+        //Restart service (because new/less services etc. / changed settings)
+        restartNotificationService();
     }
 
     public int getNextCountdownId() {
@@ -133,10 +136,20 @@ public class InternalStorageMgr {
         }
         editor.apply();
 
-        //TODO:Restart service (because new/less services etc. / changed settings)
-        /*this.getContext().stopService(new Intent(this.getContext(),NotificationService.class));
-        this.getContext().startService(new Intent(this.getContext(), NotificationService.class));
-        Log.d(TAG, "Tried to restart service.");*/
+        //Restart service (because new/less services etc. / changed settings)
+        restartNotificationService();
+    }
+
+    public void restartNotificationService() {
+        Intent serviceIntent = new Intent(this.getContext(),NotificationService.class);
+        try {
+            this.getContext().stopService(serviceIntent);
+            Log.d(TAG, "restartNotificationService: Tried to stop service.");
+            this.getContext().startService(serviceIntent);
+        } catch(NullPointerException e) {
+            Log.e(TAG, "restartNotificationService: ServiceIntent equals null! Could not restart service.");
+        }
+        Log.d(TAG, "restartNotificationService: Tried to restart service.");
     }
 
 
