@@ -42,16 +42,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         loadAddNodes();
 
         //Start Service
-        startService(new Intent(getApplicationContext(),NotificationService.class)); //this line should be only called once
-
+        startService(new Intent(this,NotificationService.class)); //this line should be only called once
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        reloadEverything();
+    }
+
+    private void reloadEverything() {
         //reload all nodes from sharedpreferences (remove them beforehand)
         removeAllNodesFromLayout();
         loadAddNodes();
+        //restart of service happens in InternalStorageMgr!
     }
 
     private void loadAddNodes() {
@@ -127,8 +131,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.action_removeAllCountdowns:
                 InternalStorageMgr storageMgr = new InternalStorageMgr(this);
                 storageMgr.deleteAllCountdowns();
-                this.removeAllNodesFromLayout();
-                loadAddNodes(); //load current nodes (normally there should not be any ones)
+                reloadEverything(); //because onResume gets not called
                 Toast.makeText(this,"Deleted all countdowns.",Toast.LENGTH_LONG).show();
                 break;
             default: Log.e(TAG,"onOptionsItemSelected: Button does not exist: "+item.getItemId());
