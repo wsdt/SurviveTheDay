@@ -1,5 +1,7 @@
 package kevkevin.wsdt.tagueberstehen;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -16,12 +18,18 @@ public class CreditsActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.contactMe);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent emailDeveloper = new Intent(Intent.ACTION_SENDTO,
+                        Uri.fromParts("mailto","kevin.riedl.privat@gmail.com", null));
+                emailDeveloper.putExtra(Intent.EXTRA_SUBJECT, "SurviveTheDay: Review");
+                emailDeveloper.putExtra(Intent.EXTRA_TEXT, "Please only German or English messages. :)");
+                emailDeveloper.putExtra(Intent.EXTRA_EMAIL, new String[] {"kevin.riedl.privat@gmail.com"});
+                startActivity(Intent.createChooser(emailDeveloper, "Send e-mail.."));
+                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
             }
         });
 
