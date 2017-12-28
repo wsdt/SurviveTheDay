@@ -86,10 +86,10 @@ public class InternalStorageMgr {
                 //Countdown Id determines indexposition of that element in arraylist!
                 if (onlyActiveCountdowns) {
                     if (Boolean.parseBoolean(lineArr[8])) { //is this specific countdown active? only then add it, because we only want active countdowns
-                            allCountdowns.put(Integer.parseInt(lineArr[0]),new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[8])));
+                            allCountdowns.put(Integer.parseInt(lineArr[0]),new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[8]), Integer.parseInt(lineArr[9])));
                        }
                 } else {
-                    allCountdowns.put(Integer.parseInt(lineArr[0]),new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[8])));
+                    allCountdowns.put(Integer.parseInt(lineArr[0]),new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[8]), Integer.parseInt(lineArr[9])));
                 }
             }
         } catch (NumberFormatException e) {
@@ -130,7 +130,7 @@ public class InternalStorageMgr {
         //Map arraylist onto sharedpreferences
         SharedPreferences.Editor editor = getAllCountdowns_SharedPref().edit();
         for (Map.Entry<Integer,Countdown> countdown : this.allCountdowns.entrySet()) {
-            String countdownString = countdown.getValue().getCountdownId()+";"+countdown.getValue().getCountdownTitle()+";"+countdown.getValue().getCountdownDescription()+";"+countdown.getValue().getStartDateTime()+";"+countdown.getValue().getUntilDateTime()+";"+countdown.getValue().getCreatedDateTime()+";"+countdown.getValue().getLastEditDateTime()+";"+countdown.getValue().getCategory()+";"+Boolean.toString(countdown.getValue().isActive()); //save boolean as String so String.valueOf()
+            String countdownString = countdown.getValue().getCountdownId()+";"+countdown.getValue().getCountdownTitle()+";"+countdown.getValue().getCountdownDescription()+";"+countdown.getValue().getStartDateTime()+";"+countdown.getValue().getUntilDateTime()+";"+countdown.getValue().getCreatedDateTime()+";"+countdown.getValue().getLastEditDateTime()+";"+countdown.getValue().getCategory()+";"+Boolean.toString(countdown.getValue().isActive())+";"+countdown.getValue().getNotificationInterval(); //save boolean as String so String.valueOf()
             Log.d(TAG,"setSaveAllCountdowns: Saved string is COUNTDOWN_"+countdown.getValue().getCountdownId()+"/"+countdownString);
             editor.putString("COUNTDOWN_"+countdown.getValue().getCountdownId(),countdownString);
         }
