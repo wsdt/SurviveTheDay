@@ -17,33 +17,41 @@
         android:layout_margin="5dp"
         android:text="Countdown 1 - Work" />
 
+    <!-- IMPORTANT: If you change IDs of those buttons you need to adapt MainActivity.java:onCountdownModifyButtons() method! -->
     <ImageButton
-        android:contentDescription="stopStartToggle"
-        android:id="@+id/countdownStopStartToggle"
+        android:contentDescription="MotivateMeToggle"
+        android:onClick="onCountdownModifyButtons"
+        android:id="@+id/countdownMotivateMeToggle"
+        android:src="@drawable/switchtoggle_16px"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"/>
-
-    <ImageButton
-        android:contentDescription="muteMotivateToggle"
-        android:id="@+id/countdownMuteMotivateToggle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="20dp"
-        android:layout_marginEnd="20dp"/>
+        android:layout_alignParentEnd="true" />
 
     <ImageButton
         android:id="@+id/countdownEdit"
+        android:onClick="onCountdownModifyButtons"
         android:contentDescription="editButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_marginRight="40dp"
-        android:layout_marginEnd="40dp"/>
+        android:layout_marginEnd="40dp"
+        android:src="@drawable/edit_16px"
+        android:scaleType="fitXY" />
+
+    <ImageButton
+        android:contentDescription="deleteButton"
+        android:onClick="onCountdownModifyButtons"
+        android:id="@+id/countdownDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/delete_16px"
+        android:layout_marginRight="80dp"
+        android:layout_marginEnd="80dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
 
     <TextView
         android:id="@+id/untilDateTime"

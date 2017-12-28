@@ -13,7 +13,8 @@
     tools:context="kevkevin.wsdt.tagueberstehen.ModifyCountdownActivity">
 
         <!-- TITLE -->
-        <TextView
+
+    <TextView
             android:layout_gravity="start|top"
             android:layout_width="120dp"
             style="@style/textForForm"
@@ -100,12 +101,35 @@
 
     <ToggleButton
         android:id="@+id/isActive"
+        android:onClick="onMotivateMeToggleClick"
         style="@style/textForForm"
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_gravity="start|top"
         android:hint="Should countdown also be added in service?"
         android:text="Motivate me" />
+
+    <!-- Service settings (Interval for notifications: by default disabled) -->
+    <TextView
+        android:id="@+id/notificationIntervalTextView"
+        android:enabled="false"
+        android:layout_gravity="start|top"
+        android:layout_width="120dp"
+        style="@style/textForForm"
+        android:layout_marginTop="5dp"
+        android:hint="How often do u need motivation? (in seconds)"
+        android:text="Interval (in seconds): "/>
+
+    <!-- 604800 = 1 Week in seconds -->
+    <SeekBar
+        android:id="@+id/notificationIntervalSeekBar"
+        android:enabled="false"
+        android:layout_gravity="start|top"
+        android:max="604800"
+        android:layout_marginTop="20dp"
+        android:layout_width="250dp"
+        />
+
     <Button
         android:id="@+id/saveCountdown"
         android:text="Save"
