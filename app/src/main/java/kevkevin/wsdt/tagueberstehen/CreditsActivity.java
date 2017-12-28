@@ -7,7 +7,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.View;
+import android.widget.TextView;
 
 public class CreditsActivity extends AppCompatActivity {
 
@@ -32,6 +34,9 @@ public class CreditsActivity extends AppCompatActivity {
                         .setAction("Action", null).show();*/
             }
         });
+
+        //So the html gets interpretet
+        ((TextView) findViewById(R.id.creditsText)).setText(Html.fromHtml(getString(R.string.creditsText)));
 
         //APP ICON: <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
 
