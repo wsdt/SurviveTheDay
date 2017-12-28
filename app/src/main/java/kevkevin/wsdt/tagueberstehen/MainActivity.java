@@ -79,22 +79,65 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(View v) { //OnClick on node itself
+        Intent tmpintent = new Intent(this,CountdownActivity.class);
+        int countdownId = getCountdownIdFromNodeTag(v);
+
+        if (countdownId >= 0) {
+            tmpintent.putExtra("COUNTDOWN_ID", countdownId);
+            startActivity(tmpintent);
+        } else {
+            //Toast was made in getCountdownIdFromNodeTag()
+            Log.e(TAG, "onClick: An error occured in getCountdownIdFromNodeTag(). Did not open next activity.");
+        }
+    }
+
+    public void onCountdownModifyButtons(View v) { //when clicked on a node buttons (not node itself)
+        //Get countdownId of corresponding node to perform actions
+        InternalStorageMgr storageMgr = new InternalStorageMgr(this);
+        Countdown countdown = storageMgr.getCountdown(getCountdownIdFromNodeTag((LinearLayout) v.getParent()));
+
+        switch (v.getId()) {
+            case R.id.countdownMotivateMeToggle:
+                if (countdown.isActive()) {
+                    countdown.setActive(false);
+                    Log.d(TAG, "onCountdownModifyButtons: Countdown "+countdown.getCountdownId()+" does not motivate now.");
+                } else {
+                    countdown.setActive(true);
+                    Log.d(TAG, "onCountdownModifyButtons: Countdown "+countdown.getCountdownId()+" does motivate now.");
+                }
+                countdown.savePersistently();
+                Toast.makeText(this,"Countdown motivation got "+((countdown.isActive()) ? "activated" : "deactivated")+".",Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.countdownEdit:
+                Intent modifyCountdownActivity = new Intent(this, ModifyCountdownActivity.class);
+                modifyCountdownActivity.putExtra("COUNTDOWN_ID",countdown.getCountdownId());
+                startActivity(modifyCountdownActivity);
+                break;
+            case R.id.countdownDelete:
+                storageMgr.deleteCountdown(countdown.getCountdownId());
+                Toast.makeText(this,"Deleted countdown.",Toast.LENGTH_SHORT).show();
+                break;
+            default: Log.e(TAG, "onCountdownModifyButtons: Option does not exist: "+v.getId());
+        }
+    }
+
+    private int getCountdownIdFromNodeTag(View v) { //used from onCountdownModifyButtons and onClick()
         String nodeTag = (String) v.getTag(); //COUNTDOWN_N  --> N = CountdownActivity ID
+        int nodeId = (-1);
         if (nodeTag.length() >= 11) {
             try {
-                int nodeId = Integer.parseInt(nodeTag.substring(10));
-                Intent tmpintent = new Intent(this,CountdownActivity.class);
-                tmpintent.putExtra("COUNTDOWN_ID",nodeId);
-                startActivity(tmpintent);
+                nodeId = Integer.parseInt(nodeTag.substring(10));
             } catch (NumberFormatException e) {
-                Log.e("onNodeClick","Node-Id could not be parsed to Integer. Wrong Tag: "+nodeTag);
-                Toast.makeText(this, "Could not identify CountdownActivity ID.", Toast.LENGTH_SHORT).show();
+                Log.e(TAG,"getCountdownIdFromNodeTag: Node-Id could not be parsed to Integer. Wrong Tag: "+nodeTag);
+                Toast.makeText(this, "Could not identify Countdown ID.", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
             }
         } else {
-            Log.e("onNodeClick","Node-Tag WRONG labelled: "+nodeTag);
-            Toast.makeText(this,"Could not open CountdownActivity.",Toast.LENGTH_SHORT).show();
+            Log.e(TAG,"getCountdownIdFromNodeTag: Node-Tag WRONG labelled: "+nodeTag);
+            Toast.makeText(this,"Could not perform action. Node maybe wrong build.",Toast.LENGTH_SHORT).show();
         }
+        return nodeId;
     }
 
     private void createAddNodeToLayout(Countdown countdown) {

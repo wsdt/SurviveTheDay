@@ -31,6 +31,11 @@ public class InternalStorageMgr {
         this.setContext(context);
     }
 
+    public void deleteCountdown(int countdownId) {
+        this.getAllCountdowns_SharedPref().edit().remove("COUNTDOWN_"+countdownId).apply();
+        Log.d(TAG, "deleteCountdown: Deleted countdown with id: "+countdownId);
+    }
+
     public void deleteAllCountdowns() {
         //Deletes all countdowns ("COUNTDOWNS")
         this.getAllCountdowns_SharedPref().edit().clear().apply();
