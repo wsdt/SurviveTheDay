@@ -95,8 +95,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onCountdownModifyButtons(View v) { //when clicked on a node buttons (not node itself)
         //Get countdownId of corresponding node to perform actions
         InternalStorageMgr storageMgr = new InternalStorageMgr(this);
-        Countdown countdown = storageMgr.getCountdown(getCountdownIdFromNodeTag((LinearLayout) v.getParent()));
+        Countdown countdown;
+        try {
+            countdown = storageMgr.getCountdown(getCountdownIdFromNodeTag((ViewGroup) v.getParent()));
+        } catch (ClassCastException e) {
+            Log.e(TAG, "Could not cast parent view to view.");
+            return;
+        }
 
+        if (countdown == null) {Log.e(TAG,"onCountdownModifyButtons: Countdown Obj is null!");return;} //exist if null (when other exception occured)
         switch (v.getId()) {
             case R.id.countdownMotivateMeToggle:
                 if (countdown.isActive()) {
@@ -117,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.countdownDelete:
                 storageMgr.deleteCountdown(countdown.getCountdownId());
                 Toast.makeText(this,"Deleted countdown.",Toast.LENGTH_SHORT).show();
+                reloadEverything(); //reload everything to remove countdown from nodelist
                 break;
             default: Log.e(TAG, "onCountdownModifyButtons: Option does not exist: "+v.getId());
         }
