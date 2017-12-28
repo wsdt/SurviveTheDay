@@ -17,21 +17,22 @@ import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
 public class ModifyCountdownActivity extends AppCompatActivity {
     private Countdown newEditedCountdown;
     private static final String TAG = "ModifyCountdownActivity";
+    private int existingCountdownId = (-1); //if edit then this value will be updated and used to overwrite existing countdown
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modify_countdown);
 
-        int countdownId = (-2);
         try {
-            countdownId = getIntent().getIntExtra("COUNTDOWN_ID",-1);
+            this.existingCountdownId = getIntent().getIntExtra("COUNTDOWN_ID",-1);
+            //say that we want to edit an existing countdown and not create a new one
         } catch (Exception e) {
             Log.e(TAG, "onCreate: Could not load existing countdown.");
         }
 
-        if (countdownId >= 0) {
-            setFormValues((new InternalStorageMgr(this).getCountdown(countdownId)));
+        if (this.existingCountdownId >= 0) {
+            setFormValues((new InternalStorageMgr(this).getCountdown(this.existingCountdownId)));
         }
     }
 
@@ -78,6 +79,14 @@ public class ModifyCountdownActivity extends AppCompatActivity {
                 ((TextView) findViewById(R.id.categoryValue)).getText().toString(),
                 ((ToggleButton) findViewById(R.id.isActive)).isChecked(),
                 ((SeekBar) findViewById(R.id.notificationIntervalSeekBar)).getProgress()+5)); //+5 seconds by default (because if 0) app crashes
+
+        //Overwrite countdown id if countdown exists already
+        if (this.existingCountdownId >= 0) {
+            this.getNewEditedCountdown().setCountdownId(this.existingCountdownId);
+            Log.d(TAG, "loadFormValues: Overwrote/Edited countdown.");
+        } else {
+            Log.d(TAG, "loadFormValues: New countdown created.");
+        }
     }
 
     //Show service specific field if toggle button is ON (isActive)

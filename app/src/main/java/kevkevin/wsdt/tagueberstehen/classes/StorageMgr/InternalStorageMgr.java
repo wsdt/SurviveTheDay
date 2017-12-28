@@ -34,6 +34,9 @@ public class InternalStorageMgr {
     public void deleteCountdown(int countdownId) {
         this.getAllCountdowns_SharedPref().edit().remove("COUNTDOWN_"+countdownId).apply();
         Log.d(TAG, "deleteCountdown: Deleted countdown with id: "+countdownId);
+
+        //Restart service because countown got removed
+        restartNotificationService();
     }
 
     public void deleteAllCountdowns() {
