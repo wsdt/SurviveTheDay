@@ -4,22 +4,13 @@ import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-import java.util.Timer;
 import java.util.TimerTask;
-
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
-import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
 
 
@@ -28,11 +19,9 @@ public class NotificationService extends Service {
     private Notification notificationManager;
     //private static ArrayList<String[]> activeServices; //every String[]: [0]:COUNTDOWNID / [1]:STARTID (every countdown id should only occur once!)
     private InternalStorageMgr storageMgr;
-    private HashMap<Integer,Timer> timer; //do not make that static
-    private HashMap<Integer,TimerTask> timerTask;
-    private HashMap<Integer,Integer> intervalSeconds; // = 5; //default
-    private /*final*/ HashMap<Integer,Handler> handler; // = new Handler(); //use of handler to be able to run in our TimerTask
+
     private int startId;
+    private HashMap<Integer, Countdown> allCountdowns;
 
 
     @Nullable
@@ -48,16 +37,13 @@ public class NotificationService extends Service {
         Log.d(TAG, "Executed onStartCommand(). StartId: " + startId);
         super.onStartCommand(intent, flags, startId);
 
+        storageMgr = new InternalStorageMgr(this);
+        this.allCountdowns = this.storageMgr.getAllCountdowns(true); //call this line AFTER assignment of internal storage mgr (otherwise nullpointerexc!)
 
-        this.storageMgr = new InternalStorageMgr(this);
         this.startId = startId; //save current service instance in variable
 
         //Set Notification Manager etc. for Countdown
         this.notificationManager = new Notification(this, CountdownActivity.class, (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE), 0); //intent.getParcelableExtra("notificationManager");
-        this.handler = new HashMap<>();
-        this.intervalSeconds = new HashMap<>();
-        this.timer = new HashMap<>();
-        this.timerTask = new HashMap<>();
 
         startTimer(); //this function starts all countdowns
 
@@ -85,14 +71,12 @@ public class NotificationService extends Service {
 
         //for each countdown do that following
         //iterate through all countdown data sets
-        for (Map.Entry<Integer,Countdown> countdown : this.storageMgr.getAllCountdowns(true).entrySet()) {
+        for (Map.Entry<Integer, Countdown> countdown : this.allCountdowns.entrySet()) {
             Log.d(TAG, "Countdown-Id: " + countdown.getValue().getCountdownId());
-            this.timer.put(countdown.getValue().getCountdownId(), new Timer());
-            this.intervalSeconds.put(countdown.getValue().getCountdownId(), 5);
-            this.handler.put(countdown.getValue().getCountdownId(), new Handler());
-            initializeTimer(countdown.getValue().getCountdownId());
+
+            initializeTimer(countdown.getValue());
             //delay, time after interval starts
-            this.timer.get(countdown.getValue().getCountdownId()).schedule(this.timerTask.get(countdown.getValue().getCountdownId()), 5000, this.intervalSeconds.get(countdown.getValue().getCountdownId()) * 1000);
+            countdown.getValue().getTimer().schedule(countdown.getValue().getTimerTask(), 0, countdown.getValue().getNotificationInterval() * 1000);
         }
         // END - FOR EACH COUNTDOWN
     }
@@ -100,28 +84,31 @@ public class NotificationService extends Service {
     public void stopTimer() {
         Log.d(TAG, "Executed stopTimer().");
         //stop timer, if it's not already null for all countdowns!
-        if (this.timer != null) {
-            for (Map.Entry<Integer, Timer> timerInstance : this.timer.entrySet()) {
-                Log.d(TAG, "stopTimer: Tried to stop timerinstance. ");
-                if (timerInstance.getValue() != null) {
-                    timerInstance.getValue().cancel();
-                    timerInstance.setValue(null);
-                    Log.d(TAG, "stopTimer: Stopped timerinstance.");
-                }
+        for (Map.Entry<Integer, Countdown> countdown : this.allCountdowns.entrySet()) {
+            Log.d(TAG, "stopTimer: Tried to stop timerinstance. ");
+            if (countdown.getValue().getTimer() != null) {
+                countdown.getValue().getTimer().cancel();
+                countdown.getValue().setTimer(null);
+                Log.d(TAG, "stopTimer: Stopped timerinstance.");
             }
         }
     }
 
-    public void initializeTimer(final int countdownId) {
+
+    public void initializeTimer(final Countdown countdown) {
         Log.d(TAG, "Executed initializeTimer().");
-        this.timerTask.put(countdownId, new TimerTask() {
+        countdown.setTimerTask(new TimerTask() {
             @Override
             public void run() {
-                handler.get(countdownId).post(new Runnable() {
+                countdown.getHandler().post(new Runnable() {
                     @Override
                     public void run() {
-                        //TODO: call notification function
-                        notificationManager.issueNotification(notificationManager.createNotification("ServiceTest", "SUCCESSFULL TEST", R.drawable.campfire_white));
+                        try {
+                            notificationManager.issueNotification(notificationManager.createRandomNotification(countdown));
+                        } catch (Exception e) {
+                            Log.e(TAG, "initializeTimer: Error occured (see stacktrace below).");
+                            e.printStackTrace();
+                        }
                     }
 
                 });

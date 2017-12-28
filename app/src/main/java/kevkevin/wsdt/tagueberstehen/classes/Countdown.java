@@ -1,27 +1,19 @@
 package kevkevin.wsdt.tagueberstehen.classes;
 
-import android.app.AlarmManager;
-import android.app.NotificationManager;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.nfc.FormatException;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.os.Handler;
 import android.widget.Toast;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
-
-import kevkevin.wsdt.tagueberstehen.CountdownActivity;
-import kevkevin.wsdt.tagueberstehen.R;
+import java.util.Timer;
+import java.util.TimerTask;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
 
 
@@ -36,15 +28,19 @@ public class Countdown {
     private String lastEditDateTime; //last edit of countdown
     private String category; //work, school, university etc.
     private boolean isActive;
+    private int notificationInterval;
     private static final String TAG = "Countdown";
     private static final String DATE_FORMAT = "dd.MM.yyyy hh:mm:ss";
     public static final String DATE_FORMAT_REGEX = "\\d{1,2}\\.\\d{1,2}\\.\\d{4} \\d{1,2}:\\d{1,2}:\\d{1,2}"; //mainly for other classes
 
-    //TODO: make constructor for without countdownId so autoincrement
+    //Members for service (do not save them explicitely [unneccesary])
+    private Timer timer = new Timer();
+    private TimerTask timerTask;
+    private Handler handler = new Handler();
 
 
     //Constructor for lastEdit/createdDateTime automatically
-    public Countdown(Context context, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String category, boolean isActive) {
+    public Countdown(Context context, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String category, boolean isActive, int notificationInterval) {
         this.setContext(context);
         this.setCountdownId((new InternalStorageMgr(context)).getNextCountdownId()); //get next countdown id (fill gap from deleted countdown or just increment)
         this.setCountdownTitle(countdownTitle);
@@ -55,21 +51,25 @@ public class Countdown {
         this.setLastEditDateTime(getCurrentDateTimeStr());
         this.setCategory(category);
         this.setActive(isActive);
+        this.setNotificationInterval(notificationInterval);
     }
 
     //Constructor for all fields
-    public Countdown(Context context, int countdownId, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String createdDateTime, String lastEditDateTime, String category, boolean isActive) {
-            this.setContext(context);
-            this.setCountdownId(countdownId);
-            this.setCountdownTitle(countdownTitle);
-            this.setCountdownDescription(countdownDescription);
-            this.setStartDateTime(startDateTime);
-            this.setUntilDateTime(untilDateTime);
-            this.setCreatedDateTime(createdDateTime);
-            this.setLastEditDateTime(lastEditDateTime);
-            this.setCategory(category);
-            this.setActive(isActive);
+    public Countdown(Context context, int countdownId, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String createdDateTime, String lastEditDateTime, String category, boolean isActive, int notificationInterval) {
+        this.setContext(context);
+        this.setCountdownId(countdownId);
+        this.setCountdownTitle(countdownTitle);
+        this.setCountdownDescription(countdownDescription);
+        this.setStartDateTime(startDateTime);
+        this.setUntilDateTime(untilDateTime);
+        this.setCreatedDateTime(createdDateTime);
+        this.setLastEditDateTime(lastEditDateTime);
+        this.setCategory(category);
+        this.setActive(isActive);
+        this.setNotificationInterval(notificationInterval);
     }
+
+    //TODO: Write method for getting percentage of left and done of startTime/untilDateTime and currentTime!
 
 
     public void savePersistently() {
@@ -221,5 +221,37 @@ public class Countdown {
 
     public void setStartDateTime(String startDateTime) {
         this.startDateTime = escapeForSharedPreferences(startDateTime);
+    }
+
+    public int getNotificationInterval() {
+        return notificationInterval;
+    }
+
+    public void setNotificationInterval(int notificationInterval) {
+        this.notificationInterval = notificationInterval;
+    }
+
+    public Timer getTimer() {
+        return timer;
+    }
+
+    public void setTimer(Timer timer) {
+        this.timer = timer;
+    }
+
+    public TimerTask getTimerTask() {
+        return timerTask;
+    }
+
+    public void setTimerTask(TimerTask timerTask) {
+        this.timerTask = timerTask;
+    }
+
+    public Handler getHandler() {
+        return handler;
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
     }
 }

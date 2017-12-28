@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
 
 import kevkevin.wsdt.tagueberstehen.R;
@@ -20,6 +22,7 @@ public class Notification /*implements Parcelable*/ { //one instance for every c
     private NotificationManager mNotifyMgr;
     private PendingIntent resultPendingIntent; //open countdown of current notifications
     private static final String TAG = "Notification";
+    private Random random = new Random();
 
     public Notification (Context activityThisTarget,Class targetActivityClass, NotificationManager mNotifyMgr, int countdownId) { //(NotifyManager) getSystemService(Notification_Service);
         this.setActivityThisTarget(activityThisTarget);
@@ -70,9 +73,8 @@ public class Notification /*implements Parcelable*/ { //one instance for every c
         *       TIMEBASED (1)
         *       CATEGORYBASED (2) */
 
-        Random random = new Random();
         //Decide which type of random notification (generic, time-based, ...)
-        switch (random.nextInt(2-0)+0) {
+        switch (this.random.nextInt(2)) { //random.nextInt(2-0)+0
             case 0: //GENERIC
                 Log.d(TAG, "createRandomNotification: Chose random notification from GENERIC.");
                 randomNotification = createRandomNotification_GENERIC(countdown);
@@ -99,22 +101,52 @@ public class Notification /*implements Parcelable*/ { //one instance for every c
         String title;
         String text;
         int icon;
+        //Create arraylists and add texts HERE [because specific for generic etc.] (choose random from alle by index) (because of that each category needs a separate instance of that inner class)
+        ArrayList<String> titleList = new ArrayList<>(); //not static because otherwise categories might get mixed up!!
+        ArrayList<String> textList = new ArrayList<>();
+        ArrayList<Integer> iconList = new ArrayList<>();
     }
 
     private NotificationContent createRandomNotification_GENERIC(Countdown countdown) {
-        NotificationContent randomNotification = new NotificationContent();
+        NotificationContent randomNotification = new NotificationContent(); //create custom instance (important not to use same instance for each cateogry)
+        randomNotification.titleList.addAll(Arrays.asList("Keep going!","Almost done!","Do not give up!","Keep it up!")); //converts array to list and adds all of them
+        randomNotification.textList.addAll(Arrays.asList(countdown.getCountdownTitle()+" - "+countdown.getCategory(),countdown.getCountdownTitle()+" - "+countdown.getUntilDateTime()));
+        randomNotification.iconList.addAll(Arrays.asList(R.drawable.campfire_black,R.drawable.campfire_red,R.drawable.campfire_white));
+
+        //Choose one for each arraylist by random index (max is size-1!)
+        randomNotification.title = randomNotification.titleList.get(this.random.nextInt(randomNotification.titleList.size()-1)); //-1 because size() index does not exist!
+        randomNotification.text = randomNotification.textList.get(this.random.nextInt(randomNotification.textList.size()-1));
+        randomNotification.icon = randomNotification.iconList.get(this.random.nextInt(randomNotification.iconList.size()-1));
 
         return randomNotification;
     }
 
     private NotificationContent createRandomNotification_TIMEBASED(Countdown countdown) {
-        NotificationContent randomNotification = new NotificationContent();
+        NotificationContent randomNotification = new NotificationContent(); //create custom instance (important not to use same instance for each cateogry)
+
+        randomNotification.titleList.addAll(Arrays.asList("Just "+countdown.getTotalSeconds()+" seconds to go!","You get this!", "Easy man!")); //converts array to list and adds all of them
+        randomNotification.textList.addAll(Arrays.asList(countdown.getCountdownTitle()+" - "+countdown.getCountdownDescription(),countdown.getCountdownTitle()+" - You get the half!",countdown.getCountdownTitle()+" - Only "+countdown.getTotalSeconds()+" s to go!"));
+        randomNotification.iconList.addAll(Arrays.asList(R.drawable.campfire_black,R.drawable.campfire_red,R.drawable.campfire_white));
+
+        //Choose one for each arraylist by random index (max is size-1!)
+        randomNotification.title = randomNotification.titleList.get(this.random.nextInt(randomNotification.titleList.size()-1)); //-1 because size() index does not exist!
+        randomNotification.text = randomNotification.textList.get(this.random.nextInt(randomNotification.textList.size()-1));
+        randomNotification.icon = randomNotification.iconList.get(this.random.nextInt(randomNotification.iconList.size()-1));
 
         return randomNotification;
     }
 
     private NotificationContent createRandomNotification_CATEGORYBASED(Countdown countdown) {
-        NotificationContent randomNotification = new NotificationContent();
+        NotificationContent randomNotification = new NotificationContent(); //create custom instance (important not to use same instance for each cateogry)
+
+        randomNotification.titleList.addAll(Arrays.asList("Too easy man!", "YOu can do that!")); //converts array to list and adds all of them
+        randomNotification.textList.addAll(Arrays.asList(countdown.getCountdownTitle()+" - Cat.: "+countdown.getCategory(),countdown.getCountdownTitle()+" - Until: "+countdown.getUntilDateTime(),countdown.getCountdownTitle()+" - Created: "+countdown.getCreatedDateTime()));
+        randomNotification.iconList.addAll(Arrays.asList(R.drawable.campfire_black,R.drawable.campfire_red,R.drawable.campfire_white));
+
+        //Choose one for each arraylist by random index (max is size-1!)
+        randomNotification.title = randomNotification.titleList.get(this.random.nextInt(randomNotification.titleList.size()-1)); //-1 because size() index does not exist!
+        randomNotification.text = randomNotification.textList.get(this.random.nextInt(randomNotification.textList.size()-1));
+        randomNotification.icon = randomNotification.iconList.get(this.random.nextInt(randomNotification.iconList.size()-1));
 
         return randomNotification;
     }

@@ -11,12 +11,7 @@ import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
 
 public class ModifyCountdownActivity extends AppCompatActivity {
-    private String countdownTitle;
-    private String countdownDescription;
-    private String startDateTime;
-    private String untilDateTime;
-    private String category;
-    private boolean isActive;
+    private Countdown newEditedCountdown;
     private static final String TAG = "ModifyCountdownActivity";
 
     @Override
@@ -30,8 +25,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         //Get values from form
         loadFormValues();
         validateFormValues();
-        InternalStorageMgr storageMgr = new InternalStorageMgr(this);
-        storageMgr.setSaveCountdown(new Countdown(this,this.getCountdownTitle(),this.getCountdownDescription(),this.getStartDateTime(),this.getUntilDateTime(),this.getCategory(),this.isActive()),true);
+        new InternalStorageMgr(this).setSaveCountdown(this.getNewEditedCountdown(),true);
         Log.d(TAG, "onSaveClick: Tried to save new countdown.");
         finish(); //go back to main
     }
@@ -43,69 +37,32 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
     private void validateFormValues() {
         //Validate dates
-        if (this.getStartDateTime().matches(Countdown.DATE_FORMAT_REGEX) && this.getUntilDateTime().matches(Countdown.DATE_FORMAT_REGEX)) {
+        if (this.getNewEditedCountdown().getStartDateTime().matches(Countdown.DATE_FORMAT_REGEX) && this.getNewEditedCountdown().getUntilDateTime().matches(Countdown.DATE_FORMAT_REGEX)) {
             //TODO: (new Countdown(this,)).savePersistently();
             //TODO: new constructor in countdown
         } else {
-            Log.e(TAG, "validateFormValue: Dates not valid: "+this.getStartDateTime()+" /// "+this.getUntilDateTime());
+            Log.e(TAG, "validateFormValue: Dates not valid: "+this.getNewEditedCountdown().getStartDateTime()+" /// "+this.getNewEditedCountdown().getUntilDateTime());
         }
     }
 
     private void loadFormValues() {
-        this.setCountdownTitle(((TextView) findViewById(R.id.countdownTitleValue)).getText().toString());
-        this.setCountdownDescription(((TextView) findViewById(R.id.countdownDescriptionValue)).getText().toString());
-        this.setStartDateTime(((TextView) findViewById(R.id.startDateTimeValue)).getText().toString());
-        this.setUntilDateTime(((TextView) findViewById(R.id.untilDateTimeValue)).getText().toString());
-        this.setCategory(((TextView) findViewById(R.id.categoryValue)).getText().toString());
-        this.setActive(((ToggleButton) findViewById(R.id.isActive)).isChecked());
+
+        this.setNewEditedCountdown(new Countdown(this,
+                ((TextView) findViewById(R.id.countdownTitleValue)).getText().toString(),
+                ((TextView) findViewById(R.id.countdownDescriptionValue)).getText().toString(),
+                ((TextView) findViewById(R.id.startDateTimeValue)).getText().toString(),
+                ((TextView) findViewById(R.id.untilDateTimeValue)).getText().toString(),
+                ((TextView) findViewById(R.id.categoryValue)).getText().toString(),
+                ((ToggleButton) findViewById(R.id.isActive)).isChecked(),
+                5)); //TODO: load interval from form (create field)
     }
 
     //GETTER/SETTER -----------------------------------------------------
-    public String getCountdownTitle() {
-        return countdownTitle;
+    public Countdown getNewEditedCountdown() {
+        return newEditedCountdown;
     }
 
-    public void setCountdownTitle(String countdownTitle) {
-        this.countdownTitle = countdownTitle;
-    }
-
-    public String getCountdownDescription() {
-        return countdownDescription;
-    }
-
-    public void setCountdownDescription(String countdownDescription) {
-        this.countdownDescription = countdownDescription;
-    }
-
-    public String getStartDateTime() {
-        return startDateTime;
-    }
-
-    public void setStartDateTime(String startDateTime) {
-        this.startDateTime = startDateTime;
-    }
-
-    public String getUntilDateTime() {
-        return untilDateTime;
-    }
-
-    public void setUntilDateTime(String untilDateTime) {
-        this.untilDateTime = untilDateTime;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
+    public void setNewEditedCountdown(Countdown newEditedCountdown) {
+        this.newEditedCountdown = newEditedCountdown;
     }
 }
