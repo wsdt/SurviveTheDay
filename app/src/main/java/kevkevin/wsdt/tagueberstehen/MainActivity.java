@@ -185,6 +185,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 reloadEverything(); //because onResume gets not called
                 Toast.makeText(this,"Deleted all countdowns.",Toast.LENGTH_LONG).show();
                 break;
+            case R.id.action_credits:
+                Log.d(TAG, "onOptionsItemSelected: Tried to open CreditsActivity.");
+                startActivity(new Intent(this, CreditsActivity.class));
+                break;
             default: Log.e(TAG,"onOptionsItemSelected: Button does not exist: "+item.getItemId());
         }
         return true;
