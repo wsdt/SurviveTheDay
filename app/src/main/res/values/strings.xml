@@ -1,5 +1,13 @@
 <resources>
-    <string name="app_name">SurviveTheDay</string>
+    <string name="app_name" translatable="false">SurviveTheDay</string>
     <string name="action_credits">Credits</string>
     <string name="title_activity_credits">Credits</string>
+    <string name="creditsText">
+        <!-- CDATA FOR HTML SUPPORT -->
+        <![CDATA[
+        "<h1>SurviveTheDay - © Riedl Kevin, 2018</h1>"
+        "<p>Special thanks to following external authors:</p>"
+        "- Campfire icon: \n"
+        ]]>
+    </string>
 </resources>
