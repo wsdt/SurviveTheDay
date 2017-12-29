@@ -15,4 +15,6 @@
         android:layout_margin="@dimen/text_margin"
         android:text="@string/creditsText"/>
 
+    <!-- für jedes icon hier eigenen eintrag im xml machen -->
+
 </android.support.v4.widget.NestedScrollView>

@@ -5,9 +5,8 @@
     <string name="creditsText">
         <!-- CDATA FOR HTML SUPPORT -->
         <![CDATA[
-        "<h1>SurviveTheDay - © Riedl Kevin, 2018</h1>"
+        "<h3>SurviveTheDay - © Riedl Kevin, 2018</h3>"
         "<p>Special thanks to following external authors:</p>"
-        "- Campfire icon: \n"
         ]]>
     </string>
 </resources>
