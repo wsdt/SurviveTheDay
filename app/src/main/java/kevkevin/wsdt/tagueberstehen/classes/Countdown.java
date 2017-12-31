@@ -77,7 +77,18 @@ public class Countdown {
         storageMgr.setSaveCountdown(this,true);
     }
 
-
+    public Double getRemainingPercentage() {
+        try {
+            Double all100percentSeconds = Long.valueOf((getDateTime(getUntilDateTime()).getTimeInMillis() - getDateTime(getStartDateTime()).getTimeInMillis()) / 1000).doubleValue();
+            Double leftXpercentSeconds = Long.valueOf((getDateTime(getUntilDateTime()).getTimeInMillis() - getCurrentDateTime().getTimeInMillis()) / 1000).doubleValue();
+            Double result = (leftXpercentSeconds / all100percentSeconds) * 100;
+            return (result >= 0) ? ((result <= 100) ? result : 100) : 0; //always return 0-100
+        } catch (NullPointerException e) {
+            Log.e(TAG, "getRemainingPercentage: Could not calculate remaining percentage.");
+            e.printStackTrace();
+        }
+        return (-1D); //to show error
+    }
 
     public Double getTotalSeconds() {
         Double totalSeconds = 0D;

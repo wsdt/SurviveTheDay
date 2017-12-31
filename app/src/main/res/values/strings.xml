@@ -6,7 +6,10 @@
         <!-- CDATA FOR HTML SUPPORT -->
         <![CDATA[
         "<h3>SurviveTheDay - © Riedl Kevin, 2018</h3>"
+        "<p>Business: <a href='mailto:kevin.riedl.privat@gmail.com'>kevin.riedl.privat@gmail.com</a></p>"
         "<p>Special thanks to following external authors:</p>"
+        "<ul><li>GENERIC Quotes in majority from <a href="https://www.briantracy.com/blog/personal-success/26-motivational-quotes-for-success/">Briantracy.com, Personal Success, motivational quotes</a></li>"
+        "</ul>"
         ]]>
     </string>
 </resources>

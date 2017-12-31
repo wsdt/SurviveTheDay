@@ -8,6 +8,11 @@
     tools:context="kevkevin.wsdt.tagueberstehen.CreditsActivity"
     tools:showIn="@layout/activity_credits">
 
+    <LinearLayout
+        android:id="@+id/contentView"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <TextView
         android:id="@+id/creditsText"
         android:layout_width="wrap_content"
@@ -16,5 +21,11 @@
         android:text="@string/creditsText"/>
 
     <!-- für jedes icon hier eigenen eintrag im xml machen -->
-
+    <GridLayout
+        android:id="@+id/creditList"
+        android:columnCount="2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </GridLayout>
+    </LinearLayout>
 </android.support.v4.widget.NestedScrollView>
