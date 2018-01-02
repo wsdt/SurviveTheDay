@@ -61,7 +61,11 @@ public class NotificationService extends Service {
         Log.d(TAG, "Executed onDestroy().");
         stopTimer();
         super.onDestroy();
-        Log.d(TAG, "onDestroy: Tried to kill service ungracefully.");
+        killNotificationServiceUngracefully();
+    }
+
+    public void killNotificationServiceUngracefully() {
+        Log.d(TAG, "killNotificationServiceUngracefully: Tried to kill service ungracefully.");
         android.os.Process.killProcess(android.os.Process.myPid()); //Important: Otherwise service would not stop because sth will still run in this instance
     }
 
@@ -71,12 +75,18 @@ public class NotificationService extends Service {
 
         //for each countdown do that following
         //iterate through all countdown data sets
+        int count = 0;
         for (Map.Entry<Integer, Countdown> countdown : this.allCountdowns.entrySet()) {
             Log.d(TAG, "Countdown-Id: " + countdown.getValue().getCountdownId());
+            count++; //increment because at least one countdown is there
 
             initializeTimer(countdown.getValue());
             //delay, time after interval starts
             countdown.getValue().getTimer().schedule(countdown.getValue().getTimerTask(), 0, countdown.getValue().getNotificationInterval() * 1000);
+        }
+        if (count <= 0) {
+            //Kill Service if there is no countdown! Save energy.
+            killNotificationServiceUngracefully();
         }
         // END - FOR EACH COUNTDOWN
     }
