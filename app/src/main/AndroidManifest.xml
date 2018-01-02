@@ -44,7 +44,8 @@
             android:stopWithTask="false"
             android:exported="false"/>
         -->
-        <activity android:name=".ModifyCountdownActivity"></activity>
+        <activity android:name=".ModifyCountdownActivity" />
+        <activity android:name=".DateTimePicker"></activity>
     </application>
 
 </manifest>

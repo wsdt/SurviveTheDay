@@ -1,5 +1,6 @@
 package kevkevin.wsdt.tagueberstehen;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +19,10 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     private Countdown newEditedCountdown;
     private static final String TAG = "ModifyCountdownActivity";
     private int existingCountdownId = (-1); //if edit then this value will be updated and used to overwrite existing countdown
+
+    public void startDateTimePicker(View v) {
+        startActivity(new Intent(this, DateTimePicker.class));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
