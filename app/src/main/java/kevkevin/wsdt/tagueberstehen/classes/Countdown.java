@@ -6,6 +6,9 @@ import android.util.Log;
 import android.os.Handler;
 import android.widget.Toast;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -28,7 +31,7 @@ public class Countdown {
     private String lastEditDateTime; //last edit of countdown
     private String category; //work, school, university etc.
     private boolean isActive;
-    private int notificationInterval;
+    private int notificationInterval; //in milliseconds!
     private static final String TAG = "Countdown";
     private static final String DATE_FORMAT = "dd.MM.yyyy hh:mm:ss";
     public static final String DATE_FORMAT_REGEX = "\\d{1,2}\\.\\d{1,2}\\.\\d{4} \\d{1,2}:\\d{1,2}:\\d{1,2}"; //mainly for other classes
@@ -77,17 +80,30 @@ public class Countdown {
         storageMgr.setSaveCountdown(this,true);
     }
 
-    public Double getRemainingPercentage() {
+    public Double getRemainingPercentage(int anzahlNachkomma) { //min is 1, if 0 then it will be still min 1 nachkommastelle (but always 0!) because of double format itself
         try {
             Double all100percentSeconds = Long.valueOf((getDateTime(getUntilDateTime()).getTimeInMillis() - getDateTime(getStartDateTime()).getTimeInMillis()) / 1000).doubleValue();
             Double leftXpercentSeconds = Long.valueOf((getDateTime(getUntilDateTime()).getTimeInMillis() - getCurrentDateTime().getTimeInMillis()) / 1000).doubleValue();
-            Double result = (leftXpercentSeconds / all100percentSeconds) * 100;
+
+            StringBuffer nachkommaStellen = new StringBuffer(".");
+            for (int i = 0; i < anzahlNachkomma; i++) {
+                nachkommaStellen.append("0");
+            }
+            Double result = Double.parseDouble((new DecimalFormat("##"+nachkommaStellen)).format((leftXpercentSeconds / all100percentSeconds) * 100)); //formatting percentage to 2 nachkommastellen
             return (result >= 0) ? ((result <= 100) ? result : 100) : 0; //always return 0-100
         } catch (NullPointerException e) {
             Log.e(TAG, "getRemainingPercentage: Could not calculate remaining percentage.");
             e.printStackTrace();
         }
         return (-1D); //to show error
+    }
+
+    public String getTotalSecondsNoScientificNotation() {
+        DecimalFormat decimalFormat = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+        DecimalFormatSymbols decimalFormatSymbols = decimalFormat.getDecimalFormatSymbols();
+        decimalFormatSymbols.setGroupingSeparator(','); //set separator
+        decimalFormat.setDecimalFormatSymbols(decimalFormatSymbols);
+        return decimalFormat.format(this.getTotalSeconds());
     }
 
     public Double getTotalSeconds() {
