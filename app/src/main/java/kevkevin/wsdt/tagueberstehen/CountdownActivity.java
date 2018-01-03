@@ -13,6 +13,11 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+
+import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.NotificationService;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
 
@@ -25,6 +30,12 @@ public class CountdownActivity extends AppCompatActivity {
         setContentView(R.layout.activity_countdown);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
+        // SHOW FULL PAGE ADD
+        AdManager adManager = new AdManager(this);
+        adManager.initializeAdmob();
+        //TODO: make it possible to load and prevent stopping ui (also afterwards: because coutndown does not refresh!) --> esp. when fullpage from other activities opens to slow and gets closed in the countdownactivity
+        //IMPORTANT: Do not place here fullpage ad because this blocks the countdown!
+        adManager.loadBannerAd((RelativeLayout) findViewById(R.id.content_main));
 
 
         //Notifications regularly: How long do you need to work today or similar and easy type in maybe in notification bar!

@@ -72,9 +72,6 @@ public class Countdown {
         this.setNotificationInterval(notificationInterval);
     }
 
-    //TODO: Write method for getting percentage of left and done of startTime/untilDateTime and currentTime!
-
-
     public void savePersistently() {
         InternalStorageMgr storageMgr = new InternalStorageMgr(this.getContext());
         storageMgr.setSaveCountdown(this,true);
@@ -140,7 +137,8 @@ public class Countdown {
         return getDateTime(new GregorianCalendar(year,month,day,hour,minute,second));
     }
 
-    private GregorianCalendar getDateTime(String formattedDate) {
+    //also needed in ModifyCountdownActivity
+    public GregorianCalendar getDateTime(String formattedDate) {
         DateFormat df = new SimpleDateFormat(DATE_FORMAT, Locale.GERMAN);
         GregorianCalendar result;
         try {
@@ -277,8 +275,5 @@ public class Countdown {
     public Handler getHandler() {
         return handler;
     }
-
-    public void setHandler(Handler handler) {
-        this.handler = handler;
-    }
+    //set handler not required because directly assigned on top
 }
