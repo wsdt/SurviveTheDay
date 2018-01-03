@@ -1,17 +1,14 @@
 package kevkevin.wsdt.tagueberstehen;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.GridLayout;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
-
-import org.w3c.dom.Text;
-
+import java.util.GregorianCalendar;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
 
@@ -20,14 +17,14 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     private static final String TAG = "ModifyCountdownActivity";
     private int existingCountdownId = (-1); //if edit then this value will be updated and used to overwrite existing countdown
 
-    public void startDateTimePicker(View v) {
-        startActivity(new Intent(this, DateTimePicker.class));
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modify_countdown);
+
+        //Set custom onclick listener so time and datepicker show up
+        setCustomOnClickListener(findViewById(R.id.startDateTimeValue));
+        setCustomOnClickListener(findViewById(R.id.untilDateTimeValue));
 
         try {
             this.existingCountdownId = getIntent().getIntExtra("COUNTDOWN_ID",-1);
@@ -112,5 +109,22 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
     public void setNewEditedCountdown(Countdown newEditedCountdown) {
         this.newEditedCountdown = newEditedCountdown;
+    }
+
+
+    // ################################################################################################################
+    // TIMER/DATE PICKER ##############################################################################################
+    // ################################################################################################################
+
+    public void setCustomOnClickListener(View v) {
+        //GregorianCalendar now = new GregorianCalendar(); //now
+        final DateTimePicker DATETIMEPICKER = new DateTimePicker(this, getSupportFragmentManager(),(TextView) v,GregorianCalendar.HOUR_OF_DAY, GregorianCalendar.MINUTE, GregorianCalendar.SECOND, true);
+
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DATETIMEPICKER.showDateTimePicker();
+            }
+        });
     }
 }
