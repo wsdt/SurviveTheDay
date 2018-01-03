@@ -13,6 +13,7 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 
 import com.ikovac.timepickerwithseconds.MyTimePickerDialog;
+import com.ikovac.timepickerwithseconds.TimePicker;
 
 //Thanks to http://www.truiton.com/2013/03/android-pick-date-time-from-edittext-onclick-event/
 public class DateTimePicker {
@@ -23,17 +24,20 @@ public class DateTimePicker {
     private static final String TAG = "DateTimePicker";
 
     public DateTimePicker (Context context, FragmentManager fragmentManager, @NonNull TextView mainResultView, int hourOfDay, int minute, int seconds, boolean is24hourView) {
+        Log.d(TAG, "Created instance.");
         this.setMainResultView(mainResultView);
         this.setFragmentManager(fragmentManager);
 
+        Log.d(TAG, "Tried to assign and create DatePickerFragment. ");
         //Create datepicker and assign it to outer class
         DatePickerFragment tmpDatePicker = new DatePickerFragment();
-        tmpDatePicker.setResultView(mainResultView);
+        tmpDatePicker.setResultView(this.getMainResultView());
         this.setMainDatePicker(tmpDatePicker);
 
+        Log.d(TAG, "Tried to assign and create TimerPickerFragment. ");
         //create time picker and assign it to outer class
-        TimePickerFragment tmpTimePicker = new TimePickerFragment(context, hourOfDay, minute, seconds, is24hourView);
-        tmpTimePicker.setResultView(mainResultView);
+        TimePickerFragment tmpTimePicker = new TimePickerFragment(context, this.onTimeSetListener,hourOfDay, minute, seconds, is24hourView);
+        tmpTimePicker.setResultView(this.getMainResultView());
         this.setMainTimePicker(tmpTimePicker);
     }
 
@@ -101,7 +105,8 @@ public class DateTimePicker {
         @Override
         public void onDateSet(DatePicker view, int year, int month, int day) {
             // Do something with the date chosen by the user
-            getResultView().setText(day + "." + (month + 1) + "." + year);
+            this.getResultView().setText(day + "." + (month + 1) + "." + year);
+            Log.d(TAG, "onDateSet: Assigned new date.");
         }
 
         public void setResultView(TextView resultView) {
@@ -114,11 +119,20 @@ public class DateTimePicker {
     }
 
     //########################## TIME PICKER ####################################
+    private MyTimePickerDialog.OnTimeSetListener onTimeSetListener = new MyTimePickerDialog.OnTimeSetListener() {
+        @Override
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute, int seconds) {
+            // Do something with the time chosen by the user
+            getMainResultView().setText(getMainResultView().getText() + " " + String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + ":" + String.format("%02d", seconds));
+            Log.d(TAG, "onTimeSet: Assigned new time.");
+        }
+    }; //use this explicitely created listener to give them as callback
+
     public static class TimePickerFragment extends MyTimePickerDialog implements MyTimePickerDialog.OnTimeSetListener {
         private TextView resultView;
 
-        public TimePickerFragment(Context context, int hourOfDay, int minute, int seconds, boolean is24HourView) {
-            super(context, null, hourOfDay, minute, seconds, is24HourView);
+        public TimePickerFragment(Context context,OnTimeSetListener callback, int hourOfDay, int minute, int seconds, boolean is24HourView) {
+            super(context, callback, hourOfDay, minute, seconds, is24HourView);
             /* callback = new DateTimePicker.TimePickerFragment.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(com.ikovac.timepickerwithseconds.TimePicker view, int hourOfDay, int minute, int seconds) {
@@ -127,18 +141,19 @@ public class DateTimePicker {
             }*/
         }
 
-        public TimePickerFragment(Context context, int theme, int hourOfDay, int minute, int seconds, boolean is24HourView) {
-            super(context, theme, null, hourOfDay, minute, seconds, is24HourView);
+        public TimePickerFragment(Context context, int theme, OnTimeSetListener callback, int hourOfDay, int minute, int seconds, boolean is24HourView) {
+            super(context, theme, callback, hourOfDay, minute, seconds, is24HourView);
         }
 
         @Override
         public void onTimeSet(com.ikovac.timepickerwithseconds.TimePicker view, int hourOfDay, int minute, int seconds) {
             // Do something with the time chosen by the user
-            getResultView().setText(getResultView().getText() + " " + String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + ":" + String.format("%02d", seconds));
+            this.getResultView().setText(getResultView().getText() + " " + String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + ":" + String.format("%02d", seconds));
+            Log.d(TAG, "onTimeSet: Assigned new time.");
         }
 
         public TextView getResultView() {
-            return resultView;
+            return this.resultView;
         }
 
         public void setResultView(TextView resultView) {
