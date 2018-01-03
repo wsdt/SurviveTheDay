@@ -13,7 +13,6 @@
     tools:context="kevkevin.wsdt.tagueberstehen.ModifyCountdownActivity">
 
         <!-- TITLE -->
-
     <TextView
             android:layout_gravity="start|top"
             android:layout_width="120dp"
@@ -46,20 +45,20 @@
             android:text="Job at IKEA" />
     <!-- Start Datetime -->
     <TextView
-        android:onClick="startDateTimePicker"
         android:layout_gravity="start|top"
         android:layout_width="120dp"
         style="@style/textForForm"
         android:layout_marginTop="5dp"
         android:text="From: "/>
-    <EditText
+    <TextView
         android:layout_gravity="start|top"
         android:id="@+id/startDateTimeValue"
         style="@style/textForForm"
         android:hint="dd.MM.YYYY hh:mm:ss"
         android:layout_width="match_parent"
-        android:inputType="datetime"
         android:text="15.12.2017 08:00:00" />
+        <!--android:inputType="datetime"-->
+
     <!-- Until Datetime
     TODO: http://www.truiton.com/2013/03/android-pick-date-time-from-edittext-onclick-event/ >>> super Lösung
     -->
@@ -69,13 +68,12 @@
         style="@style/textForForm"
         android:layout_marginTop="5dp"
         android:text="Until: "/>
-    <EditText
+    <TextView
         android:layout_gravity="start|top"
         android:id="@+id/untilDateTimeValue"
         style="@style/textForForm"
         android:hint="dd.MM.YYYY hh:mm:ss"
         android:layout_width="match_parent"
-        android:inputType="datetime"
         android:text="15.12.2018 15:00:00" />
     <!-- Category -->
     <TextView
