@@ -1,33 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/page"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:id="@+id/mainActivityPage"
     tools:context="kevkevin.wsdt.tagueberstehen.MainActivity">
 
-    <TextView
-        android:id="@+id/mainHeading"
-        style="@style/heading"
-        android:text="Survive The Day" />
-
-    <ScrollView
-        android:id="@+id/scrollView"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <!-- This part should be added programmatically later / Tag identifies COUNTDOWN!
-        IMPORTANT: If you change Layouttype of nodeList then you need to adapt MainActivity:onCountdownModifyButtons() -->
-        <LinearLayout
-            android:id="@+id/nodeList"
+
+        <TextView
+            android:id="@+id/mainHeading"
+            style="@style/heading"
+            android:text="Survive The Day" />
+
+        <ScrollView
+            android:id="@+id/scrollView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
+            <!-- This part should be added programmatically later / Tag identifies COUNTDOWN!
+            IMPORTANT: If you change Layouttype of nodeList then you need to adapt MainActivity:onCountdownModifyButtons() -->
+            <LinearLayout
+                android:id="@+id/nodeList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
 
+    <!--<com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
 
-        </LinearLayout>
-    </ScrollView>
-
-</LinearLayout>
+        android:layout_centerHorizontal="true"
+        ads:adSize="BANNER"
+        ads:adUnitId="ca-app-pub-8160960481527784/8464916252"/>-->
+</RelativeLayout>

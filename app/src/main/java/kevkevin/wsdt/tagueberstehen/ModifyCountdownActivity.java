@@ -4,12 +4,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 import java.util.GregorianCalendar;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.DateTimePicker;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
 
 public class ModifyCountdownActivity extends AppCompatActivity {
@@ -41,10 +42,14 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     public void onSaveClick(View view) {
         //Get values from form
         loadFormValues();
-        validateFormValues();
-        new InternalStorageMgr(this).setSaveCountdown(this.getNewEditedCountdown(),true);
-        Log.d(TAG, "onSaveClick: Tried to save new countdown.");
-        finish(); //go back to main
+        if (areFormValuesValid()) {
+            new InternalStorageMgr(this).setSaveCountdown(this.getNewEditedCountdown(), true);
+            Log.d(TAG, "onSaveClick: Tried to save new countdown.");
+            finish(); //go back to main
+        } else {
+            //Toast.makeText(this, "Value(s) not allowed!", Toast.LENGTH_SHORT).show(); --> toasts in areFormValuesValid() more specific!
+            Log.w(TAG, "onSaveClick: areFormValuesValid() delivered not true!");
+        }
     }
 
     public void onAbortClick(View view) {
@@ -52,14 +57,27 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         finish();
     }
 
-    private void validateFormValues() {
+    private boolean areFormValuesValid() {
+        boolean areFormValuesValid = true;
         //Validate dates
         if (this.getNewEditedCountdown().getStartDateTime().matches(Countdown.DATE_FORMAT_REGEX) && this.getNewEditedCountdown().getUntilDateTime().matches(Countdown.DATE_FORMAT_REGEX)) {
-            //TODO: (new Countdown(this,)).savePersistently();
-            //TODO: new constructor in countdown
+            // Is UntilDateTime AFTER StartDateTime? -------------------
+            //getDateTime(getStartDateTime()).compareTo(getCurrentDateTime()) > 0
+            if (getNewEditedCountdown().getDateTime(getNewEditedCountdown().getStartDateTime())
+                    .compareTo(getNewEditedCountdown().getDateTime(getNewEditedCountdown().getUntilDateTime())) >= 0) {
+                //startdatetime is in "future" is bigger than untildatetima (bad)
+                Toast.makeText(this, "UntilDateTime needs to be AFTER StartDateTime!", Toast.LENGTH_SHORT).show();
+                Log.w(TAG, "areFormValuesValid: UntilDateTime needs to be AFTER StartDateTime.");
+                areFormValuesValid = false;
+            }
+            // Is UntilDateTime AFTER StartDateTime? - END -------------
+
+            //TODO: ADD HERE FURTHER VALIDATIONS
         } else {
             Log.e(TAG, "validateFormValue: Dates not valid: "+this.getNewEditedCountdown().getStartDateTime()+" /// "+this.getNewEditedCountdown().getUntilDateTime());
+            Toast.makeText(this,"DateTime is not valid! This might be an internal error. ", Toast.LENGTH_LONG).show();
         }
+        return areFormValuesValid;
     }
 
     private void setFormValues(Countdown countdown) {

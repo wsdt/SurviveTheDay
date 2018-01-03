@@ -15,9 +15,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.Map;
-
+import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.NotificationService;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
@@ -26,14 +25,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout nodeList;
     private static final String TAG = "MainActivity";
 
-    /*
-    TODO: Vulgaritätsschieberegler (umso höher desto vulgärer oder ausfälliger Sprüche
-    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Initiliaze AdMob
+        AdManager adManager = new AdManager(this);
+        adManager.initializeAdmob();
+        adManager.loadFullPageAd();
+        adManager.loadBannerAd((RelativeLayout) findViewById(R.id.mainActivityPage));
 
         //Nodelist
         nodeList = (LinearLayout) findViewById(R.id.nodeList);
