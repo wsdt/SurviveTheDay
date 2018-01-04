@@ -31,7 +31,7 @@ public class Countdown {
     private String lastEditDateTime; //last edit of countdown
     private String category; //work, school, university etc.
     private boolean isActive;
-    private int notificationInterval; //in milliseconds!
+    private int notificationInterval; //in seconds!
     private static final String TAG = "Countdown";
     private static final String DATE_FORMAT = "dd.MM.yyyy hh:mm:ss";
     public static final String DATE_FORMAT_REGEX = "\\d{1,2}\\.\\d{1,2}\\.\\d{4} \\d{1,2}:\\d{1,2}:\\d{1,2}"; //mainly for other classes
