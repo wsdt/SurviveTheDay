@@ -16,7 +16,10 @@ import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 
 public class CreditsActivity extends AppCompatActivity {
 
@@ -26,6 +29,12 @@ public class CreditsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_credits);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //Ads - START
+        AdManager adManager = new AdManager(this);
+        adManager.initializeAdmob();
+        adManager.loadBannerAd((RelativeLayout) findViewById(R.id.wrappingRLForAds));
+        //Ads - END
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.contactMe);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -49,7 +58,6 @@ public class CreditsActivity extends AppCompatActivity {
         addAllIconCreditsToView();
 
         //APP ICON: <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
-
         //CREDITS: CAMPFIRE ICON: <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
         // Plus Icon: <div>Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
         // Trash Icon: <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
@@ -63,12 +71,12 @@ public class CreditsActivity extends AppCompatActivity {
         GridLayout content = (GridLayout) findViewById(R.id.creditList);
         addIconCreditToView(content,"<div><h4>App Icon</h4>Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.app_icon);
         addIconCreditToView(content,"<div><h4>Plus Icon</h4><div>Icons made by <a href=\"https://www.flaticon.com/authors/smashicons\" title=\"Smashicons\">Smashicons</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.plus);
-        addIconCreditToView(content,"<div><h4>Trash Icon (Delete all)</h4><div>Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.delete);
+        addIconCreditToView(content,"<div><h4>Trash Icon</h4><div>Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.delete);
         addIconCreditToView(content,"<div><h4>Edit Icon</h4><div><div>Icons made by <a href=\"https://www.flaticon.com/authors/smashicons\" title=\"Smashicons\">Smashicons</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.edit_16px);
-        addIconCreditToView(content,"<div><h4>Delete Icon (Delete a countdown)</h4><div>Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.delete_16px);
+        addIconCreditToView(content,"<div><h4>Delete Icon</h4><div>Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.delete_16px);
         addIconCreditToView(content,"<div><h4>Motivate me toggle</h4><div>Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.switchtoggle_16px);
-        addIconCreditToView(content,"<div><h4>Conversation mark - notification (4 colours)</h4>Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>", R.drawable.notification_generic_blue);
-        addIconCreditToView(content,"<div><h4>Stoptimer - notification (2 colours)</h4>Icons made by <a href=\"https://www.flaticon.com/authors/smashicons\" title=\"Smashicons\">Smashicons</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.notification_timebased_color);
+        addIconCreditToView(content,"<div><h4>Conversation mark</h4>Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>", R.drawable.notification_generic_blue);
+        addIconCreditToView(content,"<div><h4>Stoptimer</h4>Icons made by <a href=\"https://www.flaticon.com/authors/smashicons\" title=\"Smashicons\">Smashicons</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.notification_timebased_color);
     }
 
     private void addIconCreditToView(GridLayout creditList, String credits, int drawable) {

@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name" translatable="false">SurviveTheDay</string>
+    <string name="app_owner" translatable="false">© Kevin Riedl, 2018</string>
+    <string name="app_owner_mail" translatable="false">kevin.riedl.privat@gmail.com</string>
+    <string name="loading_pleasewait">Please wait ..</string>
     <string name="action_credits">Credits</string>
     <string name="title_activity_credits">Credits</string>
     <string name="creditsText">

@@ -33,8 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //Initiliaze AdMob
         AdManager adManager = new AdManager(this);
-        adManager.initializeAdmob();
-        adManager.loadFullPageAd();
+        adManager.initializeAdmob(); //no fullpage ad because this happens already in loading screen
         adManager.loadBannerAd((RelativeLayout) findViewById(R.id.mainActivityPage));
 
         //Nodelist

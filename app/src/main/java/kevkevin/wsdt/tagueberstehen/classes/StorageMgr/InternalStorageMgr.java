@@ -94,7 +94,10 @@ public class InternalStorageMgr {
                 //Countdown Id determines indexposition of that element in arraylist!
                 if (onlyActiveCountdowns) {
                     if (Boolean.parseBoolean(lineArr[8])) { //is this specific countdown active? only then add it, because we only want active countdowns
-                            allCountdowns.put(Integer.parseInt(lineArr[0]),new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[8]), Integer.parseInt(lineArr[9])));
+                        Countdown tmp = new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[8]), Integer.parseInt(lineArr[9]));
+                        if (tmp.isStartDateInThePast()) { //only add to activeCountdowns if startDate is in the past (because otherwise service would run if motivateMe is on but startdate in the past
+                            allCountdowns.put(Integer.parseInt(lineArr[0]), tmp);
+                        }
                        }
                 } else {
                     allCountdowns.put(Integer.parseInt(lineArr[0]),new Countdown(this.getContext(), Integer.parseInt(lineArr[0]), lineArr[1], lineArr[2], lineArr[3], lineArr[4], lineArr[5], lineArr[6], lineArr[7], Boolean.parseBoolean(lineArr[8]), Integer.parseInt(lineArr[9])));

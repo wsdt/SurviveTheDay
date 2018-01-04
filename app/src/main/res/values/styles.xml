@@ -40,7 +40,7 @@
     <style name="countdownNode" parent="page">
         <item name="android:background">#666</item>
         <item name="android:layout_marginTop">10dp</item>
-        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:layout_marginBottom">15dp</item>
         <item name="android:gravity">center_horizontal</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -65,6 +65,12 @@
     <style name="textForForm">
 
         <item name="android:textSize">20sp</item>
+    </style>
+
+    <!-- Loading screen -->
+    <style name="loadingText">
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:textColor">#aaa</item>
     </style>
 
 </resources>

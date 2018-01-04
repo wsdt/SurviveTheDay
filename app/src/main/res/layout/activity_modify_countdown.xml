@@ -1,153 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/wrappingRLForAds"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginEnd="5dp"
     android:layout_marginLeft="5dp"
     android:layout_marginRight="5dp"
     android:layout_marginStart="5dp"
-    android:columnCount="2"
-    android:orientation="horizontal"
     tools:context="kevkevin.wsdt.tagueberstehen.ModifyCountdownActivity">
 
-    <!-- TITLE -->
-    <TextView
-        style="@style/textForForm"
-        android:layout_width="120dp"
-        android:layout_gravity="start|top"
-        android:layout_marginTop="15dp"
-        android:text="Title: " />
-
-    <EditText
-        android:id="@+id/countdownTitleValue"
-        style="@style/textForForm"
-        android:layout_marginTop="10dp"
+    <GridLayout
         android:layout_width="match_parent"
-        android:layout_gravity="start|top"
-        android:ems="10"
-        android:hint="Saturday Work - IKEA"
-        android:inputType="textCapCharacters"
-        android:text="Work" />
-    <!-- DESCRIPTION -->
-    <TextView
-        style="@style/textForForm"
-        android:layout_width="120dp"
-        android:layout_gravity="start|top"
-        android:layout_marginTop="15dp"
-        android:text="Description: " />
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:orientation="horizontal">
+        <!-- TITLE -->
+        <TextView
+            style="@style/textForForm"
+            android:layout_width="120dp"
+            android:layout_gravity="start|top"
+            android:layout_marginTop="15dp"
+            android:text="Title: " />
 
-    <EditText
-        android:id="@+id/countdownDescriptionValue"
-        style="@style/textForForm"
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_gravity="start|top"
-        android:hint="Working from 8 a.m - 6 p.m."
-        android:inputType="textCapCharacters"
-        android:text="Job at IKEA" />
-    <!-- Start Datetime -->
-    <TextView
-        style="@style/textForForm"
-        android:layout_width="120dp"
-        android:layout_gravity="start|top"
-        android:layout_marginTop="15dp"
-        android:text="From: " />
+        <EditText
+            android:id="@+id/countdownTitleValue"
+            style="@style/textForForm"
+            android:layout_width="match_parent"
+            android:layout_gravity="start|top"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:hint="Saturday Work - IKEA"
+            android:inputType="textCapCharacters"
+            android:text="Work" />
+        <!-- DESCRIPTION -->
+        <TextView
+            style="@style/textForForm"
+            android:layout_width="120dp"
+            android:layout_gravity="start|top"
+            android:layout_marginTop="15dp"
+            android:text="Description: " />
 
-    <TextView
-        android:id="@+id/startDateTimeValue"
-        style="@style/textForForm"
-        android:layout_width="match_parent"
-        android:layout_gravity="start|top"
-        android:layout_marginTop="15dp"
-        android:hint="dd.MM.YYYY hh:mm:ss"
-        android:text="15.12.2017 08:00:00" />
-    <!--android:inputType="datetime"-->
+        <EditText
+            android:id="@+id/countdownDescriptionValue"
+            style="@style/textForForm"
+            android:layout_width="match_parent"
+            android:layout_gravity="start|top"
+            android:layout_marginTop="10dp"
+            android:hint="Working from 8 a.m - 6 p.m."
+            android:inputType="textCapCharacters"
+            android:text="Job at IKEA" />
+        <!-- Start Datetime -->
+        <TextView
+            style="@style/textForForm"
+            android:layout_width="120dp"
+            android:layout_gravity="start|top"
+            android:layout_marginTop="15dp"
+            android:text="From: " />
 
-    <!-- Until Datetime
-    TODO: http://www.truiton.com/2013/03/android-pick-date-time-from-edittext-onclick-event/ >>> super Lösung
-    -->
-    <TextView
-        style="@style/textForForm"
-        android:layout_width="120dp"
-        android:layout_gravity="start|top"
-        android:layout_marginTop="15dp"
-        android:text="Until: " />
+        <TextView
+            android:id="@+id/startDateTimeValue"
+            style="@style/textForForm"
+            android:layout_width="match_parent"
+            android:layout_gravity="start|top"
+            android:layout_marginTop="15dp"
+            android:hint="dd.MM.YYYY hh:mm:ss"
+            android:text="15.12.2017 08:00:00" />
+        <!--android:inputType="datetime"-->
 
-    <TextView
-        android:id="@+id/untilDateTimeValue"
-        style="@style/textForForm"
-        android:layout_width="match_parent"
-        android:layout_gravity="start|top"
-        android:layout_marginTop="15dp"
-        android:hint="dd.MM.YYYY hh:mm:ss"
-        android:text="15.12.2018 15:00:00" />
-    <!-- Category -->
-    <TextView
-        style="@style/textForForm"
-        android:layout_width="120dp"
-        android:layout_gravity="start|top"
-        android:layout_marginTop="15dp"
-        android:text="Category: " />
+        <!-- Until Datetime
+        TODO: http://www.truiton.com/2013/03/android-pick-date-time-from-edittext-onclick-event/ >>> super Lösung
+        -->
+        <TextView
+            style="@style/textForForm"
+            android:layout_width="120dp"
+            android:layout_gravity="start|top"
+            android:layout_marginTop="15dp"
+            android:text="Until: " />
 
-    <EditText
-        android:id="@+id/categoryValue"
-        style="@style/textForForm"
-        android:layout_width="match_parent"
-        android:layout_gravity="start|top"
-        android:layout_marginTop="10dp"
-        android:hint="work, school etc."
-        android:inputType="numberDecimal"
-        android:text="work" />
-    <!-- isActive -->
-    <TextView
-        style="@style/textForForm"
-        android:layout_width="120dp"
-        android:layout_gravity="start|top"
-        android:layout_marginTop="15dp"
-        android:text="Motivate me: " />
+        <TextView
+            android:id="@+id/untilDateTimeValue"
+            style="@style/textForForm"
+            android:layout_width="match_parent"
+            android:layout_gravity="start|top"
+            android:layout_marginTop="15dp"
+            android:hint="dd.MM.YYYY hh:mm:ss"
+            android:text="15.12.2018 15:00:00" />
+        <!-- Category -->
+        <TextView
+            style="@style/textForForm"
+            android:layout_width="120dp"
+            android:layout_gravity="start|top"
+            android:layout_marginTop="15dp"
+            android:text="Category: " />
 
-    <ToggleButton
-        android:id="@+id/isActive"
-        style="@style/textForForm"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_gravity="start|top"
-        android:layout_marginTop="10dp"
-        android:hint="Should countdown also be added in service?"
-        android:onClick="onMotivateMeToggleClick"
-        android:text="Motivate me" />
+        <EditText
+            android:id="@+id/categoryValue"
+            style="@style/textForForm"
+            android:layout_width="match_parent"
+            android:layout_gravity="start|top"
+            android:layout_marginTop="10dp"
+            android:hint="work, school etc."
+            android:inputType="numberDecimal"
+            android:text="work" />
+        <!-- isActive -->
+        <TextView
+            style="@style/textForForm"
+            android:layout_width="120dp"
+            android:layout_gravity="start|top"
+            android:layout_marginTop="15dp"
+            android:text="Motivate me: " />
 
-    <!-- Service settings (Interval for notifications: by default disabled) -->
-    <TextView
-        android:id="@+id/notificationIntervalTextView"
-        style="@style/textForForm"
-        android:layout_width="120dp"
-        android:layout_gravity="start|top"
-        android:layout_marginTop="5dp"
-        android:enabled="false"
-        android:hint="How often do u need motivation? (in seconds)"
-        android:text="Interval (in seconds): " />
+        <ToggleButton
+            android:id="@+id/isActive"
+            style="@style/textForForm"
+            android:layout_width="250dp"
+            android:layout_height="50dp"
+            android:layout_gravity="start|top"
+            android:layout_marginTop="10dp"
+            android:hint="Should countdown also be added in service?"
+            android:onClick="onMotivateMeToggleClick"
+            android:text="Motivate me" />
 
-    <!-- 604800 = 1 Week in seconds -->
-    <SeekBar
-        android:id="@+id/notificationIntervalSeekBar"
-        android:layout_width="250dp"
-        android:layout_gravity="start|top"
-        android:layout_marginTop="20dp"
-        android:enabled="false"
-        android:max="604800" />
+        <!-- Service settings (Interval for notifications: by default disabled) -->
+        <TextView
+            android:id="@+id/notificationIntervalTextView"
+            style="@style/textForForm"
+            android:layout_width="120dp"
+            android:layout_gravity="start|top"
+            android:layout_marginTop="5dp"
+            android:enabled="false"
+            android:hint="How often do u need motivation? (in seconds)"
+            android:text="Interval (in seconds): " />
 
-    <Button
-        android:id="@+id/saveCountdown"
-        android:onClick="onSaveClick"
-        android:padding="5dp"
-        android:text="Save" />
+        <!-- 604800 = 1 Week in seconds -->
+        <SeekBar
+            android:id="@+id/notificationIntervalSeekBar"
+            android:layout_width="250dp"
+            android:layout_gravity="start|top"
+            android:layout_marginTop="20dp"
+            android:enabled="false"
+            android:max="604800" />
 
-    <Button
-        android:id="@+id/abortCountdown"
-        android:onClick="onAbortClick"
-        android:padding="5dp"
-        android:text="Abort" />
-</GridLayout>
+        <Button
+            android:id="@+id/saveCountdown"
+            android:onClick="onSaveClick"
+            android:padding="5dp"
+            android:text="Save" />
+
+        <Button
+            android:id="@+id/abortCountdown"
+            android:onClick="onAbortClick"
+            android:padding="5dp"
+            android:text="Abort" />
+    </GridLayout>
+</RelativeLayout>
