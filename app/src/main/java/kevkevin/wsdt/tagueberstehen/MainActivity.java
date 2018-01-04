@@ -134,25 +134,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int getCountdownIdFromNodeTag(View v) { //used from onCountdownModifyButtons and onClick()
         String nodeTag = (String) v.getTag(); //COUNTDOWN_N  --> N = CountdownActivity ID
         int nodeId = (-1);
-        if (nodeTag.length() >= 11) {
-            try {
-                nodeId = Integer.parseInt(nodeTag.substring(10));
-            } catch (NumberFormatException e) {
-                Log.e(TAG,"getCountdownIdFromNodeTag: Node-Id could not be parsed to Integer. Wrong Tag: "+nodeTag);
-                Toast.makeText(this, "Could not identify Countdown ID.", Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
+        try {
+            if (nodeTag.length() >= 11) {
+                try {
+                    nodeId = Integer.parseInt(nodeTag.substring(10));
+                } catch (NumberFormatException e) {
+                    Log.e(TAG, "getCountdownIdFromNodeTag: Node-Id could not be parsed to Integer. Wrong Tag: " + nodeTag);
+                    Toast.makeText(this, "Could not identify Countdown ID.", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+            } else {
+                Log.e(TAG, "getCountdownIdFromNodeTag: Node-Tag WRONG labelled: " + nodeTag);
+                Toast.makeText(this, "Could not perform action. Node maybe wrong build.", Toast.LENGTH_SHORT).show();
             }
-        } else {
-            Log.e(TAG,"getCountdownIdFromNodeTag: Node-Tag WRONG labelled: "+nodeTag);
-            Toast.makeText(this,"Could not perform action. Node maybe wrong build.",Toast.LENGTH_SHORT).show();
+        } catch (NullPointerException e) {
+            Log.e(TAG, "getCountdownIdFromNodeTag: Nullpointerexception (presumably nodeTag == null!).");
+            e.printStackTrace();
         }
         return nodeId;
     }
 
     private void createAddNodeToLayout(Countdown countdown) {
-        RelativeLayout countdownView = (RelativeLayout) getLayoutInflater().inflate(R.layout.node_template,null);
+        RelativeLayout countdownView = (RelativeLayout) getLayoutInflater().inflate(R.layout.node_template,new RelativeLayout(this)); //give relativelayout so layoutparams get done
         ((TextView)countdownView.findViewById(R.id.countdownTitle)).setText(countdown.getCountdownTitle());
         ((TextView)countdownView.findViewById(R.id.untilDateTime)).setText(countdown.getUntilDateTime());
+        //TODO: Tag might be not ADDED!!!!!!!!!!!!!!!!!!!!!!!!!!! (especially after few operations on those buttons!?)
         countdownView.setTag("COUNTDOWN_"+countdown.getCountdownId()); //to determine what countdown to open in CountdownActivity
         nodeList.addView(countdownView);
     }
