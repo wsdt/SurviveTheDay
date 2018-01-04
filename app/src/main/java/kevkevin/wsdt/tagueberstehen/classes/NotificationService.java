@@ -82,7 +82,7 @@ public class NotificationService extends Service {
 
             initializeTimer(countdown.getValue());
             //delay, time after interval starts
-            countdown.getValue().getTimer().schedule(countdown.getValue().getTimerTask(), 0, countdown.getValue().getNotificationInterval() * 1000);
+            countdown.getValue().getTimer().schedule(countdown.getValue().getTimerTask(), 0, countdown.getValue().getNotificationInterval() * 1000); //*1000 so every second * interval
         }
         if (count <= 0) {
             //Kill Service if there is no countdown! Save energy.

@@ -15,4 +15,40 @@
         "</ul>"
         ]]>
     </string>
+
+    <!-- IMPORTANT: Following two arrays must be the same size and order!! -->
+    <string-array name="countdownIntervalSpinner_LABELS">
+        <item>5 Seconds</item>
+        <item>30 Seconds</item>
+        <item>1 Minute</item>
+        <item>5 Minutes</item>
+        <item>10 Minutes</item>
+        <item>15 Minutes</item>
+        <item>30 Minutes</item>
+        <item>45 Minutes</item>
+        <item>1 Hour</item>
+        <item>2 Hours</item>
+        <item>3 Hours</item>
+        <item>5 Hours</item>
+        <item>8 Hours</item>
+        <item>12 Hours</item>
+    </string-array>
+    <!-- IMPORTANT: If smartphone gets restarted the interval might be start from 0, so e.g. 2 days will never be executed -->
+    <string-array name="countdownIntervalSpinner_VALUES">
+        <!-- Values from above in seconds! -->
+        <item>5</item>
+        <item>30</item>
+        <item>60</item>
+        <item>300</item>
+        <item>600</item>
+        <item>900</item>
+        <item>1800</item>
+        <item>2700</item>
+        <item>3600</item>
+        <item>7200</item>
+        <item>10800</item>
+        <item>18000</item>
+        <item>28800</item>
+        <item>43200</item>
+    </string-array>
 </resources>

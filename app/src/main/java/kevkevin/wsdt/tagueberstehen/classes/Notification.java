@@ -185,7 +185,7 @@ public class Notification /*implements Parcelable*/ { //one instance for every c
         randomNotification.textList.addAll(Arrays.asList(countdown.getCountdownTitle()+" - Only "+countdown.getTotalSecondsNoScientificNotation()+" seconds to go!",
                 countdown.getCountdownTitle()+" - Just "+countdown.getRemainingPercentage(2)+" % left.",
                 countdown.getCountdownTitle()+" - Countdown ends on "+countdown.getUntilDateTime(),
-                countdown.getCountdownTitle()+" - A motivating notification will be sent every "+(countdown.getNotificationInterval()/1000)+" seconds. :)"));
+                countdown.getCountdownTitle()+" - A motivating notification will be sent every "+(this.getActivityThisTarget().getResources().getStringArray(R.array.countdownIntervalSpinner_LABELS)[(Arrays.asList(this.getActivityThisTarget().getResources().getStringArray(R.array.countdownIntervalSpinner_VALUES)).indexOf(""+countdown.getNotificationInterval()))])+". :)")); //get label of corresponding seconds of strings.xml
         randomNotification.iconList.addAll(Arrays.asList(R.drawable.notification_timebased_color,R.drawable.notification_timebased_white));
 
         //Choose one for each arraylist by random index (max is size-1!)

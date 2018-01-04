@@ -39,6 +39,8 @@
 
     </style>
     <style name="countdownNode" parent="page">
+        <item name="android:layout_marginLeft">5dp</item>
+        <item name="android:layout_marginRight">5dp</item>
         <item name="android:background">#666</item>
         <item name="android:layout_marginTop">5dp</item>
         <item name="android:gravity">center_horizontal</item>
@@ -61,8 +63,7 @@
     </style>
 
     <!-- Modify Countdown Styles -->
-    <style name="textForForm">
-
+    <style name="textForForm"><!-- If you place here a textcolor the disabled spinner and corr. textview will be always that way colored!! -->
         <item name="android:textSize">20sp</item>
     </style>
 

@@ -2,16 +2,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/wrappingRLForAds"
+    android:id="@+id/wrappingRLForAdsModifyCountdowns"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginEnd="5dp"
-    android:layout_marginLeft="5dp"
-    android:layout_marginRight="5dp"
-    android:layout_marginStart="5dp"
     tools:context="kevkevin.wsdt.tagueberstehen.ModifyCountdownActivity">
 
     <GridLayout
+        android:layout_marginEnd="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginStart="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:columnCount="2"
@@ -69,9 +69,7 @@
             android:text="15.12.2017 08:00:00" />
         <!--android:inputType="datetime"-->
 
-        <!-- Until Datetime
-        TODO: http://www.truiton.com/2013/03/android-pick-date-time-from-edittext-onclick-event/ >>> super Lösung
-        -->
+        <!-- Until Datetime http://www.truiton.com/2013/03/android-pick-date-time-from-edittext-onclick-event/ >>> super Lösung -->
         <TextView
             style="@style/textForForm"
             android:layout_width="120dp"
@@ -127,21 +125,29 @@
         <TextView
             android:id="@+id/notificationIntervalTextView"
             style="@style/textForForm"
+            android:layout_height="50dp"
             android:layout_width="120dp"
             android:layout_gravity="start|top"
             android:layout_marginTop="5dp"
-            android:enabled="false"
-            android:hint="How often do u need motivation? (in seconds)"
-            android:text="Interval (in seconds): " />
+            android:hint="How often do u need motivation?"
+            android:text="Interval: " />
 
-        <!-- 604800 = 1 Week in seconds -->
+        <!-- SLIDER currently -->
+        <Spinner
+            android:layout_marginTop="5dp"
+            android:id="@+id/notificationIntervalSpinner"
+            android:layout_height="wrap_content"
+            android:spinnerMode="dropdown"
+            android:gravity="center"
+            android:layout_width="200dp"/>
+        <!--OLD SLIDER:
         <SeekBar
             android:id="@+id/notificationIntervalSeekBar"
             android:layout_width="250dp"
             android:layout_gravity="start|top"
             android:layout_marginTop="20dp"
             android:enabled="false"
-            android:max="604800" />
+            android:max="604800" />-->
 
         <Button
             android:id="@+id/saveCountdown"
@@ -155,4 +161,6 @@
             android:padding="5dp"
             android:text="Abort" />
     </GridLayout>
+
+
 </RelativeLayout>

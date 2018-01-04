@@ -44,7 +44,7 @@ public class AdManager {
                 //just in case validate whether app is loaded
                 if (fullpageAd.isLoaded()) {
                     fullpageAd.show(); //show ad if loaded
-                    Log.e(TAG, "onAdLoaded: Tried to show fullpage ad.");
+                    Log.d(TAG, "onAdLoaded: Tried to show fullpage ad.");
                 } else {
                     Log.e(TAG, "onAdLoaded: This error should not happen.");
                 }
@@ -96,6 +96,7 @@ public class AdManager {
             public void onAdLoaded() {
                 viewGroup.removeView(adView);
                 viewGroup.addView(adView); //add to layout if loaded
+                Log.d(TAG, "onAdLoaded (loadBannerAd): Banner successfully loaded.");
             }
         });
     }

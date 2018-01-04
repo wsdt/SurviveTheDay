@@ -2,6 +2,7 @@ package kevkevin.wsdt.tagueberstehen;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) { //OnClick on node itself
         Intent tmpintent = new Intent(this,CountdownActivity.class);
-        int countdownId = getCountdownIdFromNodeTag(v);
+        int countdownId = getCountdownIdFromNodeTag((RelativeLayout) v);
 
         if (countdownId >= 0) {
             tmpintent.putExtra("COUNTDOWN_ID", countdownId);
@@ -98,9 +99,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         InternalStorageMgr storageMgr = new InternalStorageMgr(this);
         Countdown countdown;
         try {
-            countdown = storageMgr.getCountdown(getCountdownIdFromNodeTag((ViewGroup) v.getParent()));
+            countdown = storageMgr.getCountdown(getCountdownIdFromNodeTag((RelativeLayout) v.getParent()));
         } catch (ClassCastException e) {
-            Log.e(TAG, "Could not cast parent view to view.");
+            Log.e(TAG, "Could not cast parent view to RelativeLayout. Maybe it is not a node.");
             return;
         }
 
@@ -131,8 +132,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private int getCountdownIdFromNodeTag(View v) { //used from onCountdownModifyButtons and onClick()
+    private int getCountdownIdFromNodeTag(@NonNull RelativeLayout v) { //used from onCountdownModifyButtons and onClick()
         String nodeTag = (String) v.getTag(); //COUNTDOWN_N  --> N = CountdownActivity ID
+        Log.d(TAG, "getCountdownIdFromNodeTag: Nodetag of countdown is: "+((nodeTag==null) ? "null" : nodeTag));
         int nodeId = (-1);
         try {
             if (nodeTag.length() >= 11) {
@@ -148,19 +150,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, "Could not perform action. Node maybe wrong build.", Toast.LENGTH_SHORT).show();
             }
         } catch (NullPointerException e) {
+            Toast.makeText(this, "Operation failed. Please contact administrator.",Toast.LENGTH_SHORT).show();
             Log.e(TAG, "getCountdownIdFromNodeTag: Nullpointerexception (presumably nodeTag == null!).");
             e.printStackTrace();
         }
         return nodeId;
     }
 
-    private void createAddNodeToLayout(Countdown countdown) {
-        RelativeLayout countdownView = (RelativeLayout) getLayoutInflater().inflate(R.layout.node_template,new RelativeLayout(this)); //give relativelayout so layoutparams get done
+    private void createAddNodeToLayout(Countdown countdown) { //TODO: maybe wrong countdown gets delivered?
+        RelativeLayout countdownView = (RelativeLayout) getLayoutInflater().inflate(R.layout.node_template,(LinearLayout) findViewById(R.id.nodeList), false); //give relativelayout so layoutparams get done
         ((TextView)countdownView.findViewById(R.id.countdownTitle)).setText(countdown.getCountdownTitle());
         ((TextView)countdownView.findViewById(R.id.untilDateTime)).setText(countdown.getUntilDateTime());
         //TODO: Tag might be not ADDED!!!!!!!!!!!!!!!!!!!!!!!!!!! (especially after few operations on those buttons!?)
         countdownView.setTag("COUNTDOWN_"+countdown.getCountdownId()); //to determine what countdown to open in CountdownActivity
         nodeList.addView(countdownView);
+        Log.d(TAG, "createAddNodeToLayout: Added countdown as node to layout: "+countdownView.getTag());
     }
 
     private void removeAllNodesFromLayout() {
