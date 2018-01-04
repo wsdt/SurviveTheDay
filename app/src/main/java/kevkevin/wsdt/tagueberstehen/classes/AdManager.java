@@ -2,9 +2,12 @@ package kevkevin.wsdt.tagueberstehen.classes;
 
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -18,6 +21,7 @@ public class AdManager {
     private static final String TAG = "AdManager";
 
 
+    //TODO: für internet permission prüfen und verlangen usw.
     public AdManager(Context context) {
         this.setContext(context);
     }
@@ -26,14 +30,15 @@ public class AdManager {
         MobileAds.initialize(this.getContext(), "ca-app-pub-8160960481527784~1956004763");
     }
 
-    public void loadFullPageAd() {
+
+    public void loadFullPageAd(@Nullable AdListener adListener, @Nullable final Intent goToActivityAfterShown) {
         final String FULLPAGE_ID = "ca-app-pub-3940256099942544/1033173712"; //testing purpose
         //TODO: final String FULLPAGE_ID = "ca-app-pub-8160960481527784/3526438439"; //real page id
 
         final InterstitialAd fullpageAd = new InterstitialAd(this.getContext());
         fullpageAd.setAdUnitId(FULLPAGE_ID);
         fullpageAd.loadAd(new AdRequest.Builder().build());
-        fullpageAd.setAdListener(new AdListener() {
+        fullpageAd.setAdListener((adListener == null) ? new AdListener() {
             @Override
             public void onAdLoaded() {
                 //just in case validate whether app is loaded
@@ -44,7 +49,27 @@ public class AdManager {
                     Log.e(TAG, "onAdLoaded: This error should not happen.");
                 }
             }
-        });
+
+            @Override
+            public void onAdClosed() {
+                //if ad closed go to gotoActivity
+                Log.d(TAG, "onAdClosed: Interstitial ad got closed and new activity got started.");
+                if (goToActivityAfterShown != null) {
+                    Log.d(TAG, "onAdClosed: gotoActivity is not null.");
+                    getContext().startActivity(goToActivityAfterShown);
+                }
+            }
+
+            @Override
+            public void onAdFailedToLoad(int errorcode) {
+                Toast.makeText(getContext(), "Please check your internet connection!", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "onAdFailedToLoad: Could not load interstitial ad. Errorcode: "+errorcode);
+                if (goToActivityAfterShown != null) {
+                    Log.d(TAG, "onAdClosed: gotoActivity is not null.");
+                    getContext().startActivity(goToActivityAfterShown); //does app not prevent from being executed without internet
+                }
+            }
+        } : adListener); //IMPORTANT: add given adListener, if null create default one
     }
 
     public void loadBannerAd(final RelativeLayout viewGroup) {
@@ -61,6 +86,12 @@ public class AdManager {
 
         adView.loadAd(new AdRequest.Builder().build());
         adView.setAdListener(new AdListener() {
+            @Override
+            public void onAdFailedToLoad(int errorcode) {
+                Toast.makeText(getContext(), "Please check your internet connection!", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "onAdFailedToLoad (loadBannerAd): Banner could not be loaded.");
+            }
+
             @Override
             public void onAdLoaded() {
                 viewGroup.removeView(adView);

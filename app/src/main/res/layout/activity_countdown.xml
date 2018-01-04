@@ -26,7 +26,8 @@
         android:id="@+id/countdownCounterYearsLabel"
         android:text="Total Years: "
         style="@style/CountdownSmall"
-        android:layout_alignLeft="@+id/countdownCounter"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_below="@id/countdownCounter"/>
     <TextView
         android:layout_width="wrap_content"
@@ -34,7 +35,8 @@
         android:id="@+id/countdownCounterYears"
         android:text="00.00"
         style="@style/CountdownSmall"
-        android:layout_alignRight="@+id/countdownCounter"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_below="@id/countdownCounter"/>
 
     <!-- MONTHS ++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -44,7 +46,8 @@
         android:id="@+id/countdownCounterMonthsLabel"
         android:text="Total Months: "
         style="@style/CountdownSmall"
-        android:layout_alignLeft="@+id/countdownCounterYearsLabel"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_below="@+id/countdownCounterYears"/>
     <TextView
         android:layout_width="wrap_content"
@@ -52,7 +55,8 @@
         android:id="@+id/countdownCounterMonths"
         android:text="00.00"
         style="@style/CountdownSmall"
-        android:layout_alignRight="@+id/countdownCounterYears"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_below="@+id/countdownCounterYears"/>
 
     <!-- WEEKS ++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -62,7 +66,8 @@
         android:id="@+id/countdownCounterWeeksLabel"
         android:text="Total Weeks: "
         style="@style/CountdownSmall"
-        android:layout_alignLeft="@+id/countdownCounterMonthsLabel"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_below="@+id/countdownCounterMonths"/>
     <TextView
         android:layout_width="wrap_content"
@@ -70,7 +75,8 @@
         android:id="@+id/countdownCounterWeeks"
         android:text="00.00"
         style="@style/CountdownSmall"
-        android:layout_alignRight="@+id/countdownCounterMonths"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_below="@+id/countdownCounterMonths"/>
 
     <!-- DAYS ++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -80,7 +86,8 @@
         android:id="@+id/countdownCounterDaysLabel"
         android:text="Total Days: "
         style="@style/CountdownSmall"
-        android:layout_alignLeft="@id/countdownCounterWeeksLabel"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_below="@id/countdownCounterWeeks"/>
     <TextView
         android:layout_width="wrap_content"
@@ -88,7 +95,8 @@
         android:id="@+id/countdownCounterDays"
         android:text="00.00"
         style="@style/CountdownSmall"
-        android:layout_alignRight="@+id/countdownCounterWeeks"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_below="@id/countdownCounterWeeks"/>
 
     <!-- HOURS ++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -98,7 +106,8 @@
         android:id="@+id/countdownCounterHoursLabel"
         android:text="Total Hours: "
         style="@style/CountdownSmall"
-        android:layout_alignLeft="@id/countdownCounterDaysLabel"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_below="@+id/countdownCounterDays"/>
     <TextView
         android:layout_width="wrap_content"
@@ -106,7 +115,8 @@
         android:id="@+id/countdownCounterHours"
         android:text="00.00"
         style="@style/CountdownSmall"
-        android:layout_alignRight="@id/countdownCounterDays"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_below="@+id/countdownCounterDays"/>
 
     <!-- MINUTES ++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -116,7 +126,8 @@
         android:id="@+id/countdownCounterMinutesLabel"
         android:text="Total Minutes: "
         style="@style/CountdownSmall"
-        android:layout_alignLeft="@+id/countdownCounterHoursLabel"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_below="@+id/countdownCounterHours"/>
     <TextView
         android:layout_width="wrap_content"
@@ -124,7 +135,8 @@
         android:id="@+id/countdownCounterMinutes"
         android:text="00.00"
         style="@style/CountdownSmall"
-        android:layout_alignRight="@id/countdownCounterHours"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_below="@+id/countdownCounterHours"/>
 
     <!-- SECONDS ++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -134,7 +146,8 @@
         android:id="@+id/countdownCounterSecondsLabel"
         android:text="Total Seconds: "
         style="@style/CountdownSmall"
-        android:layout_alignLeft="@+id/countdownCounterMinutesLabel"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_below="@+id/countdownCounterMinutes"/>
     <TextView
         android:layout_width="wrap_content"
@@ -142,6 +155,7 @@
         android:id="@+id/countdownCounterSeconds"
         android:text="00.00"
         style="@style/CountdownSmall"
-        android:layout_alignRight="@id/countdownCounterMinutes"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_below="@+id/countdownCounterMinutes"/>
 </RelativeLayout>

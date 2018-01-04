@@ -103,6 +103,10 @@ public class Countdown {
         return decimalFormat.format(this.getTotalSeconds());
     }
 
+    public boolean isStartDateInThePast() {
+        return (getDateTime(getStartDateTime()).compareTo(getCurrentDateTime()) <= 0); //only if in the past or NOW
+    }
+
     public Double getTotalSeconds() {
         Double totalSeconds = 0D;
         try {

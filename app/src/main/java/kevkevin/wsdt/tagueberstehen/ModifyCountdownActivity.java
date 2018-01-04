@@ -4,11 +4,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import java.util.GregorianCalendar;
+
+import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.DateTimePicker;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
@@ -22,6 +25,12 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modify_countdown);
+
+        //ADS - START
+        AdManager adManager = new AdManager(this);
+        adManager.initializeAdmob();
+        adManager.loadBannerAd((RelativeLayout) findViewById(R.id.wrappingRLForAds));
+        //ADS - END
 
         //Set custom onclick listener so time and datepicker show up
         setCustomOnClickListener(findViewById(R.id.startDateTimeValue));

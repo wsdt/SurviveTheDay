@@ -1,31 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/wrappingRLForAds"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="kevkevin.wsdt.tagueberstehen.CreditsActivity"
-    tools:showIn="@layout/activity_credits">
+    tools:showIn="@layout/activity_credits"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/contentView"
-        android:orientation="vertical"
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <TextView
-        android:id="@+id/creditsText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        android:text="@string/creditsText"/>
 
-    <!-- für jedes icon hier eigenen eintrag im xml machen -->
-    <GridLayout
-        android:id="@+id/creditList"
-        android:columnCount="2"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </GridLayout>
-    </LinearLayout>
-</android.support.v4.widget.NestedScrollView>
+        <LinearLayout
+            android:id="@+id/contentView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/creditsText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/text_margin"
+                android:text="@string/creditsText" />
+
+            <!-- für jedes icon hier eigenen eintrag im xml machen -->
+            <GridLayout
+                android:id="@+id/creditList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:columnCount="2"></GridLayout>
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+</RelativeLayout>
