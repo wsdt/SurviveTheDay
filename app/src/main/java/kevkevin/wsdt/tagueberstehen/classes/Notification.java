@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import kevkevin.wsdt.tagueberstehen.R;
 
@@ -22,11 +23,12 @@ public class Notification /*implements Parcelable*/ { //one instance for every c
     private NotificationManager mNotifyMgr;
     private PendingIntent resultPendingIntent; //open countdown of current notifications
     private static final String TAG = "Notification";
-    private Random random = new Random();
+    private Random random;
 
     public Notification (Context activityThisTarget,Class targetActivityClass, NotificationManager mNotifyMgr, int countdownId) { //(NotifyManager) getSystemService(Notification_Service);
         this.setActivityThisTarget(activityThisTarget);
         this.setmNotifyMgr(mNotifyMgr);
+        this.random =  new Random();
 
         //With countdown ID we are able to look in our persistent storage for the right countdown
         Intent tmp = new Intent(this.getActivityThisTarget(),targetActivityClass);
@@ -171,7 +173,7 @@ public class Notification /*implements Parcelable*/ { //one instance for every c
         randomNotification.iconList.addAll(Arrays.asList(R.drawable.notification_generic_blue,R.drawable.notification_generic_green,R.drawable.notification_generic_purple,R.drawable.notification_generic_red));
 
         //Choose one for each arraylist by random index (max is size-1!)
-        randomNotification.title = randomNotification.titleList.get(this.random.nextInt(randomNotification.titleList.size())); //-1 because size() index does not exist!
+        randomNotification.title = randomNotification.titleList.get(this.random.nextInt(randomNotification.titleList.size())); //size() index does exist!
         randomNotification.text = randomNotification.textList.get(this.random.nextInt(randomNotification.textList.size()));
         randomNotification.icon = randomNotification.iconList.get(this.random.nextInt(randomNotification.iconList.size()));
 

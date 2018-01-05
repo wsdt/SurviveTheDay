@@ -3,6 +3,7 @@ package kevkevin.wsdt.tagueberstehen;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -10,6 +11,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
@@ -52,7 +54,14 @@ public class CreditsActivity extends AppCompatActivity {
         });
 
         //So the html gets interpretet
-        ((TextView) findViewById(R.id.creditsText)).setText(Html.fromHtml(getString(R.string.creditsText)));
+        TextView introduction = ((TextView) findViewById(R.id.creditsText));
+        //Makes links etc. clickable
+        if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            introduction.setText(Html.fromHtml(getString(R.string.creditsText), Html.FROM_HTML_MODE_LEGACY)); //deprecated for newer versions
+        } else {
+            introduction.setText(Html.fromHtml(getString(R.string.creditsText)));
+        }
+        introduction.setMovementMethod(LinkMovementMethod.getInstance());
 
         //add all icons to view
         addAllIconCreditsToView();
@@ -69,14 +78,14 @@ public class CreditsActivity extends AppCompatActivity {
 
     private void addAllIconCreditsToView() {
         GridLayout content = (GridLayout) findViewById(R.id.creditList);
-        addIconCreditToView(content,"<div><h4>App Icon</h4>Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.app_icon);
-        addIconCreditToView(content,"<div><h4>Plus Icon</h4><div>Icons made by <a href=\"https://www.flaticon.com/authors/smashicons\" title=\"Smashicons\">Smashicons</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.plus);
-        addIconCreditToView(content,"<div><h4>Trash Icon</h4><div>Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.delete);
-        addIconCreditToView(content,"<div><h4>Edit Icon</h4><div><div>Icons made by <a href=\"https://www.flaticon.com/authors/smashicons\" title=\"Smashicons\">Smashicons</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.edit_16px);
-        addIconCreditToView(content,"<div><h4>Delete Icon</h4><div>Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.delete_16px);
-        addIconCreditToView(content,"<div><h4>Motivate me toggle</h4><div>Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.switchtoggle_16px);
-        addIconCreditToView(content,"<div><h4>Conversation mark</h4>Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>", R.drawable.notification_generic_blue);
-        addIconCreditToView(content,"<div><h4>Stoptimer</h4>Icons made by <a href=\"https://www.flaticon.com/authors/smashicons\" title=\"Smashicons\">Smashicons</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.notification_timebased_color);
+        addIconCreditToView(content,"<div><b>App Icon</b><br />Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.app_icon);
+        addIconCreditToView(content,"<div><b>Plus Icon</b><br />Icons made by <a href=\"https://www.flaticon.com/authors/smashicons\" title=\"Smashicons\">Smashicons</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.plus);
+        addIconCreditToView(content,"<div><b>Trash Icon</b><br />Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.delete);
+        addIconCreditToView(content,"<div><b>Edit Icon</b><br />Icons made by <a href=\"https://www.flaticon.com/authors/smashicons\" title=\"Smashicons\">Smashicons</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.edit_16px);
+        addIconCreditToView(content,"<div><b>Delete Icon</b><br />Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.delete_16px);
+        addIconCreditToView(content,"<div><b>Motivate me toggle</b><br />Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.switchtoggle_16px);
+        addIconCreditToView(content,"<div><b>Conversation mark</b><br />Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>", R.drawable.notification_generic_blue);
+        addIconCreditToView(content,"<div><b>Stoptimer</b><br />Icons made by <a href=\"https://www.flaticon.com/authors/smashicons\" title=\"Smashicons\">Smashicons</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.notification_timebased_color);
     }
 
     private void addIconCreditToView(GridLayout creditList, String credits, int drawable) {
@@ -90,7 +99,13 @@ public class CreditsActivity extends AppCompatActivity {
         layoutParams.height = 150; //to change imagebuttons to similar size
         newImageButton.setLayoutParams(layoutParams); //changes the size of button
         newImageButton.setScaleType(ImageView.ScaleType.FIT_XY);
-        newTextView.setText(Html.fromHtml(credits));
+        if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            newTextView.setText(Html.fromHtml(credits, Html.FROM_HTML_MODE_LEGACY)); //deprecated for newer versions
+        } else {
+            newTextView.setText(Html.fromHtml(credits));
+        }
+
+        newTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
         creditList.addView(newImageButton);
         creditList.addView(newTextView);
