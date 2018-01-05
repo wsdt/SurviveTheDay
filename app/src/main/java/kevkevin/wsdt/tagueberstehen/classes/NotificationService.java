@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.TimerTask;
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
@@ -19,7 +20,6 @@ public class NotificationService extends Service {
     private Notification notificationManager;
     //private static ArrayList<String[]> activeServices; //every String[]: [0]:COUNTDOWNID / [1]:STARTID (every countdown id should only occur once!)
     private InternalStorageMgr storageMgr;
-
     private int startId;
     private HashMap<Integer, Countdown> allCountdowns;
 
@@ -81,8 +81,8 @@ public class NotificationService extends Service {
             count++; //increment because at least one countdown is there
 
             initializeTimer(countdown.getValue());
-            //delay, time after interval starts
-            countdown.getValue().getTimer().schedule(countdown.getValue().getTimerTask(), 0, countdown.getValue().getNotificationInterval() * 1000); //*1000 so every second * interval
+            //delay, time after interval starts (random e.g. 0-4 seconds, so multiple countdown timer does not show notification at the same seconds)
+            countdown.getValue().getTimer().schedule(countdown.getValue().getTimerTask(),0, countdown.getValue().getNotificationInterval() * 1000); //*1000 so every second * interval
         }
         if (count <= 0) {
             //Kill Service if there is no countdown! Save energy.

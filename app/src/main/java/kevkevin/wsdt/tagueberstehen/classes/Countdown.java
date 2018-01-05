@@ -1,6 +1,7 @@
 package kevkevin.wsdt.tagueberstehen.classes;
 
 import android.content.Context;
+import android.location.LocationListener;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.os.Handler;
@@ -77,18 +78,21 @@ public class Countdown {
         storageMgr.setSaveCountdown(this,true);
     }
 
-    public Double getRemainingPercentage(int anzahlNachkomma) { //min is 1, if 0 then it will be still min 1 nachkommastelle (but always 0!) because of double format itself
+    public double getRemainingPercentage(int anzahlNachkomma) { //min is 1, if 0 then it will be still min 1 nachkommastelle (but always 0!) because of double format itself
         try {
             Double all100percentSeconds = Long.valueOf((getDateTime(getUntilDateTime()).getTimeInMillis() - getDateTime(getStartDateTime()).getTimeInMillis()) / 1000).doubleValue();
             Double leftXpercentSeconds = Long.valueOf((getDateTime(getUntilDateTime()).getTimeInMillis() - getCurrentDateTime().getTimeInMillis()) / 1000).doubleValue();
 
-            StringBuffer nachkommaStellen = new StringBuffer(".");
+            StringBuilder nachkommaStellen = new StringBuilder();
             for (int i = 0; i < anzahlNachkomma; i++) {
                 nachkommaStellen.append("0");
             }
-            Double result = Double.parseDouble((new DecimalFormat("##"+nachkommaStellen)).format((leftXpercentSeconds / all100percentSeconds) * 100)); //formatting percentage to 2 nachkommastellen
+            DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
+            df.setMaximumFractionDigits(2); //min might be 0 (nachkommastellen)
+            double result = df.parse(df.format((leftXpercentSeconds / all100percentSeconds) * 100)).doubleValue(); //formatting percentage to 2 nachkommastellen
+            //Double result = Double.parseDouble((new DecimalFormat("##,"+nachkommaStellen)).format((leftXpercentSeconds / all100percentSeconds) * 100)); //formatting percentage to 2 nachkommastellen
             return (result >= 0) ? ((result <= 100) ? result : 100) : 0; //always return 0-100
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | NumberFormatException | ParseException e) {
             Log.e(TAG, "getRemainingPercentage: Could not calculate remaining percentage.");
             e.printStackTrace();
         }
