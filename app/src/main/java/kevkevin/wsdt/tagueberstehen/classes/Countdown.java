@@ -29,7 +29,7 @@ public class Countdown {
     private String untilDateTime; //when is countdown 0
     private String createdDateTime; //when was countdown firstly created
     private String lastEditDateTime; //last edit of countdown
-    private String category; //work, school, university etc.
+    private String category; //hexadecimal color etc.
     private boolean isActive;
     private int notificationInterval; //in seconds!
     private static final String TAG = "Countdown";
@@ -235,7 +235,7 @@ public class Countdown {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(String category) { //#000000
         this.category = escapeForSharedPreferences(category);
     }
 

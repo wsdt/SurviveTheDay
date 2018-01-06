@@ -27,7 +27,7 @@ public class CountdownCounterService extends Service {
 
     //Only one countdown
 
-
+    //TODO: THIS PLUGIN SHOULD BE ADDED IF EVERYTHING IS TESTED AND IMPLEMENTED (GOOGLE SERVICES ETC.)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         //TODO: Mit Progressbar für jeden aktiven Countdown (not isActive Countdowns sondern eigene Einstellung dafür machen!)
