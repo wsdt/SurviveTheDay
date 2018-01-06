@@ -137,7 +137,7 @@ public class CustomNotification /*implements Parcelable*/ { //one instance for e
                 "If you are working on something that you really care about, you don't have to be pushed. The vision pulls you. (Steve Jobs)",
                 "People who are crazy enough to think they can change the world, are the ones who do. (Rob Siltanen)",
                 "Failure will never overtake me if my determination to succeed is strong enough. (Og Mandino)",
-                "Enterpreneurs are great at dealing with uncertainty and also very good at minimizing risk. That's the classic entrepreneur. (Mohnish Pabrai)",
+                "Entrepreneurs are great at dealing with uncertainty and also very good at minimizing risk. That's the classic entrepreneur. (Mohnish Pabrai)",
                 "We may encounter many defeats but we must not be defeated. (Maya Angelou)",
                 "Knowing is not enough; We must apply. Wishing is not enough; We must do. (Johann Wolfgang von Goethe)",
                 "Imagine your life is perfect in every respect; What would it look like? (Brian Tracy)",
@@ -270,7 +270,21 @@ public class CustomNotification /*implements Parcelable*/ { //one instance for e
                 "Whoever is happy will make others happy too. (Anne Frank)",
                 "In a gentle way, you can shake the world. (Mahatma Gandhi)",
                 "Don't limit yourself. Many people limit themselves to what they think they can do. You can go as far as your mind lets you. What you believe, remember, you can achieve. (Mary Kay Ash)",
-                "We can change our lives. We can do, have, and be exactly what we wish. (Tony Robbings)"));
+                "We can change our lives. We can do, have, and be exactly what we wish. (Tony Robbings)",
+                "Even if I knew that tomorrow the would would go to pieces, I would still plant my apple tree. (Martin Luther)",
+                "Memories of our lives, of our works and our deeds will continue in others. (Rosa Parks)",
+                "The things that we love tell us what we are. (Thomas Aquinas)",
+                "Somewhere, something incredible is waiting to be known. (Sharon Begley)",
+                "The glow of one warm thought is to me worth more than money. (Thomas Jefferson)",
+                "If a man does not keep pace with his companions, perhaps it is because he hears a different drummer. Let him step to the music which he hears, however measured or far away. (Henry David Thoreau)",
+                "Accept the things to which fate binds you, and love the people whom fate brings you together, but do so with all your heart. (Marcus Aurelius)",
+                "If we did all the things we are capable of, we would literally astound ourselves. (Thomas A. Edison)",
+                "Each day provides its own gifts. (Marcus Aurelius)",
+                "Keep your feet on the ground, but let your heart soar as high as it will. Refuse to be average or to surrender to the chill of your spiritual environment. (Arthur Helps)",
+                "Let us dream of tomorrow where we can truly love from the soul, and know love as the ultimate truth at the heart of all creation. (Michael Jackson)",
+                "You change your life by changing your heart. (Max Lucado)",
+                "A champion is someone who gets up when he can't. (Jack Dempsey)"
+        ));
         randomNotification.iconList.addAll(Arrays.asList(R.drawable.notification_generic_blue,R.drawable.notification_generic_green,R.drawable.notification_generic_purple,R.drawable.notification_generic_red));
 
         //Choose one for each arraylist by random index (max is size-1!)
