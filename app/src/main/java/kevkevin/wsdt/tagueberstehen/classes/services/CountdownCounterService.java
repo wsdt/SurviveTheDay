@@ -31,6 +31,8 @@ public class CountdownCounterService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         //TODO: Mit Progressbar für jeden aktiven Countdown (not isActive Countdowns sondern eigene Einstellung dafür machen!)
+        //TODO: Jede notification hier mit progressbar (in methode machen)
+        //TODO: startForeground() und dort alle aktiven notifications updaten inklusive Progressbar (evtl. getRemainingPercentage() from Countdown nutzen!)
 
         CustomNotification customNotificationMgr = new CustomNotification(this, CountdownActivity.class, (NotificationManager) getSystemService(NOTIFICATION_SERVICE));
         InternalStorageMgr internalStorageMgr = new InternalStorageMgr(this);

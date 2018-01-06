@@ -44,8 +44,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Create for each saved countdown one node
         loadAddNodes();
 
-        //test foreground service
-        startService(new Intent(this, CountdownCounterService.class));
+        //TODO: test foreground service, wenn noch statisch dann nullpointer exception wenn kein Countdown in app gespeichert!
+        //startService(new Intent(this, CountdownCounterService.class));
 
         //Start Service
         startService(new Intent(this,NotificationService.class)); //this line should be only called once
