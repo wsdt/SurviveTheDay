@@ -11,6 +11,7 @@
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
+        android:layout_marginBottom="50dp"
         android:layout_height="match_parent">
 
         <LinearLayout
@@ -31,7 +32,7 @@
                 android:id="@+id/creditList"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:columnCount="2"></GridLayout>
+                android:columnCount="2"/>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 </RelativeLayout>

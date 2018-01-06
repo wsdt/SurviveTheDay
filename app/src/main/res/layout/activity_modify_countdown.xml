@@ -10,6 +10,7 @@
     <!-- layouts not useless because ad gets added programmatically -->
     <ScrollView
         android:layout_width="match_parent"
+        android:layout_marginBottom="50dp"
         android:layout_height="match_parent">
 
         <GridLayout

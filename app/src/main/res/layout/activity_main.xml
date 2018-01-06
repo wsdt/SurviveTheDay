@@ -2,35 +2,31 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainActivityPage"
     style="@style/page"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/mainActivityPage"
     tools:context="kevkevin.wsdt.tagueberstehen.MainActivity">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <TextView
+        android:id="@+id/mainHeading"
+        style="@style/heading"
+        android:text="@string/app_name" />
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_marginBottom="50dp"
+        android:layout_below="@id/mainHeading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/mainHeading"
-            style="@style/heading"
-            android:text="@string/app_name" />
-
-        <ScrollView
-            android:id="@+id/scrollView"
+        <!-- This part should be added programmatically later / Tag identifies COUNTDOWN!
+        IMPORTANT: If you change Layouttype of nodeList then you need to adapt MainActivity:onCountdownModifyButtons() -->
+        <LinearLayout
+            android:id="@+id/nodeList"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <!-- This part should be added programmatically later / Tag identifies COUNTDOWN!
-            IMPORTANT: If you change Layouttype of nodeList then you need to adapt MainActivity:onCountdownModifyButtons() -->
-            <LinearLayout
-                android:id="@+id/nodeList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            </LinearLayout>
-        </ScrollView>
-    </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 </RelativeLayout>
