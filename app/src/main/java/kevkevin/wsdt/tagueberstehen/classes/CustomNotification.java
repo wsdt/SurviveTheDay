@@ -300,8 +300,9 @@ public class CustomNotification /*implements Parcelable*/ { //one instance for e
 
         randomNotification.titleList.addAll(Arrays.asList("Almost done!", "You got it soon!", "Be confident, the end is near.")); //converts array to list and adds all of them
         randomNotification.textList.addAll(Arrays.asList(countdown.getCountdownTitle()+" - Only "+countdown.getTotalSecondsNoScientificNotation()+" seconds to go!",
-                countdown.getCountdownTitle()+" - Just "+countdown.getRemainingPercentage(2)+" % left.",
+                countdown.getCountdownTitle()+" - Just "+countdown.getRemainingPercentage(2, true)+" % left.",
                 countdown.getCountdownTitle()+" - Countdown ends on "+countdown.getUntilDateTime(),
+                countdown.getCountdownTitle()+" - Already "+countdown.getRemainingPercentage(2, false)+" % passed!",
                 countdown.getCountdownTitle()+" - A motivating notification will be sent every "+(this.getActivityThisTarget().getResources().getStringArray(R.array.countdownIntervalSpinner_LABELS)[(Arrays.asList(this.getActivityThisTarget().getResources().getStringArray(R.array.countdownIntervalSpinner_VALUES)).indexOf(""+countdown.getNotificationInterval()))])+". :)")); //get label of corresponding seconds of strings.xml
         randomNotification.iconList.addAll(Arrays.asList(R.drawable.notification_timebased_color,R.drawable.notification_timebased_white));
 

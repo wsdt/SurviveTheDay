@@ -77,7 +77,7 @@ public class Countdown {
         storageMgr.setSaveCountdown(this,true);
     }
 
-    public double getRemainingPercentage(int anzahlNachkomma) { //min is 1, if 0 then it will be still min 1 nachkommastelle (but always 0!) because of double format itself
+    public double getRemainingPercentage(int anzahlNachkomma, boolean getRemainingOtherwisePassedPercentage) { //min is 1, if 0 then it will be still min 1 nachkommastelle (but always 0!) because of double format itself
         try {
             Double all100percentSeconds = Long.valueOf((getDateTime(getUntilDateTime()).getTimeInMillis() - getDateTime(getStartDateTime()).getTimeInMillis()) / 1000).doubleValue();
             Double leftXpercentSeconds = Long.valueOf((getDateTime(getUntilDateTime()).getTimeInMillis() - getCurrentDateTime().getTimeInMillis()) / 1000).doubleValue();
@@ -88,7 +88,14 @@ public class Countdown {
             }
             DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
             df.setMaximumFractionDigits(2); //min might be 0 (nachkommastellen)
-            double result = df.parse(df.format((leftXpercentSeconds / all100percentSeconds) * 100)).doubleValue(); //formatting percentage to 2 nachkommastellen
+
+            double percentageValueUnformatted ;
+            if (getRemainingOtherwisePassedPercentage) {
+                percentageValueUnformatted = (leftXpercentSeconds / all100percentSeconds) * 100;
+            } else {
+                percentageValueUnformatted = 100-((leftXpercentSeconds / all100percentSeconds) * 100); //get passed percentage if false
+            }
+            double result = df.parse(df.format(percentageValueUnformatted)).doubleValue(); //formatting percentage to 2 nachkommastellen
             //Double result = Double.parseDouble((new DecimalFormat("##,"+nachkommaStellen)).format((leftXpercentSeconds / all100percentSeconds) * 100)); //formatting percentage to 2 nachkommastellen
             return (result >= 0) ? ((result <= 100) ? result : 100) : 0; //always return 0-100
         } catch (NullPointerException | NumberFormatException | ParseException e) {
