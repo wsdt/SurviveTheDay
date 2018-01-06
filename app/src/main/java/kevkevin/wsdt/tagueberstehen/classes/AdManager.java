@@ -32,9 +32,7 @@ public class AdManager {
 
 
     public void loadFullPageAd(@Nullable AdListener adListener, @Nullable final Intent goToActivityAfterShown) {
-        //final String FULLPAGE_ID = "ca-app-pub-3940256099942544/1033173712"; //testing purpose
-        //TODO:
-        final String FULLPAGE_ID = "ca-app-pub-8160960481527784/3526438439"; //real page id
+        final String FULLPAGE_ID = Constants.ADMANAGER.useTestAds ? Constants.ADMANAGER.TEST.INTERSTITIAL_AD_ID : Constants.ADMANAGER.REAL.INTERSTITIAL_AD_ID;
 
         final InterstitialAd fullpageAd = new InterstitialAd(this.getContext());
         fullpageAd.setAdUnitId(FULLPAGE_ID);
@@ -74,9 +72,7 @@ public class AdManager {
     }
 
     public void loadBannerAd(final RelativeLayout viewGroup) {
-        //final String BANNER_ID = "ca-app-pub-3940256099942544/6300978111"; //testing purpose
-        //TODO:
-        final String BANNER_ID = "ca-app-pub-8160960481527784/8464916252"; //real banner!!!!
+        final String BANNER_ID = Constants.ADMANAGER.useTestAds ? Constants.ADMANAGER.TEST.BANNER_AD_ID : Constants.ADMANAGER.REAL.BANNER_AD_ID;
 
         final AdView adView = new AdView(this.getContext());
         adView.setAdSize(AdSize.SMART_BANNER); //IMPORTANT: adsize and adunit should be added in the same manner! (programmatically | xml)

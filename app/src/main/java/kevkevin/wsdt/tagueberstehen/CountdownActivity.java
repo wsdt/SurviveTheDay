@@ -15,6 +15,7 @@ import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
 
 public class CountdownActivity extends AppCompatActivity {
     private AsyncTask<Double,Double,Double> countdownCounter;
+    private static final String TAG = "CountdownActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,13 +39,14 @@ public class CountdownActivity extends AppCompatActivity {
         Intent intent = getIntent();
         //maybe by main menu or notification, but we get the same Extra: COUNTDOWN_ID with the ID
         int countdownId = intent.getIntExtra("COUNTDOWN_ID",-1); //0 is default value
-        if (countdownId >= 0) {
-            //search in storage and get total seconds then start countdown
+        try {
+            //search in storage and get total seconds then start countdown (if not found because smaller 0 or deleted and notification referenced it
             countdownCounter = startCountdownService(loadCountdownFromSharedPreferences(countdownId));
-        } else {
+        } catch (NullPointerException e) {
             //else everything is implicit 0!
-            Toast.makeText(this,"CountdownActivity not found :/",Toast.LENGTH_LONG).show();
-            Log.e("getIntentCountdownId","CountdownActivity not found. ID: "+countdownId);
+            Toast.makeText(this,"Countdown not found :/",Toast.LENGTH_LONG).show();
+            Log.e(TAG,"CountdownActivity(): Countdown not found. ID: "+countdownId);
+            e.printStackTrace();
         }
     }
 
@@ -196,6 +198,11 @@ public class CountdownActivity extends AppCompatActivity {
     @Override
     protected void onPause() { //no onstop necessary because it comes after pause
         super.onPause();
-        countdownCounter.cancel(true);
+        try {
+            countdownCounter.cancel(true);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "onPause: NullpointerException while cancelling asynctask.");
+            e.printStackTrace();
+        }
     }
 }
