@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="kevkevin.wsdt.tagueberstehen">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -27,20 +28,36 @@
             android:label="@string/title_activity_credits"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <!-- BACKGROUND NOTIFICATION SERVICE
+                directBootAware (allows running service also when phone is locked), if not supported by current device then savely IGNORED!
+        -->
         <service
-            android:name=".classes.NotificationService"
+            android:name=".classes.services.NotificationService"
             android:exported="false"
             android:label="@string/app_name"
+            android:directBootAware="true"
             android:process=":remote"
             android:stopWithTask="false">
             <intent-filter>
                 <action android:name=".classes.NotificationService" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
+
+        <!-- FOREGROUND COUNTDOWN COUNTER SERVICE -->
+        <service
+            android:name=".classes.services.CountdownCounterService"
+            android:exported="false"
+            android:process=":countdowncounter"
+            android:stopWithTask="false">
+            <intent-filter>
+                <action android:name=".classes.CountdownCounterService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+
         <activity android:name=".ModifyCountdownActivity" />
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity"/>
     </application>
 
 </manifest>

@@ -5,18 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
-import android.util.SparseIntArray;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
-import kevkevin.wsdt.tagueberstehen.classes.Notification;
-import kevkevin.wsdt.tagueberstehen.classes.NotificationService;
+import kevkevin.wsdt.tagueberstehen.classes.services.NotificationService;
 
 
 public class InternalStorageMgr {
