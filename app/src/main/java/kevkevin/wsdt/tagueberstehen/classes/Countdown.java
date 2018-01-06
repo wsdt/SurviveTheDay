@@ -1,7 +1,6 @@
 package kevkevin.wsdt.tagueberstehen.classes;
 
 import android.content.Context;
-import android.location.LocationListener;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.os.Handler;

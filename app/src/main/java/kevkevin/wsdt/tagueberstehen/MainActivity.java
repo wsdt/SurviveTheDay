@@ -19,7 +19,8 @@ import android.widget.Toast;
 import java.util.Map;
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
-import kevkevin.wsdt.tagueberstehen.classes.NotificationService;
+import kevkevin.wsdt.tagueberstehen.classes.services.CountdownCounterService;
+import kevkevin.wsdt.tagueberstehen.classes.services.NotificationService;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -42,6 +43,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //Create for each saved countdown one node
         loadAddNodes();
+
+        //test foreground service
+        startService(new Intent(this, CountdownCounterService.class));
 
         //Start Service
         startService(new Intent(this,NotificationService.class)); //this line should be only called once
@@ -157,11 +161,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return nodeId;
     }
 
-    private void createAddNodeToLayout(Countdown countdown) { //TODO: maybe wrong countdown gets delivered?
+    private void createAddNodeToLayout(Countdown countdown) {
         RelativeLayout countdownView = (RelativeLayout) getLayoutInflater().inflate(R.layout.node_template,(LinearLayout) findViewById(R.id.nodeList), false); //give relativelayout so layoutparams get done
         ((TextView)countdownView.findViewById(R.id.countdownTitle)).setText(countdown.getCountdownTitle());
         ((TextView)countdownView.findViewById(R.id.untilDateTime)).setText(countdown.getUntilDateTime());
-        //TODO: Tag might be not ADDED!!!!!!!!!!!!!!!!!!!!!!!!!!! (especially after few operations on those buttons!?)
         countdownView.setTag("COUNTDOWN_"+countdown.getCountdownId()); //to determine what countdown to open in CountdownActivity
         nodeList.addView(countdownView);
         Log.d(TAG, "createAddNodeToLayout: Added countdown as node to layout: "+countdownView.getTag());

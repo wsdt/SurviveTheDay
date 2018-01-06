@@ -1,4 +1,4 @@
-package kevkevin.wsdt.tagueberstehen.classes;
+package kevkevin.wsdt.tagueberstehen.classes.services;
 
 import android.annotation.SuppressLint;
 import android.app.NotificationManager;
@@ -9,15 +9,16 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.TimerTask;
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
+import kevkevin.wsdt.tagueberstehen.classes.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
 
 
 public class NotificationService extends Service {
     private static final String TAG = "NotificationService";
-    private Notification notificationManager;
+    private CustomNotification customNotificationManager;
     //private static ArrayList<String[]> activeServices; //every String[]: [0]:COUNTDOWNID / [1]:STARTID (every countdown id should only occur once!)
     private InternalStorageMgr storageMgr;
     private int startId;
@@ -42,8 +43,8 @@ public class NotificationService extends Service {
 
         this.startId = startId; //save current service instance in variable
 
-        //Set Notification Manager etc. for Countdown
-        this.notificationManager = new Notification(this, CountdownActivity.class, (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE), 0); //intent.getParcelableExtra("notificationManager");
+        //Set CustomNotification Manager etc. for Countdown
+        this.customNotificationManager = new CustomNotification(this, CountdownActivity.class, (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE)); //intent.getParcelableExtra("customNotificationManager");
 
         startTimer(); //this function starts all countdowns
 
@@ -114,7 +115,7 @@ public class NotificationService extends Service {
                     @Override
                     public void run() {
                         try {
-                            notificationManager.issueNotification(notificationManager.createRandomNotification(countdown));
+                            customNotificationManager.issueNotification(customNotificationManager.createRandomNotification(countdown));
                         } catch (Exception e) {
                             Log.e(TAG, "initializeTimer: Error occured (see stacktrace below).");
                             e.printStackTrace();

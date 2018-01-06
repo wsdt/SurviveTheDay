@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
@@ -22,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
+import kevkevin.wsdt.tagueberstehen.classes.services.CountdownCounterService;
 
 public class CreditsActivity extends AppCompatActivity {
 
@@ -37,6 +39,7 @@ public class CreditsActivity extends AppCompatActivity {
         adManager.initializeAdmob();
         adManager.loadBannerAd((RelativeLayout) findViewById(R.id.wrappingRLForAds));
         //Ads - END
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.contactMe);
         fab.setOnClickListener(new View.OnClickListener() {

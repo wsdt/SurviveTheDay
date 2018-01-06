@@ -5,43 +5,34 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 import kevkevin.wsdt.tagueberstehen.R;
 
-public class Notification /*implements Parcelable*/ { //one instance for every countdown or similar
+public class CustomNotification /*implements Parcelable*/ { //one instance for every countdown or similar
     private Context activityThisTarget;
     private Intent resultIntent;
     private int mNotificationId = 0; //start with 0 should be first notification (index starts at 0)
     private ArrayList<NotificationCompat.Builder> notifications = new ArrayList<>(); //NOT static, because every instance should have own Arraylist!
     private NotificationManager mNotifyMgr;
     private PendingIntent resultPendingIntent; //open countdown of current notifications
-    private static final String TAG = "Notification";
+    private static final String TAG = "CustomNotification";
     private Random random;
+    private Class targetActivityClass;
 
-    public Notification (Context activityThisTarget,Class targetActivityClass, NotificationManager mNotifyMgr, int countdownId) { //(NotifyManager) getSystemService(Notification_Service);
+    public CustomNotification(Context activityThisTarget, Class targetActivityClass, NotificationManager mNotifyMgr) { //(NotifyManager) getSystemService(Notification_Service);
         this.setActivityThisTarget(activityThisTarget);
         this.setmNotifyMgr(mNotifyMgr);
         this.random =  new Random();
+        this.setTargetActivityClass(targetActivityClass);
 
         //With countdown ID we are able to look in our persistent storage for the right countdown
-        Intent tmp = new Intent(this.getActivityThisTarget(),targetActivityClass);
-        tmp.putExtra("COUNTDOWN_ID",countdownId);
-        this.setResultIntent(tmp);
-        this.setResultPendingIntent(
-                PendingIntent.getActivity(
-                        this.getActivityThisTarget(),
-                        0,
-                        this.getResultIntent(),
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                )
-        );
+        // IMPORTANT: Pending intent in create countdown so always correct one opened
         Log.d(TAG,"mNotificationId: "+getmNotificationId());
     }
 
@@ -49,12 +40,36 @@ public class Notification /*implements Parcelable*/ { //one instance for every c
         try {
             this.getmNotifyMgr().notify(mNotificationId, this.getNotifications().get(mNotificationId).build());
         } catch(IndexOutOfBoundsException e) {
-            Log.e(TAG, "issueNotification: Notification not defined! Notification-No.: "+mNotificationId);
+            Log.e(TAG, "issueNotification: CustomNotification not defined! CustomNotification-No.: "+mNotificationId);
             e.printStackTrace();
         }
     }
 
-    public int createNotification(String title,String text, int icon) {
+    public int createIssueCounterServiceNotification(Context context, Countdown countdown) {
+        this.setResultPendingIntent(countdown.getCountdownId()); //so correct associated countdown gets opened
+
+        /* Creates custom foreground, unremoveable notification for specific countdowns which might be counted down */
+        this.getmNotifyMgr().notify(Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID+countdown.getCountdownId(), //constantsNotNummer + countdownid (1000+1, etc.)
+                //not deprecated one requires api 16 (min is 15)
+                new NotificationCompat.Builder(this.getActivityThisTarget())
+                        .setSmallIcon(R.drawable.app_icon)
+                        .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.drawable.app_icon))
+                        .setContentTitle(countdown.getCountdownTitle())
+                        .setAutoCancel(false) //remove after clicking on it
+                        .setContentIntent(this.getResultPendingIntent())
+                        .setOngoing(true) //notification is NOT REMOVEABLE
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText("BIG: "+countdown.getCountdownDescription())) //make notification extendable
+                        .setContentText("CT: "+countdown.getUntilDateTime())
+                .build());
+
+        //because one notification for countdown
+        return (Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID+countdown.getCountdownId()); //e.g. 100 (high enough for collision avoidance) + countdownId (0,1,2,...) = 100,101,102 so easy to modify afterwards
+    }
+
+    private int createNotification(Countdown countdown, String title, String text, int icon) {
+        this.setResultPendingIntent(countdown.getCountdownId());
+
+        //add notification
         this.getNotifications().add( //save with current id
                 new NotificationCompat.Builder(this.getActivityThisTarget())
                 .setSmallIcon(icon)
@@ -93,10 +108,10 @@ public class Notification /*implements Parcelable*/ { //one instance for every c
                 break;*/
             default:
                 Log.e(TAG, "createRandomNotification: Could not determine random notification type!");
-                return createNotification("System Error", "Please contact administrator. ", R.drawable.warning);
+                return createNotification(countdown,"System Error", "Please contact administrator. ", R.drawable.warning);
         }
-        //Extract values from innerclass instance and create Notification in next method
-        return createNotification(randomNotification.title,randomNotification.text,randomNotification.icon);
+        //Extract values from innerclass instance and create CustomNotification in next method
+        return createNotification(countdown, randomNotification.title,randomNotification.text,randomNotification.icon);
     }
 
     // PRIVATE METHODS FOR CREATERANDOMNOTIFICATION(COUNTDOWN countdown) {} - START ####################################################
@@ -256,8 +271,18 @@ public class Notification /*implements Parcelable*/ { //one instance for every c
         return resultPendingIntent;
     }
 
-    public void setResultPendingIntent(PendingIntent resultPendingIntent) {
-        this.resultPendingIntent = resultPendingIntent;
+    public void setResultPendingIntent(int countdownId) {
+        //Create pending intent
+        Intent tmp = new Intent(this.getActivityThisTarget(), getTargetActivityClass());
+        tmp.putExtra("COUNTDOWN_ID",countdownId); //countdown to open
+        this.setResultIntent(tmp);
+        this.resultPendingIntent =
+                PendingIntent.getActivity(
+                        this.getActivityThisTarget(),
+                        0,
+                        this.getResultIntent(),
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
     }
 
     public Intent getResultIntent() {
@@ -266,6 +291,14 @@ public class Notification /*implements Parcelable*/ { //one instance for every c
 
     public void setResultIntent(Intent resultIntent) {
         this.resultIntent = resultIntent;
+    }
+
+    public Class getTargetActivityClass() {
+        return targetActivityClass;
+    }
+
+    public void setTargetActivityClass(Class targetActivityClass) {
+        this.targetActivityClass = targetActivityClass;
     }
 
 }
