@@ -1,5 +1,7 @@
 package kevkevin.wsdt.tagueberstehen;
 
+import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +17,7 @@ import java.util.Arrays;
 import java.util.GregorianCalendar;
 
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
+import kevkevin.wsdt.tagueberstehen.classes.ColorPicker;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.DateTimePicker;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
@@ -38,6 +41,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         //Set custom onclick listener so time and datepicker show up
         setCustomOnClickListener(findViewById(R.id.startDateTimeValue));
         setCustomOnClickListener(findViewById(R.id.untilDateTimeValue));
+
 
         //Set List for intervalsetter (spinner)
         setIntervalSpinnerConfigurations();
@@ -103,7 +107,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.countdownDescriptionValue)).setText(countdown.getCountdownDescription());
         ((TextView) findViewById(R.id.startDateTimeValue)).setText(countdown.getStartDateTime());
         ((TextView) findViewById(R.id.untilDateTimeValue)).setText(countdown.getUntilDateTime());
-        ((TextView) findViewById(R.id.categoryValue)).setText(countdown.getCategory());
+        (findViewById(R.id.categoryValue)).setBackgroundColor(Color.parseColor(countdown.getCategory()));
         ((ToggleButton) findViewById(R.id.isActive)).setChecked(countdown.isActive());
         //set associated entry of interval seconds to spinner
         ((Spinner) findViewById(R.id.notificationIntervalSpinner)).setSelection(Arrays.asList(getResources().getStringArray(R.array.countdownIntervalSpinner_VALUES)).indexOf(""+countdown.getNotificationInterval())); //reduce about 5 otherwise we would add 5 every time we edited it!
@@ -115,7 +119,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
                 ((TextView) findViewById(R.id.countdownDescriptionValue)).getText().toString(),
                 ((TextView) findViewById(R.id.startDateTimeValue)).getText().toString(),
                 ((TextView) findViewById(R.id.untilDateTimeValue)).getText().toString(),
-                ((TextView) findViewById(R.id.categoryValue)).getText().toString(),
+                ColorPicker.getBackgroundColorHexString(findViewById(R.id.categoryValue)),
                 ((ToggleButton) findViewById(R.id.isActive)).isChecked(),
                 Integer.parseInt(getResources().getStringArray(R.array.countdownIntervalSpinner_VALUES)[((Spinner) findViewById(R.id.notificationIntervalSpinner)).getSelectedItemPosition()]))); //.getProgress()+5 for old seekbar slider +5 seconds by default (because if 0) app crashes
                 //line above: gets selected spinner items position and uses this to get the associated array entry with the correct value in seconds.
@@ -127,6 +131,12 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         } else {
             Log.d(TAG, "loadFormValues: New countdown created.");
         }
+    }
+
+    //Color picker for category value
+    public void onClickOpenColorPicker(View view) {
+        Log.d(TAG, "onClickOpenColorPicker: Tried to open color picker. ");
+        ColorPicker.openColorPickerDialog(this, view, Color.parseColor(ColorPicker.getBackgroundColorHexString(findViewById(R.id.categoryValue))), false);
     }
 
     //Show service specific field if toggle button is ON (isActive)

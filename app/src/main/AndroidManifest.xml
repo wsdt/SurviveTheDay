@@ -44,7 +44,8 @@
             </intent-filter>
         </service>
 
-        <!-- FOREGROUND COUNTDOWN COUNTER SERVICE -->
+        <!-- FOREGROUND COUNTDOWN COUNTER SERVICE -
+        // ADDED IF EVERYTHING WORKS FINE
         <service
             android:name=".classes.services.CountdownCounterService"
             android:exported="false"
@@ -54,10 +55,11 @@
                 <action android:name=".classes.CountdownCounterService" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </service>
+        </service>-->
 
         <activity android:name=".ModifyCountdownActivity" />
         <activity android:name=".MainActivity"/>
+
     </application>
 
 </manifest>

@@ -3,6 +3,7 @@ package kevkevin.wsdt.tagueberstehen;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +17,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.text.ParseException;
 import java.util.Map;
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
@@ -164,8 +167,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void createAddNodeToLayout(Countdown countdown) {
         RelativeLayout countdownView = (RelativeLayout) getLayoutInflater().inflate(R.layout.node_template,(LinearLayout) findViewById(R.id.nodeList), false); //give relativelayout so layoutparams get done
         ((TextView)countdownView.findViewById(R.id.countdownTitle)).setText(countdown.getCountdownTitle());
-        ((TextView)countdownView.findViewById(R.id.untilDateTime)).setText(countdown.getUntilDateTime());
-        countdownView.setTag("COUNTDOWN_"+countdown.getCountdownId()); //to determine what countdown to open in CountdownActivity
+        ((TextView)countdownView.findViewById(R.id.startAndUntilDateTime)).setText(countdown.getStartDateTime()+" - "+countdown.getUntilDateTime());
+        countdownView.setTag("COUNTDOWN_"+countdown.getCountdownId()); //IMPORTANT: to determine what countdown to open in CountdownActivity
+
+        //set category color, if not valid or other then overwrite it with default color and save that countdown so this error will not happen again
+        try {
+            (countdownView.findViewById(R.id.categoryColorView)).setBackgroundColor(Color.parseColor(countdown.getCategory()));
+        } catch (Exception e) {
+            Log.e(TAG, "createAddNodeToLayout: ParseException by defining color! Selected default color and saved it into countdown.");
+            //Set default color
+            (countdownView.findViewById(R.id.categoryColorView)).setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+            //save into countdown itself
+            countdown.setCategory("#"+Integer.toHexString(ContextCompat.getColor(this,R.color.colorPrimaryDark)));
+            countdown.savePersistently();
+            Toast.makeText(this, "Category color could not be applied. We chose one for you.", Toast.LENGTH_SHORT).show();
+        }
         nodeList.addView(countdownView);
         Log.d(TAG, "createAddNodeToLayout: Added countdown as node to layout: "+countdownView.getTag());
     }
