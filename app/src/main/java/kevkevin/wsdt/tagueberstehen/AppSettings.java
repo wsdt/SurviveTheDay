@@ -46,6 +46,13 @@ public class AppSettings extends AppCompatActivity {
         setCustomListeners();
     }
 
+    private void enableDisableBatteryFields(boolean enabled) {
+        for (int i = 0; i<saveBatteryRow.getChildCount(); i++) {
+            saveBatteryRow.getChildAt(i).setEnabled(enabled);
+        }
+        findViewById(R.id.saveBatteryDescription).setEnabled(enabled);
+    }
+
     private void setCustomListeners() {
         this.useForwardCompatibility.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -53,18 +60,7 @@ public class AppSettings extends AppCompatActivity {
                 globalAppSettingsMgr.setUseForwardCompatibility(b);
                 Log.d(TAG, "setCustomListeners: Set useForwardcompatibility.");
 
-                if (!b) {
-                    //if forward compatibility of then hide save battery setting
-                    for (int i = 0; i<saveBatteryRow.getChildCount(); i++) {
-                        saveBatteryRow.getChildAt(i).setEnabled(false);
-                    }
-                    findViewById(R.id.saveBatteryDescription).setEnabled(false);
-                } else {
-                    for (int i = 0; i<saveBatteryRow.getChildCount(); i++) {
-                        saveBatteryRow.getChildAt(i).setEnabled(true);
-                    }
-                    findViewById(R.id.saveBatteryDescription).setEnabled(true);
-                }
+                enableDisableBatteryFields(b); //if enabled, then enable battery fields
             }
         });
 
@@ -80,6 +76,9 @@ public class AppSettings extends AppCompatActivity {
     private void loadCurrentSettings() {
         this.useForwardCompatibility.setChecked(this.globalAppSettingsMgr.useForwardCompatibility());
         this.saveBattery.setChecked(this.globalAppSettingsMgr.saveBattery());
+
+        enableDisableBatteryFields(this.useForwardCompatibility.isChecked());
+
         Log.d(TAG, "loadCurrentSettings: Loaded current settings.");
     }
 }

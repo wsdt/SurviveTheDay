@@ -8,7 +8,32 @@
     tools:context="kevkevin.wsdt.tagueberstehen.AppSettings">
     <!-- Relative Layout for Banner Ad -->
 
+    <TextView
+        android:id="@+id/versionNameLabel"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:text="App-Version: "
+        android:paddingEnd="40dp"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
+        android:paddingStart="40dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <!-- Version name in gradle build defined, bc of that it is not detected by AS -->
+    <TextView
+        android:id="@+id/versionName"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="@string/versionName"
+        android:layout_alignEnd="@+id/versionNameLabel"
+        android:layout_alignRight="@+id/versionNameLabel"
+        android:layout_marginEnd="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <ScrollView
+        android:layout_marginTop="15dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <TableLayout
@@ -16,6 +41,7 @@
             android:orientation="vertical"
             android:shrinkColumns="*"
             android:stretchColumns="*"
+            android:layout_marginBottom="50dp"
             android:layout_marginTop="15dp"
             android:layout_marginLeft="15dp"
             android:layout_marginStart="15dp"
@@ -44,7 +70,7 @@
                 android:layout_width="match_parent">
                 <!-- description for row above -->
                 <TextView
-                    android:text="If activated this app uses broadcast receivers to show notifications, because newer phones block background services. You should only disable this function, if this app does not work properly."
+                    android:text="If activated this app uses broadcast receivers to show notifications, because newer phones block background services. You should only disable this function, if this app does not work properly. But keep in mind that the forward compatibility mode gets tested more often, has more functions and is more reliable."
                     android:layout_span="2" />
             </TableRow>
 
@@ -78,7 +104,6 @@
 
         </TableLayout>
     </ScrollView>
-
 
     <!-- here will be banner ad added programmatically -->
 </RelativeLayout>

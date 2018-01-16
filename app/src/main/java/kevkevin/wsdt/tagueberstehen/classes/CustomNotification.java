@@ -7,6 +7,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.renderscript.RenderScript;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -137,10 +139,17 @@ public class CustomNotification { //one instance for every countdown or similar
                 new NotificationCompat.Builder(this.getActivityThisTarget())
                 .setSmallIcon(icon)
                 .setContentTitle(title)
+                //onMs = how long on / offMs = how long off (repeating, so blinking!)
+                //USE category color
+                .setLights(Color.parseColor(countdown.getCategory()), 1000, 1000)
+                //TODO: Also make Ticker configurable (text [escape!!] and enable/disable)
+                .setTicker("SurviveTheDay - Motivation")
                 .setAutoCancel(true) //remove after clicking on it
                 .setContentIntent(pendingIntent)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(text)) //make notification extendable
                 .setContentText(text));
+
+        Log.d(TAG, "createNotfiication: Tried to set notification color: "+countdown.getCategory());
 
         return this.getmNotificationId(); //because randomly generated
         //return (mNotificationId-1); //saved under that id-1 because incremented
