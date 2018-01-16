@@ -1,16 +1,25 @@
 package kevkevin.wsdt.tagueberstehen.classes.StorageMgr;
 
 
+import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.util.Log;
+
+import kevkevin.wsdt.tagueberstehen.CountdownActivity;
+import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
+import kevkevin.wsdt.tagueberstehen.classes.services.NotificationService;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class GlobalAppSettingsMgr {
     private SharedPreferences globalSettings_SharedPref;
     private static final String TAG = "GlobalAppSettingsMgr";
     private Context context;
 
-    public GlobalAppSettingsMgr (Context context) {
+    public GlobalAppSettingsMgr (@NonNull Context context) {
         this.setContext(context);
         this.setGlobalSettings_SharedPref(context.getSharedPreferences("APP_SETTINGS", Context.MODE_PRIVATE));
     }
@@ -20,11 +29,12 @@ public class GlobalAppSettingsMgr {
                 If TRUE: Use broadcastReceivers and make Option available for saveBattery
                 If FALSE: Use Background service (long intervals might not work)
         */
-        return this.getGlobalSettings_SharedPref().getBoolean("USE_FORWARD_COMPATITBILITY", true); //default true, so broadcast receivers used
+        return this.getGlobalSettings_SharedPref().getBoolean("USE_FORWARD_COMPATIBILITY", true); //default true, so broadcast receivers used
     }
 
     public void setUseForwardCompatibility(boolean useForwardCompatibility) {
-        //TODO
+        this.getGlobalSettings_SharedPref().edit().putBoolean("USE_FORWARD_COMPATIBILITY", useForwardCompatibility).apply();
+        Log.d(TAG, "setUseForwardCompatibility: Saved new forwardcompatiblity setting.");
     }
 
     public boolean saveBattery() {
@@ -41,7 +51,8 @@ public class GlobalAppSettingsMgr {
     }
 
     public void setSaveBattery(boolean saveBattery) {
-        //TODO
+        this.getGlobalSettings_SharedPref().edit().putBoolean("SAVE_BATTERY", saveBattery).apply();
+        Log.d(TAG, "setSaveBattery: Saved new saveBattery setting.");
     }
 
 
@@ -59,5 +70,22 @@ public class GlobalAppSettingsMgr {
 
     public void setContext(Context context) {
         this.context = context;
+    }
+
+    public void startBroadcastORBackgroundService() {
+        if (this.useForwardCompatibility()) {
+            //TODO: Kill Bg service before hand
+
+
+            //USE broadcast receivers
+            (new CustomNotification(this.getContext(), CountdownActivity.class, (NotificationManager) this.getContext().getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications(this.getContext());
+            Log.d(TAG, "OnCreate: Scheduled broadcast receivers. ");
+        } else {
+            //TODO: Stop all broadcast receivers
+
+            //Use background service
+            this.getContext().startService(new Intent(this.getContext(),NotificationService.class)); //this line should be only called once
+            Log.d(TAG, "OnCreate: Started background service.");
+        }
     }
 }

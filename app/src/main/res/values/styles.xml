@@ -73,4 +73,9 @@
         <item name="android:textColor">#aaa</item>
     </style>
 
+    <!-- Setting activity -->
+    <style name="settingText">
+        <item name="android:textSize">16sp</item>
+    </style>
+
 </resources>
