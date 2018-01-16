@@ -1,7 +1,6 @@
 package kevkevin.wsdt.tagueberstehen;
 
 import android.graphics.Color;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,13 +13,14 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.ColorPicker;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.DateTimePicker;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
 public class ModifyCountdownActivity extends AppCompatActivity {
     private Countdown newEditedCountdown;
@@ -55,7 +55,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         }
 
         if (this.existingCountdownId >= 0) {
-            setFormValues((new InternalStorageMgr(this).getCountdown(this.existingCountdownId)));
+            setFormValues((new InternalCountdownStorageMgr(this).getCountdown(this.existingCountdownId)));
         }
 
         onMotivateMeToggleClick(findViewById(R.id.isActive)); //simulate click so it is always at its correct state (enabled/disabled)
@@ -65,7 +65,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         //Get values from form
         loadFormValues();
         if (areFormValuesValid()) {
-            new InternalStorageMgr(this).setSaveCountdown(this.getNewEditedCountdown(), true);
+            new InternalCountdownStorageMgr(this).setSaveCountdown(this.getNewEditedCountdown(), true);
             Log.d(TAG, "onSaveClick: Tried to save new countdown.");
             finish(); //go back to main
         } else {
@@ -176,7 +176,8 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
     public void setCustomOnClickListener(View v) {
         //GregorianCalendar now = new GregorianCalendar(); //now
-        final DateTimePicker DATETIMEPICKER = new DateTimePicker(this, getSupportFragmentManager(),(TextView) v,GregorianCalendar.HOUR_OF_DAY, GregorianCalendar.MINUTE, GregorianCalendar.SECOND, true);
+        GregorianCalendar now = new GregorianCalendar(); //so current time gets automatically set
+        final DateTimePicker DATETIMEPICKER = new DateTimePicker(this, getSupportFragmentManager(),(TextView) v,now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND), true);
 
         v.setOnClickListener(new View.OnClickListener() {
             @Override

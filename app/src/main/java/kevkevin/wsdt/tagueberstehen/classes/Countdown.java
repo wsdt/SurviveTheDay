@@ -17,7 +17,8 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
+
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
 
 public class Countdown {
@@ -45,7 +46,7 @@ public class Countdown {
     //Constructor for lastEdit/createdDateTime automatically
     public Countdown(Context context, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String category, boolean isActive, int notificationInterval) {
         this.setContext(context);
-        this.setCountdownId((new InternalStorageMgr(context)).getNextCountdownId()); //get next countdown id (fill gap from deleted countdown or just increment)
+        this.setCountdownId((new InternalCountdownStorageMgr(context)).getNextCountdownId()); //get next countdown id (fill gap from deleted countdown or just increment)
         this.setCountdownTitle(countdownTitle);
         this.setCountdownDescription(countdownDescription);
         this.setStartDateTime(startDateTime);
@@ -73,7 +74,7 @@ public class Countdown {
     }
 
     public void savePersistently() {
-        InternalStorageMgr storageMgr = new InternalStorageMgr(this.getContext());
+        InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(this.getContext());
         storageMgr.setSaveCountdown(this,true);
     }
 
@@ -115,6 +116,9 @@ public class Countdown {
 
     public boolean isStartDateInThePast() {
         return (getDateTime(getStartDateTime()).compareTo(getCurrentDateTime()) <= 0); //only if in the past or NOW
+    }
+    public boolean isUntilDateInTheFuture() {
+        return (getDateTime(getUntilDateTime()).compareTo(getCurrentDateTime()) > 0); //only if in the future
     }
 
     public Double getTotalSeconds() {

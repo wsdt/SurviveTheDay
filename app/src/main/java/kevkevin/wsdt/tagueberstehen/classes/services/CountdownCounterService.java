@@ -11,7 +11,7 @@ import android.util.Log;
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
 public class CountdownCounterService extends Service {
     /** GENERATES FOR ALL SAVED COUNTDOWN WITH ACTIVATED FOREGROUND SERVICE an own notification "foreground service"
@@ -36,8 +36,8 @@ public class CountdownCounterService extends Service {
         //TODO: Before rollout tomorrow change ad ids to real ads again!
 
         CustomNotification customNotificationMgr = new CustomNotification(this, CountdownActivity.class, (NotificationManager) getSystemService(NOTIFICATION_SERVICE));
-        InternalStorageMgr internalStorageMgr = new InternalStorageMgr(this);
-        Countdown countdown = internalStorageMgr.getCountdown(0);
+        InternalCountdownStorageMgr internalCountdownStorageMgr = new InternalCountdownStorageMgr(this);
+        Countdown countdown = internalCountdownStorageMgr.getCountdown(0);
         customNotificationMgr.createIssueCounterServiceNotification(this, countdown);
         Log.d(TAG, "Finished onStartCommand().");
         return START_STICKY;

@@ -13,14 +13,14 @@ import java.util.TimerTask;
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
 
 public class NotificationService extends Service {
     private static final String TAG = "NotificationService";
     private CustomNotification customNotificationManager;
     //private static ArrayList<String[]> activeServices; //every String[]: [0]:COUNTDOWNID / [1]:STARTID (every countdown id should only occur once!)
-    private InternalStorageMgr storageMgr;
+    private InternalCountdownStorageMgr storageMgr;
     private int startId;
     private HashMap<Integer, Countdown> allCountdowns;
 
@@ -38,7 +38,7 @@ public class NotificationService extends Service {
         Log.d(TAG, "Executed onStartCommand(). StartId: " + startId);
         super.onStartCommand(intent, flags, startId);
 
-        storageMgr = new InternalStorageMgr(this);
+        storageMgr = new InternalCountdownStorageMgr(this);
         this.allCountdowns = this.storageMgr.getAllCountdowns(true); //call this line AFTER assignment of internal storage mgr (otherwise nullpointerexc!)
 
         this.startId = startId; //save current service instance in variable
@@ -115,7 +115,15 @@ public class NotificationService extends Service {
                     @Override
                     public void run() {
                         try {
-                            customNotificationManager.issueNotification(customNotificationManager.createRandomNotification(countdown));
+                            //TODO: Stop this timeTask instance when countdown has expired! otherwise it would still run until new stark of service (what will happen surely a few minutes later or similar)
+                            if (countdown.isUntilDateInTheFuture()) {
+                                customNotificationManager.issueNotification(customNotificationManager.createRandomNotification(countdown));
+                            } else {
+                                Log.d(TAG, "initializeTimer: Countdown has expired! Tried to stopTimer.");
+                                countdown.getTimer().cancel();
+                                countdown.setTimer(null);
+                                Log.d(TAG, "initializeTimer: Stopped timer for specific countdown.");
+                            }
                         } catch (Exception e) {
                             Log.e(TAG, "initializeTimer: Error occured (see stacktrace below).");
                             e.printStackTrace();

@@ -11,7 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
 public class CountdownActivity extends AppCompatActivity {
     private AsyncTask<Double,Double,Double> countdownCounter;
@@ -52,7 +52,7 @@ public class CountdownActivity extends AppCompatActivity {
 
 
     public Double loadCountdownFromSharedPreferences(int countdownId) {
-        return new InternalStorageMgr(this).getCountdown(countdownId).getTotalSeconds();
+        return new InternalCountdownStorageMgr(this).getCountdown(countdownId).getTotalSeconds();
     }
 
     public AsyncTask<Double,Double,Double> startCountdownService(Double totalSeconds) {
