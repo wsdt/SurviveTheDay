@@ -16,6 +16,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    //this creates resource string while compiling with current versionName! (e.g. Loading screen)
+    applicationVariants.all {
+        variant ->
+            variant.resValue "string", "versionName", variant.versionName
+    }
 }
 
 dependencies {
