@@ -52,19 +52,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //startService(new Intent(this, CountdownCounterService.class));
 
 
-        //TODO: Create setting activity and set globalsettings
         //IMPORTANT: IF ELSE so NOT BOTH get started !!
         //Start background service is forward compatibility off/false OR startBroadcast Receivers if ON
         GlobalAppSettingsMgr globalAppSettingsMgr = new GlobalAppSettingsMgr(this);
-        if (globalAppSettingsMgr.useForwardCompatibility()) {
-            //USE broadcast receivers
-            (new CustomNotification(this, CountdownActivity.class, (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications(this);
-            Log.d(TAG, "OnCreate: Scheduled broadcast receivers. ");
-        } else {
-            //Use background service
-            startService(new Intent(this,NotificationService.class)); //this line should be only called once
-            Log.d(TAG, "OnCreate: Started background service.");
-        }
+        globalAppSettingsMgr.startBroadcastORBackgroundService();
     }
 
     @Override
@@ -231,6 +222,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.action_credits:
                 Log.d(TAG, "onOptionsItemSelected: Tried to open CreditsActivity.");
                 startActivity(new Intent(this, CreditsActivity.class));
+                break;
+            case R.id.action_settings:
+                Log.d(TAG, "onOptionsItemSelected: Tried to open SettingsActivity.");
+                startActivity(new Intent(this, AppSettings.class));
                 break;
             default: Log.e(TAG,"onOptionsItemSelected: Button does not exist: "+item.getItemId());
         }

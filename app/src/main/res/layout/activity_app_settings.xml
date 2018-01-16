@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/settingsRLforAd"
+    tools:context="kevkevin.wsdt.tagueberstehen.AppSettings">
+    <!-- Relative Layout for Banner Ad -->
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TableLayout
+            android:id="@+id/settingsList"
+            android:orientation="vertical"
+            android:shrinkColumns="*"
+            android:stretchColumns="*"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <!-- Use Forward compatiblity -->
+            <TableRow
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_width="match_parent">
+                <TextView
+                    android:text="Forward compatibility"
+                    style="@style/settingText"
+                    android:layout_weight="1"/>
+                <Switch
+                    android:id="@+id/useForwardCompatibility"
+                    android:checked="true"
+                    android:layout_weight="1"/>
+            </TableRow>
+            <TableRow
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_width="match_parent">
+                <!-- description for row above -->
+                <TextView
+                    android:text="If activated this app uses broadcast receivers to show notifications, because newer phones block background services. You should only disable this function, if this app does not work properly."
+                    android:layout_span="2" />
+            </TableRow>
+
+
+            <!-- Save battery (works only if forwardCompatibility ON -> SO only show if activated) -->
+            <TableRow
+                android:id="@+id/saveBattery_ROW"
+                android:layout_marginTop="30dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_width="match_parent">
+                <TextView
+                    android:text="Save battery"
+                    style="@style/settingText"
+                    android:layout_weight="1"/>
+                <Switch
+                    android:id="@+id/saveBattery"
+                    android:checked="false"
+                    android:layout_weight="1"/>
+            </TableRow>
+            <TableRow
+                android:id="@+id/saveBatteryDescription"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_width="match_parent">
+                <!-- description for row above -->
+                <TextView
+                    android:text="If activated notifications might not show up on-time of the selected interval. Works only with forward compatibility."
+                    android:layout_span="2" />
+            </TableRow>
+
+        </TableLayout>
+    </ScrollView>
+
+
+    <!-- here will be banner ad added programmatically -->
+</RelativeLayout>
