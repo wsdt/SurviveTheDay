@@ -124,6 +124,7 @@ public class CustomNotification { //one instance for every countdown or similar
         //Create pending intent
         Intent tmpIntent = new Intent(this.getActivityThisTarget(), getTargetActivityClass());
         tmpIntent.putExtra("COUNTDOWN_ID",countdown.getCountdownId()); //countdown to open
+        tmpIntent.setFlags(tmpIntent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY); //prevent activity to be added to history (preventing several back procedures)
         //make this locally because of the same reason why pending intent has no getter
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this.getActivityThisTarget(),
