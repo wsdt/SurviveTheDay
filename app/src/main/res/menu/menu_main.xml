@@ -15,12 +15,12 @@
         android:id="@+id/action_addCountdown"
         android:orderInCategory="0"
         android:icon="@drawable/plus"
-        android:title="Add new countdown"
+        android:title="Add new"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_removeAllCountdowns"
         android:orderInCategory="1"
         android:icon="@drawable/delete"
-        android:title="Delete all countdowns"
+        android:title="Delete all"
         app:showAsAction="ifRoom" />
 </menu>

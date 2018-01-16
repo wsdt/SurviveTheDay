@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //startService(new Intent(this, CountdownCounterService.class));
 
 
+        //TODO: Create setting activity and set globalsettings
         //IMPORTANT: IF ELSE so NOT BOTH get started !!
         //Start background service is forward compatibility off/false OR startBroadcast Receivers if ON
         GlobalAppSettingsMgr globalAppSettingsMgr = new GlobalAppSettingsMgr(this);

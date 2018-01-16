@@ -153,19 +153,23 @@ public class InternalCountdownStorageMgr {
 
     public void restartNotificationService() {
         Log.d(TAG, "restartNofificationService: Did not restart service (not necessary). Tried broadcast receiver.");
-        //TODO: would not be necessary because on broadcastreceiver the current countdown gets automatically loaded!
-        //TODO: except if countdown was created, then we have to reload it! (only changes/deletes do not require a reload)
-        (new CustomNotification(this.getContext(), CountdownActivity.class, (NotificationManager) this.getContext().getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications(this.getContext());
+        //would not be necessary because on broadcastreceiver the current countdown gets automatically loaded!
+        //except if countdown was created, then we have to reload it! (only changes/deletes do not require a reload) [but for bgservice mode it is necessary]
 
-        /*Intent serviceIntent = new Intent(this.getContext(), NotificationService.class);
-        try {
-            this.getContext().stopService(serviceIntent);
-            Log.d(TAG, "restartNotificationService: Tried to stop service.");
-            this.getContext().startService(serviceIntent);
-        } catch (NullPointerException e) {
-            Log.e(TAG, "restartNotificationService: ServiceIntent equals null! Could not restart service.");
+        if (new GlobalAppSettingsMgr(this.getContext()).useForwardCompatibility()) {
+            (new CustomNotification(this.getContext(), CountdownActivity.class, (NotificationManager) this.getContext().getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications(this.getContext());
+            Log.d(TAG, "restartNotificationService: Rescheduled all broadcast receivers.");
+        } else {
+            Intent serviceIntent = new Intent(this.getContext(), NotificationService.class);
+            try {
+                this.getContext().stopService(serviceIntent);
+                Log.d(TAG, "restartNotificationService: Tried to stop service.");
+                this.getContext().startService(serviceIntent);
+            } catch (NullPointerException e) {
+                Log.e(TAG, "restartNotificationService: ServiceIntent equals null! Could not restart service.");
+            }
+            Log.d(TAG, "restartNotificationService: Tried to restart service.");
         }
-        Log.d(TAG, "restartNotificationService: Tried to restart service.");*/
     }
 
 

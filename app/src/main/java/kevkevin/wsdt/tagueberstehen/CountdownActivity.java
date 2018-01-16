@@ -15,6 +15,7 @@ import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageM
 
 public class CountdownActivity extends AppCompatActivity {
     private AsyncTask<Double,Double,Double> countdownCounter;
+    private int countdownId = (-1);
     private static final String TAG = "CountdownActivity";
 
     @Override
@@ -29,6 +30,7 @@ public class CountdownActivity extends AppCompatActivity {
         //make it possible to load and prevent stopping ui (also afterwards: because coutndown does not refresh!) --> esp. when fullpage from other activities opens to slow and gets closed in the countdownactivity
         //IMPORTANT: Do not place here fullpage ad because this blocks the countdown!
         adManager.loadBannerAd((RelativeLayout) findViewById(R.id.content_main));
+        //adManager.loadFullPageAd(null, null);
 
 
         //Notifications regularly: How long do you need to work today or similar and easy type in maybe in notification bar!
@@ -37,11 +39,20 @@ public class CountdownActivity extends AppCompatActivity {
 
         //ACTIVITY OPENED BY OTHER ACTIVITY: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         Intent intent = getIntent();
+        this.countdownId = intent.getIntExtra("COUNTDOWN_ID",-1);
         //maybe by main menu or notification, but we get the same Extra: COUNTDOWN_ID with the ID
-        int countdownId = intent.getIntExtra("COUNTDOWN_ID",-1); //0 is default value
+        startCountdownService(this.countdownId); //0 is default value
+    }
+
+
+    public Double loadCountdownFromSharedPreferences(int countdownId) {
+        return new InternalCountdownStorageMgr(this).getCountdown(countdownId).getTotalSeconds();
+    }
+
+    public void startCountdownService(int countdownId) {
         try {
             //search in storage and get total seconds then start countdown (if not found because smaller 0 or deleted and notification referenced it
-            countdownCounter = startCountdownService(loadCountdownFromSharedPreferences(countdownId));
+            this.countdownCounter = new CountdownCounter().execute(loadCountdownFromSharedPreferences(countdownId));
         } catch (NullPointerException e) {
             //else everything is implicit 0!
             Toast.makeText(this,"Countdown not found :/",Toast.LENGTH_LONG).show();
@@ -50,14 +61,43 @@ public class CountdownActivity extends AppCompatActivity {
         }
     }
 
+    //TODO: REPLACEMENT FOR ASYNCTASK (memory leaks etc.) --> best maybe in complete own class (and there with StringBuilder() and runOnUiThread() and normal thread etc. and give activity context there to findTextViews
+    /*private void countdownCounter_NEW(Double totalseconds) {
+        Thread calculateCountdown = new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-    public Double loadCountdownFromSharedPreferences(int countdownId) {
-        return new InternalCountdownStorageMgr(this).getCountdown(countdownId).getTotalSeconds();
-    }
 
-    public AsyncTask<Double,Double,Double> startCountdownService(Double totalSeconds) {
-        return new CountdownCounter().execute(totalSeconds);
-    }
+                //Send to view
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((TextView) findViewById(R.id.countdownCounterSeconds)).setText(String.format("%.2f", totalSeconds));
+                        ((TextView) findViewById(R.id.countdownCounterMinutes)).setText(String.format("%.4f", totalMinutes));
+                        ((TextView) findViewById(R.id.countdownCounterHours)).setText(String.format("%.6f", totalHours));
+                        ((TextView) findViewById(R.id.countdownCounterDays)).setText(String.format("%.8f", totalDays));
+                        ((TextView) findViewById(R.id.countdownCounterWeeks)).setText(String.format("%.10f", totalWeeks));
+                        ((TextView) findViewById(R.id.countdownCounterMonths)).setText(String.format("%.12f", totalMonths));
+                        ((TextView) findViewById(R.id.countdownCounterYears)).setText(String.format("%.15f", totalYears));
+
+                        ((TextView) findViewById(R.id.countdownCounter)).setText(new StringBuilder()
+                                .append(years).append(":")
+                                .append(months).append(":")
+                                .append(weeks).append(":")
+                                .append(days).append(":")
+                                .append(hours).append(":")
+                                .append(minutes).append(":")
+                                .append(seconds));
+                    }
+                });
+            }
+        });
+        calculateCountdown.start();
+
+
+    }*/
+
+
 
     //IMPORTANT: Use by: new CountdownCounter().execute(Übergabeparameter Long);
     private class CountdownCounter extends AsyncTask<Double,Double,Double> {
@@ -194,6 +234,16 @@ public class CountdownActivity extends AppCompatActivity {
         }
     }
 
+    /*@Override
+    protected void onResume() {
+        super.onResume();
+        //Restart asynctask (otherwise it would be stopped by onPause(), but stop it in onPause because when activity gets in Background!
+        if (this.countdownId >= 0) {
+            startCountdownService(this.countdownId);
+        } else {
+            Log.e(TAG, "onResume: CountdownId negative. Maybe onResume called before countdown loaded or countdown could not be loaded.");
+        }
+    }*/
 
     @Override
     protected void onPause() { //no onstop necessary because it comes after pause
