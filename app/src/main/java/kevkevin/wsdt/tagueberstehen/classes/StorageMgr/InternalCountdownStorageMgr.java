@@ -1,6 +1,7 @@
 package kevkevin.wsdt.tagueberstehen.classes.StorageMgr;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,18 +10,22 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 
+import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
 import kevkevin.wsdt.tagueberstehen.classes.services.NotificationService;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
 
-public class InternalStorageMgr {
+
+public class InternalCountdownStorageMgr {
     private SharedPreferences allCountdowns_SharedPref;
-    private static final String TAG = "InternalStorageMgr";
+    private static final String TAG = "InternCountdownStorMgr";
     private HashMap<Integer, Countdown> allCountdowns;
     private Context context;
 
 
-    public InternalStorageMgr(Context context) {
+    public InternalCountdownStorageMgr(Context context) {
         setAllCountdowns_SharedPref(context.getSharedPreferences("COUNTDOWNS", Context.MODE_PRIVATE));
         this.setContext(context);
     }
@@ -147,7 +152,12 @@ public class InternalStorageMgr {
     }
 
     public void restartNotificationService() {
-        Intent serviceIntent = new Intent(this.getContext(), NotificationService.class);
+        Log.d(TAG, "restartNofificationService: Did not restart service (not necessary). Tried broadcast receiver.");
+        //TODO: would not be necessary because on broadcastreceiver the current countdown gets automatically loaded!
+        //TODO: except if countdown was created, then we have to reload it! (only changes/deletes do not require a reload)
+        (new CustomNotification(this.getContext(), CountdownActivity.class, (NotificationManager) this.getContext().getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications(this.getContext());
+
+        /*Intent serviceIntent = new Intent(this.getContext(), NotificationService.class);
         try {
             this.getContext().stopService(serviceIntent);
             Log.d(TAG, "restartNotificationService: Tried to stop service.");
@@ -155,7 +165,7 @@ public class InternalStorageMgr {
         } catch (NullPointerException e) {
             Log.e(TAG, "restartNotificationService: ServiceIntent equals null! Could not restart service.");
         }
-        Log.d(TAG, "restartNotificationService: Tried to restart service.");
+        Log.d(TAG, "restartNotificationService: Tried to restart service.");*/
     }
 
 

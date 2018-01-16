@@ -4,6 +4,8 @@
     package="kevkevin.wsdt.tagueberstehen">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="com.android.vending.BILLING" />
 
     <application
         android:allowBackup="true"
@@ -59,6 +61,15 @@
 
         <activity android:name=".ModifyCountdownActivity" />
         <activity android:name=".MainActivity"/>
+
+        <!-- BROADCAST RECEIVERS FOR REGULAR NOTIFICATIONS (maybe replacing background service in future)-->
+        <receiver android:name=".classes.services.BootReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".classes.services.NotificationService_AlarmmanagerBroadcastReceiver"/>
 
     </application>
 

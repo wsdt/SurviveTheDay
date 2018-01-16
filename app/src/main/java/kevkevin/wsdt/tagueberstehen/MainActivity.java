@@ -1,5 +1,6 @@
 package kevkevin.wsdt.tagueberstehen;
 
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -18,13 +19,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.ParseException;
 import java.util.Map;
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
-import kevkevin.wsdt.tagueberstehen.classes.services.CountdownCounterService;
+import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 import kevkevin.wsdt.tagueberstehen.classes.services.NotificationService;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalStorageMgr;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private LinearLayout nodeList;
@@ -50,8 +51,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //TODO: test foreground service, wenn noch statisch dann nullpointer exception wenn kein Countdown in app gespeichert!
         //startService(new Intent(this, CountdownCounterService.class));
 
-        //Start Service
-        startService(new Intent(this,NotificationService.class)); //this line should be only called once
+
+        //IMPORTANT: IF ELSE so NOT BOTH get started !!
+        //Start background service is forward compatibility off/false OR startBroadcast Receivers if ON
+        GlobalAppSettingsMgr globalAppSettingsMgr = new GlobalAppSettingsMgr(this);
+        if (globalAppSettingsMgr.useForwardCompatibility()) {
+            //USE broadcast receivers
+            (new CustomNotification(this, CountdownActivity.class, (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications(this);
+            Log.d(TAG, "OnCreate: Scheduled broadcast receivers. ");
+        } else {
+            //Use background service
+            startService(new Intent(this,NotificationService.class)); //this line should be only called once
+            Log.d(TAG, "OnCreate: Started background service.");
+        }
     }
 
     @Override
@@ -64,11 +76,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //reload all nodes from sharedpreferences (remove them beforehand)
         removeAllNodesFromLayout();
         loadAddNodes();
-        //restart of service happens in InternalStorageMgr!
+        //restart of service happens in InternalCountdownStorageMgr!
     }
 
     private void loadAddNodes() {
-        InternalStorageMgr storageMgr = new InternalStorageMgr(this);
+        InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(this);
         int anzahlCountdowns = 0;
         for (Map.Entry<Integer,Countdown> countdown : storageMgr.getAllCountdowns(false).entrySet()) {
             createAddNodeToLayout(countdown.getValue());
@@ -103,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void onCountdownModifyButtons(View v) { //when clicked on a node buttons (not node itself)
         //Get countdownId of corresponding node to perform actions
-        InternalStorageMgr storageMgr = new InternalStorageMgr(this);
+        InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(this);
         Countdown countdown;
         try {
             countdown = storageMgr.getCountdown(getCountdownIdFromNodeTag((RelativeLayout) v.getParent()));
@@ -210,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(createCountdownAct);
                 break;
             case R.id.action_removeAllCountdowns:
-                InternalStorageMgr storageMgr = new InternalStorageMgr(this);
+                InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(this);
                 storageMgr.deleteAllCountdowns();
                 reloadEverything(); //because onResume gets not called
                 Toast.makeText(this,"Deleted all countdowns.",Toast.LENGTH_LONG).show();
