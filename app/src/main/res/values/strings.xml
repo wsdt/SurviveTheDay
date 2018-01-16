@@ -51,9 +51,9 @@
         <item>28800</item>
         <item>43200</item>
     </string-array>
-    <string name="intervalSpinnerInformation">
-        In general notifications will be sent every time after the selected period goes by. Unfortunately, Android might kill this service which will be restarted after an arbitrary period of time. So the selected interval might be sometimes different.
-    </string>
+    <string name="categoryInfo">
+            Color will be used e.g. for notifications (led-color, ...)
+         </string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
