@@ -15,6 +15,18 @@
         android:layout_marginTop="80dp"
         android:id="@+id/appName"
         android:text="@string/app_name"
+        android:layout_marginBottom="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <!-- Reference is VALID (in gradle file defined -->
+    <TextView
+        android:id="@+id/versionName"
+        android:text="@string/versionName"
+        android:textSize="20sp"
+        android:layout_below="@+id/appName"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/colorPrimaryDark"
         android:layout_marginBottom="15dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
@@ -29,7 +41,7 @@
         android:scaleY="0.85"
         android:layout_marginBottom="15dp"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/appName"
+        android:layout_below="@+id/versionName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <TextView
