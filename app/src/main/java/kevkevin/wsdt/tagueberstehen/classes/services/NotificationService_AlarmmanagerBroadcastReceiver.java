@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import java.util.Map;
+
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
@@ -65,5 +67,17 @@ public class NotificationService_AlarmmanagerBroadcastReceiver extends Broadcast
 
     private void deleteAlarmService(Context context, int alarmId) throws NullPointerException {
         ((AlarmManager) context.getSystemService(Context.ALARM_SERVICE)).cancel(PendingIntent.getBroadcast(context, alarmId, new Intent(context, NotificationService_AlarmmanagerBroadcastReceiver.class), 0));
+    }
+
+    public static void deleteAllAlarmServices(Context context) {
+        for (Map.Entry<Integer, Countdown> entry : (new InternalCountdownStorageMgr(context)).getAllCountdowns(true).entrySet()) {
+            try {
+                ((AlarmManager) context.getSystemService(Context.ALARM_SERVICE)).cancel(PendingIntent.getBroadcast(context, entry.getValue().getCountdownId(), new Intent(context, NotificationService_AlarmmanagerBroadcastReceiver.class), 0));
+                Log.d(TAG, "deleteAllAlarmServices: Deleted broadcast for countdown: "+entry.getValue().getCountdownId());
+            } catch (NullPointerException e) {
+                Log.e(TAG, "deleteAllAlarmServices: Could not delete alarmservice of countdown: "+entry.getValue().getCountdownId());
+                e.printStackTrace();
+            }
+        }
     }
 }

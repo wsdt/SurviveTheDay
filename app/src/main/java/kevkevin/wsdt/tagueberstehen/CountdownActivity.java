@@ -1,5 +1,6 @@
 package kevkevin.wsdt.tagueberstehen;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
+import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
 public class CountdownActivity extends AppCompatActivity {
@@ -102,13 +104,13 @@ public class CountdownActivity extends AppCompatActivity {
     //IMPORTANT: Use by: new CountdownCounter().execute(Übergabeparameter Long);
     private class CountdownCounter extends AsyncTask<Double,Double,Double> {
         //public Context countdownContext;
-        protected Double totalSeconds = 0D;
-        protected Double totalMinutes = 0D;
-        protected Double totalHours = 0D;
-        protected Double totalDays = 0D;
-        protected Double totalWeeks = 0D;
-        protected Double totalMonths = 0D;
-        protected Double totalYears = 0D;
+        private Double totalSeconds = 0D;
+        private Double totalMinutes = 0D;
+        private Double totalHours = 0D;
+        private Double totalDays = 0D;
+        private Double totalWeeks = 0D;
+        private Double totalMonths = 0D;
+        private Double totalYears = 0D;
 
         //Big countdown parameters
         private Long seconds = 0L; // [0-59]
@@ -119,7 +121,6 @@ public class CountdownActivity extends AppCompatActivity {
         private Long months = 0L; // [0-11]
         private Long years = 0L; // [0 - /]
 
-        //private Double serviceOrActivity = 0D;
 
         @Override
         protected Double doInBackground(Double... totalSeconds) {
@@ -172,11 +173,7 @@ public class CountdownActivity extends AppCompatActivity {
                                 this.hours + ":" +
                                 this.minutes + ":" +
                                 this.seconds);
-             /* } else {
-                //service
-                CustomNotification tmp = new CustomNotification(this,CountdownActivity.class,(NotificationManager) getSystemService(NOTIFICATION_SERVICE),0);
-                tmp.issueNotification(tmp.createNotification("TEST","TESTTEXT",R.drawable.campfire_red));
-            }*/
+
         }
 
         protected void calculateParams(Double totalSeconds) {

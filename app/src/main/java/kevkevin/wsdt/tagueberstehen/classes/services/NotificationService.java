@@ -13,6 +13,7 @@ import java.util.TimerTask;
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
 
@@ -47,6 +48,10 @@ public class NotificationService extends Service {
         this.customNotificationManager = new CustomNotification(this, CountdownActivity.class, (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE)); //intent.getParcelableExtra("customNotificationManager");
 
         startTimer(); //this function starts all countdowns
+
+        //So it can be stopped from outside
+        (new GlobalAppSettingsMgr(this)).setBackgroundServicePid(android.os.Process.myPid());
+        Log.d(TAG, "onStartCommand: Current process pid: "+android.os.Process.myPid());
 
         return START_STICKY; //START_REDELIVER_INTENT;
     }
@@ -120,6 +125,7 @@ public class NotificationService extends Service {
                                 customNotificationManager.issueNotification(customNotificationManager.createRandomNotification(countdown));
                             } else {
                                 Log.d(TAG, "initializeTimer: Countdown has expired! Tried to stopTimer.");
+                                //TODO: does not work
                                 countdown.getTimer().cancel();
                                 countdown.setTimer(null);
                                 Log.d(TAG, "initializeTimer: Stopped timer for specific countdown.");
