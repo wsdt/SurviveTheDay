@@ -8,6 +8,7 @@ import android.util.Log;
 
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -20,7 +21,11 @@ public class BootReceiver extends BroadcastReceiver {
         try {
             if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
                 //that method restarts all countdowns (so their broadcast receiver event gets restarted).
-                (new CustomNotification(context, CountdownActivity.class, (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications(context);
+                if (new GlobalAppSettingsMgr(context).useForwardCompatibility()) {
+                    (new CustomNotification(context, CountdownActivity.class, (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications(context);
+                } else {
+                    Log.d(TAG, "Bootreceiver ignored. Because Forward-Compatibility is OFF.");
+                }
             }
         } catch (NullPointerException e) {
             Log.e(TAG, "onReceive: Could not validate broadcast action.");
