@@ -1,19 +1,10 @@
-package kevkevin.wsdt.tagueberstehen.classes;
-import java.util.Calendar;
+package kevkevin.wsdt.tagueberstehen.classes.DateTimePicker;
 
 import android.support.v4.app.FragmentManager;
 import android.content.Context;
-import android.os.Bundle;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
 import android.util.Log;
-import android.widget.DatePicker;
 import android.widget.TextView;
-
-import com.ikovac.timepickerwithseconds.MyTimePickerDialog;
-import com.ikovac.timepickerwithseconds.TimePicker;
 
 //Thanks to http://www.truiton.com/2013/03/android-pick-date-time-from-edittext-onclick-event/
 public class DateTimePicker {
@@ -22,6 +13,7 @@ public class DateTimePicker {
     private TimePickerFragment mainTimePicker;
     private TextView mainResultView;
     private static final String TAG = "DateTimePicker";
+    private static DateTimePicker thisInstance; //for inner classes so they can reference outer methods
 
     public DateTimePicker (Context context, FragmentManager fragmentManager, @NonNull TextView mainResultView, int hourOfDay, int minute, int seconds, boolean is24hourView) {
         Log.d(TAG, "Created instance.");
@@ -34,16 +26,17 @@ public class DateTimePicker {
         tmpDatePicker.setResultView(this.getMainResultView());
         this.setMainDatePicker(tmpDatePicker);
 
-        Log.d(TAG, "Tried to assign and create TimerPickerFragment. ");
+        /*Log.d(TAG, "Tried to assign and create TimerPickerFragment. ");
         //create time picker and assign it to outer class
         TimePickerFragment tmpTimePicker = new TimePickerFragment(context, this.onTimeSetListener,hourOfDay, minute, seconds, is24hourView);
         tmpTimePicker.setResultView(this.getMainResultView());
         this.setMainTimePicker(tmpTimePicker);
+        thisInstance = this; //set this instance for inner static classes*/
     }
 
     public void showDateTimePicker() {
         try {
-            this.getMainTimePicker().show(); //call timepicker firstly so it is behind datepicker
+            //this.getMainTimePicker().show(); //call timepicker firstly so it is behind datepicker
             this.getMainDatePicker().show(this.getFragmentManager(), "datePicker");
         } catch (NullPointerException e) {
             Log.e(TAG, "showDateTimePicker: NullpointerException! Define both fragments firstly!");
@@ -85,7 +78,7 @@ public class DateTimePicker {
 
     // STATIC CLASSES #########################################################
 
-    public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+/*    public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
         private TextView resultView;
 
         @NonNull
@@ -104,6 +97,8 @@ public class DateTimePicker {
 
         @Override
         public void onDateSet(DatePicker view, int year, int month, int day) {
+            DateTimePicker.thisInstance.getMainTimePicker().show(); //show timePicker only if dateTime set (so dialog will not show if cancelled)
+
             // Do something with the date chosen by the user
             this.getResultView().setText(day + "." + (month + 1) + "." + year);
             Log.d(TAG, "onDateSet: Assigned new date.");
@@ -118,6 +113,7 @@ public class DateTimePicker {
         }
     }
 
+
     //########################## TIME PICKER ####################################
     private MyTimePickerDialog.OnTimeSetListener onTimeSetListener = new MyTimePickerDialog.OnTimeSetListener() {
         @Override
@@ -131,17 +127,28 @@ public class DateTimePicker {
     public static class TimePickerFragment extends MyTimePickerDialog implements MyTimePickerDialog.OnTimeSetListener {
         private TextView resultView;
 
-        public TimePickerFragment(Context context,OnTimeSetListener callback, int hourOfDay, int minute, int seconds, boolean is24HourView) {
+        private TimePickerFragment(Context context,OnTimeSetListener callback, int hourOfDay, int minute, int seconds, boolean is24HourView) {
             super(context, callback, hourOfDay, minute, seconds, is24HourView);
             /* callback = new DateTimePicker.TimePickerFragment.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(com.ikovac.timepickerwithseconds.TimePicker view, int hourOfDay, int minute, int seconds) {
                     DateTimePicker.TimePickerFragment.onTimeSet(view, hourOfDay, minute, seconds);
                 }
-            }*/
+            }*/ /*
+
+            //Overrides assigned null-Listener from superclass!
+            setButton2(context.getText(com.ikovac.timepickerwithseconds.R.string.cancel), new OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    //if cancelled set current time
+                    GregorianCalendar now = new GregorianCalendar();
+                    getResultView().setText(getResultView().getText() + " " + String.format("%02d", now.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", now.get(Calendar.MINUTE)) + ":" + String.format("%02d", now.get(Calendar.SECOND)));
+                    Log.d(TAG, "onCancelListener: Time cancelled, set current time with previously selected date.");
+                }
+            });
         }
 
-        public TimePickerFragment(Context context, int theme, OnTimeSetListener callback, int hourOfDay, int minute, int seconds, boolean is24HourView) {
+        private TimePickerFragment(Context context, int theme, OnTimeSetListener callback, int hourOfDay, int minute, int seconds, boolean is24HourView) {
             super(context, theme, callback, hourOfDay, minute, seconds, is24HourView);
         }
 
@@ -152,12 +159,13 @@ public class DateTimePicker {
             Log.d(TAG, "onTimeSet: Assigned new time.");
         }
 
-        public TextView getResultView() {
+
+        private TextView getResultView() {
             return this.resultView;
         }
 
-        public void setResultView(TextView resultView) {
+        private void setResultView(TextView resultView) {
             this.resultView = resultView;
         }
-    }
+    }*/
 }
