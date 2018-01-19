@@ -4,6 +4,8 @@
     style="@style/countdownNode"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@android:drawable/dialog_holo_dark_frame"
+    android:layout_marginBottom="-10dp"
     android:onClick="onClick">
     <!-- Only add this programmatically: android:tag="COUNTDOWN_0"-->
 

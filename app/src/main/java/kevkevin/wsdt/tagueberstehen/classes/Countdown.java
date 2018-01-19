@@ -126,7 +126,7 @@ public class Countdown {
         try {
             if (getDateTime(getStartDateTime()).compareTo(getCurrentDateTime()) > 0) {
                 //date is in the future
-                Toast.makeText(this.getContext(),"Countdown starts at: "+this.getStartDateTime(),Toast.LENGTH_LONG).show();
+                Toast.makeText(this.getContext(),"Countdown starts at: "+this.getStartDateTime(),Toast.LENGTH_SHORT).show();
                 totalSeconds = 0D; //prevent from counting to infinity (because negative)
             } else {
                 //date is in the past and countdown started already
@@ -137,7 +137,7 @@ public class Countdown {
             e.printStackTrace();
         }
         if (totalSeconds < 0) {
-            Toast.makeText(this.getContext(),"Countdown starts at: "+this.getStartDateTime(),Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getContext(),"Countdown has already expired on: "+this.getUntilDateTime(),Toast.LENGTH_SHORT).show();
             totalSeconds = 0D; //prevent from counting to infinity (because negative)
         }
 
