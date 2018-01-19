@@ -51,7 +51,7 @@
 
         <!--
         FOREGROUND COUNTDOWN COUNTER SERVICE -
-        // ADDED IF EVERYTHING WORKS FINE
+        // ADDED IF EVERYTHING WORKS FINE-->
         <service
             android:name=".classes.services.CountdownCounterService"
             android:exported="false"
@@ -62,7 +62,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
-        -->
+
 
         <activity android:name=".ModifyCountdownActivity" />
         <activity android:name=".MainActivity" />
