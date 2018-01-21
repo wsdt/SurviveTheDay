@@ -16,6 +16,17 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:text="Countdown not found" />
+    <TextView
+        android:id="@+id/countdownDescription"
+        style="@style/text"
+        android:textSize="15sp"
+        android:text="Please contact system administrator."
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_below="@id/countdownTitle"/>
 
     <!-- IMPORTANT: If you change IDs of those buttons you need to adapt MainActivity.java:onCountdownModifyButtons() method! -->
     <ImageButton
@@ -57,7 +68,7 @@
         android:id="@+id/categoryColorView"
         android:background="@color/colorPrimaryDark"
         android:layout_margin="5dp"
-        android:layout_below="@id/countdownTitle"
+        android:layout_below="@id/countdownDescription"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_width="20dp"
@@ -70,7 +81,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@id/countdownTitle"
+        android:layout_below="@id/countdownDescription"
         android:layout_margin="5dp"
         android:text="01.01.2017 00:00:00 - 31.12.2017 23:59:59"
         android:textSize="15sp" />

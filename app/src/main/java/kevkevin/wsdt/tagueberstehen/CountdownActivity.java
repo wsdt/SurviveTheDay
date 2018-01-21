@@ -162,7 +162,7 @@ public class CountdownActivity extends AppCompatActivity {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         Log.e("CountdownCounter", "Thread Sleep interrupted in doInBackground()! ");
-                        e.printStackTrace();
+                        //e.printStackTrace();
                     }
                 } else {
                     this.totalSeconds = 0D;
@@ -289,58 +289,66 @@ public class CountdownActivity extends AppCompatActivity {
     private void showInAppNotificationIfAvailable() {
         Log.d(TAG, "showInAppNotificationIfAvailable: Started method.");
         try {
-            //TODO: not always correct notification is shown (older ones)
-            //TODO: Only show green bg and animation if quote/intent found
-            final RelativeLayout notificationContent = (RelativeLayout) findViewById(R.id.notificationContent);
-            notificationContent.setY(notificationContent.getHeight()*(-1)); //assign height*-1 so notification will get exactly behind display
-            final int hiddenPosition = (notificationContent.getHeight()*(-1)); //TODO: extra long quotes do not get hidden completely
-            Log.d(TAG, "showInAppNotificationIfAvailable: Tried to positionate inapp-notification outside screen: "+hiddenPosition);
+            int notificationImage = this.getLastIntent().getIntExtra("SMALL_ICON",-1);
+            String notificationHeading = this.getLastIntent().getStringExtra("CONTENT_TITLE");
+            String notificationFullText = this.getLastIntent().getStringExtra("CONTENT_TEXT");
+            final RelativeLayout notificationContent = (RelativeLayout) findViewById(R.id.notificationContent); //call after values assigned so correct height
 
-            final ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(notificationContent, "y", 0); //get it back to positive animated
-            objectAnimator.setDuration(1500); //1,5 seconds
+            if (notificationImage != (-1) && !notificationHeading.equals("") && !notificationFullText.equals("")) {
+                //Set notification contents
+                ((ImageView) findViewById(R.id.notificationImage)).setImageBitmap(BitmapFactory.decodeResource(getResources(), notificationImage));
+                ((TextView) findViewById(R.id.notificationHeading)).setText(notificationHeading);
+                ((TextView) findViewById(R.id.notificationFullText)).setText(notificationFullText);
+                Log.d(TAG, "showInAppNotificationIfAvailable: Tried to assign values to view. ");
+
+                //Set negative Y but assign values BEFORE (because height might change because of wrap content)
+                final int hiddenPosition = ((notificationContent.getHeight()) * (-1));
+                notificationContent.setY(hiddenPosition); //assign height*-1 so notification will get exactly behind display
+                Log.d(TAG, "showInAppNotificationIfAvailable: Tried to positionate inapp-notification outside screen: " + hiddenPosition);
+
+                //TODO: multiple properties (alpha also so it hides or comes): https://stackoverflow.com/questions/28352352/change-multiple-properties-with-single-objectanimator
+                final ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(notificationContent, "y", 15); //get it back to positive animated (+5 because we want a small space above shape)
+                objectAnimator.setDuration(1500); //1,5 seconds
             /*objectAnimator.setRepeatCount(1); //show it and hide it after duration expired [making this with count var and restarting animation in onAnimationEnd()]
             objectAnimator.setRepeatMode(ValueAnimator.REVERSE);*/
-            objectAnimator.addListener(new Animator.AnimatorListener() {
-                int count = 0;
+                objectAnimator.addListener(new Animator.AnimatorListener() {
+                    int count = 0;
 
-                @Override
-                public void onAnimationStart(Animator animator) {
-                    Log.d(TAG, "onAnimationStart: Inapp notification animation started.");
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animator) {
-                    if (count++ < 1) { //create new object animator because we want not the same animation but reverse
-                        ObjectAnimator objectAnimatorReverse = ObjectAnimator.ofFloat(notificationContent, "y", hiddenPosition); //get it back to positive animated
-                        objectAnimatorReverse.setDuration(1500);
-                        objectAnimatorReverse.setStartDelay(5500); //how long should be notification displayed
-                        objectAnimatorReverse.start(); //start again
-                        Log.d(TAG, "onAnimationEnd: Inapp notification repeated with delay in onAnimationEnd.");
-                    } else {
-                        Log.d(TAG, "onAnimationEnd: Inapp notification animation finished.");
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+                        Log.d(TAG, "onAnimationStart: Inapp notification animation started.");
                     }
-                }
 
-                @Override
-                public void onAnimationCancel(Animator animator) {
-                    Log.d(TAG, "onAnimationCancel: Cancelled animation of inappnotification.");
-                }
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        if (count++ < 1) { //create new object animator because we want not the same animation but reverse
+                            //TODO: works now, but in future if extreme long texts notification might not get hidden completely (*2)
+                            ObjectAnimator objectAnimatorReverse = ObjectAnimator.ofFloat(notificationContent, "y", (hiddenPosition*2)); //get it back to positive animated (*2 so it is in every case outside of screen [no idea why this might be necessary for long codes]
+                            objectAnimatorReverse.setDuration(1500);
+                            objectAnimatorReverse.setStartDelay(7500); //how long should be notification displayed TODO: Make configurable by globalsettings
+                            objectAnimatorReverse.start(); //start again
+                            Log.d(TAG, "onAnimationEnd: Inapp notification repeated with delay in onAnimationEnd.");
+                        } else {
+                            Log.d(TAG, "onAnimationEnd: Inapp notification animation finished.");
+                        }
+                    }
 
-                @Override
-                public void onAnimationRepeat(Animator animator) {
-                    Log.d(TAG, "onAnimationRepeat: Repeated in app notification animation.");
-                    //objectAnimator.setStartDelay(3000); //do not use animator (start delay would be ignored) does not work because not called
-                }
-            });
-            objectAnimator.start();
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+                        Log.d(TAG, "onAnimationCancel: Cancelled animation of inappnotification.");
+                    }
 
-            //Set notification contents
-            ((ImageView) findViewById(R.id.notificationImage)).setImageBitmap(BitmapFactory.decodeResource(getResources(), this.getLastIntent().getIntExtra("SMALL_ICON",-1)));
-            ((TextView) findViewById(R.id.notificationHeading)).setText(this.getLastIntent().getStringExtra("CONTENT_TITLE"));
-            ((TextView) findViewById(R.id.notificationFullText)).setText(this.getLastIntent().getStringExtra("CONTENT_TEXT"));
-            Log.d(TAG, "showInAppNotificationIfAvailable: Tried to assign values to view. ");
-
-
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
+                        Log.d(TAG, "onAnimationRepeat: Repeated in app notification animation.");
+                        //objectAnimator.setStartDelay(3000); //do not use animator (start delay would be ignored) does not work because not called
+                    }
+                });
+                objectAnimator.start();
+            } else {
+                notificationContent.setVisibility(View.GONE);
+                Log.w(TAG, "showInAppNotificationIfAvailable: Activity not called by notification.");
+            }
         } catch (Exception e) {
             Log.e(TAG, "showInApNotificationIfAvailable: Could not show inapp-notification. Maybe activity was opened from main menu.");
             e.printStackTrace();

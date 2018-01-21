@@ -171,6 +171,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void createAddNodeToLayout(Countdown countdown) {
         RelativeLayout countdownView = (RelativeLayout) getLayoutInflater().inflate(R.layout.node_template,(LinearLayout) findViewById(R.id.nodeList), false); //give relativelayout so layoutparams get done
         ((TextView)countdownView.findViewById(R.id.countdownTitle)).setText(countdown.getCountdownTitle());
+        ((TextView)countdownView.findViewById(R.id.countdownDescription)).setText(countdown.getCountdownDescription());
         ((TextView)countdownView.findViewById(R.id.startAndUntilDateTime)).setText(countdown.getStartDateTime()+" - "+countdown.getUntilDateTime());
         countdownView.setTag("COUNTDOWN_"+countdown.getCountdownId()); //IMPORTANT: to determine what countdown to open in CountdownActivity
 
