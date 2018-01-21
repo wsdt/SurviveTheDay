@@ -1,12 +1,19 @@
 package kevkevin.wsdt.tagueberstehen;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +26,7 @@ public class CountdownActivity extends AppCompatActivity {
     private AsyncTask<Double,Double,Double> countdownCounter;
     private int countdownId = (-1);
     private static final String TAG = "CountdownActivity";
+    private Intent lastIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +48,21 @@ public class CountdownActivity extends AppCompatActivity {
         //Drink a glass of water and the day goes by faster etc.
 
         //ACTIVITY OPENED BY OTHER ACTIVITY: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        Intent intent = getIntent();
-        this.countdownId = intent.getIntExtra("COUNTDOWN_ID",-1);
+        this.setLastIntent(getIntent());
+        this.countdownId = this.getLastIntent().getIntExtra("COUNTDOWN_ID",-1);
         //maybe by main menu or notification, but we get the same Extra: COUNTDOWN_ID with the ID
         startCountdownService(this.countdownId); //0 is default value
+
+        //Wait until views are drawn (for size etc.)
+        final RelativeLayout inAppNotification = ((RelativeLayout) findViewById(R.id.notificationContent));
+        final ViewTreeObserver observer = inAppNotification.getViewTreeObserver();
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                showInAppNotificationIfAvailable();
+                inAppNotification.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+            }
+        });
     }
 
 
@@ -61,6 +80,14 @@ public class CountdownActivity extends AppCompatActivity {
             Log.e(TAG,"CountdownActivity(): Countdown not found. ID: "+countdownId);
             e.printStackTrace();
         }
+    }
+
+    public Intent getLastIntent() {
+        return lastIntent;
+    }
+
+    public void setLastIntent(Intent lastIntent) {
+        this.lastIntent = lastIntent;
     }
 
     //TODO: REPLACEMENT FOR ASYNCTASK (memory leaks etc.) --> best maybe in complete own class (and there with StringBuilder() and runOnUiThread() and normal thread etc. and give activity context there to findTextViews
@@ -251,5 +278,78 @@ public class CountdownActivity extends AppCompatActivity {
             Log.e(TAG, "onPause: NullpointerException while cancelling asynctask.");
             e.printStackTrace();
         }
+    }
+
+
+    // ################################################################################################################
+    // NOTIFICATION-CONTENT SHOWER ####################################################################################
+    // ################################################################################################################
+
+    //Show in-app-notification (incl. animation)
+    private void showInAppNotificationIfAvailable() {
+        Log.d(TAG, "showInAppNotificationIfAvailable: Started method.");
+        try {
+            //TODO: not always correct notification is shown (older ones)
+            //TODO: Only show green bg and animation if quote/intent found
+            final RelativeLayout notificationContent = (RelativeLayout) findViewById(R.id.notificationContent);
+            notificationContent.setY(notificationContent.getHeight()*(-1)); //assign height*-1 so notification will get exactly behind display
+            final int hiddenPosition = (notificationContent.getHeight()*(-1)); //TODO: extra long quotes do not get hidden completely
+            Log.d(TAG, "showInAppNotificationIfAvailable: Tried to positionate inapp-notification outside screen: "+hiddenPosition);
+
+            final ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(notificationContent, "y", 0); //get it back to positive animated
+            objectAnimator.setDuration(1500); //1,5 seconds
+            /*objectAnimator.setRepeatCount(1); //show it and hide it after duration expired [making this with count var and restarting animation in onAnimationEnd()]
+            objectAnimator.setRepeatMode(ValueAnimator.REVERSE);*/
+            objectAnimator.addListener(new Animator.AnimatorListener() {
+                int count = 0;
+
+                @Override
+                public void onAnimationStart(Animator animator) {
+                    Log.d(TAG, "onAnimationStart: Inapp notification animation started.");
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animator) {
+                    if (count++ < 1) { //create new object animator because we want not the same animation but reverse
+                        ObjectAnimator objectAnimatorReverse = ObjectAnimator.ofFloat(notificationContent, "y", hiddenPosition); //get it back to positive animated
+                        objectAnimatorReverse.setDuration(1500);
+                        objectAnimatorReverse.setStartDelay(5500); //how long should be notification displayed
+                        objectAnimatorReverse.start(); //start again
+                        Log.d(TAG, "onAnimationEnd: Inapp notification repeated with delay in onAnimationEnd.");
+                    } else {
+                        Log.d(TAG, "onAnimationEnd: Inapp notification animation finished.");
+                    }
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animator) {
+                    Log.d(TAG, "onAnimationCancel: Cancelled animation of inappnotification.");
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animator) {
+                    Log.d(TAG, "onAnimationRepeat: Repeated in app notification animation.");
+                    //objectAnimator.setStartDelay(3000); //do not use animator (start delay would be ignored) does not work because not called
+                }
+            });
+            objectAnimator.start();
+
+            //Set notification contents
+            ((ImageView) findViewById(R.id.notificationImage)).setImageBitmap(BitmapFactory.decodeResource(getResources(), this.getLastIntent().getIntExtra("SMALL_ICON",-1)));
+            ((TextView) findViewById(R.id.notificationHeading)).setText(this.getLastIntent().getStringExtra("CONTENT_TITLE"));
+            ((TextView) findViewById(R.id.notificationFullText)).setText(this.getLastIntent().getStringExtra("CONTENT_TEXT"));
+            Log.d(TAG, "showInAppNotificationIfAvailable: Tried to assign values to view. ");
+
+
+        } catch (Exception e) {
+            Log.e(TAG, "showInApNotificationIfAvailable: Could not show inapp-notification. Maybe activity was opened from main menu.");
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        this.setLastIntent(intent); //set last calling intent (because of single top would not call activity again, so maybe always same intent will be shown)
     }
 }

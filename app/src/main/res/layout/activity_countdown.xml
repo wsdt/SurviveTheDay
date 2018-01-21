@@ -1,162 +1,224 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_main"
+    style="@style/ContentMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="kevkevin.wsdt.tagueberstehen.CountdownActivity"
-    android:id="@+id/content_main"
-    style="@style/ContentMain">
+    tools:context="kevkevin.wsdt.tagueberstehen.CountdownActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/countdownCounter"
-        android:text="00:00:00:00"
-        style="@style/Countdown"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="45dp"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/countdownCounter"
+                style="@style/Countdown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="75dp"
+                android:text="00:00:00:00" />
 
 
-    <!-- YEARS ++++++++++++++++++++++++++++++++++++++++++++++ -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/countdownCounterYearsLabel"
-        android:text="Total Years: "
-        style="@style/CountdownSmall"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@id/countdownCounter"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/countdownCounterYears"
-        android:text="00.00"
-        style="@style/CountdownSmall"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@id/countdownCounter"/>
+            <!-- YEARS ++++++++++++++++++++++++++++++++++++++++++++++ -->
+            <TextView
+                android:id="@+id/countdownCounterYearsLabel"
+                style="@style/CountdownSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/countdownCounter"
+                android:text="Total Years: " />
 
-    <!-- MONTHS ++++++++++++++++++++++++++++++++++++++++++++++ -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/countdownCounterMonthsLabel"
-        android:text="Total Months: "
-        style="@style/CountdownSmall"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/countdownCounterYears"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/countdownCounterMonths"
-        android:text="00.00"
-        style="@style/CountdownSmall"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/countdownCounterYears"/>
+            <TextView
+                android:id="@+id/countdownCounterYears"
+                style="@style/CountdownSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/countdownCounter"
+                android:text="00.00" />
 
-    <!-- WEEKS ++++++++++++++++++++++++++++++++++++++++++++++ -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/countdownCounterWeeksLabel"
-        android:text="Total Weeks: "
-        style="@style/CountdownSmall"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/countdownCounterMonths"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/countdownCounterWeeks"
-        android:text="00.00"
-        style="@style/CountdownSmall"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/countdownCounterMonths"/>
+            <!-- MONTHS ++++++++++++++++++++++++++++++++++++++++++++++ -->
+            <TextView
+                android:id="@+id/countdownCounterMonthsLabel"
+                style="@style/CountdownSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/countdownCounterYears"
+                android:text="Total Months: " />
 
-    <!-- DAYS ++++++++++++++++++++++++++++++++++++++++++++++ -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/countdownCounterDaysLabel"
-        android:text="Total Days: "
-        style="@style/CountdownSmall"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@id/countdownCounterWeeks"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/countdownCounterDays"
-        android:text="00.00"
-        style="@style/CountdownSmall"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@id/countdownCounterWeeks"/>
+            <TextView
+                android:id="@+id/countdownCounterMonths"
+                style="@style/CountdownSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/countdownCounterYears"
+                android:text="00.00" />
 
-    <!-- HOURS ++++++++++++++++++++++++++++++++++++++++++++++ -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/countdownCounterHoursLabel"
-        android:text="Total Hours: "
-        style="@style/CountdownSmall"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/countdownCounterDays"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/countdownCounterHours"
-        android:text="00.00"
-        style="@style/CountdownSmall"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/countdownCounterDays"/>
+            <!-- WEEKS ++++++++++++++++++++++++++++++++++++++++++++++ -->
+            <TextView
+                android:id="@+id/countdownCounterWeeksLabel"
+                style="@style/CountdownSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/countdownCounterMonths"
+                android:text="Total Weeks: " />
 
-    <!-- MINUTES ++++++++++++++++++++++++++++++++++++++++++++++ -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/countdownCounterMinutesLabel"
-        android:text="Total Minutes: "
-        style="@style/CountdownSmall"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/countdownCounterHours"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/countdownCounterMinutes"
-        android:text="00.00"
-        style="@style/CountdownSmall"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/countdownCounterHours"/>
+            <TextView
+                android:id="@+id/countdownCounterWeeks"
+                style="@style/CountdownSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/countdownCounterMonths"
+                android:text="00.00" />
 
-    <!-- SECONDS ++++++++++++++++++++++++++++++++++++++++++++++ -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/countdownCounterSecondsLabel"
-        android:text="Total Seconds: "
-        style="@style/CountdownSmall"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/countdownCounterMinutes"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/countdownCounterSeconds"
-        android:text="00.00"
-        style="@style/CountdownSmall"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/countdownCounterMinutes"/>
+            <!-- DAYS ++++++++++++++++++++++++++++++++++++++++++++++ -->
+            <TextView
+                android:id="@+id/countdownCounterDaysLabel"
+                style="@style/CountdownSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/countdownCounterWeeks"
+                android:text="Total Days: " />
 
+            <TextView
+                android:id="@+id/countdownCounterDays"
+                style="@style/CountdownSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/countdownCounterWeeks"
+                android:text="00.00" />
+
+            <!-- HOURS ++++++++++++++++++++++++++++++++++++++++++++++ -->
+            <TextView
+                android:id="@+id/countdownCounterHoursLabel"
+                style="@style/CountdownSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/countdownCounterDays"
+                android:text="Total Hours: " />
+
+            <TextView
+                android:id="@+id/countdownCounterHours"
+                style="@style/CountdownSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/countdownCounterDays"
+                android:text="00.00" />
+
+            <!-- MINUTES ++++++++++++++++++++++++++++++++++++++++++++++ -->
+            <TextView
+                android:id="@+id/countdownCounterMinutesLabel"
+                style="@style/CountdownSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/countdownCounterHours"
+                android:text="Total Minutes: " />
+
+            <TextView
+                android:id="@+id/countdownCounterMinutes"
+                style="@style/CountdownSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/countdownCounterHours"
+                android:text="00.00" />
+
+            <!-- SECONDS ++++++++++++++++++++++++++++++++++++++++++++++ -->
+            <TextView
+                android:id="@+id/countdownCounterSecondsLabel"
+                style="@style/CountdownSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/countdownCounterMinutes"
+                android:text="Total Seconds: " />
+
+            <TextView
+                android:id="@+id/countdownCounterSeconds"
+                style="@style/CountdownSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="35dp"
+                android:layout_below="@+id/countdownCounterMinutes"
+                android:text="00.00" />
+        </RelativeLayout>
+    </ScrollView>
+
+    <!-- QUOTE VIEW (will be shown for a specific period of time when opening this activity from a notification) -->
+    <RelativeLayout
+        android:id="@+id/notificationContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:alpha="0.95"
+        android:background="@color/colorPrimaryDark">
+
+        <ImageView
+            android:id="@+id/notificationImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="15dp"
+            android:contentDescription="Notification Icon"
+            android:src="@drawable/notification_generic_red" />
+
+        <TextView
+            android:id="@+id/notificationHeading"
+            style="@style/CountdownSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_toEndOf="@+id/notificationImage"
+            android:layout_toRightOf="@+id/notificationImage"
+            android:text="You get this!" />
+
+        <TextView
+            android:id="@+id/notificationFullText"
+            style="@style/CountdownSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/notificationHeading"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="44dp"
+            android:layout_marginStart="44dp"
+            android:text="Creativity is intelligence having fun. (Albert Einstein)"
+            android:textSize="15sp" />
+    </RelativeLayout>
 </RelativeLayout>
+
