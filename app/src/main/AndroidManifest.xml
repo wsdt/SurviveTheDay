@@ -30,6 +30,10 @@
             android:name=".CreditsActivity"
             android:label="@string/title_activity_credits"
             android:theme="@style/AppTheme.NoActionBar" />
+        <!--<activity
+            android:name=".util.InAppPurchaseActivity"
+            android:label="In App Purchase"
+            android:theme="@style/AppTheme.NoActionBar" />-->
 
         <!--
              BACKGROUND NOTIFICATION SERVICE

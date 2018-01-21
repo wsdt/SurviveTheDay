@@ -1,11 +1,17 @@
 package kevkevin.wsdt.tagueberstehen;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
+import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.sax.RootElement;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -59,6 +65,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         }
 
         onMotivateMeToggleClick(findViewById(R.id.isActive)); //simulate click so it is always at its correct state (enabled/disabled)
+
     }
 
     public void onSaveClick(View view) {
@@ -186,4 +193,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             }
         });
     }
+
+
+
 }
