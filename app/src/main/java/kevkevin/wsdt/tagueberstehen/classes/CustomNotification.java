@@ -132,13 +132,12 @@ public class CustomNotification { //one instance for every countdown or similar
         tmpIntent.putExtra("CONTENT_TEXT", text);
         tmpIntent.putExtra("SMALL_ICON", icon);
 
-        tmpIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY); //prevent activity to be added to history (preventing several back procedures) [also set in manifest]
+        tmpIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NO_HISTORY); //prevent activity to be added to history (preventing several back procedures) [also set in manifest]
         //make this locally because of the same reason why pending intent has no getter
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this.getActivityThisTarget(),
-                countdown.getCountdownId(),
-                tmpIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                this.getmNotificationId(),// instead of notificationId this was set (Problem: Always last intent was used): countdown.getCountdownId(),
+                tmpIntent,PendingIntent.FLAG_UPDATE_CURRENT);
 
         //add notification
         this.getNotifications().put((long) this.getmNotificationId(), //save with current id
@@ -279,7 +278,7 @@ public class CustomNotification { //one instance for every countdown or similar
                 "Nothing is impossible, the word itself says 'I'm possible'. (Audrey Hepburn)",
                 "My mission in life is not merely to survive, but to thrive; and to do so with some passion, some compassion, some humor, and some style. (Maya Angelou)",
                 "Today I choose life. Every morning when I wake up I can choose joy, happiness, negativity, pain... To feel the freedom that comes from being able to continue to make mistakes and choices - today I choose to feel life, not to deny my humanity but embrace it. (Kevyn Aucoin)",
-                "Your work is goind to fill a large part of your life, and the only way to be truly satisfied is to do what you believe is great work. And the only way to do great work is to love what you do. If you haven't found it yet keep looking. Don't settle. As with all matters of the heart, you'll know when you find it. (Steve Jobs)",
+                "Your work is going to fill a large part of your life, and the only way to be truly satisfied is to do what you believe is great work. And the only way to do great work is to love what you do. If you haven't found it yet keep looking. Don't settle. As with all matters of the heart, you'll know when you find it. (Steve Jobs)",
                 "Believe you can and you're halfway there. (Theodore Roosevelt)",
                 "Keep your face always toward the sunshine - and shadows will fall behind you. (Walt Whitman)",
                 "Perfection is not attainable, but if we chase perfection we can catch excellence. (Vince Lombardi)",

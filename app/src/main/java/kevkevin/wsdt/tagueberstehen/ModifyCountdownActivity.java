@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -87,8 +88,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     }
 
     private boolean areFormValuesValid() {
-        boolean areFormValuesValid = true;
-        //Validate dates
+        //Validate dates ------------------------------------------------------------------
         if (this.getNewEditedCountdown().getStartDateTime().matches(Countdown.DATE_FORMAT_REGEX) && this.getNewEditedCountdown().getUntilDateTime().matches(Countdown.DATE_FORMAT_REGEX)) {
             // Is UntilDateTime AFTER StartDateTime? -------------------
             //getDateTime(getStartDateTime()).compareTo(getCurrentDateTime()) > 0
@@ -97,16 +97,31 @@ public class ModifyCountdownActivity extends AppCompatActivity {
                 //startdatetime is in "future" is bigger than untildatetima (bad)
                 Toast.makeText(this, "UntilDateTime needs to be AFTER StartDateTime!", Toast.LENGTH_SHORT).show();
                 Log.w(TAG, "areFormValuesValid: UntilDateTime needs to be AFTER StartDateTime.");
-                areFormValuesValid = false;
+                return false;
             }
             // Is UntilDateTime AFTER StartDateTime? - END -------------
-
-            //TODO: ADD HERE FURTHER VALIDATIONS
         } else {
             Log.e(TAG, "validateFormValue: Dates not valid: "+this.getNewEditedCountdown().getStartDateTime()+" /// "+this.getNewEditedCountdown().getUntilDateTime());
             Toast.makeText(this,"DateTime is not valid! This might be an internal error. ", Toast.LENGTH_LONG).show();
+            return false;
         }
-        return areFormValuesValid;
+
+        //Validate lengths of texts ------------------------------------------------------------------
+        String countdownTitleValue = (((EditText) findViewById(R.id.countdownTitleValue)).getText()).toString();
+        if (countdownTitleValue.length() > 13 || countdownTitleValue.length() <= 0) {
+            Log.w(TAG, "areFormValuesValid: CountdownTitleValue is not valid!");
+            Toast.makeText(this, "Title must have 1 - 13 chars!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        String countdownDescriptionValue = (((EditText) findViewById(R.id.countdownDescriptionValue)).getText()).toString();
+        if (countdownDescriptionValue.length() > 28 || countdownDescriptionValue.length() <= 0) {
+            Log.w(TAG, "areFormValuesValid: CountdownDescriptionValue is not valid!");
+            Toast.makeText(this, "Description must have 1 - 28 chars!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        //TODO: ADD HERE FURTHER VALIDATIONS
+        return true;
     }
 
     private void setFormValues(Countdown countdown) {
