@@ -70,6 +70,16 @@ public class GlobalAppSettingsMgr {
         Log.d(TAG, "setSaveBattery: Saved new saveBattery setting.");
     }
 
+    public void setInAppNotificationShowDuration(int seconds) {
+        this.getGlobalSettings_SharedPref().edit().putInt("INAPP_NOTIFICATION_SHOW_DURATION", 1000*seconds).apply();
+        Log.d(TAG, "setSaveInAppNotificationShowDuration: Saved new inapp notification setting.");
+    }
+
+    public int getInAppNotificationShowDuration() {
+        Log.d(TAG, "getSaveInAppNotificationShowDuration: Returned inapp notification setting.");
+        return this.getGlobalSettings_SharedPref().getInt("INAPP_NOTIFICATION_SHOW_DURATION", 7500); //7500 seconds as default
+    }
+
 
     private SharedPreferences getGlobalSettings_SharedPref() {
         return this.globalSettings_SharedPref;

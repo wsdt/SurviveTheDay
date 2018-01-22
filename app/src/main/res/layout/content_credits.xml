@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     tools:context="kevkevin.wsdt.tagueberstehen.CreditsActivity"
     tools:showIn="@layout/activity_credits"
+    android:background="@color/dark"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:layout_height="match_parent">
 
@@ -24,6 +25,7 @@
                 android:id="@+id/creditsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/light"
                 android:layout_margin="@dimen/text_margin"
                 android:text="@string/creditsText" />
 

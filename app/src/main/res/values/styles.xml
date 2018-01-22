@@ -20,7 +20,7 @@
     <!-- MainPage - CountdownList MainActivity -->
     <style name="page">
         <item name="android:textColor">#eee</item>
-        <item name="android:background">#111</item>
+        <item name="android:background">@color/dark</item>
     </style>
     <style name="heading" parent="page">
         <item name="android:textSize">40sp</item>
@@ -49,7 +49,7 @@
 
     <!-- COUNTDOWN VIEW -->
     <style name="ContentMain">
-        <item name="android:background">#111</item>
+        <item name="android:background">@color/dark</item>
     </style>
 
     <style name="Countdown">
@@ -58,12 +58,13 @@
     </style>
 
     <style name="CountdownSmall">
-        <item name="android:textColor">#eee</item>
+        <item name="android:textColor">@color/light</item>
         <item name="android:textSize">20sp</item>
     </style>
 
     <!-- Modify Countdown Styles -->
     <style name="textForForm"><!-- If you place here a textcolor the disabled spinner and corr. textview will be always that way colored!! -->
+        <item name="android:textColor">@color/light</item>
         <item name="android:textSize">20sp</item>
     </style>
 
@@ -72,9 +73,13 @@
         <item name="android:layout_centerHorizontal">true</item>
         <item name="android:textColor">#aaa</item>
     </style>
+    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/loadingscreen</item>
+    </style>
 
     <!-- Setting activity -->
     <style name="settingText">
+        <item name="android:textColor">@color/light</item>
         <item name="android:textSize">16sp</item>
     </style>
 

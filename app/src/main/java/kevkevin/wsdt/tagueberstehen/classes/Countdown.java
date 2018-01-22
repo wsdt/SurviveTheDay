@@ -34,8 +34,6 @@ public class Countdown {
     private boolean isActive;
     private int notificationInterval; //in seconds!
     private static final String TAG = "Countdown";
-    private static final String DATE_FORMAT = "dd.MM.yyyy hh:mm:ss";
-    public static final String DATE_FORMAT_REGEX = "\\d{1,2}\\.\\d{1,2}\\.\\d{4} \\d{1,2}:\\d{1,2}:\\d{1,2}"; //mainly for other classes
 
     //Members for service (do not save them explicitely [unneccesary])
     private Timer timer = new Timer();
@@ -88,7 +86,7 @@ public class Countdown {
                 nachkommaStellen.append("0");
             }
             DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
-            df.setMaximumFractionDigits(2); //min might be 0 (nachkommastellen)
+            df.setMaximumFractionDigits(Constants.COUNTDOWN.MAXIMUM_FRACTION_DIGITS); //min might be 0 (nachkommastellen)
 
             double percentageValueUnformatted ;
             if (getRemainingOtherwisePassedPercentage) {
@@ -109,7 +107,7 @@ public class Countdown {
     public String getTotalSecondsNoScientificNotation() {
         DecimalFormat decimalFormat = (DecimalFormat) NumberFormat.getInstance(Locale.US);
         DecimalFormatSymbols decimalFormatSymbols = decimalFormat.getDecimalFormatSymbols();
-        decimalFormatSymbols.setGroupingSeparator(','); //set separator
+        decimalFormatSymbols.setGroupingSeparator(Constants.GLOBAL.THOUSAND_GROUPING_SEPERATOR); //set separator
         decimalFormat.setDecimalFormatSymbols(decimalFormatSymbols);
         return decimalFormat.format(this.getTotalSeconds());
     }
@@ -157,7 +155,7 @@ public class Countdown {
 
     //also needed in ModifyCountdownActivity
     public GregorianCalendar getDateTime(String formattedDate) {
-        DateFormat df = new SimpleDateFormat(DATE_FORMAT, Locale.GERMAN);
+        DateFormat df = new SimpleDateFormat(Constants.GLOBAL.DATETIME_FORMAT, Locale.GERMAN);
         GregorianCalendar result;
         try {
             Date date = df.parse(formattedDate);

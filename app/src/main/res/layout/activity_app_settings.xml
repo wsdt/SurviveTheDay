@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/settingsRLforAd"
-    tools:context="kevkevin.wsdt.tagueberstehen.AppSettings">
+    android:background="@color/dark"
+    tools:context="kevkevin.wsdt.tagueberstehen.AppSettingsActivity">
     <!-- Relative Layout for Banner Ad -->
 
     <TextView
@@ -17,13 +18,13 @@
         android:paddingLeft="40dp"
         android:paddingRight="40dp"
         android:paddingStart="40dp"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/colorPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <!-- Version name in gradle build defined, bc of that it is not detected by AS -->
     <TextView
         android:id="@+id/versionName"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/colorPrimary"
         android:text="@string/versionName"
         android:layout_alignEnd="@+id/versionNameLabel"
         android:layout_alignRight="@+id/versionNameLabel"
@@ -71,6 +72,7 @@
                 <!-- description for row above -->
                 <TextView
                     android:text="If activated this app uses broadcast receivers to show notifications, because newer phones block background services. You should only disable this function, if this app does not work properly. But keep in mind that the forward compatibility mode gets tested more often, has more functions and is more reliable."
+                    android:textColor="@color/lightdark"
                     android:layout_span="2" />
             </TableRow>
 
@@ -99,6 +101,40 @@
                 <!-- description for row above -->
                 <TextView
                     android:text="If activated notifications might not show up on-time of the selected interval. Works only with forward compatibility."
+                    android:textColor="@color/lightdark"
+                    android:layout_span="2" />
+            </TableRow>
+
+            <!-- In app notification - how long to show -->
+            <TableRow
+                android:id="@+id/inappNotificationHowLongToShow_ROW"
+                android:layout_marginTop="30dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_width="match_parent">
+
+
+                <TextView
+                    android:text="Duration of In-App-Notifications"
+                    style="@style/settingText"
+                    android:layout_weight="1"/>
+                <NumberPicker
+                    android:id="@+id/inappNotificationHowLongToShowValue"
+                    android:background="@color/lightdark"
+
+                    android:layout_width="40dp"
+
+                    android:layout_weight="1"/>
+            </TableRow>
+            <TableRow
+                android:id="@+id/inappNotificationHowLongToShowDescription"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_width="match_parent">
+                <!-- description for row above -->
+                <TextView
+                    android:text="The higher the no. the longer an in-app-notification will be displayed on screen. In-app-notifications are only displayed when you click on a motivational notification."
+                    android:textColor="@color/lightdark"
                     android:layout_span="2" />
             </TableRow>
 

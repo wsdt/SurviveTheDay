@@ -8,17 +8,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.renderscript.RenderScript;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-
 import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
@@ -59,7 +56,7 @@ public class CustomNotification { //one instance for every countdown or similar
         //Important: inexactRepeating to save battery!
         AlarmManager alarmManager = (AlarmManager) this.getActivityThisTarget().getSystemService(Context.ALARM_SERVICE);
         Intent tmpIntent = new Intent(this.getActivityThisTarget(), NotificationService_AlarmmanagerBroadcastReceiver.class);
-        tmpIntent.putExtra("COUNTDOWN_ID",countdownId);
+        tmpIntent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID,countdownId);
 
         //PendingIntent ID = Countdown ID (important so reload overwrites old one! AND we can show different notifications because different pendingIntent IDs!!
         PendingIntent alarmIntent = PendingIntent.getBroadcast(this.getActivityThisTarget(), countdownId, tmpIntent,0);
@@ -91,7 +88,7 @@ public class CustomNotification { //one instance for every countdown or similar
         //TODO: use this function for foreground service (live countdown)
 
         Intent tmpIntent = new Intent(this.getActivityThisTarget(), getTargetActivityClass());
-        tmpIntent.putExtra("COUNTDOWN_ID",countdown.getCountdownId()); //countdown to open
+        tmpIntent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID,countdown.getCountdownId()); //countdown to open
         //make this locally because of the same reason why pending intent has no getter
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this.getActivityThisTarget(),
@@ -125,12 +122,12 @@ public class CustomNotification { //one instance for every countdown or similar
         //IMPORTANT: Make no GETTER for this method, because this class is used for multiple countdowns!! So only the last assignment would open countdown
         //Create pending intent
         Intent tmpIntent = new Intent(this.getActivityThisTarget(), getTargetActivityClass());
-        tmpIntent.putExtra("COUNTDOWN_ID",countdown.getCountdownId()); //countdown to open
+        tmpIntent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID,countdown.getCountdownId()); //countdown to open
 
         //Following attributes are added to call them in countdownActivity and showing notification again.
-        tmpIntent.putExtra("CONTENT_TITLE", title);
-        tmpIntent.putExtra("CONTENT_TEXT", text);
-        tmpIntent.putExtra("SMALL_ICON", icon);
+        tmpIntent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_CONTENT_TITLE, title);
+        tmpIntent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_CONTENT_TEXT, text);
+        tmpIntent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_SMALL_ICON, icon);
 
         tmpIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NO_HISTORY); //prevent activity to be added to history (preventing several back procedures) [also set in manifest]
         //make this locally because of the same reason why pending intent has no getter
@@ -146,9 +143,9 @@ public class CustomNotification { //one instance for every countdown or similar
                 .setContentTitle(title)
                 //onMs = how long on / offMs = how long off (repeating, so blinking!)
                 //USE category color
-                .setLights(Color.parseColor(countdown.getCategory()), 1000, 1000)
-                //TODO: Also make Ticker configurable (text [escape!!] and enable/disable)
-                .setTicker("SurviveTheDay - Motivation")
+                .setLights(Color.parseColor(countdown.getCategory()), Constants.CUSTOMNOTIFICATION.NOTIFICATION_BLINK_ON_TIME_IN_MS, Constants.CUSTOMNOTIFICATION.NOTIFICATION_BLINK_OFF_TIME_IN_MS)
+                //TODO: [MAYBE, I think this setting would be useless] Also make Ticker configurable (text [escape!!] and enable/disable)
+                .setTicker(Constants.CUSTOMNOTIFICATION.NOTIFICATION_TICKER)
                 .setAutoCancel(true) //remove after clicking on it
                 .setContentIntent(pendingIntent)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(text)) //make notification extendable

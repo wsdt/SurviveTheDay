@@ -19,12 +19,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import org.w3c.dom.Text;
+
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.ColorPicker;
+import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.DateTimePicker.DateTimePicker;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
@@ -55,7 +58,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
 
         try {
-            this.existingCountdownId = getIntent().getIntExtra("COUNTDOWN_ID",-1);
+            this.existingCountdownId = getIntent().getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID,-1);
             //say that we want to edit an existing countdown and not create a new one
         } catch (Exception e) {
             Log.e(TAG, "onCreate: Could not load existing countdown.");
@@ -89,7 +92,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
     private boolean areFormValuesValid() {
         //Validate dates ------------------------------------------------------------------
-        if (this.getNewEditedCountdown().getStartDateTime().matches(Countdown.DATE_FORMAT_REGEX) && this.getNewEditedCountdown().getUntilDateTime().matches(Countdown.DATE_FORMAT_REGEX)) {
+        if (this.getNewEditedCountdown().getStartDateTime().matches(Constants.GLOBAL.DATETIME_FORMAT_REGEX) && this.getNewEditedCountdown().getUntilDateTime().matches(Constants.GLOBAL.DATETIME_FORMAT_REGEX)) {
             // Is UntilDateTime AFTER StartDateTime? -------------------
             //getDateTime(getStartDateTime()).compareTo(getCurrentDateTime()) > 0
             if (getNewEditedCountdown().getDateTime(getNewEditedCountdown().getStartDateTime())
@@ -108,15 +111,15 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
         //Validate lengths of texts ------------------------------------------------------------------
         String countdownTitleValue = (((EditText) findViewById(R.id.countdownTitleValue)).getText()).toString();
-        if (countdownTitleValue.length() > 13 || countdownTitleValue.length() <= 0) {
+        if (countdownTitleValue.length() >= Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MAX || countdownTitleValue.length() <= Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MIN) {
             Log.w(TAG, "areFormValuesValid: CountdownTitleValue is not valid!");
-            Toast.makeText(this, "Title must have 1 - 13 chars!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Title must have "+(Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MIN+1)+" - "+(Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MAX-1)+" chars!", Toast.LENGTH_SHORT).show();
             return false;
         }
         String countdownDescriptionValue = (((EditText) findViewById(R.id.countdownDescriptionValue)).getText()).toString();
-        if (countdownDescriptionValue.length() > 28 || countdownDescriptionValue.length() <= 0) {
+        if (countdownDescriptionValue.length() >= Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MAX || countdownDescriptionValue.length() <= Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MIN) {
             Log.w(TAG, "areFormValuesValid: CountdownDescriptionValue is not valid!");
-            Toast.makeText(this, "Description must have 1 - 28 chars!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Description must have "+(Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MIN+1)+" - "+(Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MAX-1)+" chars!", Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -167,8 +170,18 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         boolean tbIsChecked = ((ToggleButton) view).isChecked();
 
         //disable/enable fields (if toggle button is checked = active then buttons should be enabled. otherwise it is false
-        findViewById(R.id.notificationIntervalTextView).setEnabled(tbIsChecked);
-        findViewById(R.id.notificationIntervalSpinner).setEnabled(tbIsChecked);
+        TextView notificationIntervalTextView = (TextView) findViewById(R.id.notificationIntervalTextView);
+        Spinner notificationIntervalSpinner = (Spinner) findViewById(R.id.notificationIntervalSpinner);
+        //notificationIntervalTextView.setEnabled(tbIsChecked);
+        //notificationIntervalSpinner.setEnabled(tbIsChecked);
+
+        if (!tbIsChecked) {
+            notificationIntervalTextView.setVisibility(View.GONE);
+            notificationIntervalSpinner.setVisibility(View.GONE);
+        } else {
+            notificationIntervalTextView.setVisibility(View.VISIBLE);
+            notificationIntervalSpinner.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setIntervalSpinnerConfigurations() {

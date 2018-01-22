@@ -10,8 +10,8 @@ import android.widget.ImageView;
 
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 
-public class LoadingScreen extends AppCompatActivity {
-    private static final String TAG = "LoadingScreen";
+public class LoadingScreenActivity extends AppCompatActivity {
+    private static final String TAG = "LoadingScreenActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
