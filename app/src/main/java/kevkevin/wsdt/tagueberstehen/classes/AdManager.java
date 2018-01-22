@@ -27,7 +27,7 @@ public class AdManager {
     }
 
     public void initializeAdmob() {
-        MobileAds.initialize(this.getContext(), "ca-app-pub-8160960481527784~1956004763");
+        MobileAds.initialize(this.getContext(), Constants.ADMANAGER.ADMOB_USER_ID);
     }
 
 

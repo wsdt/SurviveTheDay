@@ -1,6 +1,5 @@
 package kevkevin.wsdt.tagueberstehen;
 
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -21,11 +20,10 @@ import android.widget.Toast;
 
 import java.util.Map;
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
+import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
-import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
-import kevkevin.wsdt.tagueberstehen.classes.services.NotificationService;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private LinearLayout nodeList;
@@ -97,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int countdownId = getCountdownIdFromNodeTag((RelativeLayout) v);
 
         if (countdownId >= 0) {
-            tmpintent.putExtra("COUNTDOWN_ID", countdownId);
+            tmpintent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID, countdownId);
             startActivity(tmpintent);
         } else {
             //Toast was made in getCountdownIdFromNodeTag()
@@ -226,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.action_settings:
                 Log.d(TAG, "onOptionsItemSelected: Tried to open SettingsActivity.");
-                startActivity(new Intent(this, AppSettings.class));
+                startActivity(new Intent(this, AppSettingsActivity.class));
                 break;
             default: Log.e(TAG,"onOptionsItemSelected: Button does not exist: "+item.getItemId());
         }

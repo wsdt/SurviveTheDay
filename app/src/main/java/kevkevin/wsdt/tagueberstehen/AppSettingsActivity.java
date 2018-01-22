@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TableRow;
@@ -15,13 +16,15 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
+import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
 
-public class AppSettings extends AppCompatActivity {
+public class AppSettingsActivity extends AppCompatActivity {
     private GlobalAppSettingsMgr globalAppSettingsMgr;
-    private static final String TAG = "AppSettings";
+    private static final String TAG = "AppSettingsActivity";
     private Switch useForwardCompatibility;
     private Switch saveBattery;
+    private NumberPicker inappNotificationShowDuration;
     private TableRow saveBatteryRow;
 
     @Override
@@ -39,6 +42,11 @@ public class AppSettings extends AppCompatActivity {
         this.useForwardCompatibility = (Switch) findViewById(R.id.useForwardCompatibility);
         this.saveBattery = (Switch) findViewById(R.id.saveBattery);
         this.saveBatteryRow = (TableRow) findViewById(R.id.saveBattery_ROW);
+        this.inappNotificationShowDuration = (NumberPicker) findViewById(R.id.inappNotificationHowLongToShowValue);
+
+        //Set numberpicker properties
+        this.inappNotificationShowDuration.setMinValue(3);
+        this.inappNotificationShowDuration.setMaxValue(60);
 
         //Load current settings before attaching listeners etc.
         loadCurrentSettings();
@@ -47,10 +55,12 @@ public class AppSettings extends AppCompatActivity {
     }
 
     private void enableDisableBatteryFields(boolean enabled) {
+        //Hide battery field if forward compatibility off or reverse (because batterysaving does not do anything if deactivated)
+        int viewVisibility = (enabled) ? View.VISIBLE : View.GONE;
         for (int i = 0; i<saveBatteryRow.getChildCount(); i++) {
-            saveBatteryRow.getChildAt(i).setEnabled(enabled);
+            saveBatteryRow.getChildAt(i).setVisibility(viewVisibility);
         }
-        findViewById(R.id.saveBatteryDescription).setEnabled(enabled);
+        findViewById(R.id.saveBatteryDescription).setVisibility(viewVisibility);
     }
 
     private void setCustomListeners() {
@@ -71,6 +81,13 @@ public class AppSettings extends AppCompatActivity {
                 Log.d(TAG, "setCustomListeners: Set saveBattery.");
             }
         });
+
+        this.inappNotificationShowDuration.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker numberPicker, int oldVal, int newVal) {
+                globalAppSettingsMgr.setInAppNotificationShowDuration(newVal);
+            }
+        });
     }
 
     private void loadCurrentSettings() {
@@ -78,6 +95,8 @@ public class AppSettings extends AppCompatActivity {
         this.saveBattery.setChecked(this.globalAppSettingsMgr.saveBattery());
 
         enableDisableBatteryFields(this.useForwardCompatibility.isChecked());
+
+        this.inappNotificationShowDuration.setValue(this.globalAppSettingsMgr.getInAppNotificationShowDuration());
 
         Log.d(TAG, "loadCurrentSettings: Loaded current settings.");
     }

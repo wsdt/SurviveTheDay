@@ -5,6 +5,7 @@
     android:id="@+id/wrappingRLForAdsModifyCountdowns"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/dark"
     tools:context="kevkevin.wsdt.tagueberstehen.ModifyCountdownActivity">
 
     <!-- layouts not useless because ad gets added programmatically -->
@@ -28,14 +29,14 @@
                 android:layout_width="120dp"
                 android:layout_gravity="start|top"
                 android:layout_marginTop="15dp"
-                android:text="Title: " />
+                android:text="Title" />
 
             <EditText
                 android:id="@+id/countdownTitleValue"
                 style="@style/textForForm"
                 android:layout_width="match_parent"
                 android:layout_gravity="start|top"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="6dp"
                 android:ems="10"
                 android:hint="Saturday Work - IKEA"
                 android:text="Work" />
@@ -44,15 +45,14 @@
                 style="@style/textForForm"
                 android:layout_width="120dp"
                 android:layout_gravity="start|top"
-                android:layout_marginTop="15dp"
-                android:text="Description: " />
+                android:layout_marginTop="10dp"
+                android:text="Description" />
 
             <EditText
                 android:id="@+id/countdownDescriptionValue"
                 style="@style/textForForm"
                 android:layout_width="match_parent"
                 android:layout_gravity="start|top"
-                android:layout_marginTop="10dp"
                 android:hint="Working from 8 a.m - 6 p.m."
                 android:text="Job at IKEA" />
             <!-- Start Datetime -->
@@ -60,15 +60,15 @@
                 style="@style/textForForm"
                 android:layout_width="120dp"
                 android:layout_gravity="start|top"
-                android:layout_marginTop="15dp"
-                android:text="From: " />
+                android:layout_marginTop="10dp"
+                android:text="From" />
 
             <TextView
                 android:id="@+id/startDateTimeValue"
                 style="@style/textForForm"
                 android:layout_width="match_parent"
                 android:layout_gravity="start|top"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="10dp"
                 android:hint="dd.MM.YYYY hh:mm:ss"
                 android:text="15.12.2017 08:00:00" />
             <!--android:inputType="datetime"-->
@@ -79,7 +79,7 @@
                 android:layout_width="120dp"
                 android:layout_gravity="start|top"
                 android:layout_marginTop="15dp"
-                android:text="Until: " />
+                android:text="Until" />
 
             <TextView
                 android:id="@+id/untilDateTimeValue"
@@ -95,7 +95,7 @@
                 android:layout_width="120dp"
                 android:layout_gravity="start|top"
                 android:layout_marginTop="15dp"
-                android:text="Category: " />
+                android:text="Category" />
 
             <LinearLayout
                 android:orientation="vertical">
@@ -103,11 +103,11 @@
                 android:id="@+id/categoryValue"
                 style="@style/textForForm"
                 android:layout_width="240dp"
-                android:layout_height="30dp"
+                android:layout_height="25dp"
                 android:layout_gravity="start|top"
                 android:layout_marginLeft="5dp"
                 android:layout_marginStart="5dp"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="17dp"
                 android:background="@color/colorPrimaryDark"
                 android:hint="All variations of colors."
                 android:onClick="onClickOpenColorPicker"
@@ -118,24 +118,28 @@
                     android:width="225dp"
                     android:layout_marginLeft="5dp"
                     android:layout_marginStart="5dp"
+                    style="@style/textForForm"
                     android:text="@string/categoryInfo"
                     android:textSize="12sp" />
             </LinearLayout>
+
             <!-- isActive -->
             <TextView
                 style="@style/textForForm"
                 android:layout_width="120dp"
                 android:layout_gravity="start|top"
-                android:layout_marginTop="15dp"
-                android:text="Motivate me: " />
+                android:layout_marginTop="10dp"
+                android:text="Motivate me" />
 
             <ToggleButton
                 android:id="@+id/isActive"
                 style="@style/textForForm"
+                android:textSize="15sp"
+                android:textColor="@color/dark"
                 android:layout_width="250dp"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="5dp"
                 android:layout_gravity="start|top"
-                android:layout_marginTop="10dp"
                 android:hint="Should countdown also be added in service?"
                 android:onClick="onMotivateMeToggleClick"
                 android:text="Motivate me" />
@@ -149,7 +153,7 @@
                 android:layout_gravity="start|top"
                 android:layout_marginTop="5dp"
                 android:hint="How often do u need motivation?"
-                android:text="Interval: " />
+                android:text="Interval" />
 
             <!-- SLIDER currently -->
             <Spinner

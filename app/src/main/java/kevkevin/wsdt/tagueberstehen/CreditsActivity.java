@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Px;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.NestedScrollView;
@@ -23,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
+import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.services.CountdownCounterService;
 
 public class CreditsActivity extends AppCompatActivity {
@@ -46,11 +48,11 @@ public class CreditsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent emailDeveloper = new Intent(Intent.ACTION_SENDTO,
-                        Uri.fromParts("mailto","kevin.riedl.privat@gmail.com", null));
-                emailDeveloper.putExtra(Intent.EXTRA_SUBJECT, "SurviveTheDay: Review");
-                emailDeveloper.putExtra(Intent.EXTRA_TEXT, "Please only German or English messages. :)");
-                emailDeveloper.putExtra(Intent.EXTRA_EMAIL, new String[] {"kevin.riedl.privat@gmail.com"});
-                startActivity(Intent.createChooser(emailDeveloper, "Send e-mail.."));
+                        Uri.fromParts("mailto", Constants.CREDITS_ACTIVITY.CONTACT_APP_CREATOR_EMAIL, null));
+                emailDeveloper.putExtra(Intent.EXTRA_SUBJECT, Constants.CREDITS_ACTIVITY.CONTACT_APP_CREATOR_DEFAULT_SUBJECT);
+                emailDeveloper.putExtra(Intent.EXTRA_TEXT, Constants.CREDITS_ACTIVITY.CONTACT_APP_CREATOR_DEFAULT_BODY);
+                emailDeveloper.putExtra(Intent.EXTRA_EMAIL, new String[] {Constants.CREDITS_ACTIVITY.CONTACT_APP_CREATOR_EMAIL});
+                startActivity(Intent.createChooser(emailDeveloper, Constants.CREDITS_ACTIVITY.CONTACT_APP_CREATOR_INTENT_TITLE));
                 /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
             }
@@ -100,6 +102,7 @@ public class CreditsActivity extends AppCompatActivity {
         GridLayout.LayoutParams layoutParams = new GridLayout.LayoutParams();
         layoutParams.width = 150;
         layoutParams.height = 150; //to change imagebuttons to similar size
+        layoutParams.setMargins(0,0,5,0);
         newImageButton.setLayoutParams(layoutParams); //changes the size of button
         newImageButton.setScaleType(ImageView.ScaleType.FIT_XY);
         if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
@@ -109,6 +112,7 @@ public class CreditsActivity extends AppCompatActivity {
         }
 
         newTextView.setMovementMethod(LinkMovementMethod.getInstance());
+        newTextView.setTextColor(getResources().getColor(R.color.light));
 
         creditList.addView(newImageButton);
         creditList.addView(newTextView);

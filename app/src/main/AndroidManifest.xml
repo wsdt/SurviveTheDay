@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="com.android.vending.BILLING" />
 
+    <!-- INTENT FILTER VIEW FOR GOOGLE INDEXING -->
     <application
         android:allowBackup="true"
         android:icon="@drawable/app_icon"
@@ -14,32 +15,68 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoadingScreen"
-            android:noHistory="true">
+        <activity
+            android:name=".LoadingScreenActivity"
+            android:noHistory="true"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- Also splash theme here, so we can show appIcon while opening app from notification -->
         <activity
             android:name=".CountdownActivity"
             android:label="@string/app_name"
             android:noHistory="true"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/SplashTheme">
+            <intent-filter><action android:name="android.intent.action.VIEW"/></intent-filter>
+        </activity>
+        <!-- Credits activity needs parent of splashtheme -->
         <activity
             android:name=".CreditsActivity"
-            android:label="@string/title_activity_credits"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/SplashTheme"
+            android:label="@string/title_activity_credits">
+            <intent-filter><action android:name="android.intent.action.VIEW"/></intent-filter>
+        </activity>
         <!--<activity
             android:name=".util.InAppPurchaseActivity"
             android:label="In App Purchase"
             android:theme="@style/AppTheme.NoActionBar" />-->
+        <activity android:name=".ModifyCountdownActivity">
+            <intent-filter><action android:name="android.intent.action.VIEW"/></intent-filter>
+        </activity>
+        <activity android:name=".MainActivity">
+            <intent-filter><action android:name="android.intent.action.VIEW"/></intent-filter>
+        </activity>
+        <activity android:name=".AppSettingsActivity" />
 
-        <!--
-             BACKGROUND NOTIFICATION SERVICE
-                directBootAware (allows running service also when phone is locked), if not supported by current device then savely IGNORED!
-        -->
+        <!-- BROADCAST RECEIVERS FOR REGULAR NOTIFICATIONS (maybe replacing background service in future) -->
+        <receiver
+            android:name=".classes.services.BootReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".classes.services.NotificationService_AlarmmanagerBroadcastReceiver" />
+
+        <!-- FOREGROUND COUNTDOWN COUNTER SERVICE -
+        // ADDED IF EVERYTHING WORKS FINE-->
+        <service
+            android:name=".classes.services.CountdownCounterService"
+            android:exported="false"
+            android:process=":countdowncounter"
+            android:stopWithTask="false">
+            <intent-filter>
+                <action android:name=".classes.CountdownCounterService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+
+        <!-- BACKGROUND NOTIFICATION SERVICE
+             directBootAware (allows running service also when phone is locked), if not supported by current device then savely IGNORED! -->
         <service
             android:name=".classes.services.NotificationService"
             android:directBootAware="true"
@@ -53,36 +90,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
-
-        <!--
-        FOREGROUND COUNTDOWN COUNTER SERVICE -
-        // ADDED IF EVERYTHING WORKS FINE-->
-        <service
-            android:name=".classes.services.CountdownCounterService"
-            android:exported="false"
-            android:process=":countdowncounter"
-            android:stopWithTask="false">
-            <intent-filter>
-                <action android:name=".classes.CountdownCounterService" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </service>
-
-
-        <activity android:name=".ModifyCountdownActivity" />
-        <activity android:name=".MainActivity" />
-
-        <!-- BROADCAST RECEIVERS FOR REGULAR NOTIFICATIONS (maybe replacing background service in future) -->
-        <receiver
-            android:name=".classes.services.BootReceiver"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-        <receiver android:name=".classes.services.NotificationService_AlarmmanagerBroadcastReceiver" />
-
-        <activity android:name=".AppSettings"></activity>
     </application>
 
 </manifest>

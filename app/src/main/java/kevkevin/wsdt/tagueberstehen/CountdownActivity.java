@@ -19,7 +19,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
+import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
 public class CountdownActivity extends AppCompatActivity {
@@ -27,12 +29,16 @@ public class CountdownActivity extends AppCompatActivity {
     private int countdownId = (-1);
     private static final String TAG = "CountdownActivity";
     private Intent lastIntent;
+    private GlobalAppSettingsMgr globalAppSettingsMgr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_countdown);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+
+        //Create activity globalStorageMgr
+        this.globalAppSettingsMgr =  new GlobalAppSettingsMgr(this);
 
         // SHOW FULL PAGE ADD
         AdManager adManager = new AdManager(this);
@@ -289,9 +295,9 @@ public class CountdownActivity extends AppCompatActivity {
     private void showInAppNotificationIfAvailable() {
         Log.d(TAG, "showInAppNotificationIfAvailable: Started method.");
         try {
-            int notificationImage = this.getLastIntent().getIntExtra("SMALL_ICON",-1);
-            String notificationHeading = this.getLastIntent().getStringExtra("CONTENT_TITLE");
-            String notificationFullText = this.getLastIntent().getStringExtra("CONTENT_TEXT");
+            int notificationImage = this.getLastIntent().getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_SMALL_ICON,-1);
+            String notificationHeading = this.getLastIntent().getStringExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_CONTENT_TITLE);
+            String notificationFullText = this.getLastIntent().getStringExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_CONTENT_TEXT);
             final RelativeLayout notificationContent = (RelativeLayout) findViewById(R.id.notificationContent); //call after values assigned so correct height
 
             if (notificationImage != (-1) && !notificationHeading.equals("") && !notificationFullText.equals("")) {
@@ -308,7 +314,7 @@ public class CountdownActivity extends AppCompatActivity {
 
                 //TODO: multiple properties (alpha also so it hides or comes): https://stackoverflow.com/questions/28352352/change-multiple-properties-with-single-objectanimator
                 final ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(notificationContent, "y", 15); //get it back to positive animated (+5 because we want a small space above shape)
-                objectAnimator.setDuration(1500); //1,5 seconds
+                objectAnimator.setDuration(Constants.COUNTDOWN_ACTIVITY.INAPP_NOTIFICATION_ANIMATION_DURATION_IN_MS); //1,5 seconds
             /*objectAnimator.setRepeatCount(1); //show it and hide it after duration expired [making this with count var and restarting animation in onAnimationEnd()]
             objectAnimator.setRepeatMode(ValueAnimator.REVERSE);*/
                 objectAnimator.addListener(new Animator.AnimatorListener() {
@@ -324,8 +330,8 @@ public class CountdownActivity extends AppCompatActivity {
                         if (count++ < 1) { //create new object animator because we want not the same animation but reverse
                             //TODO: works now, but in future if extreme long texts notification might not get hidden completely (*2)
                             ObjectAnimator objectAnimatorReverse = ObjectAnimator.ofFloat(notificationContent, "y", (hiddenPosition*2)); //get it back to positive animated (*2 so it is in every case outside of screen [no idea why this might be necessary for long codes]
-                            objectAnimatorReverse.setDuration(1500);
-                            objectAnimatorReverse.setStartDelay(7500); //how long should be notification displayed TODO: Make configurable by globalsettings
+                            objectAnimatorReverse.setDuration(Constants.COUNTDOWN_ACTIVITY.INAPP_NOTIFICATION_ANIMATION_DURATION_IN_MS);
+                            objectAnimatorReverse.setStartDelay(globalAppSettingsMgr.getInAppNotificationShowDuration()); //how long should be notification displayed TODO: Make configurable by globalsettings
                             objectAnimatorReverse.start(); //start again
                             Log.d(TAG, "onAnimationEnd: Inapp notification repeated with delay in onAnimationEnd.");
                         } else {
