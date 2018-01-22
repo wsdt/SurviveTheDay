@@ -77,7 +77,7 @@ public class GlobalAppSettingsMgr {
 
     public int getInAppNotificationShowDuration() {
         Log.d(TAG, "getSaveInAppNotificationShowDuration: Returned inapp notification setting.");
-        return this.getGlobalSettings_SharedPref().getInt("INAPP_NOTIFICATION_SHOW_DURATION", 7500); //7500 seconds as default
+        return this.getGlobalSettings_SharedPref().getInt("INAPP_NOTIFICATION_SHOW_DURATION", 7); //7 seconds as default
     }
 
 
