@@ -118,12 +118,13 @@
                     android:text="Duration of In-App-Notifications"
                     style="@style/settingText"
                     android:layout_weight="1"/>
-                <NumberPicker
+                <Spinner
                     android:id="@+id/inappNotificationHowLongToShowValue"
                     android:background="@color/lightdark"
-
-                    android:layout_width="40dp"
-
+                    android:spinnerMode="dropdown"
+                    android:layout_width="50dp"
+                    android:textAlignment="center"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"/>
             </TableRow>
             <TableRow

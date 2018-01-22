@@ -30,6 +30,7 @@ import kevkevin.wsdt.tagueberstehen.classes.ColorPicker;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.DateTimePicker.DateTimePicker;
+import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
 public class ModifyCountdownActivity extends AppCompatActivity {
@@ -54,7 +55,8 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
 
         //Set List for intervalsetter (spinner)
-        setIntervalSpinnerConfigurations();
+        HelperClass.setIntervalSpinnerConfigurations((Spinner) findViewById(R.id.notificationIntervalSpinner),R.array.countdownIntervalSpinner_LABELS);
+        //setIntervalSpinnerConfigurations();
 
 
         try {
@@ -184,7 +186,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         }
     }
 
-    private void setIntervalSpinnerConfigurations() {
+    /*private void setIntervalSpinnerConfigurations() {
         Spinner spinner = (Spinner) findViewById(R.id.notificationIntervalSpinner);
         //Create an arrayadapter using string array from strings.xml and default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -193,7 +195,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         //apply adapter to spinner
         spinner.setAdapter(adapter);
-    }
+    }*/
 
     //GETTER/SETTER -----------------------------------------------------
     public Countdown getNewEditedCountdown() {
