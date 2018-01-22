@@ -6,13 +6,13 @@
     android:layout_height="match_parent"
     android:id="@+id/loadingScreen"
     android:background="#111"
+    android:gravity="center_vertical"
     tools:context="kevkevin.wsdt.tagueberstehen.LoadingScreen">
 
     <TextView
         android:textColor="@color/colorPrimaryDark"
         android:textSize="35sp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="80dp"
         android:id="@+id/appName"
         android:text="@string/app_name"
         android:layout_marginBottom="5dp"
@@ -44,30 +44,14 @@
         android:layout_below="@+id/versionName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-    <TextView
-        android:id="@+id/appOwner"
-        android:text="@string/app_owner"
-        android:textSize="25sp"
-        android:layout_marginBottom="5dp"
-        style="@style/loadingText"
-        android:layout_below="@+id/appIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <TextView
-        android:id="@+id/ownerMail"
-        android:textSize="15sp"
-        android:text="@string/app_owner_mail"
-        android:layout_below="@+id/appOwner"
-        style="@style/loadingText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 
-    <TextView
+    <ProgressBar
         android:layout_marginTop="20dp"
-        style="@style/loadingText"
         android:text="@string/loading_pleasewait"
-        android:layout_below="@+id/ownerMail"
+        android:layout_below="@+id/appIcon"
         android:textSize="15sp"
+        android:indeterminate="true"
+        android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
