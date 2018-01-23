@@ -2,10 +2,111 @@
     <string name="app_name" translatable="false">SurviveTheDay</string>
     <string name="app_owner" translatable="false">© Kevin Riedl, 2018</string>
     <string name="app_owner_mail" translatable="false">kevin.riedl.privat@gmail.com</string>
-    <string name="loading_pleasewait">Please wait ..</string>
-    <string name="action_credits">Credits</string>
+    <string name="app_version_label">App-Version: </string>
+
+    <!-- ACTIONBAR TITLES -->
     <string name="title_activity_credits">Credits</string>
-    <string name="creditsText">
+    <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_modify_countdown">Create/Edit a countdown</string>
+
+    <!-- BUTTONS -->
+    <string name="button_save">Save</string>
+    <string name="button_abort">Abort</string>
+
+    <!-- GENERIC ERROR MESSAGES -->
+    <string name="error_title_systemError">System error</string>
+    <string name="error_contactAdministrator">Operation failed. Please contact administrator.</string>
+    <string name="error_noInternetConnection">Please check your internet connection!</string>
+
+    <!-- #################################### ACTIVITIES ################################################## -->
+    <!-- MainActivity -->
+    <string name="mainActivity_noCountdownsFound">No countdowns found.</string>
+    <string name="mainActivity_deletedCountdown">Deleted countdown.</string>
+    <string name="mainActivity_deletedAllCountdowns">Deleted all countdowns.</string>
+    <string name="mainActivity_countdownMotivationToggleOnOff">Countdown motivation got %1$s.</string>
+    <string name="mainActivity_countdownMotivationToggleOnOff_activated">activated</string>
+    <string name="mainActivity_countdownMotivationToggleOnOff_deactivated">deactivated</string>
+    <string name="mainActivity_countdownNode_error_nodeTagWrongBuild">Could not perform action. Node maybe wrong build.</string>
+    <string name="mainActivity_countdownNode_error_categoryColorWrongRetained">Category color could not be applied. We chose one for you.</string>
+    <string name="mainActivity_countdownNode_DateTimeValues">%1$s - %2$s</string>
+
+    <!-- Nodes -->
+    <string name="node_countdownTitleError404">Countdown not found</string>
+    <string name="node_countdownDescriptionError404">Please contact system administrator.</string>
+    <string name="node_countdownDateTimeValuesError404">dd.MM.JJJJ hh:mm:ss - dd.MM.JJJJ hh:mm:ss</string>
+
+    <!-- SettingsActivity -->
+    <string name="setting_forwardCompatibility_title">Forward compatibility</string>
+    <string name="setting_forwardCompatibility_description">If activated this app uses broadcast receivers to show notifications, because newer phones block background services. You should only disable this function, if this app does not work properly. But keep in mind that the forward compatibility mode gets tested more often, has more functions and is more reliable.</string>
+    <string name="setting_saveBattery_title">Save battery</string>
+    <string name="setting_saveBattery_description">If activated notifications might not show up on-time of the selected interval. Works only with forward compatibility.</string>
+    <string name="setting_durationOfInAppNotifications_title">Duration of In-App-Notifications</string>
+    <string name="setting_durationOfInAppNotifications_description">The higher the no. the longer an in-app-notification will be displayed on screen. In-app-notifications are only displayed when you click on a motivational notification.</string>
+
+    <!-- CountdownActivity -->
+    <string name="countdownActivity_countdownNotFound">Countdown not found.</string>
+    <string name="countdownActivity_countdownMainCounter_zero">00:00:00:00</string>
+    <string name="countdownActivity_countdownSubCounter_zero">00.00</string>
+    <string name="countdownActivity_countdownSubCounter_totalYears_label">Total Years: </string>
+    <string name="countdownActivity_countdownSubCounter_totalMonths_label">Total Months: </string>
+    <string name="countdownActivity_countdownSubCounter_totalWeeks_label">Total Weeks: </string>
+    <string name="countdownActivity_countdownSubCounter_totalDays_label">Total Days: </string>
+    <string name="countdownActivity_countdownSubCounter_totalHours_label">Total Hours: </string>
+    <string name="countdownActivity_countdownSubCounter_totalMinutes_label">Total Minutes: </string>
+    <string name="countdownActivity_countdownSubCounter_totalSeconds_label">Total Seconds: </string>
+    <string name="countdownActivity_inAppNotification_error404_title">System error</string>
+    <string name="countdownActivity_inAppNotification_error404_description">Please report this issue to the system administrator.</string>
+    <string-array name="inAppNotificationShowSpinner_LABELS_VALUES">
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>10</item>
+        <item>12</item>
+        <item>15</item>
+        <item>20</item>
+        <item>25</item>
+        <item>30</item>
+        <item>45</item>
+        <item>60</item>
+    </string-array>
+
+    <!-- ModifyCountdownActivity -->
+    <string name="modifyCountdownActivity_countdown_title_label">Title</string>
+    <string name="modifyCountdownActivity_countdown_title_edittext_exampleValue">Work</string>
+    <string name="modifyCountdownActivity_countdown_description_label">Description</string>
+    <string name="modifyCountdownActivity_countdown_description_edittext_exampleValue">Being vendor in IKEA</string>
+    <string name="modifyCountdownActivity_countdown_fromDateTime_label">From</string>
+    <string name="modifyCountdownActivity_countdown_fromDateTime_textview_exampleValue">15.12.2017 08:00:00</string>
+    <string name="modifyCountdownActivity_countdown_untilDateTime_label">Until</string>
+    <string name="modifyCountdownActivity_countdown_untilDateTime_textview_exampleValue">15.12.2018 08:00:00</string>
+    <string name="modifyCountdownActivity_countdown_category_label">Category</string>
+    <string name="modifyCountdownActivity_countdown_category_textview_fieldDescription">Color will be used e.g. for notifications (led-color, &#8320;)</string>
+    <string name="modifyCountdownActivity_countdown_motivateMe_label">Motivate me</string>
+    <string name="modifyCountdownActivity_countdown_motivateMeInterval_label">Interval</string>
+    <string name="modifyCountdownActivity_countdown_validation_UntilAfterStartDateTime">UntilDateTime needs to be AFTER StartDateTime!</string>
+    <string name="modifyCountdownActivity_countdown_validation_DateTimeNotValid">DateTime is not valid! This might be an internal error.</string>
+    <string name="modifyCountdownActivity_countdown_validation_LengthConstraints">%1$s must have %2$d - %3$d chars!</string>
+
+    <!-- CreditsActivity -->
+    <string name="creditsActivity_floatingButton_contactAppOwnerMailIntent_mail_subject">SurviveTheDay: Review</string>
+    <string name="creditsActivity_floatingButton_contactAppOwnerMailIntent_mail_body">Please only German or English messages. :)</string>
+    <string name="creditsActivity_floatingButton_contactAppOwnerMailIntent_mail_intentTitle">Send e-mail..</string>
+    <string name="creditsActivity_drawableCreditTemplate">
+        <![CDATA[
+            "<div><b>%1$s Icon</b><br />Icons made by <a href=\"%2$s\" title=\"%3$s\">%3$s</a> from <br /><a href=\"%4$s\" title=\"%5$s\">%4$s</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div></string>"
+            ]]></string>
+    <string name="creditsActivity_drawableCreditTemplate_app">App</string>
+    <string name="creditsActivity_drawableCreditTemplate_plus">Plus</string>
+    <string name="creditsActivity_drawableCreditTemplate_trash">Trash</string>
+    <string name="creditsActivity_drawableCreditTemplate_edit">Edit</string>
+    <string name="creditsActivity_drawableCreditTemplate_delete">Delete</string>
+    <string name="creditsActivity_drawableCreditTemplate_motivateMe">Motivate me</string>
+    <string name="creditsActivity_drawableCreditTemplate_conversationMark">Conversation mark</string>
+    <string name="creditsActivity_drawableCreditTemplate_stopTimer">Stoptimer</string>
+    <string name="creditsActivity_creditsIntroductionText">
         <!-- CDATA FOR HTML SUPPORT -->
         <![CDATA[
         "<h3>SurviveTheDay - © Riedl Kevin, 2018</h3>"
@@ -15,7 +116,6 @@
         "[2]: Generic quotes from <a href="https://www.brainyquote.com/topics/inspirational">Brainyquote.com, Inspirational Quotes</a> (last seen: 2018-01-06)"
         ]]>
     </string>
-
     <!-- IMPORTANT: Following two arrays must be the same size and order!! -->
     <string-array name="countdownIntervalSpinner_LABELS">
         <item>5 Seconds</item>
@@ -51,102 +151,17 @@
         <item>28800</item>
         <item>43200</item>
     </string-array>
-    <string name="categoryInfo">
-            Color will be used e.g. for notifications (led-color, ...)
-         </string>
-    <string name="title_activity_settings">Settings</string>
 
-    <!-- Strings related to Settings -->
+    <!-- CLASSES ###################################################################################################### -->
+    <!-- CustomNotification -->
+    <string name="customNotification_notificationTicker">SurviveTheDay - Motivation</string>
 
-    <!-- Example General settings -->
-    <string name="pref_header_general">General</string>
+    <!-- Countdown -->
+    <string name="countdown_info_startDateInFuture">Countdown starts at: %1$s</string>
+    <string name="countdown_info_untilDateInPast">Countdown has already expired on: %1$s</string>
 
-    <string name="pref_title_social_recommendations">Enable social recommendations</string>
-    <string name="pref_description_social_recommendations">Recommendations for people to contact
-        based on your message history
-    </string>
-
-    <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">John Smith</string>
-
-    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
-    <string-array name="pref_example_list_titles">
-        <item>Always</item>
-        <item>When possible</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_example_list_values">
-        <item>1</item>
-        <item>0</item>
-        <item>-1</item>
-    </string-array>
-
-    <!-- Example settings for Data & Sync -->
-    <string name="pref_header_data_sync">Data &amp; sync</string>
-
-    <string name="pref_title_sync_frequency">Sync frequency</string>
-    <string-array name="pref_sync_frequency_titles">
-        <item>15 minutes</item>
-        <item>30 minutes</item>
-        <item>1 hour</item>
-        <item>3 hours</item>
-        <item>6 hours</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_sync_frequency_values">
-        <item>15</item>
-        <item>30</item>
-        <item>60</item>
-        <item>180</item>
-        <item>360</item>
-        <item>-1</item>
-    </string-array>
-
-    <string-array name="list_preference_entries">
-        <item>Entry 1</item>
-        <item>Entry 2</item>
-        <item>Entry 3</item>
-    </string-array>
-
-    <string-array name="list_preference_entry_values">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
-
-    <string-array name="multi_select_list_preference_default_value" />
-
-    <string name="pref_title_system_sync_settings">System sync settings</string>
-
-    <!-- Example settings for Notifications -->
-    <string name="pref_header_notifications">Notifications</string>
-
-    <string name="pref_title_new_message_notifications">New message notifications</string>
-
-    <string name="pref_title_ringtone">Ringtone</string>
-    <string name="pref_ringtone_silent">Silent</string>
-
-    <string name="pref_title_vibrate">Vibrate</string>
-
-
-    <!-- IMPORTANT: Following two arrays must be the same size and order!! -->
-    <string-array name="inAppNotificationShowSpinner_LABELS_VALUES">
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>10</item>
-        <item>12</item>
-        <item>15</item>
-        <item>20</item>
-        <item>25</item>
-        <item>30</item>
-        <item>45</item>
-        <item>60</item>
-    </string-array>
-
-
+    <!-- DateTimePicker -->
+    <string name="dateTimePicker_format_date">%1$d.%2$d.%3$d</string>
+    <string name="dateTimePicker_format_DateTime">%1$s %2$s:%3$s:%4$s</string>
 
 </resources>

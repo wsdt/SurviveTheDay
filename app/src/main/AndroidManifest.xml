@@ -15,9 +15,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <!-- screenOrientation and configChanges so only portrait mode -->
         <activity
             android:name=".LoadingScreenActivity"
             android:noHistory="true"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,10 +36,9 @@
             android:theme="@style/SplashTheme">
             <intent-filter><action android:name="android.intent.action.VIEW"/></intent-filter>
         </activity>
-        <!-- Credits activity needs parent of splashtheme -->
+        <!-- Credits activity needs parent of splashtheme or noActionBar Theme (better: because color so primary and not black) -->
         <activity
             android:name=".CreditsActivity"
-            android:theme="@style/SplashTheme"
             android:label="@string/title_activity_credits">
             <intent-filter><action android:name="android.intent.action.VIEW"/></intent-filter>
         </activity>
@@ -44,13 +46,15 @@
             android:name=".util.InAppPurchaseActivity"
             android:label="In App Purchase"
             android:theme="@style/AppTheme.NoActionBar" />-->
-        <activity android:name=".ModifyCountdownActivity">
+        <activity android:name=".ModifyCountdownActivity"
+            android:label="@string/title_activity_modify_countdown">
             <intent-filter><action android:name="android.intent.action.VIEW"/></intent-filter>
         </activity>
         <activity android:name=".MainActivity">
             <intent-filter><action android:name="android.intent.action.VIEW"/></intent-filter>
         </activity>
-        <activity android:name=".AppSettingsActivity" />
+        <activity android:name=".AppSettingsActivity"
+            android:label="@string/title_activity_settings"/>
 
         <!-- BROADCAST RECEIVERS FOR REGULAR NOTIFICATIONS (maybe replacing background service in future) -->
         <receiver

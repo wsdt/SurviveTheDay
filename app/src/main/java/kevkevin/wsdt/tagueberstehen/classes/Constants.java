@@ -1,6 +1,8 @@
 package kevkevin.wsdt.tagueberstehen.classes;
 
 
+import java.util.Locale;
+
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
 
 public class Constants {
@@ -9,6 +11,7 @@ public class Constants {
         Character THOUSAND_GROUPING_SEPERATOR = ',';
         String DATETIME_FORMAT = "dd.MM.yyyy hh:mm:ss";
         String DATETIME_FORMAT_REGEX = "\\d{1,2}\\.\\d{1,2}\\.\\d{4} \\d{1,2}:\\d{1,2}:\\d{1,2}";
+        Locale LOCALE = Locale.GERMAN;
     }
 
     public interface ADMANAGER {
@@ -37,7 +40,6 @@ public class Constants {
         int NOTIFICATION_BLINK_ON_TIME_IN_MS = 1000;
 
         //CREATE NOTIFICATION ITSELF (IDENTIFIERS for PUTEXTRA in intents etc.)
-        String NOTIFICATION_TICKER = "SurviveTheDay - Motivation";
         String IDENTIFIER_COUNTDOWN_ID = "COUNTDOWN_ID";
         String IDENTIFIER_CONTENT_TITLE = "CONTENT_TITLE";
         String IDENTIFIER_CONTENT_TEXT = "CONTENT_TEXT";
@@ -59,11 +61,19 @@ public class Constants {
         int INAPP_NOTIFICATION_ANIMATION_DURATION_IN_MS = 1500;
     }
 
-    public interface CREDITS_ACTIVITY {
-        //TODO: Normal strings (translateable should be generally converted to strings.xml and no reference to constants.java)
-        String CONTACT_APP_CREATOR_EMAIL = "kevin.riedl.privat@gmail.com";
-        String CONTACT_APP_CREATOR_DEFAULT_SUBJECT = "SurviveTheDay: Review";
-        String CONTACT_APP_CREATOR_DEFAULT_BODY = "Please only German or English messages. :)";
-        String CONTACT_APP_CREATOR_INTENT_TITLE = "Send e-mail..";
+    public interface MAIN_ACTIVITY {
+        String COUNTDOWN_VIEW_TAG_PREFIX = "COUNTDOWN_";
+    }
+
+    public interface STORAGE_MANAGERS {
+        interface INTERNAL_COUNTDOWN_STR_MGR {
+            String SHAREDPREFERENCES_DBNAME = "COUNTDOWNS";
+        }
+        interface GLOBAL_APPSETTINGS_STR_MGR {
+            String SHAREDPREFERENCES_DBNAME = "APP_SETTINGS";
+            String SPIDENTIFIER_BG_SERVICE_PID = "BG_SERVICE_PID";
+            String SPIDENTIFIER_USE_FORWARD_COMPATIBILITY = "USE_FORWARD_COMPATIBILITY";
+            String SPIDENTIFIER_SAVE_BATTERY = "SAVE_BATTERY";
+        }
     }
 }

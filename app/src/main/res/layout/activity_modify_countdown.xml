@@ -29,7 +29,7 @@
                 android:layout_width="120dp"
                 android:layout_gravity="start|top"
                 android:layout_marginTop="15dp"
-                android:text="Title" />
+                android:text="@string/modifyCountdownActivity_countdown_title_label" />
 
             <EditText
                 android:id="@+id/countdownTitleValue"
@@ -38,30 +38,33 @@
                 android:layout_gravity="start|top"
                 android:layout_marginTop="6dp"
                 android:ems="10"
-                android:hint="Saturday Work - IKEA"
-                android:text="Work" />
+                android:inputType="text|textAutoComplete|textAutoCorrect"
+                android:autoText="true"
+                android:text="@string/modifyCountdownActivity_countdown_title_edittext_exampleValue" />
             <!-- DESCRIPTION -->
             <TextView
                 style="@style/textForForm"
                 android:layout_width="120dp"
                 android:layout_gravity="start|top"
                 android:layout_marginTop="10dp"
-                android:text="Description" />
+                android:text="@string/modifyCountdownActivity_countdown_description_label" />
 
+            <!-- inputType and autoText combination (both) -->
             <EditText
+                android:inputType="text|textAutoComplete|textAutoCorrect"
+                android:autoText="true"
                 android:id="@+id/countdownDescriptionValue"
                 style="@style/textForForm"
                 android:layout_width="match_parent"
                 android:layout_gravity="start|top"
-                android:hint="Working from 8 a.m - 6 p.m."
-                android:text="Job at IKEA" />
+                android:text="@string/modifyCountdownActivity_countdown_description_edittext_exampleValue" />
             <!-- Start Datetime -->
             <TextView
                 style="@style/textForForm"
                 android:layout_width="120dp"
                 android:layout_gravity="start|top"
                 android:layout_marginTop="10dp"
-                android:text="From" />
+                android:text="@string/modifyCountdownActivity_countdown_fromDateTime_label" />
 
             <TextView
                 android:id="@+id/startDateTimeValue"
@@ -69,8 +72,7 @@
                 android:layout_width="match_parent"
                 android:layout_gravity="start|top"
                 android:layout_marginTop="10dp"
-                android:hint="dd.MM.YYYY hh:mm:ss"
-                android:text="15.12.2017 08:00:00" />
+                android:text="@string/modifyCountdownActivity_countdown_fromDateTime_textview_exampleValue" />
             <!--android:inputType="datetime"-->
 
             <!-- Until Datetime http://www.truiton.com/2013/03/android-pick-date-time-from-edittext-onclick-event/ >>> super Lösung -->
@@ -79,7 +81,7 @@
                 android:layout_width="120dp"
                 android:layout_gravity="start|top"
                 android:layout_marginTop="15dp"
-                android:text="Until" />
+                android:text="@string/modifyCountdownActivity_countdown_untilDateTime_label" />
 
             <TextView
                 android:id="@+id/untilDateTimeValue"
@@ -87,15 +89,14 @@
                 android:layout_width="match_parent"
                 android:layout_gravity="start|top"
                 android:layout_marginTop="15dp"
-                android:hint="dd.MM.YYYY hh:mm:ss"
-                android:text="15.12.2018 15:00:00" />
+                android:text="@string/modifyCountdownActivity_countdown_untilDateTime_textview_exampleValue" />
             <!-- Category -->
             <TextView
                 style="@style/textForForm"
                 android:layout_width="120dp"
                 android:layout_gravity="start|top"
                 android:layout_marginTop="15dp"
-                android:text="Category" />
+                android:text="@string/modifyCountdownActivity_countdown_category_label" />
 
             <LinearLayout
                 android:orientation="vertical">
@@ -109,9 +110,7 @@
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="17dp"
                 android:background="@color/colorPrimaryDark"
-                android:hint="All variations of colors."
-                android:onClick="onClickOpenColorPicker"
-                android:tooltipText="Click on me to select a color." />
+                android:onClick="onClickOpenColorPicker" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -119,7 +118,7 @@
                     android:layout_marginLeft="5dp"
                     android:layout_marginStart="5dp"
                     style="@style/textForForm"
-                    android:text="@string/categoryInfo"
+                    android:text="@string/modifyCountdownActivity_countdown_category_textview_fieldDescription"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -129,7 +128,7 @@
                 android:layout_width="120dp"
                 android:layout_gravity="start|top"
                 android:layout_marginTop="10dp"
-                android:text="Motivate me" />
+                android:text="@string/modifyCountdownActivity_countdown_motivateMe_label" />
 
             <ToggleButton
                 android:id="@+id/isActive"
@@ -140,9 +139,7 @@
                 android:layout_height="40dp"
                 android:layout_marginTop="5dp"
                 android:layout_gravity="start|top"
-                android:hint="Should countdown also be added in service?"
-                android:onClick="onMotivateMeToggleClick"
-                android:text="Motivate me" />
+                android:onClick="onMotivateMeToggleClick" />
 
             <!-- Service settings (Interval for notifications: by default disabled) -->
             <TextView
@@ -152,8 +149,7 @@
                 android:layout_height="50dp"
                 android:layout_gravity="start|top"
                 android:layout_marginTop="5dp"
-                android:hint="How often do u need motivation?"
-                android:text="Interval" />
+                android:text="@string/modifyCountdownActivity_countdown_motivateMeInterval_label" />
 
             <!-- SLIDER currently -->
             <Spinner
@@ -169,13 +165,13 @@
                 android:id="@+id/saveCountdown"
                 android:onClick="onSaveClick"
                 android:padding="5dp"
-                android:text="Save" />
+                android:text="@string/button_save" />
 
             <Button
                 android:id="@+id/abortCountdown"
                 android:onClick="onAbortClick"
                 android:padding="5dp"
-                android:text="Abort" />
+                android:text="@string/button_abort" />
         </GridLayout>
     </ScrollView>
 

@@ -6,8 +6,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import java.util.ArrayList;
@@ -29,12 +31,14 @@ public class CustomNotification { //one instance for every countdown or similar
     private static final String TAG = "CustomNotification";
     private Random random;
     private Class targetActivityClass;
+    private Resources res;
 
-    public CustomNotification(Context activityThisTarget, Class targetActivityClass, NotificationManager mNotifyMgr) { //(NotifyManager) getSystemService(Notification_Service);
+    public CustomNotification(@NonNull Context activityThisTarget, Class targetActivityClass, NotificationManager mNotifyMgr) { //(NotifyManager) getSystemService(Notification_Service);
         this.setActivityThisTarget(activityThisTarget);
         this.setmNotifyMgr(mNotifyMgr);
         this.random =  new Random();
         this.setTargetActivityClass(targetActivityClass);
+        this.setRes(activityThisTarget.getResources());
 
         //With countdown ID we are able to look in our persistent storage for the right countdown
         // IMPORTANT: Pending intent in create countdown so always correct one opened
@@ -101,7 +105,7 @@ public class CustomNotification { //one instance for every countdown or similar
                 //not deprecated one requires api 16 (min is 15)
                 new NotificationCompat.Builder(this.getActivityThisTarget())
                         .setSmallIcon(R.drawable.app_icon)
-                        .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.drawable.app_icon))
+                        .setLargeIcon(BitmapFactory.decodeResource(this.getRes(),R.drawable.app_icon))
                         .setContentTitle(countdown.getCountdownTitle())
                         .setAutoCancel(false) //remove after clicking on it
                         .setContentIntent(pendingIntent)
@@ -144,8 +148,7 @@ public class CustomNotification { //one instance for every countdown or similar
                 //onMs = how long on / offMs = how long off (repeating, so blinking!)
                 //USE category color
                 .setLights(Color.parseColor(countdown.getCategory()), Constants.CUSTOMNOTIFICATION.NOTIFICATION_BLINK_ON_TIME_IN_MS, Constants.CUSTOMNOTIFICATION.NOTIFICATION_BLINK_OFF_TIME_IN_MS)
-                //TODO: [MAYBE, I think this setting would be useless] Also make Ticker configurable (text [escape!!] and enable/disable)
-                .setTicker(Constants.CUSTOMNOTIFICATION.NOTIFICATION_TICKER)
+                .setTicker(this.getRes().getString(R.string.customNotification_notificationTicker))
                 .setAutoCancel(true) //remove after clicking on it
                 .setContentIntent(pendingIntent)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(text)) //make notification extendable
@@ -182,11 +185,12 @@ public class CustomNotification { //one instance for every countdown or similar
                 break;*/
             default:
                 Log.e(TAG, "createRandomNotification: Could not determine random notification type!");
-                return createNotification(countdown,"System Error", "Please contact administrator. ", R.drawable.warning);
+                return createNotification(countdown,this.getRes().getString(R.string.error_title_systemError), this.getRes().getString(R.string.error_contactAdministrator), R.drawable.warning);
         }
         //Extract values from innerclass instance and create CustomNotification in next method
         return createNotification(countdown, randomNotification.title,randomNotification.text,randomNotification.icon);
     }
+
 
     // PRIVATE METHODS FOR CREATERANDOMNOTIFICATION(COUNTDOWN countdown) {} - START ####################################################
     private class NotificationContent {
@@ -377,7 +381,7 @@ public class CustomNotification { //one instance for every countdown or similar
                 countdown.getCountdownTitle()+" - Just "+countdown.getRemainingPercentage(2, true)+" % left.",
                 countdown.getCountdownTitle()+" - Countdown ends on "+countdown.getUntilDateTime(),
                 countdown.getCountdownTitle()+" - Already "+countdown.getRemainingPercentage(2, false)+" % passed!",
-                countdown.getCountdownTitle()+" - A motivating notification will be sent every "+(this.getActivityThisTarget().getResources().getStringArray(R.array.countdownIntervalSpinner_LABELS)[(Arrays.asList(this.getActivityThisTarget().getResources().getStringArray(R.array.countdownIntervalSpinner_VALUES)).indexOf(""+countdown.getNotificationInterval()))])+". :)")); //get label of corresponding seconds of strings.xml
+                countdown.getCountdownTitle()+" - A motivating notification will be sent every "+(this.getRes().getStringArray(R.array.countdownIntervalSpinner_LABELS)[(Arrays.asList(this.getRes().getStringArray(R.array.countdownIntervalSpinner_VALUES)).indexOf(""+countdown.getNotificationInterval()))])+". :)")); //get label of corresponding seconds of strings.xml
         randomNotification.iconList.addAll(Arrays.asList(R.drawable.notification_timebased_color,R.drawable.notification_timebased_white));
 
         //Choose one for each arraylist by random index (max is size-1!)
@@ -452,5 +456,12 @@ public class CustomNotification { //one instance for every countdown or similar
         this.targetActivityClass = targetActivityClass;
     }
 
+    public Resources getRes() {
+        return res;
+    }
+
+    public void setRes(Resources res) {
+        this.res = res;
+    }
 
 }

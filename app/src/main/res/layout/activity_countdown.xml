@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="75dp"
-                android:text="00:00:00:00" />
+                android:text="@string/countdownActivity_countdownMainCounter_zero" />
 
 
             <!-- YEARS ++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -41,7 +41,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@id/countdownCounter"
-                android:text="Total Years: " />
+                android:text="@string/countdownActivity_countdownSubCounter_totalYears_label" />
 
             <TextView
                 android:id="@+id/countdownCounterYears"
@@ -51,7 +51,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/countdownCounter"
-                android:text="00.00" />
+                android:text="@string/countdownActivity_countdownSubCounter_zero" />
 
             <!-- MONTHS ++++++++++++++++++++++++++++++++++++++++++++++ -->
             <TextView
@@ -62,7 +62,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/countdownCounterYears"
-                android:text="Total Months: " />
+                android:text="@string/countdownActivity_countdownSubCounter_totalMonths_label" />
 
             <TextView
                 android:id="@+id/countdownCounterMonths"
@@ -72,7 +72,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_below="@+id/countdownCounterYears"
-                android:text="00.00" />
+                android:text="@string/countdownActivity_countdownSubCounter_zero" />
 
             <!-- WEEKS ++++++++++++++++++++++++++++++++++++++++++++++ -->
             <TextView
@@ -83,7 +83,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/countdownCounterMonths"
-                android:text="Total Weeks: " />
+                android:text="@string/countdownActivity_countdownSubCounter_totalWeeks_label" />
 
             <TextView
                 android:id="@+id/countdownCounterWeeks"
@@ -93,7 +93,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_below="@+id/countdownCounterMonths"
-                android:text="00.00" />
+                android:text="@string/countdownActivity_countdownSubCounter_zero" />
 
             <!-- DAYS ++++++++++++++++++++++++++++++++++++++++++++++ -->
             <TextView
@@ -104,7 +104,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@id/countdownCounterWeeks"
-                android:text="Total Days: " />
+                android:text="@string/countdownActivity_countdownSubCounter_totalDays_label" />
 
             <TextView
                 android:id="@+id/countdownCounterDays"
@@ -114,7 +114,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/countdownCounterWeeks"
-                android:text="00.00" />
+                android:text="@string/countdownActivity_countdownSubCounter_zero" />
 
             <!-- HOURS ++++++++++++++++++++++++++++++++++++++++++++++ -->
             <TextView
@@ -125,7 +125,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/countdownCounterDays"
-                android:text="Total Hours: " />
+                android:text="@string/countdownActivity_countdownSubCounter_totalHours_label" />
 
             <TextView
                 android:id="@+id/countdownCounterHours"
@@ -135,7 +135,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_below="@+id/countdownCounterDays"
-                android:text="00.00" />
+                android:text="@string/countdownActivity_countdownSubCounter_zero" />
 
             <!-- MINUTES ++++++++++++++++++++++++++++++++++++++++++++++ -->
             <TextView
@@ -146,7 +146,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/countdownCounterHours"
-                android:text="Total Minutes: " />
+                android:text="@string/countdownActivity_countdownSubCounter_totalMinutes_label" />
 
             <TextView
                 android:id="@+id/countdownCounterMinutes"
@@ -156,7 +156,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_below="@+id/countdownCounterHours"
-                android:text="00.00" />
+                android:text="@string/countdownActivity_countdownSubCounter_zero" />
 
             <!-- SECONDS ++++++++++++++++++++++++++++++++++++++++++++++ -->
             <TextView
@@ -167,7 +167,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/countdownCounterMinutes"
-                android:text="Total Seconds: " />
+                android:text="@string/countdownActivity_countdownSubCounter_totalSeconds_label" />
 
             <TextView
                 android:id="@+id/countdownCounterSeconds"
@@ -178,7 +178,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginBottom="35dp"
                 android:layout_below="@+id/countdownCounterMinutes"
-                android:text="00.00" />
+                android:text="@string/countdownActivity_countdownSubCounter_zero" />
         </RelativeLayout>
     </ScrollView>
 
@@ -220,7 +220,7 @@
             android:textSize="18sp"
             android:layout_toEndOf="@+id/notificationImage"
             android:layout_toRightOf="@+id/notificationImage"
-            android:text="System error" />
+            android:text="@string/countdownActivity_inAppNotification_error404_title" />
 
         <TextView
             android:id="@+id/notificationFullText"
@@ -230,7 +230,7 @@
             android:layout_below="@id/notificationHeading"
             android:layout_marginLeft="44dp"
             android:layout_marginStart="44dp"
-            android:text="Please report this issue to the system administrator."
+            android:text="@string/countdownActivity_inAppNotification_error404_description"
             android:textSize="13sp" />
     </RelativeLayout>
 </RelativeLayout>

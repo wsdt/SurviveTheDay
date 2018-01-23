@@ -47,7 +47,6 @@
 
     <ProgressBar
         android:layout_marginTop="20dp"
-        android:text="@string/loading_pleasewait"
         android:layout_below="@+id/appIcon"
         android:textSize="15sp"
         android:indeterminate="true"

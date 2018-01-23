@@ -1,6 +1,7 @@
 package kevkevin.wsdt.tagueberstehen;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -33,8 +34,6 @@ public class CreditsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_credits);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         //Ads - START
         AdManager adManager = new AdManager(this);
@@ -42,19 +41,17 @@ public class CreditsActivity extends AppCompatActivity {
         adManager.loadBannerAd((RelativeLayout) findViewById(R.id.wrappingRLForAds));
         //Ads - END
 
-
+        final Resources res = getResources();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.contactMe);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent emailDeveloper = new Intent(Intent.ACTION_SENDTO,
-                        Uri.fromParts("mailto", Constants.CREDITS_ACTIVITY.CONTACT_APP_CREATOR_EMAIL, null));
-                emailDeveloper.putExtra(Intent.EXTRA_SUBJECT, Constants.CREDITS_ACTIVITY.CONTACT_APP_CREATOR_DEFAULT_SUBJECT);
-                emailDeveloper.putExtra(Intent.EXTRA_TEXT, Constants.CREDITS_ACTIVITY.CONTACT_APP_CREATOR_DEFAULT_BODY);
-                emailDeveloper.putExtra(Intent.EXTRA_EMAIL, new String[] {Constants.CREDITS_ACTIVITY.CONTACT_APP_CREATOR_EMAIL});
-                startActivity(Intent.createChooser(emailDeveloper, Constants.CREDITS_ACTIVITY.CONTACT_APP_CREATOR_INTENT_TITLE));
-                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
+                        Uri.fromParts("mailto", res.getString(R.string.app_owner_mail), null));
+                emailDeveloper.putExtra(Intent.EXTRA_SUBJECT, res.getString(R.string.creditsActivity_floatingButton_contactAppOwnerMailIntent_mail_subject));
+                emailDeveloper.putExtra(Intent.EXTRA_TEXT, res.getString(R.string.creditsActivity_floatingButton_contactAppOwnerMailIntent_mail_body));
+                emailDeveloper.putExtra(Intent.EXTRA_EMAIL, new String[]{res.getString(R.string.app_owner_mail)});
+                startActivity(Intent.createChooser(emailDeveloper, res.getString(R.string.creditsActivity_floatingButton_contactAppOwnerMailIntent_mail_intentTitle)));
             }
         });
 
@@ -62,35 +59,28 @@ public class CreditsActivity extends AppCompatActivity {
         TextView introduction = ((TextView) findViewById(R.id.creditsText));
         //Makes links etc. clickable
         if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            introduction.setText(Html.fromHtml(getString(R.string.creditsText), Html.FROM_HTML_MODE_LEGACY)); //deprecated for newer versions
+            introduction.setText(Html.fromHtml(getString(R.string.creditsActivity_creditsIntroductionText), Html.FROM_HTML_MODE_LEGACY)); //deprecated for newer versions
         } else {
-            introduction.setText(Html.fromHtml(getString(R.string.creditsText)));
+            introduction.setText(Html.fromHtml(getString(R.string.creditsActivity_creditsIntroductionText)));
         }
         introduction.setMovementMethod(LinkMovementMethod.getInstance());
 
         //add all icons to view
         addAllIconCreditsToView();
-
-        //APP ICON: <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
-        //CREDITS: CAMPFIRE ICON: <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
-        // Plus Icon: <div>Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
-        // Trash Icon: <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
-        //Warning icon: <div>Icons made by <a href="https://www.flaticon.com/authors/twitter" title="Twitter">Twitter</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
-        // Edit Icon: <div>Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
-        // Delete small icon: <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
-        // MotivateMeToggle: <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
     }
 
     private void addAllIconCreditsToView() {
         GridLayout content = (GridLayout) findViewById(R.id.creditList);
-        addIconCreditToView(content,"<div><b>App Icon</b><br />Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.app_icon);
-        addIconCreditToView(content,"<div><b>Plus Icon</b><br />Icons made by <a href=\"https://www.flaticon.com/authors/smashicons\" title=\"Smashicons\">Smashicons</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.plus);
-        addIconCreditToView(content,"<div><b>Trash Icon</b><br />Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.delete);
-        addIconCreditToView(content,"<div><b>Edit Icon</b><br />Icons made by <a href=\"https://www.flaticon.com/authors/smashicons\" title=\"Smashicons\">Smashicons</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.edit_16px);
-        addIconCreditToView(content,"<div><b>Delete Icon</b><br />Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.delete_16px);
-        addIconCreditToView(content,"<div><b>Motivate me toggle</b><br />Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.switchtoggle_16px);
-        addIconCreditToView(content,"<div><b>Conversation mark</b><br />Icons made by <a href=\"http://www.freepik.com\" title=\"Freepik\">Freepik</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>", R.drawable.notification_generic_blue);
-        addIconCreditToView(content,"<div><b>Stoptimer</b><br />Icons made by <a href=\"https://www.flaticon.com/authors/smashicons\" title=\"Smashicons\">Smashicons</a> from <br /><a href=\"https://www.flaticon.com/\" title=\"Flaticon\">www.flaticon.com</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div>",R.drawable.notification_timebased_color);
+        Resources res = getResources();
+        String drawableCreditTemplate = getResources().getString(R.string.creditsActivity_drawableCreditTemplate);
+        addIconCreditToView(content, String.format(drawableCreditTemplate, res.getString(R.string.creditsActivity_drawableCreditTemplate_app), "http://www.freepik.com", "Freepik", "https://www.flaticon.com/", "Flaticon"), R.drawable.app_icon);
+        addIconCreditToView(content, String.format(drawableCreditTemplate, res.getString(R.string.creditsActivity_drawableCreditTemplate_plus), "https://www.flaticon.com/authors/smashicons", "Smashicons", "https://www.flaticon.com/", "Flaticon"), R.drawable.plus);
+        addIconCreditToView(content, String.format(drawableCreditTemplate, res.getString(R.string.creditsActivity_drawableCreditTemplate_trash), "http://www.freepik.com", "Freepik", "https://www.flaticon.com/", "Flaticon"), R.drawable.delete);
+        addIconCreditToView(content, String.format(drawableCreditTemplate, res.getString(R.string.creditsActivity_drawableCreditTemplate_edit), "https://www.flaticon.com/authors/smashicons", "Smashicons", "https://www.flaticon.com/", "Flaticon"), R.drawable.edit_16px);
+        addIconCreditToView(content, String.format(drawableCreditTemplate, res.getString(R.string.creditsActivity_drawableCreditTemplate_delete), "http://www.freepik.com", "Freepik", "https://www.flaticon.com/", "Flaticon"), R.drawable.delete_16px);
+        addIconCreditToView(content, String.format(drawableCreditTemplate, res.getString(R.string.creditsActivity_drawableCreditTemplate_motivateMe), "http://www.freepik.com", "Freepik", "https://www.flaticon.com/", "Flaticon"), R.drawable.switchtoggle_16px);
+        addIconCreditToView(content, String.format(drawableCreditTemplate, res.getString(R.string.creditsActivity_drawableCreditTemplate_conversationMark), "http://www.freepik.com", "Freepik", "https://www.flaticon.com/", "Flaticon"), R.drawable.notification_generic_blue);
+        addIconCreditToView(content, String.format(drawableCreditTemplate, res.getString(R.string.creditsActivity_drawableCreditTemplate_stopTimer), "https://www.flaticon.com/authors/smashicons", "Smashicons", "https://www.flaticon.com/", "Flaticon"), R.drawable.notification_timebased_color);
     }
 
     private void addIconCreditToView(GridLayout creditList, String credits, int drawable) {
@@ -102,7 +92,7 @@ public class CreditsActivity extends AppCompatActivity {
         GridLayout.LayoutParams layoutParams = new GridLayout.LayoutParams();
         layoutParams.width = 150;
         layoutParams.height = 150; //to change imagebuttons to similar size
-        layoutParams.setMargins(0,0,5,0);
+        layoutParams.setMargins(0, 0, 5, 0);
         newImageButton.setLayoutParams(layoutParams); //changes the size of button
         newImageButton.setScaleType(ImageView.ScaleType.FIT_XY);
         if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
