@@ -155,6 +155,21 @@
     <!-- CLASSES ###################################################################################################### -->
     <!-- CustomNotification -->
     <string name="customNotification_notificationTicker">SurviveTheDay - Motivation</string>
+    <string-array name="customNotification_random_generic_titles">
+        <item>Keep going!</item>
+        <item>Do not give up!</item>
+        <item>Keep it up!</item>
+        <item>You get that!</item>
+        <item>That is nothing!</item>
+        <item>Easy :)</item>
+        <item>Never settle!</item>
+    </string-array>
+    <string-array name="customNotification_random_timebased_titles">
+        <item>Almost done!</item>
+        <item>You got it soon!</item>
+        <item>Be confident, the end is near.</item>
+    </string-array>
+    <!-- TODO: customnotification GENERIC AND TIMEBASED CONTENT TO ADD!!!!!!!!!!! (timebased with placeholders) -->
 
     <!-- Countdown -->
     <string name="countdown_info_startDateInFuture">Countdown starts at: %1$s</string>

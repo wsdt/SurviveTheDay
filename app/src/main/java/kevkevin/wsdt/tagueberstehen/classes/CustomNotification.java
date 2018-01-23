@@ -206,7 +206,7 @@ public class CustomNotification { //one instance for every countdown or similar
 
     private NotificationContent createRandomNotification_GENERIC(Countdown countdown) {
         NotificationContent randomNotification = new NotificationContent(); //create custom instance (important not to use same instance for each cateogry)
-        randomNotification.titleList.addAll(Arrays.asList("Keep going!","Do not give up!","Keep it up!", "You get that!", "That is nothing!", "Easy :)", "Never settle!")); //converts array to list and adds all of them
+        randomNotification.titleList.addAll(Arrays.asList(this.getRes().getStringArray(R.array.customNotification_random_generic_titles))); //converts array to list and adds all of them
         randomNotification.textList.addAll(Arrays.asList("The way get started is to quit talking and begin doing. (Walt Disney)",
                 "The pessimist sees difficulty in every opportunity. The optimist sees opportunity in every difficulty. (Winston Churchill)",
                 "Don't let yesterday take up too much of today. (Will Rogers)",
@@ -376,7 +376,7 @@ public class CustomNotification { //one instance for every countdown or similar
     private NotificationContent createRandomNotification_TIMEBASED(Countdown countdown) {
         NotificationContent randomNotification = new NotificationContent(); //create custom instance (important not to use same instance for each cateogry)
 
-        randomNotification.titleList.addAll(Arrays.asList("Almost done!", "You got it soon!", "Be confident, the end is near.")); //converts array to list and adds all of them
+        randomNotification.titleList.addAll(Arrays.asList(this.getRes().getStringArray(R.array.customNotification_random_timebased_titles))); //converts array to list and adds all of them
         randomNotification.textList.addAll(Arrays.asList(countdown.getCountdownTitle()+" - Only "+countdown.getTotalSecondsNoScientificNotation()+" seconds to go!",
                 countdown.getCountdownTitle()+" - Just "+countdown.getRemainingPercentage(2, true)+" % left.",
                 countdown.getCountdownTitle()+" - Countdown ends on "+countdown.getUntilDateTime(),
