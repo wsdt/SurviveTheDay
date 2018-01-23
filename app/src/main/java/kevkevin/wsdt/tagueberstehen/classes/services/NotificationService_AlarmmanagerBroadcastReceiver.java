@@ -12,6 +12,7 @@ import android.util.Log;
 import java.util.Map;
 
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
+import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
@@ -30,7 +31,7 @@ public class NotificationService_AlarmmanagerBroadcastReceiver extends Broadcast
         Countdown currCountdown = null;
         int alarmId = (-1);
         try {
-            alarmId = intent.getIntExtra("COUNTDOWN_ID",-1);
+            alarmId = intent.getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID,-1);
             currCountdown = (new InternalCountdownStorageMgr(context)).getCountdown(alarmId);
         } catch (Exception e) {
             Log.e(TAG, "onReceive: Could not load countdown from countdown id.");

@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
+import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
 import kevkevin.wsdt.tagueberstehen.classes.services.NotificationService;
 import kevkevin.wsdt.tagueberstehen.classes.services.NotificationService_AlarmmanagerBroadcastReceiver;
@@ -22,17 +23,17 @@ public class GlobalAppSettingsMgr {
 
     public GlobalAppSettingsMgr (@NonNull Context context) {
         this.setContext(context);
-        this.setGlobalSettings_SharedPref(context.getSharedPreferences("APP_SETTINGS", Context.MODE_PRIVATE));
+        this.setGlobalSettings_SharedPref(context.getSharedPreferences(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.SHAREDPREFERENCES_DBNAME, Context.MODE_PRIVATE));
     }
 
     public void setBackgroundServicePid(int bgServicePid) {
         //only used to kill the process of bg service
-        this.getGlobalSettings_SharedPref().edit().putInt("BG_SERVICE_PID",bgServicePid).apply();
+        this.getGlobalSettings_SharedPref().edit().putInt(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.SPIDENTIFIER_BG_SERVICE_PID,bgServicePid).apply();
         Log.d(TAG, "setBackgroundServicePid: Tried to save process id of bg service.");
     }
 
     public int getBackgroundServicePid() {
-        return this.getGlobalSettings_SharedPref().getInt("BG_SERVICE_PID", -1);
+        return this.getGlobalSettings_SharedPref().getInt(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.SPIDENTIFIER_BG_SERVICE_PID, -1);
     }
 
     public boolean useForwardCompatibility() {
@@ -40,11 +41,11 @@ public class GlobalAppSettingsMgr {
                 If TRUE: Use broadcastReceivers and make Option available for saveBattery
                 If FALSE: Use Background service (long intervals might not work)
         */
-        return this.getGlobalSettings_SharedPref().getBoolean("USE_FORWARD_COMPATIBILITY", true); //default true, so broadcast receivers used
+        return this.getGlobalSettings_SharedPref().getBoolean(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.SPIDENTIFIER_USE_FORWARD_COMPATIBILITY, true); //default true, so broadcast receivers used
     }
 
     public void setUseForwardCompatibility(boolean useForwardCompatibility) {
-        this.getGlobalSettings_SharedPref().edit().putBoolean("USE_FORWARD_COMPATIBILITY", useForwardCompatibility).apply();
+        this.getGlobalSettings_SharedPref().edit().putBoolean(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.SPIDENTIFIER_USE_FORWARD_COMPATIBILITY, useForwardCompatibility).apply();
         Log.d(TAG, "setUseForwardCompatibility: Saved new forwardcompatiblity setting.");
 
         //change mode
@@ -56,7 +57,7 @@ public class GlobalAppSettingsMgr {
                If TRUE: inexactRepeating() USED [battery saving]
                If FALSE: setRepeating() USED [battery draining]*/
 
-        boolean saveBattery = this.getGlobalSettings_SharedPref().getBoolean("SAVE_BATTERY",false); //default is false, so more precise
+        boolean saveBattery = this.getGlobalSettings_SharedPref().getBoolean(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.SPIDENTIFIER_SAVE_BATTERY,false); //default is false, so more precise
 
         if (!useForwardCompatibility()) {
              Log.d(TAG, "saveBattery: useForwardCompatibility FALSE! Background service is used so this option is redundant!");
@@ -66,18 +67,18 @@ public class GlobalAppSettingsMgr {
 
     public void setSaveBattery(boolean saveBattery) {
         //no restart necessary value gets called dynamically
-        this.getGlobalSettings_SharedPref().edit().putBoolean("SAVE_BATTERY", saveBattery).apply();
+        this.getGlobalSettings_SharedPref().edit().putBoolean(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.SPIDENTIFIER_SAVE_BATTERY, saveBattery).apply();
         Log.d(TAG, "setSaveBattery: Saved new saveBattery setting.");
     }
 
-    public void setInAppNotificationShowDuration(int seconds) {
+    public void setInAppNotificationShowDurationInS(int seconds) {
         this.getGlobalSettings_SharedPref().edit().putInt("INAPP_NOTIFICATION_SHOW_DURATION", 1000*seconds).apply();
         Log.d(TAG, "setSaveInAppNotificationShowDuration: Saved new inapp notification setting.");
     }
 
-    public int getInAppNotificationShowDuration() {
+    public int getInAppNotificationShowDurationInMs() {
         Log.d(TAG, "getSaveInAppNotificationShowDuration: Returned inapp notification setting.");
-        return this.getGlobalSettings_SharedPref().getInt("INAPP_NOTIFICATION_SHOW_DURATION", 7); //7 seconds as default
+        return this.getGlobalSettings_SharedPref().getInt("INAPP_NOTIFICATION_SHOW_DURATION", 7000); //7 seconds as default
     }
 
 

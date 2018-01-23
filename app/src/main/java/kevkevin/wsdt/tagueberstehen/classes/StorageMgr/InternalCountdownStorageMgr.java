@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
+import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
 import kevkevin.wsdt.tagueberstehen.classes.services.NotificationService;
@@ -26,12 +27,12 @@ public class InternalCountdownStorageMgr {
 
 
     public InternalCountdownStorageMgr(Context context) {
-        setAllCountdowns_SharedPref(context.getSharedPreferences("COUNTDOWNS", Context.MODE_PRIVATE));
+        setAllCountdowns_SharedPref(context.getSharedPreferences(Constants.STORAGE_MANAGERS.INTERNAL_COUNTDOWN_STR_MGR.SHAREDPREFERENCES_DBNAME, Context.MODE_PRIVATE));
         this.setContext(context);
     }
 
     public void deleteCountdown(int countdownId) {
-        this.getAllCountdowns_SharedPref().edit().remove("COUNTDOWN_" + countdownId).apply();
+        this.getAllCountdowns_SharedPref().edit().remove(Constants.MAIN_ACTIVITY.COUNTDOWN_VIEW_TAG_PREFIX + countdownId).apply();
         Log.d(TAG, "deleteCountdown: Deleted countdown with id: " + countdownId);
 
         //Restart service because countown got removed
@@ -143,7 +144,7 @@ public class InternalCountdownStorageMgr {
         for (Map.Entry<Integer, Countdown> countdown : this.allCountdowns.entrySet()) {
             String countdownString = countdown.getValue().getCountdownId() + ";" + countdown.getValue().getCountdownTitle() + ";" + countdown.getValue().getCountdownDescription() + ";" + countdown.getValue().getStartDateTime() + ";" + countdown.getValue().getUntilDateTime() + ";" + countdown.getValue().getCreatedDateTime() + ";" + countdown.getValue().getLastEditDateTime() + ";" + countdown.getValue().getCategory() + ";" + Boolean.toString(countdown.getValue().isActive()) + ";" + countdown.getValue().getNotificationInterval(); //save boolean as String so String.valueOf()
             Log.d(TAG, "setSaveAllCountdowns: Saved string is COUNTDOWN_" + countdown.getValue().getCountdownId() + "/" + countdownString);
-            editor.putString("COUNTDOWN_" + countdown.getValue().getCountdownId(), countdownString);
+            editor.putString(Constants.MAIN_ACTIVITY.COUNTDOWN_VIEW_TAG_PREFIX + countdown.getValue().getCountdownId(), countdownString);
         }
         editor.apply();
 

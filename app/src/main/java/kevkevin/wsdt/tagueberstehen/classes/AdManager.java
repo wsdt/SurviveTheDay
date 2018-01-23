@@ -16,6 +16,8 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 
+import kevkevin.wsdt.tagueberstehen.R;
+
 public class AdManager {
     private Context context;
     private static final String TAG = "AdManager";
@@ -61,7 +63,7 @@ public class AdManager {
 
             @Override
             public void onAdFailedToLoad(int errorcode) {
-                Toast.makeText(getContext(), "Please check your internet connection!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.error_noInternetConnection, Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "onAdFailedToLoad: Could not load interstitial ad. Errorcode: "+errorcode);
                 if (goToActivityAfterShown != null) {
                     Log.d(TAG, "onAdClosed: gotoActivity is not null.");
@@ -86,7 +88,7 @@ public class AdManager {
         adView.setAdListener(new AdListener() {
             @Override
             public void onAdFailedToLoad(int errorcode) {
-                Toast.makeText(getContext(), "Please check your internet connection!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.error_noInternetConnection, Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "onAdFailedToLoad (loadBannerAd): Banner could not be loaded.");
             }
 

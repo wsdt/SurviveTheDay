@@ -1,6 +1,7 @@
 package kevkevin.wsdt.tagueberstehen.classes;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.os.Handler;
@@ -18,6 +19,7 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
 
@@ -120,11 +122,12 @@ public class Countdown {
     }
 
     public Double getTotalSeconds() {
+        Resources res = this.getContext().getResources();
         Double totalSeconds = 0D;
         try {
             if (getDateTime(getStartDateTime()).compareTo(getCurrentDateTime()) > 0) {
                 //date is in the future
-                Toast.makeText(this.getContext(),"Countdown starts at: "+this.getStartDateTime(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(this.getContext(),String.format(res.getString(R.string.countdown_info_startDateInFuture),this.getStartDateTime()),Toast.LENGTH_SHORT).show();
                 totalSeconds = 0D; //prevent from counting to infinity (because negative)
             } else {
                 //date is in the past and countdown started already
@@ -135,7 +138,7 @@ public class Countdown {
             e.printStackTrace();
         }
         if (totalSeconds < 0) {
-            Toast.makeText(this.getContext(),"Countdown has already expired on: "+this.getUntilDateTime(),Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.getContext(),String.format(res.getString(R.string.countdown_info_untilDateInPast),this.getUntilDateTime()),Toast.LENGTH_SHORT).show();
             totalSeconds = 0D; //prevent from counting to infinity (because negative)
         }
 

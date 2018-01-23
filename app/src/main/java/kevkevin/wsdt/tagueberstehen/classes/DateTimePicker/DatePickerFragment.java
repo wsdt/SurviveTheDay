@@ -2,6 +2,7 @@ package kevkevin.wsdt.tagueberstehen.classes.DateTimePicker;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -15,8 +16,12 @@ import com.ikovac.timepickerwithseconds.TimePicker;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import kevkevin.wsdt.tagueberstehen.R;
+import kevkevin.wsdt.tagueberstehen.classes.Constants;
+
 public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
     private TextView resultView;
+    private Resources res;
     private static final String TAG = "DatePickerFragment";
 
     @NonNull
@@ -27,6 +32,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
+        this.setRes(getResources()); //important must NOT be null!
 
         // Create a new instance of DatePickerDialog and return it
         return new DatePickerDialog(getActivity(), this, year, month, day);
@@ -40,7 +46,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute, int seconds) {
                 // Do something with the time chosen by the user
-                getResultView().setText(getResultView().getText() + " " + String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + ":" + String.format("%02d", seconds));
+                getResultView().setText(String.format(getRes().getString(R.string.dateTimePicker_format_DateTime),getResultView().getText(),String.format(Constants.GLOBAL.LOCALE,"%02d", hourOfDay),String.format(Constants.GLOBAL.LOCALE,"%02d", minute),String.format(Constants.GLOBAL.LOCALE,"%02d", seconds)));
                 Log.d(TAG, "onTimeSet: Assigned new time.");
             }
         }, this.getResultView(), now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND), true);
@@ -49,7 +55,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         //DateTimePicker.thisInstance.getMainTimePicker().show(); //show timePicker only if dateTime set (so dialog will not show if cancelled)
 
         // Do something with the date chosen by the user
-        this.getResultView().setText(day + "." + (month + 1) + "." + year);
+        this.getResultView().setText(String.format(this.getRes().getString(R.string.dateTimePicker_format_date),day,(month + 1),year));
         Log.d(TAG, "onDateSet: Assigned new date.");
     }
 
@@ -59,5 +65,13 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 
     public TextView getResultView() {
         return this.resultView;
+    }
+
+    public Resources getRes() {
+        return res;
+    }
+
+    public void setRes(Resources res) {
+        this.res = res;
     }
 }

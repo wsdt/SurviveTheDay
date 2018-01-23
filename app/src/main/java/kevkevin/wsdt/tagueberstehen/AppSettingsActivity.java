@@ -29,7 +29,6 @@ public class AppSettingsActivity extends AppCompatActivity {
     private Switch useForwardCompatibility;
     private Switch saveBattery;
     private Spinner inappNotificationShowDuration;
-    private TableRow saveBatteryRow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,13 +44,10 @@ public class AppSettingsActivity extends AppCompatActivity {
         this.globalAppSettingsMgr = new GlobalAppSettingsMgr(this);
         this.useForwardCompatibility = (Switch) findViewById(R.id.useForwardCompatibility);
         this.saveBattery = (Switch) findViewById(R.id.saveBattery);
-        this.saveBatteryRow = (TableRow) findViewById(R.id.saveBattery_ROW);
         this.inappNotificationShowDuration = (Spinner) findViewById(R.id.inappNotificationHowLongToShowValue);
 
         //Set spinner properties (inappnotification duration show)
         HelperClass.setIntervalSpinnerConfigurations(this.inappNotificationShowDuration, R.array.inAppNotificationShowSpinner_LABELS_VALUES);
-        /*this.inappNotificationShowDuration.setMinValue(3);
-        this.inappNotificationShowDuration.setMaxValue(60);*/
 
         //Load current settings before attaching listeners etc.
         loadCurrentSettings();
@@ -60,13 +56,10 @@ public class AppSettingsActivity extends AppCompatActivity {
     }
 
     private void enableDisableBatteryFields(boolean enabled) {
-        //TODO: When using this function, the spinner gets shown when batteryfields are hidden and reverse (after 2nd reclick the spinner is displayed correctly)
         //Hide battery field if forward compatibility off or reverse (because batterysaving does not do anything if deactivated)
         int viewVisibility = (enabled) ? View.VISIBLE : View.GONE;
-        for (int i = 0; i<saveBatteryRow.getChildCount(); i++) {
-            saveBatteryRow.getChildAt(i).setVisibility(viewVisibility);
-        }
-        findViewById(R.id.saveBatteryDescription).setVisibility(viewVisibility);
+        ((TableRow) findViewById(R.id.saveBattery_ROW)).setVisibility(viewVisibility);
+        ((TableRow) findViewById(R.id.saveBatteryDescription)).setVisibility(viewVisibility);
     }
 
     private void setCustomListeners() {
@@ -91,7 +84,7 @@ public class AppSettingsActivity extends AppCompatActivity {
         this.inappNotificationShowDuration.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
-                globalAppSettingsMgr.setInAppNotificationShowDuration(Integer.parseInt(adapterView.getItemAtPosition(pos).toString()));
+                globalAppSettingsMgr.setInAppNotificationShowDurationInS(Integer.parseInt(adapterView.getItemAtPosition(pos).toString()));
                 Log.d(TAG, "onItemSelected: Saved selected inappsetting.");
             }
 
@@ -111,11 +104,9 @@ public class AppSettingsActivity extends AppCompatActivity {
     private void loadCurrentSettings() {
         this.useForwardCompatibility.setChecked(this.globalAppSettingsMgr.useForwardCompatibility());
         this.saveBattery.setChecked(this.globalAppSettingsMgr.saveBattery());
-
         enableDisableBatteryFields(this.useForwardCompatibility.isChecked());
 
-        //TODO: does not work
-        this.inappNotificationShowDuration.setSelection(Arrays.asList(getResources().getStringArray(R.array.inAppNotificationShowSpinner_LABELS_VALUES)).indexOf(""+this.globalAppSettingsMgr.getInAppNotificationShowDuration()));
+        this.inappNotificationShowDuration.setSelection(Arrays.asList(getResources().getStringArray(R.array.inAppNotificationShowSpinner_LABELS_VALUES)).indexOf(""+(this.globalAppSettingsMgr.getInAppNotificationShowDurationInMs()/1000)));
 
         Log.d(TAG, "loadCurrentSettings: Loaded current settings.");
     }

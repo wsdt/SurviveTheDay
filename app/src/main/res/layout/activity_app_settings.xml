@@ -13,7 +13,7 @@
         android:id="@+id/versionNameLabel"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:text="App-Version: "
+        android:text="@string/app_version_label"
         android:paddingEnd="40dp"
         android:paddingLeft="40dp"
         android:paddingRight="40dp"
@@ -21,6 +21,7 @@
         android:textColor="@color/colorPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
     <!-- Version name in gradle build defined, bc of that it is not detected by AS -->
     <TextView
         android:id="@+id/versionName"
@@ -57,7 +58,7 @@
                 android:gravity="center_horizontal"
                 android:layout_width="match_parent">
                 <TextView
-                    android:text="Forward compatibility"
+                    android:text="@string/setting_forwardCompatibility_title"
                     style="@style/settingText"
                     android:layout_weight="1"/>
                 <Switch
@@ -71,7 +72,7 @@
                 android:layout_width="match_parent">
                 <!-- description for row above -->
                 <TextView
-                    android:text="If activated this app uses broadcast receivers to show notifications, because newer phones block background services. You should only disable this function, if this app does not work properly. But keep in mind that the forward compatibility mode gets tested more often, has more functions and is more reliable."
+                    android:text="@string/setting_forwardCompatibility_description"
                     android:textColor="@color/lightdark"
                     android:layout_span="2" />
             </TableRow>
@@ -85,7 +86,7 @@
                 android:gravity="center_horizontal"
                 android:layout_width="match_parent">
                 <TextView
-                    android:text="Save battery"
+                    android:text="@string/setting_saveBattery_title"
                     style="@style/settingText"
                     android:layout_weight="1"/>
                 <Switch
@@ -100,7 +101,7 @@
                 android:layout_width="match_parent">
                 <!-- description for row above -->
                 <TextView
-                    android:text="If activated notifications might not show up on-time of the selected interval. Works only with forward compatibility."
+                    android:text="@string/setting_saveBattery_description"
                     android:textColor="@color/lightdark"
                     android:layout_span="2" />
             </TableRow>
@@ -115,7 +116,7 @@
 
 
                 <TextView
-                    android:text="Duration of In-App-Notifications"
+                    android:text="@string/setting_durationOfInAppNotifications_title"
                     style="@style/settingText"
                     android:layout_weight="1"/>
                 <Spinner
@@ -123,7 +124,6 @@
                     android:background="@color/lightdark"
                     android:spinnerMode="dropdown"
                     android:layout_width="50dp"
-                    android:textAlignment="center"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"/>
             </TableRow>
@@ -134,7 +134,7 @@
                 android:layout_width="match_parent">
                 <!-- description for row above -->
                 <TextView
-                    android:text="The higher the no. the longer an in-app-notification will be displayed on screen. In-app-notifications are only displayed when you click on a motivational notification."
+                    android:text="@string/setting_durationOfInAppNotifications_description"
                     android:textColor="@color/lightdark"
                     android:layout_span="2" />
             </TableRow>

@@ -15,12 +15,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:text="Countdown not found" />
+        android:text="@string/node_countdownTitleError404" />
     <TextView
         android:id="@+id/countdownDescription"
         style="@style/text"
         android:textSize="15sp"
-        android:text="Please contact system administrator."
+        android:text="@string/node_countdownDescriptionError404"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
@@ -83,6 +83,6 @@
         android:layout_alignParentRight="true"
         android:layout_below="@id/countdownDescription"
         android:layout_margin="5dp"
-        android:text="01.01.2017 00:00:00 - 31.12.2017 23:59:59"
+        android:text="@string/node_countdownDateTimeValuesError404"
         android:textSize="15sp" />
 </RelativeLayout>

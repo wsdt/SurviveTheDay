@@ -1,6 +1,7 @@
 package kevkevin.wsdt.tagueberstehen;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //add plus icon or similar to add new countdown
             TextView noCountdownsFound = new TextView(this);
             noCountdownsFound.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            noCountdownsFound.setText("No countdowns found.");
+            noCountdownsFound.setText(R.string.mainActivity_noCountdownsFound);
             noCountdownsFound.setTextSize(20);
             noCountdownsFound.setTextColor(Color.WHITE);
             noCountdownsFound.setGravity(Gravity.CENTER);
@@ -125,16 +126,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Log.d(TAG, "onCountdownModifyButtons: Countdown "+countdown.getCountdownId()+" does motivate now.");
                 }
                 countdown.savePersistently();
-                Toast.makeText(this,"Countdown motivation got "+((countdown.isActive()) ? "activated" : "deactivated")+".",Toast.LENGTH_SHORT).show();
+                Resources res = getResources();
+                Toast.makeText(this,String.format(res.getString(R.string.mainActivity_countdownMotivationToggleOnOff),((countdown.isActive()) ? res.getString(R.string.mainActivity_countdownMotivationToggleOnOff_activated) : res.getString(R.string.mainActivity_countdownMotivationToggleOnOff_deactivated))),Toast.LENGTH_SHORT).show();
                 break;
             case R.id.countdownEdit:
                 Intent modifyCountdownActivity = new Intent(this, ModifyCountdownActivity.class);
-                modifyCountdownActivity.putExtra("COUNTDOWN_ID",countdown.getCountdownId());
+                modifyCountdownActivity.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID,countdown.getCountdownId());
                 startActivity(modifyCountdownActivity);
                 break;
             case R.id.countdownDelete:
                 storageMgr.deleteCountdown(countdown.getCountdownId());
-                Toast.makeText(this,"Deleted countdown.",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,R.string.mainActivity_deletedCountdown,Toast.LENGTH_SHORT).show();
                 reloadEverything(); //reload everything to remove countdown from nodelist
                 break;
             default: Log.e(TAG, "onCountdownModifyButtons: Option does not exist: "+v.getId());
@@ -156,10 +158,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             } else {
                 Log.e(TAG, "getCountdownIdFromNodeTag: Node-Tag WRONG labelled: " + nodeTag);
-                Toast.makeText(this, "Could not perform action. Node maybe wrong build.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.mainActivity_countdownNode_error_nodeTagWrongBuild, Toast.LENGTH_SHORT).show();
             }
         } catch (NullPointerException e) {
-            Toast.makeText(this, "Operation failed. Please contact administrator.",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error_contactAdministrator,Toast.LENGTH_SHORT).show();
             Log.e(TAG, "getCountdownIdFromNodeTag: Nullpointerexception (presumably nodeTag == null!).");
             e.printStackTrace();
         }
@@ -170,8 +172,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         RelativeLayout countdownView = (RelativeLayout) getLayoutInflater().inflate(R.layout.node_template,(LinearLayout) findViewById(R.id.nodeList), false); //give relativelayout so layoutparams get done
         ((TextView)countdownView.findViewById(R.id.countdownTitle)).setText(countdown.getCountdownTitle());
         ((TextView)countdownView.findViewById(R.id.countdownDescription)).setText(countdown.getCountdownDescription());
-        ((TextView)countdownView.findViewById(R.id.startAndUntilDateTime)).setText(countdown.getStartDateTime()+" - "+countdown.getUntilDateTime());
-        countdownView.setTag("COUNTDOWN_"+countdown.getCountdownId()); //IMPORTANT: to determine what countdown to open in CountdownActivity
+        ((TextView)countdownView.findViewById(R.id.startAndUntilDateTime)).setText(String.format(getResources().getString(R.string.mainActivity_countdownNode_DateTimeValues),countdown.getStartDateTime(),countdown.getUntilDateTime()));
+        countdownView.setTag(Constants.MAIN_ACTIVITY.COUNTDOWN_VIEW_TAG_PREFIX+countdown.getCountdownId()); //IMPORTANT: to determine what countdown to open in CountdownActivity
 
         //set category color, if not valid or other then overwrite it with default color and save that countdown so this error will not happen again
         try {
@@ -183,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //save into countdown itself
             countdown.setCategory("#"+Integer.toHexString(ContextCompat.getColor(this,R.color.colorPrimaryDark)));
             countdown.savePersistently();
-            Toast.makeText(this, "Category color could not be applied. We chose one for you.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.mainActivity_countdownNode_error_categoryColorWrongRetained, Toast.LENGTH_SHORT).show();
         }
         nodeList.addView(countdownView);
         Log.d(TAG, "createAddNodeToLayout: Added countdown as node to layout: "+countdownView.getTag());
@@ -208,15 +210,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.action_addCountdown:
-                Intent createCountdownAct = new Intent(this,ModifyCountdownActivity.class);
-                createCountdownAct.putExtra("CRUD","C");
-                startActivity(createCountdownAct);
+                startActivity(new Intent(this,ModifyCountdownActivity.class));
                 break;
             case R.id.action_removeAllCountdowns:
                 InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(this);
                 storageMgr.deleteAllCountdowns();
                 reloadEverything(); //because onResume gets not called
-                Toast.makeText(this,"Deleted all countdowns.",Toast.LENGTH_LONG).show();
+                Toast.makeText(this,R.string.mainActivity_deletedAllCountdowns,Toast.LENGTH_LONG).show();
                 break;
             case R.id.action_credits:
                 Log.d(TAG, "onOptionsItemSelected: Tried to open CreditsActivity.");

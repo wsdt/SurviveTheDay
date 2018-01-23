@@ -31,6 +31,8 @@ public class LoadingScreenActivity extends AppCompatActivity {
         animator.setRepeatMode(ValueAnimator.REVERSE);
         animator.start();
 
+        //TODO:dismiss Progressbar from XML after leaving
+
         AdManager adManager = new AdManager(this);
         adManager.initializeAdmob();
         adManager.loadFullPageAd(null, new Intent(this, MainActivity.class)); //after ad is closed or failure happens the maiActivity starts.

@@ -3,6 +3,7 @@ package kevkevin.wsdt.tagueberstehen;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.sax.RootElement;
@@ -100,28 +101,29 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             if (getNewEditedCountdown().getDateTime(getNewEditedCountdown().getStartDateTime())
                     .compareTo(getNewEditedCountdown().getDateTime(getNewEditedCountdown().getUntilDateTime())) >= 0) {
                 //startdatetime is in "future" is bigger than untildatetima (bad)
-                Toast.makeText(this, "UntilDateTime needs to be AFTER StartDateTime!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.modifyCountdownActivity_countdown_validation_UntilAfterStartDateTime, Toast.LENGTH_SHORT).show();
                 Log.w(TAG, "areFormValuesValid: UntilDateTime needs to be AFTER StartDateTime.");
                 return false;
             }
             // Is UntilDateTime AFTER StartDateTime? - END -------------
         } else {
             Log.e(TAG, "validateFormValue: Dates not valid: "+this.getNewEditedCountdown().getStartDateTime()+" /// "+this.getNewEditedCountdown().getUntilDateTime());
-            Toast.makeText(this,"DateTime is not valid! This might be an internal error. ", Toast.LENGTH_LONG).show();
+            Toast.makeText(this,R.string.modifyCountdownActivity_countdown_validation_DateTimeNotValid, Toast.LENGTH_LONG).show();
             return false;
         }
 
         //Validate lengths of texts ------------------------------------------------------------------
+        Resources res = getResources();
         String countdownTitleValue = (((EditText) findViewById(R.id.countdownTitleValue)).getText()).toString();
         if (countdownTitleValue.length() >= Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MAX || countdownTitleValue.length() <= Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MIN) {
             Log.w(TAG, "areFormValuesValid: CountdownTitleValue is not valid!");
-            Toast.makeText(this, "Title must have "+(Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MIN+1)+" - "+(Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MAX-1)+" chars!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, String.format(res.getString(R.string.modifyCountdownActivity_countdown_validation_LengthConstraints),"Title",(Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MIN+1),(Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MAX-1)), Toast.LENGTH_SHORT).show();
             return false;
         }
         String countdownDescriptionValue = (((EditText) findViewById(R.id.countdownDescriptionValue)).getText()).toString();
         if (countdownDescriptionValue.length() >= Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MAX || countdownDescriptionValue.length() <= Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MIN) {
             Log.w(TAG, "areFormValuesValid: CountdownDescriptionValue is not valid!");
-            Toast.makeText(this, "Description must have "+(Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MIN+1)+" - "+(Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MAX-1)+" chars!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, String.format(res.getString(R.string.modifyCountdownActivity_countdown_validation_LengthConstraints),"Description",(Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MIN+1),(Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MAX-1)), Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -185,17 +187,6 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             notificationIntervalSpinner.setVisibility(View.VISIBLE);
         }
     }
-
-    /*private void setIntervalSpinnerConfigurations() {
-        Spinner spinner = (Spinner) findViewById(R.id.notificationIntervalSpinner);
-        //Create an arrayadapter using string array from strings.xml and default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.countdownIntervalSpinner_LABELS, R.layout.spinner_intervall_item);
-        //specify layout to use when list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        //apply adapter to spinner
-        spinner.setAdapter(adapter);
-    }*/
 
     //GETTER/SETTER -----------------------------------------------------
     public Countdown getNewEditedCountdown() {
