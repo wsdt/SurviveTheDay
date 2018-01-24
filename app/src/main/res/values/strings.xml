@@ -326,10 +326,12 @@
         <item>You change your life by changing your heart. (Max Lucado)</item>
         <item>A champion is someone who gets up when he can't. (Jack Dempsey)</item>
     </string-array>
-    <!-- TODO: customnotification TIMEBASED CONTENT TO ADD!!!!!!!!!!! (timebased with placeholders) -->
     <!-- TIMEBASED ARRAY WITH PLACEHOLDER COULD NOt BE SET AS ARRAY, because STRING-ARRAYS DO NOT ALLOW PLACEHOLDERS! -->
     <string name="customNotification_random_timebased_text_0_secondsToGo">%1$s - Only %2$s seconds to go!</string>
     <string name="customNotification_random_timebased_text_1_percentageLeft">%1$s - Just %2$d % left.</string>
+    <string name="customNotification_random_timebased_text_2_countdownEndsOn">%1$s - Countdown ends on %2$s</string>
+    <string name="customNotification_random_timebased_text_3_percentageAchieved">%1$s - Already %2$d % passed!</string>
+    <string name="customNotification_random_timebased_text_4_notificationInterval">%1$s - A motivating notification will be sent every %2$s. :)</string>
 
     <!-- Countdown -->
     <string name="countdown_info_startDateInFuture">Countdown starts at: %1$s</string>

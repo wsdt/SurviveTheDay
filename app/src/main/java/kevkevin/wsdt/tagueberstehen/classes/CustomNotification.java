@@ -224,9 +224,9 @@ public class CustomNotification { //one instance for every countdown or similar
         randomNotification.titleList.addAll(Arrays.asList(this.getRes().getStringArray(R.array.customNotification_random_timebased_titles))); //converts array to list and adds all of them
         randomNotification.textList.addAll(Arrays.asList(String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_0_secondsToGo),countdown.getCountdownTitle(),countdown.getTotalSecondsNoScientificNotation()),
                 String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_1_percentageLeft),countdown.getCountdownTitle(),countdown.getRemainingPercentage(2, true)),
-                countdown.getCountdownTitle()+" - Countdown ends on "+countdown.getUntilDateTime(),
-                countdown.getCountdownTitle()+" - Already "+countdown.getRemainingPercentage(2, false)+" % passed!",
-                countdown.getCountdownTitle()+" - A motivating notification will be sent every "+(this.getRes().getStringArray(R.array.countdownIntervalSpinner_LABELS)[(Arrays.asList(this.getRes().getStringArray(R.array.countdownIntervalSpinner_VALUES)).indexOf(""+countdown.getNotificationInterval()))])+". :)")); //get label of corresponding seconds of strings.xml
+                String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_2_countdownEndsOn),countdown.getCountdownTitle(),countdown.getUntilDateTime()),
+                String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_3_percentageAchieved),countdown.getCountdownTitle(),countdown.getRemainingPercentage(2, false)),
+                String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_4_notificationInterval),countdown.getCountdownTitle(),(this.getRes().getStringArray(R.array.countdownIntervalSpinner_LABELS)[(Arrays.asList(this.getRes().getStringArray(R.array.countdownIntervalSpinner_VALUES)).indexOf(""+countdown.getNotificationInterval()))])))); //get label of corresponding seconds of strings.xml
         randomNotification.iconList.addAll(Arrays.asList(R.drawable.notification_timebased_color,R.drawable.notification_timebased_white));
 
         //Choose one for each arraylist by random index (max is size-1!)
