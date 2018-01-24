@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
+import kevkevin.wsdt.tagueberstehen.classes.services.CountdownCounterService;
 
 public class LoadingScreenActivity extends AppCompatActivity {
     private static final String TAG = "LoadingScreenActivity";
@@ -30,6 +31,8 @@ public class LoadingScreenActivity extends AppCompatActivity {
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.setRepeatMode(ValueAnimator.REVERSE);
         animator.start();
+
+        startService(new Intent(this, CountdownCounterService.class));
 
         //TODO:dismiss Progressbar from XML after leaving
 

@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void loadAddNodes() {
         InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(this);
         int anzahlCountdowns = 0;
-        for (Map.Entry<Integer,Countdown> countdown : storageMgr.getAllCountdowns(false).entrySet()) {
+        for (Map.Entry<Integer,Countdown> countdown : storageMgr.getAllCountdowns(false, false).entrySet()) {
             createAddNodeToLayout(countdown.getValue());
             anzahlCountdowns++;
         }

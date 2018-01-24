@@ -71,7 +71,7 @@ public class NotificationService_AlarmmanagerBroadcastReceiver extends Broadcast
     }
 
     public static void deleteAllAlarmServices(Context context) {
-        for (Map.Entry<Integer, Countdown> entry : (new InternalCountdownStorageMgr(context)).getAllCountdowns(true).entrySet()) {
+        for (Map.Entry<Integer, Countdown> entry : (new InternalCountdownStorageMgr(context)).getAllCountdowns(true, false).entrySet()) {
             try {
                 ((AlarmManager) context.getSystemService(Context.ALARM_SERVICE)).cancel(PendingIntent.getBroadcast(context, entry.getValue().getCountdownId(), new Intent(context, NotificationService_AlarmmanagerBroadcastReceiver.class), 0));
                 Log.d(TAG, "deleteAllAlarmServices: Deleted broadcast for countdown: "+entry.getValue().getCountdownId());
