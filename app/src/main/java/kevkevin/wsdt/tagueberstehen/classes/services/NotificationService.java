@@ -40,7 +40,7 @@ public class NotificationService extends Service {
         super.onStartCommand(intent, flags, startId);
 
         storageMgr = new InternalCountdownStorageMgr(this);
-        this.allCountdowns = this.storageMgr.getAllCountdowns(true); //call this line AFTER assignment of internal storage mgr (otherwise nullpointerexc!)
+        this.allCountdowns = this.storageMgr.getAllCountdowns(true, false); //call this line AFTER assignment of internal storage mgr (otherwise nullpointerexc!)
 
         this.startId = startId; //save current service instance in variable
 

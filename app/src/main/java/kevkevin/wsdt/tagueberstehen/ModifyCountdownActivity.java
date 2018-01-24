@@ -140,6 +140,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         ((ToggleButton) findViewById(R.id.isActive)).setChecked(countdown.isActive());
         //set associated entry of interval seconds to spinner
         ((Spinner) findViewById(R.id.notificationIntervalSpinner)).setSelection(Arrays.asList(getResources().getStringArray(R.array.countdownIntervalSpinner_VALUES)).indexOf(""+countdown.getNotificationInterval())); //reduce about 5 otherwise we would add 5 every time we edited it!
+        ((ToggleButton) findViewById(R.id.showLiveCountdown)).setChecked(countdown.isShowLiveCountdown());
     }
 
     private void loadFormValues() {
@@ -150,7 +151,9 @@ public class ModifyCountdownActivity extends AppCompatActivity {
                 ((TextView) findViewById(R.id.untilDateTimeValue)).getText().toString(),
                 ColorPicker.getBackgroundColorHexString(findViewById(R.id.categoryValue)),
                 ((ToggleButton) findViewById(R.id.isActive)).isChecked(),
-                Integer.parseInt(getResources().getStringArray(R.array.countdownIntervalSpinner_VALUES)[((Spinner) findViewById(R.id.notificationIntervalSpinner)).getSelectedItemPosition()]))); //.getProgress()+5 for old seekbar slider +5 seconds by default (because if 0) app crashes
+                Integer.parseInt(getResources().getStringArray(R.array.countdownIntervalSpinner_VALUES)[((Spinner) findViewById(R.id.notificationIntervalSpinner)).getSelectedItemPosition()]),
+                ((ToggleButton) findViewById(R.id.showLiveCountdown)).isChecked()));
+                // .getProgress()+5 for old seekbar slider +5 seconds by default (because if 0) app crashes
                 //line above: gets selected spinner items position and uses this to get the associated array entry with the correct value in seconds.
 
         //Overwrite countdown id if countdown exists already

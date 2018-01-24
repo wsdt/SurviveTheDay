@@ -86,6 +86,7 @@
     <string name="modifyCountdownActivity_countdown_category_textview_fieldDescription">Color will be used e.g. for notifications (led-color, &#8320;)</string>
     <string name="modifyCountdownActivity_countdown_motivateMe_label">Motivate me</string>
     <string name="modifyCountdownActivity_countdown_motivateMeInterval_label">Interval</string>
+    <string name="modifyCountdownActivity_countdown_showLiveCountdown_label">Live countdown</string>
     <string name="modifyCountdownActivity_countdown_validation_UntilAfterStartDateTime">UntilDateTime needs to be AFTER StartDateTime!</string>
     <string name="modifyCountdownActivity_countdown_validation_DateTimeNotValid">DateTime is not valid! This might be an internal error.</string>
     <string name="modifyCountdownActivity_countdown_validation_LengthConstraints">%1$s must have %2$d - %3$d chars!</string>
@@ -312,7 +313,7 @@
         <item>In a gentle way, you can shake the world. (Mahatma Gandhi)</item>
         <item>Don't limit yourself. Many people limit themselves to what they think they can do. You can go as far as your mind lets you. What you believe, remember, you can achieve. (Mary Kay Ash)</item>
         <item>We can change our lives. We can do, have, and be exactly what we wish. (Tony Robbings)</item>
-        <item>Even if I knew that tomorrow the would would go to pieces, I would still plant my apple tree. (Martin Luther)</item>
+        <item>Even if I knew that tomorrow the 'would' would go to pieces, I would still plant my apple tree. (Martin Luther)</item>
         <item>Memories of our lives, of our works and our deeds will continue in others. (Rosa Parks)</item>
         <item>The things that we love tell us what we are. (Thomas Aquinas)</item>
         <item>Somewhere, something incredible is waiting to be known. (Sharon Begley)</item>
@@ -328,9 +329,9 @@
     </string-array>
     <!-- TIMEBASED ARRAY WITH PLACEHOLDER COULD NOt BE SET AS ARRAY, because STRING-ARRAYS DO NOT ALLOW PLACEHOLDERS! -->
     <string name="customNotification_random_timebased_text_0_secondsToGo">%1$s - Only %2$s seconds to go!</string>
-    <string name="customNotification_random_timebased_text_1_percentageLeft">%1$s - Just %2$d % left.</string>
+    <string name="customNotification_random_timebased_text_1_percentageLeft">%1$s - Just %2$f %% left.</string> <!-- double % because escaping so it is not a var -->
     <string name="customNotification_random_timebased_text_2_countdownEndsOn">%1$s - Countdown ends on %2$s</string>
-    <string name="customNotification_random_timebased_text_3_percentageAchieved">%1$s - Already %2$d % passed!</string>
+    <string name="customNotification_random_timebased_text_3_percentageAchieved">%1$s - Already %2$f %% passed!</string> <!-- % twice to escape -->
     <string name="customNotification_random_timebased_text_4_notificationInterval">%1$s - A motivating notification will be sent every %2$s. :)</string>
 
     <!-- Countdown -->

@@ -2,6 +2,7 @@ package kevkevin.wsdt.tagueberstehen.classes;
 
 
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -47,7 +48,7 @@ public class CustomNotification { //one instance for every countdown or similar
 
     public HashMap<Integer, Countdown> scheduleAllActiveCountdownNotifications(Context context) {
         Log.d(TAG, "scheduleAllActiveCountdownNotifications: Started method.");
-        HashMap<Integer, Countdown> allCountdowns = (new InternalCountdownStorageMgr(context)).getAllCountdowns(true);
+        HashMap<Integer, Countdown> allCountdowns = (new InternalCountdownStorageMgr(context)).getAllCountdowns(true, false);
         for (Map.Entry<Integer, Countdown> countdown : allCountdowns.entrySet()) {
             scheduleNotification(countdown.getValue().getCountdownId(), (long) countdown.getValue().getNotificationInterval());
         }
@@ -88,7 +89,7 @@ public class CustomNotification { //one instance for every countdown or similar
         }
     }
 
-    public int createIssueCounterServiceNotification(Context context, Countdown countdown) {
+    public Notification createCounterServiceNotification(Countdown countdown) {
         //TODO: use this function for foreground service (live countdown)
 
         Intent tmpIntent = new Intent(this.getActivityThisTarget(), getTargetActivityClass());
@@ -100,22 +101,19 @@ public class CustomNotification { //one instance for every countdown or similar
                 tmpIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        /* Creates custom foreground, unremoveable notification for specific countdowns which might be counted down */
-        this.getmNotifyMgr().notify(Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID+countdown.getCountdownId(), //constantsNotNummer + countdownid (1000+1, etc.)
-                //not deprecated one requires api 16 (min is 15)
-                new NotificationCompat.Builder(this.getActivityThisTarget())
+        //because one notification for countdown
+        //return (Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID+countdown.getCountdownId()); //e.g. 100 (high enough for collision avoidance) + countdownId (0,1,2,...) = 100,101,102 so easy to modify afterwards
+        //not deprecated one requires api 16 (min is 15)
+        return new NotificationCompat.Builder(this.getActivityThisTarget())
                         .setSmallIcon(R.drawable.app_icon)
-                        .setLargeIcon(BitmapFactory.decodeResource(this.getRes(),R.drawable.app_icon))
+                        .setLargeIcon(BitmapFactory.decodeResource(this.getRes(),R.drawable.notification_timebased_color))
                         .setContentTitle(countdown.getCountdownTitle())
                         .setAutoCancel(false) //remove after clicking on it
                         .setContentIntent(pendingIntent)
                         .setOngoing(true) //notification is NOT REMOVEABLE
-                        .setStyle(new NotificationCompat.BigTextStyle().bigText("BIG: "+countdown.getCountdownDescription())) //make notification extendable
-                        .setContentText("CT: "+countdown.getUntilDateTime())
-                .build());
-
-        //because one notification for countdown
-        return (Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID+countdown.getCountdownId()); //e.g. 100 (high enough for collision avoidance) + countdownId (0,1,2,...) = 100,101,102 so easy to modify afterwards
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText("Remaining: "+countdown.getBigCountdownCurrentValues_String()+"\nTotal Years: 0\nTotal Months: 0\nTotal Weeks: 0\nTotal Days: 0\nTotal Hours: 0\nTotal Minutes: 0\nTotal Seconds: 0")) //make notification extendable
+                        .setContentText("Remaining: "+countdown.getBigCountdownCurrentValues_String())
+                        .build();
     }
 
     private int createNotification(Countdown countdown, String title, String text, int icon) {
@@ -271,7 +269,7 @@ public class CustomNotification { //one instance for every countdown or similar
     }
 
     public void incrementmNotificationId() {
-        int tmpId = (this.getmNotificationId()+1+this.random.nextInt(999999999));
+        int tmpId = (this.getmNotificationId()+1+this.random.nextInt(Constants.CUSTOMNOTIFICATION.NOTIFICATION_ID)); //IMPORTANT: 999999950 - 999999999 reserved for FOREGROUNDCOUNTERSERVICE [999999950+countdownId = foregroundNotificationID, etc.]
         Log.d(TAG,"incrementNoficiationId: Old: "+this.getmNotificationId()+"/ New: "+tmpId);
         this.mNotificationId = tmpId; //small probability that notification has the same id! So multiple instances of this class usable without overwriten old notifications
     }

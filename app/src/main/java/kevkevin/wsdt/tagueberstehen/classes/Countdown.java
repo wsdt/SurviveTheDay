@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -35,6 +36,7 @@ public class Countdown {
     private String category; //hexadecimal color etc.
     private boolean isActive;
     private int notificationInterval; //in seconds!
+    private boolean showLiveCountdown; //show Foreground service live countdown if countdown until start date constraints true
     private static final String TAG = "Countdown";
 
     //Members for service (do not save them explicitely [unneccesary])
@@ -44,7 +46,7 @@ public class Countdown {
 
 
     //Constructor for lastEdit/createdDateTime automatically
-    public Countdown(Context context, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String category, boolean isActive, int notificationInterval) {
+    public Countdown(Context context, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String category, boolean isActive, int notificationInterval, boolean showLiveCountdown) {
         this.setContext(context);
         this.setCountdownId((new InternalCountdownStorageMgr(context)).getNextCountdownId()); //get next countdown id (fill gap from deleted countdown or just increment)
         this.setCountdownTitle(countdownTitle);
@@ -56,10 +58,11 @@ public class Countdown {
         this.setCategory(category);
         this.setActive(isActive);
         this.setNotificationInterval(notificationInterval);
+        this.setShowLiveCountdown(showLiveCountdown);
     }
 
     //Constructor for all fields
-    public Countdown(Context context, int countdownId, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String createdDateTime, String lastEditDateTime, String category, boolean isActive, int notificationInterval) {
+    public Countdown(Context context, int countdownId, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String createdDateTime, String lastEditDateTime, String category, boolean isActive, int notificationInterval, boolean showLiveCountdown) {
         this.setContext(context);
         this.setCountdownId(countdownId);
         this.setCountdownTitle(countdownTitle);
@@ -71,6 +74,7 @@ public class Countdown {
         this.setCategory(category);
         this.setActive(isActive);
         this.setNotificationInterval(notificationInterval);
+        this.setShowLiveCountdown(showLiveCountdown);
     }
 
     public void savePersistently() {
@@ -78,7 +82,7 @@ public class Countdown {
         storageMgr.setSaveCountdown(this,true);
     }
 
-    public double getRemainingPercentage(int anzahlNachkomma, boolean getRemainingOtherwisePassedPercentage) { //min is 1, if 0 then it will be still min 1 nachkommastelle (but always 0!) because of double format itself
+    public float getRemainingPercentage(int anzahlNachkomma, boolean getRemainingOtherwisePassedPercentage) { //min is 1, if 0 then it will be still min 1 nachkommastelle (but always 0!) because of double format itself
         try {
             Double all100percentSeconds = Long.valueOf((getDateTime(getUntilDateTime()).getTimeInMillis() - getDateTime(getStartDateTime()).getTimeInMillis()) / 1000).doubleValue();
             Double leftXpercentSeconds = Long.valueOf((getDateTime(getUntilDateTime()).getTimeInMillis() - getCurrentDateTime().getTimeInMillis()) / 1000).doubleValue();
@@ -87,7 +91,7 @@ public class Countdown {
             for (int i = 0; i < anzahlNachkomma; i++) {
                 nachkommaStellen.append("0");
             }
-            DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
+            DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Constants.GLOBAL.LOCALE);
             df.setMaximumFractionDigits(Constants.COUNTDOWN.MAXIMUM_FRACTION_DIGITS); //min might be 0 (nachkommastellen)
 
             double percentageValueUnformatted ;
@@ -96,14 +100,15 @@ public class Countdown {
             } else {
                 percentageValueUnformatted = 100-((leftXpercentSeconds / all100percentSeconds) * 100); //get passed percentage if false
             }
-            double result = df.parse(df.format(percentageValueUnformatted)).doubleValue(); //formatting percentage to 2 nachkommastellen
+            //TODO: now again with more than only two nachkommastellen (formatting not working)
+            float result = df.parse(df.format(percentageValueUnformatted)).floatValue(); //formatting percentage to 2 nachkommastellen
             //Double result = Double.parseDouble((new DecimalFormat("##,"+nachkommaStellen)).format((leftXpercentSeconds / all100percentSeconds) * 100)); //formatting percentage to 2 nachkommastellen
             return (result >= 0) ? ((result <= 100) ? result : 100) : 0; //always return 0-100
         } catch (NullPointerException | NumberFormatException | ParseException e) {
             Log.e(TAG, "getRemainingPercentage: Could not calculate remaining percentage.");
             e.printStackTrace();
         }
-        return (-1D); //to show error
+        return (-1); //to show error
     }
 
     public String getTotalSecondsNoScientificNotation() {
@@ -143,6 +148,65 @@ public class Countdown {
         }
 
         return totalSeconds;
+    }
+
+    // COUNTDOWN COUNTER METHOD ----------------------------------------------------------
+    public HashMap<Integer, Double> getBigCountdownCurrentValues_HashMap() {
+        //Calculation for big countdown
+        Double seconds = this.getTotalSeconds();
+        Log.d("calculateParams","Total seconds: "+seconds);
+        Double years = seconds / (365*24*60*60); seconds -= (years > 0) ? (365*24*60*60)*years : 0; //only subtract if years occurs at least 1 time
+        Log.d("calculateParams","Years: "+years+" // Left seconds: "+seconds);
+        Double months = seconds / (30*24*60*60); seconds -= (months > 0) ? (30*24*60*60)*months : 0;  // * with months e.g. because there might be more than one month to substract
+        Log.d("calculateParams","Months: "+months+" // Left seconds: "+seconds);
+        Double weeks = seconds / (7*24*60*60); seconds -= (weeks > 0) ? (7*24*60*60)*weeks : 0;
+        Log.d("calculateParams","Weeks: "+weeks+" // Left seconds: "+seconds);
+        Double days = seconds / (24*60*60); seconds -= (days > 0) ? (24*60*60)*days : 0;
+        Log.d("calculateParams","Days: "+days+" // Left seconds: "+seconds);
+        Double hours = seconds / (60*60); seconds -= (hours > 0) ? (60*60)*hours : 0;
+        Log.d("calculateParams","Hours: "+hours+" // Left seconds: "+seconds);
+        Double minutes = seconds / 60; seconds -= (minutes > 0) ? (60)*minutes : 0;
+        Log.d("calculateParams","Minutes: "+minutes+" // Left seconds: "+seconds);
+        //Seconds has the rest!
+
+        //assign to hashmap so we can distinguish them
+        HashMap<Integer, Double> result = new HashMap<>();
+        result.put(Constants.COUNTDOWN.COUNTDOWN_SECOND_IDENTIFIER,seconds);
+        result.put(Constants.COUNTDOWN.COUNTDOWN_MINUTE_IDENTIFIER,minutes);
+        result.put(Constants.COUNTDOWN.COUNTDOWN_HOUR_IDENTIFIER,hours);
+        result.put(Constants.COUNTDOWN.COUNTDOWN_DAY_IDENTIFIER,days);
+        result.put(Constants.COUNTDOWN.COUNTDOWN_WEEK_IDENTIFIER,weeks);
+        result.put(Constants.COUNTDOWN.COUNTDOWN_MONTH_IDENTIFIER,months);
+        result.put(Constants.COUNTDOWN.COUNTDOWN_YEAR_IDENTIFIER,years);
+        return result;
+    }
+    public String getBigCountdownCurrentValues_String() {
+        //IMPORTANT: Lieber so extra nochmal rechnen (zwar mehr code, aber weniger abarbeitung, da nicht zusätzlich noch HashMap.put und get
+        Long seconds = this.getTotalSeconds().longValue();
+        Log.d("calculateParams","Total seconds: "+seconds);
+        Long years = seconds / (365*24*60*60); seconds -= (years > 0) ? (365*24*60*60)*years : 0; //only subtract if years occurs at least 1 time
+        Log.d("calculateParams","Years: "+years+" // Left seconds: "+seconds);
+        Long months = seconds / (30*24*60*60); seconds -= (months > 0) ? (30*24*60*60)*months : 0;  // * with months e.g. because there might be more than one month to substract
+        Log.d("calculateParams","Months: "+months+" // Left seconds: "+seconds);
+        Long weeks = seconds / (7*24*60*60); seconds -= (weeks > 0) ? (7*24*60*60)*weeks : 0;
+        Log.d("calculateParams","Weeks: "+weeks+" // Left seconds: "+seconds);
+        Long days = seconds / (24*60*60); seconds -= (days > 0) ? (24*60*60)*days : 0;
+        Log.d("calculateParams","Days: "+days+" // Left seconds: "+seconds);
+        Long hours = seconds / (60*60); seconds -= (hours > 0) ? (60*60)*hours : 0;
+        Log.d("calculateParams","Hours: "+hours+" // Left seconds: "+seconds);
+        Long minutes = seconds / 60; seconds -= (minutes > 0) ? (60)*minutes : 0;
+        Log.d("calculateParams","Minutes: "+minutes+" // Left seconds: "+seconds);
+        //Seconds has the rest!
+
+        Character separator = ':';
+        return new StringBuilder()
+                .append(years).append(separator)
+                .append(months).append(separator)
+                .append(weeks).append(separator)
+                .append(days).append(separator)
+                .append(hours).append(separator)
+                .append(minutes).append(separator)
+                .append(seconds).toString();
     }
 
 
@@ -294,5 +358,31 @@ public class Countdown {
     public Handler getHandler() {
         return handler;
     }
+
+    public boolean isShowLiveCountdown() {
+        return showLiveCountdown;
+    }
+
+    public void setShowLiveCountdown(boolean showLiveCountdown) {
+        this.showLiveCountdown = showLiveCountdown;
+    }
     //set handler not required because directly assigned on top
+
+    @Override
+    public String toString() {
+        // untilDateTime, String category, boolean isActive, int notificationInterval, boolean showLiveCountdown) {
+        Character separator = ';'; //IMPORTANT: Needs to be the correct format for shared preferences (also the reihenfolge of parameters)
+        return new StringBuilder()
+                .append(getCountdownId()).append(separator)
+                .append(getCountdownTitle()).append(separator)
+                .append(getCountdownDescription()).append(separator)
+                .append(getStartDateTime()).append(separator)
+                .append(getUntilDateTime()).append(separator)
+                .append(getCreatedDateTime()).append(separator)
+                .append(getLastEditDateTime()).append(separator)
+                .append(getCategory()).append(separator)
+                .append(isActive()).append(separator)
+                .append(getNotificationInterval()).append(separator)
+                .append(isShowLiveCountdown()).toString();
+    }
 }

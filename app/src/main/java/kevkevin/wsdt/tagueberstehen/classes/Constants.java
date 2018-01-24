@@ -29,12 +29,16 @@ public class Constants {
     }
 
     public interface COUNTDOWNCOUNTERSERVICE {
-        /* 99 as base so each countdown can have its own notification (but within the same foreground service be changed
-        * notification id for a countdown: (1000+countdownid) so..: countdown 0 = 1000, countdown 1 = 1001 etc. */
-        int NOTIFICATION_ID = 1000;
+        /* 999999950 as base so each countdown can have its own notification (but within the same foreground service be changed
+        * notification id for a countdown: (999999950+countdownid) so..: countdown 0 = 999999950, countdown 1 = 999999951 etc.
+        * --> High no. because notificationIds of motivational notifications are generated randomly up to this no.!*/
+        int NOTIFICATION_ID = 999999950; //IMPORTANT: 999999950 - 999999999 reserved for FOREGROUNDCOUNTERSERVICE [999999950+countdownId = foregroundNotificationID, etc.]
     }
 
     public interface CUSTOMNOTIFICATION {
+        //MUST BE LOWER than NOTIFICATION_ID of COUNTDOWNCOUNTERSERVICE! Below this no. a motivational notification gets its random notification id
+        int NOTIFICATION_ID = 999999949;
+
         //LED light of notification (how long to blink on/off)
         int NOTIFICATION_BLINK_OFF_TIME_IN_MS = 1000;
         int NOTIFICATION_BLINK_ON_TIME_IN_MS = 1000;
@@ -55,6 +59,15 @@ public class Constants {
         int COUNTDOWN_TITLE_LENGTH_MAX = 14; //including this nr. and above all values will be rejected
         int COUNTDOWN_DESCRIPTION_LENGTH_MIN = 0; //same constraint as above
         int COUNTDOWN_DESCRIPTION_LENGTH_MAX = 29; //same constraint as above
+
+        //Countdown UNITS (e.g. for HashMap identification)
+        Integer COUNTDOWN_SECOND_IDENTIFIER = 0;
+        Integer COUNTDOWN_MINUTE_IDENTIFIER = 1;
+        Integer COUNTDOWN_HOUR_IDENTIFIER = 2;
+        Integer COUNTDOWN_DAY_IDENTIFIER = 3;
+        Integer COUNTDOWN_WEEK_IDENTIFIER = 4;
+        Integer COUNTDOWN_MONTH_IDENTIFIER = 5;
+        Integer COUNTDOWN_YEAR_IDENTIFIER = 6;
     }
 
     public interface COUNTDOWN_ACTIVITY {
