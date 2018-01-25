@@ -17,15 +17,20 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 
 import kevkevin.wsdt.tagueberstehen.R;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
+
+import static com.google.android.gms.ads.AdRequest.ERROR_CODE_NETWORK_ERROR;
 
 public class AdManager {
     private Context context;
     private static final String TAG = "AdManager";
+    private GlobalAppSettingsMgr globalAppSettingsMgr;
 
 
     //TODO: für internet permission prüfen und verlangen usw.
     public AdManager(Context context) {
         this.setContext(context);
+        this.setGlobalAppSettingsMgr(new GlobalAppSettingsMgr(context));
     }
 
     public void initializeAdmob() {
@@ -34,6 +39,7 @@ public class AdManager {
 
 
     public void loadFullPageAd(@Nullable AdListener adListener, @Nullable final Intent goToActivityAfterShown) {
+        //IMPORTANT: ADMOB-GUIDELINE only place interestials between activities with contents and not too much!! Showing Fullpage Ad only allowed if loadingActivity shows BEFORE ad! (see: https://support.google.com/admob/answer/6201362?hl=de&ref_topic=2745287)
         final String FULLPAGE_ID = Constants.ADMANAGER.useTestAds ? Constants.ADMANAGER.TEST.INTERSTITIAL_AD_ID : Constants.ADMANAGER.REAL.INTERSTITIAL_AD_ID;
 
         final InterstitialAd fullpageAd = new InterstitialAd(this.getContext());
@@ -65,6 +71,12 @@ public class AdManager {
             public void onAdFailedToLoad(int errorcode) {
                 Toast.makeText(getContext(), R.string.error_noInternetConnection, Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "onAdFailedToLoad: Could not load interstitial ad. Errorcode: "+errorcode);
+                if (errorcode == ERROR_CODE_NETWORK_ERROR) {
+                    //only error code where user might be the reason so increment counter
+                    getGlobalAppSettingsMgr().incrementNoInternetConnectionCounter();
+                    Log.d(TAG, "onAdFailedToLoad: Tried to increment noInternetConnectionCounter.");
+                }
+
                 if (goToActivityAfterShown != null) {
                     Log.d(TAG, "onAdClosed: gotoActivity is not null.");
                     getContext().startActivity(goToActivityAfterShown); //does app not prevent from being executed without internet
@@ -89,6 +101,11 @@ public class AdManager {
             @Override
             public void onAdFailedToLoad(int errorcode) {
                 Toast.makeText(getContext(), R.string.error_noInternetConnection, Toast.LENGTH_SHORT).show();
+                if (errorcode == ERROR_CODE_NETWORK_ERROR) {
+                    //only error code where user might be the reason so increment counter
+                    getGlobalAppSettingsMgr().incrementNoInternetConnectionCounter();
+                    Log.d(TAG, "onAdFailedToLoad: Tried to increment noInternetConnectionCounter.");
+                }
                 Log.e(TAG, "onAdFailedToLoad (loadBannerAd): Banner could not be loaded.");
             }
 
@@ -109,5 +126,13 @@ public class AdManager {
 
     public void setContext(Context context) {
         this.context = context;
+    }
+
+    public GlobalAppSettingsMgr getGlobalAppSettingsMgr() {
+        return globalAppSettingsMgr;
+    }
+
+    public void setGlobalAppSettingsMgr(GlobalAppSettingsMgr globalAppSettingsMgr) {
+        this.globalAppSettingsMgr = globalAppSettingsMgr;
     }
 }

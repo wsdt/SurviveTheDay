@@ -17,6 +17,7 @@ public class Constants {
     public interface ADMANAGER {
         boolean useTestAds = true;
         String ADMOB_USER_ID = "ca-app-pub-8160960481527784~1956004763";
+        int NO_INTERNET_CONNECTION_MAX = 5; //after 5 ads which cannot be displayed notify user that this app gets financed by ads
 
         interface TEST {
             String BANNER_AD_ID = "ca-app-pub-3940256099942544/6300978111";
@@ -33,6 +34,10 @@ public class Constants {
         * notification id for a countdown: (999999950+countdownid) so..: countdown 0 = 999999950, countdown 1 = 999999951 etc.
         * --> High no. because notificationIds of motivational notifications are generated randomly up to this no.!*/
         int NOTIFICATION_ID = 999999950; //IMPORTANT: 999999950 - 999999999 reserved for FOREGROUNDCOUNTERSERVICE [999999950+countdownId = foregroundNotificationID, etc.]
+
+        //for put extra, mostly for restarting foreground service
+        String STOP_SERVICE_LABEL = "STOP_SERVICE";
+        int STOP_SERVICE = (-1); //put as extra
     }
 
     public interface CUSTOMNOTIFICATION {
@@ -87,6 +92,7 @@ public class Constants {
             String SPIDENTIFIER_BG_SERVICE_PID = "BG_SERVICE_PID";
             String SPIDENTIFIER_USE_FORWARD_COMPATIBILITY = "USE_FORWARD_COMPATIBILITY";
             String SPIDENTIFIER_SAVE_BATTERY = "SAVE_BATTERY";
+            String NO_INTERNET_CONNECTION_COUNTER = "NO_INTERNET_CONNECTION_COUNTER";
         }
     }
 }

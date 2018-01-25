@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
+import kevkevin.wsdt.tagueberstehen.LoadingScreenActivity;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
@@ -206,7 +207,7 @@ public class InternalCountdownStorageMgr {
         //except if countdown was created, then we have to reload it! (only changes/deletes do not require a reload) [but for bgservice mode it is necessary]
 
         if (new GlobalAppSettingsMgr(this.getContext()).useForwardCompatibility()) {
-            (new CustomNotification(this.getContext(), CountdownActivity.class, (NotificationManager) this.getContext().getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications(this.getContext());
+            (new CustomNotification(this.getContext(), LoadingScreenActivity.class, (NotificationManager) this.getContext().getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications(this.getContext());
             Log.d(TAG, "restartNotificationService: Rescheduled all broadcast receivers.");
         } else {
             Intent serviceIntent = new Intent(this.getContext(), NotificationService.class);
@@ -224,8 +225,10 @@ public class InternalCountdownStorageMgr {
         //TODO: does not work
         Intent foregroundServiceIntent = new Intent(this.getContext(), CountdownCounterService.class);
         try {
-            this.getContext().stopService(foregroundServiceIntent);
+            foregroundServiceIntent.putExtra(Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE_LABEL,Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE);
+            this.getContext().startService(foregroundServiceIntent); //startService instead of stopService, react to extra and stopSelf()
             Log.d(TAG, "restartNotificationService: Tried to stop and restart foregroundService.");
+            foregroundServiceIntent.removeExtra(Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE_LABEL); //remove stopService Extra so service gets started
             this.getContext().startService(foregroundServiceIntent);
         } catch (NullPointerException e) {
             Log.e(TAG, "restartNotificationService: foregroundServiceIntent equals null! Could not restart foregroundService.");

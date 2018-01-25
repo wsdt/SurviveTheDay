@@ -342,4 +342,8 @@
     <string name="dateTimePicker_format_date">%1$d.%2$d.%3$d</string>
     <string name="dateTimePicker_format_DateTime">%1$s %2$s:%3$s:%4$s</string>
 
+    <!-- AdManager/GlobalStorageMgr -->
+    <string name="adManager_noInternetConnectionMaxExceeded_notification_title">Could not display ads. :(</string>
+    <string name="adManager_noInternetConnectionMaxExceeded_notification_normalAndBigText">SurviveTheDay gets financed by ads. Please use this app when you have a working internet connection. Thank you very much :).</string>
+
 </resources>

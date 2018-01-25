@@ -9,10 +9,12 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import kevkevin.wsdt.tagueberstehen.CountdownActivity;
+import kevkevin.wsdt.tagueberstehen.LoadingScreenActivity;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
@@ -26,6 +28,8 @@ public class CountdownCounterService extends Service {
      */
     private static final String TAG = "CountdownCounterService";
     private HashMap<Integer, Countdown> loadedCountdownsForLiveCountdown;
+    private CustomNotification customNotificationMgr;
+    private InternalCountdownStorageMgr internalCountdownStorageMgr;
 
     @Nullable
     @Override
@@ -33,19 +37,19 @@ public class CountdownCounterService extends Service {
         return null;
     }
 
-
-    //TODO: THIS PLUGIN SHOULD BE ADDED IF EVERYTHING IS TESTED AND IMPLEMENTED (GOOGLE SERVICES ETC.)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        //TODO: Mit Progressbar für jeden aktiven Countdown (not isActive Countdowns sondern eigene Einstellung dafür machen!)
-        //TODO: Jede notification hier mit progressbar (in methode machen)
-        //TODO: startForeground() und dort alle aktiven notifications updaten inklusive Progressbar (evtl. getRemainingPercentage() from Countdown nutzen!)
-        //TODO: Before rollout tomorrow change ad ids to real ads again!
+        //Notification Manager and Internal Storage Mgr in shouldThisServiceBeKilled() NEEDED! (NullPointerException)
+        this.setCustomNotificationMgr(new CustomNotification(this, LoadingScreenActivity.class, (NotificationManager) getSystemService(NOTIFICATION_SERVICE)));
+        this.setInternalCountdownStorageMgr(new InternalCountdownStorageMgr(this));
+
+        shouldThisServiceBeKilled(intent); //third function call should be this!! (because service gets killed with startService = goodPractice
 
         //todo for testing
         refreshAllNotificationCounters_Interval();
 
         Log.d(TAG, "Finished onStartCommand().");
+
         return START_STICKY;
     }
 
@@ -69,11 +73,10 @@ public class CountdownCounterService extends Service {
     }
 
     private void startRefreshAllNotificationCounters() {
-        CustomNotification customNotificationMgr = new CustomNotification(this, CountdownActivity.class, (NotificationManager) getSystemService(NOTIFICATION_SERVICE));
-        InternalCountdownStorageMgr internalCountdownStorageMgr = new InternalCountdownStorageMgr(this);
-
-        this.setLoadedCountdownsForLiveCountdown(internalCountdownStorageMgr.getAllCountdowns(false, true)); //false because this service should be also possible when motivateMe is off
+        this.setLoadedCountdownsForLiveCountdown(getInternalCountdownStorageMgr().getAllCountdowns(false, true)); //false because this service should be also possible when motivateMe is off
         int foregroundNotificationCount = 0;
+        //TODO: do not remove all (blinking) only unnecessary ones [validation again]
+        removeAllServiceLiveCountdownNotifications(); //so older ones (not acc. to constraints and validations get removed)
         for (Map.Entry<Integer, Countdown> countdown : this.getLoadedCountdownsForLiveCountdown().entrySet()) {
             //IMPORTANT: 999999950 - 999999999 reserved for FOREGROUNDCOUNTERSERVICE [999999950+countdownId = foregroundNotificationID, etc.]
             //only show if setting set for that countdown
@@ -87,6 +90,48 @@ public class CountdownCounterService extends Service {
                 customNotificationMgr.getmNotifyMgr().notify(foregroundServiceNotificationId, customNotificationMgr.createCounterServiceNotification(countdown.getValue()));
             }
         }
+
+        //Kill service if NO countdowns should be active
+        if (foregroundNotificationCount <= 0) {
+            killThisService();
+        }
+    }
+
+    private void shouldThisServiceBeKilled(Intent intent) {
+        if (intent != null) {
+            try {
+                if (Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE == intent.getIntExtra(Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE_LABEL,(Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE)*(-1))) {//*-1 so error value can NEVER equal to correct stopValue
+                    killThisService();
+                } else {
+                    Log.e(TAG, "shouldThisServiceBeKilled: Maybe no extra found for killing this service or given value is wrong!. So this instance will stay alive.");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "shouldThisServiceBeKilled: Error happened. Maybe no extra found for killing this service. So this instance will stay alive.");
+                e.printStackTrace();
+            }
+        } else {
+            Log.w(TAG, "shouldThisServiceBeKilled: Intent equals null! Maybe foreground service got restarted!");
+        }
+    }
+
+    private void killThisService() {
+        Log.d(TAG, "killThisService: Trying to kill myself.");
+        stopForeground(true); //both lines are necessary
+        //remove all notifications of this service
+        removeAllServiceLiveCountdownNotifications();
+        stopSelf();
+        Log.d(TAG, "killThisService: Tried to kill service ungracefully.");
+        android.os.Process.killProcess(android.os.Process.myPid()); //Important: Otherwise service would not stop because sth will still run in this instance
+    }
+
+    private void removeAllServiceLiveCountdownNotifications() {
+        ArrayList<Integer> allLiveCountdownNotificationIds = new ArrayList<>();
+        for (Map.Entry<Integer, Countdown> countdownEntry : getInternalCountdownStorageMgr().getAllCountdowns(false, true).entrySet()) {
+            //false because this service should be also possible when motivateMe is off
+            allLiveCountdownNotificationIds.add(Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID + countdownEntry.getValue().getCountdownId());
+        }
+
+        this.getCustomNotificationMgr().removeNotifications(allLiveCountdownNotificationIds);
     }
 
 
@@ -100,6 +145,22 @@ public class CountdownCounterService extends Service {
 
     public void setLoadedCountdownsForLiveCountdown(HashMap<Integer, Countdown> loadedCountdownsForLiveCountdown) {
         this.loadedCountdownsForLiveCountdown = loadedCountdownsForLiveCountdown;
+    }
+
+    public CustomNotification getCustomNotificationMgr() {
+        return customNotificationMgr;
+    }
+
+    public void setCustomNotificationMgr(CustomNotification customNotificationMgr) {
+        this.customNotificationMgr = customNotificationMgr;
+    }
+
+    public InternalCountdownStorageMgr getInternalCountdownStorageMgr() {
+        return internalCountdownStorageMgr;
+    }
+
+    public void setInternalCountdownStorageMgr(InternalCountdownStorageMgr internalCountdownStorageMgr) {
+        this.internalCountdownStorageMgr = internalCountdownStorageMgr;
     }
     //TODO: refresh notifications with BigCountdown_Stirng() from Countdown.class
 }
