@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
+import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.services.CountdownCounterService;
 
 public class LoadingScreenActivity extends AppCompatActivity {
@@ -32,12 +33,38 @@ public class LoadingScreenActivity extends AppCompatActivity {
         animator.setRepeatMode(ValueAnimator.REVERSE);
         animator.start();
 
+        //TODO: following line is only for testing
         startService(new Intent(this, CountdownCounterService.class));
 
         //TODO:dismiss Progressbar from XML after leaving
 
+        Class loadThatActivityAfterAdShown = MainActivity.class;
+        try {
+            if (getIntent().getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID, -1) >= 0) {
+                loadThatActivityAfterAdShown = CountdownActivity.class; //show countdown activity because from notification or similar called
+                Log.d(TAG, "onCreate: Will call CountdownActivity instead of MainActivity.");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "onCreate: Presumably LoadingScreenActivity not called from a notification. So intent is null or similar.");
+            e.printStackTrace();
+        }
+        //Intent tmp = getIntent();
+        //tmp.get
+        Intent followingActivityIntent = new Intent(this, loadThatActivityAfterAdShown);
+        Intent receivedIntent = getIntent();
+        if (receivedIntent != null) {
+            Bundle receivedExtras = receivedIntent.getExtras();
+            if (receivedExtras != null) {
+                //Put all extras (e.g. from notification) to new intent so we can pass it to countdownactivity e.g.
+                followingActivityIntent.putExtras(receivedExtras);
+                Log.d(TAG, "onCreate: Passed all received extras to new intent.");
+            }
+        }
+
+        //FullPageAd etc.
         AdManager adManager = new AdManager(this);
         adManager.initializeAdmob();
-        adManager.loadFullPageAd(null, new Intent(this, MainActivity.class)); //after ad is closed or failure happens the maiActivity starts.
+        adManager.loadFullPageAd(null, followingActivityIntent); //after ad is closed or failure happens the maiActivity starts.
     }
+
 }

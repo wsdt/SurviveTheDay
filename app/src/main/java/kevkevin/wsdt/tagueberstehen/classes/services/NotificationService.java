@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimerTask;
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
+import kevkevin.wsdt.tagueberstehen.LoadingScreenActivity;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
@@ -45,7 +46,7 @@ public class NotificationService extends Service {
         this.startId = startId; //save current service instance in variable
 
         //Set CustomNotification Manager etc. for Countdown
-        this.customNotificationManager = new CustomNotification(this, CountdownActivity.class, (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE)); //intent.getParcelableExtra("customNotificationManager");
+        this.customNotificationManager = new CustomNotification(this, LoadingScreenActivity.class, (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE)); //intent.getParcelableExtra("customNotificationManager");
 
         startTimer(); //this function starts all countdowns
 

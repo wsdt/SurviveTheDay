@@ -12,6 +12,7 @@ import android.util.Log;
 import java.util.Map;
 
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
+import kevkevin.wsdt.tagueberstehen.LoadingScreenActivity;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
@@ -42,7 +43,7 @@ public class NotificationService_AlarmmanagerBroadcastReceiver extends Broadcast
         if (currCountdown != null) {
             //If countdown found, then show random generated notification of loaded countdown (this function gets only called on its interval)
             if (currCountdown.isActive() && currCountdown.isUntilDateInTheFuture() && currCountdown.isStartDateInThePast()) {
-                CustomNotification customNotificationManager = new CustomNotification(context, CountdownActivity.class, (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE));
+                CustomNotification customNotificationManager = new CustomNotification(context, LoadingScreenActivity.class, (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE));
 
                 customNotificationManager.issueNotification(customNotificationManager.createRandomNotification(currCountdown));
                 Log.d(TAG, "onReceive: Have shown countdown notification for ID: " + currCountdown.getCountdownId());

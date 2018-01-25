@@ -111,10 +111,45 @@ public class CustomNotification { //one instance for every countdown or similar
                         .setAutoCancel(false) //remove after clicking on it
                         .setContentIntent(pendingIntent)
                         .setOngoing(true) //notification is NOT REMOVEABLE
-                        .setStyle(new NotificationCompat.BigTextStyle().bigText("Remaining: "+countdown.getBigCountdownCurrentValues_String()+"\nTotal Years: 0\nTotal Months: 0\nTotal Weeks: 0\nTotal Days: 0\nTotal Hours: 0\nTotal Minutes: 0\nTotal Seconds: 0")) //make notification extendable
+                        //maybe no big text here because maybe hard to make notification small again (refresh etc.): .setStyle(new NotificationCompat.BigTextStyle().bigText("Remaining: "+countdown.getBigCountdownCurrentValues_String()+"\nTotal Years: 0\nTotal Months: 0\nTotal Weeks: 0\nTotal Days: 0\nTotal Hours: 0\nTotal Minutes: 0\nTotal Seconds: 0")) //make notification extendable
                         .setContentText("Remaining: "+countdown.getBigCountdownCurrentValues_String())
                         .build();
     }
+
+    //Public so we can create also other notifications (if not needed we can place a dummy countdown)
+    public int createNotCountdownRelatedNotification(String title, String text, String bigtext, int icon) {
+        //Since broadcast this does not really increment but uses a random number, so a new instance of this class would not overwrite old notifications!
+        incrementmNotificationId(); //because of new notification (but return old No. because index starts at 0!
+
+        //create result intent
+        //IMPORTANT: Make no GETTER for this method, because this class is used for multiple countdowns!! So only the last assignment would open countdown
+        //Create pending intent
+        Intent tmpIntent = new Intent(this.getActivityThisTarget(), getTargetActivityClass());
+        tmpIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NO_HISTORY); //prevent activity to be added to history (preventing several back procedures) [also set in manifest]
+        //make this locally because of the same reason why pending intent has no getter
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this.getActivityThisTarget(),
+                this.getmNotificationId(),// instead of notificationId this was set (Problem: Always last intent was used): countdown.getCountdownId(),
+                tmpIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+
+        //add notification
+        this.getNotifications().put((long) this.getmNotificationId(), //save with current id
+                new NotificationCompat.Builder(this.getActivityThisTarget())
+                        .setSmallIcon(icon)
+                        .setContentTitle(title)
+                        //onMs = how long on / offMs = how long off (repeating, so blinking!)
+                        //USE category color
+                        .setLights(Color.parseColor("#ff0000"), Constants.CUSTOMNOTIFICATION.NOTIFICATION_BLINK_ON_TIME_IN_MS, Constants.CUSTOMNOTIFICATION.NOTIFICATION_BLINK_OFF_TIME_IN_MS)
+                        .setAutoCancel(false) //remove NOT after clicking on it
+                        .setOngoing(false) //removeable!! --> so you have to click on notification to remove it
+                        .setContentIntent(pendingIntent)
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText(bigtext)) //make notification extendable
+                        .setContentText(text));
+
+        return this.getmNotificationId(); //because randomly generated
+        //return (mNotificationId-1); //saved under that id-1 because incremented
+    }
+
 
     private int createNotification(Countdown countdown, String title, String text, int icon) {
         //Since broadcast this does not really increment but uses a random number, so a new instance of this class would not overwrite old notifications!
@@ -126,7 +161,7 @@ public class CustomNotification { //one instance for every countdown or similar
         Intent tmpIntent = new Intent(this.getActivityThisTarget(), getTargetActivityClass());
         tmpIntent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID,countdown.getCountdownId()); //countdown to open
 
-        //Following attributes are added to call them in countdownActivity and showing notification again.
+        //Following attributes are added to call them in countdownActivity and showing in-app-notification again.
         tmpIntent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_CONTENT_TITLE, title);
         tmpIntent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_CONTENT_TEXT, text);
         tmpIntent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_SMALL_ICON, icon);
@@ -252,6 +287,18 @@ public class CustomNotification { //one instance for every countdown or similar
     }
 
     // PRIVATE METHODS FOR CREATERANDOMNOTIFICATION(COUNTDOWN countdown) {} - END ####################################################
+
+    public void removeNotification(int mNotificationId) {
+        this.getmNotifyMgr().cancel(mNotificationId);
+        Log.d(TAG, "removeNotification: Tried to remove Notification with id: "+mNotificationId);
+    }
+
+    public void removeNotifications(ArrayList<Integer> mNotificationIds) {
+        for (int mNotificationId : mNotificationIds) {
+            removeNotification(mNotificationId);
+        }
+        Log.d(TAG, "removeNotifications: Tried to remove all given notifications.");
+    }
 
 
     //GETTER / SETTER +++++++++++++++++++++++++

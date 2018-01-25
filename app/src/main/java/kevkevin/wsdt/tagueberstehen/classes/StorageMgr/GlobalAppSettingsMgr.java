@@ -9,7 +9,11 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
+import kevkevin.wsdt.tagueberstehen.CreditsActivity;
+import kevkevin.wsdt.tagueberstehen.LoadingScreenActivity;
+import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
+import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
 import kevkevin.wsdt.tagueberstehen.classes.services.NotificationService;
 import kevkevin.wsdt.tagueberstehen.classes.services.NotificationService_AlarmmanagerBroadcastReceiver;
@@ -25,6 +29,31 @@ public class GlobalAppSettingsMgr {
         this.setContext(context);
         this.setGlobalSettings_SharedPref(context.getSharedPreferences(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.SHAREDPREFERENCES_DBNAME, Context.MODE_PRIVATE));
     }
+
+    // ENSURING THAT PEOPLE ARE WATCHING ADS [every ad than cannot be displayed increments this parameter] #################################
+    //TODO: Value is incremented, but until now only a message will be shown if int e.g. is higher than 5 [do not forget the user experience, so do not block user from using app AND do not forget playstore guidelines) --> because of that until now only a message]
+    public void incrementNoInternetConnectionCounter() {
+        int newNoInternetConnectionValue = getNoInternetConnectionCounter()+1;
+        if (newNoInternetConnectionValue >= Constants.ADMANAGER.NO_INTERNET_CONNECTION_MAX) {
+            CustomNotification customNotification = (new CustomNotification(this.getContext(), CreditsActivity.class, (NotificationManager) this.getContext().getSystemService(NOTIFICATION_SERVICE)));
+            String notificationText = this.getContext().getResources().getString(R.string.adManager_noInternetConnectionMaxExceeded_notification_normalAndBigText);
+            customNotification.issueNotification(customNotification.createNotCountdownRelatedNotification(this.getContext().getResources().getString(R.string.adManager_noInternetConnectionMaxExceeded_notification_title), notificationText, notificationText, R.drawable.warning));
+            resetNoInternetConnectionCounter();
+        } else {
+            this.getGlobalSettings_SharedPref().edit().putInt(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.NO_INTERNET_CONNECTION_COUNTER, newNoInternetConnectionValue).apply(); //increase about 1 when ad cannot be displayed
+            Log.d(TAG, "incrementNoInternetConnectionCounter: Incremented NoInternetConnection counter. Curr. value: "+newNoInternetConnectionValue);
+        }
+    }
+    public void resetNoInternetConnectionCounter() {
+        this.getGlobalSettings_SharedPref().edit().putInt(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.NO_INTERNET_CONNECTION_COUNTER, 0).apply(); //must be zero for resetting
+        Log.d(TAG, "resetNoInternetConnectionCounter: Resetted ad ensurer.");
+    }
+    public int getNoInternetConnectionCounter() {
+        Log.d(TAG, "getNoInternetConnectionCounter: Tried to return ad ensurer value.");
+        return this.getGlobalSettings_SharedPref().getInt(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.NO_INTERNET_CONNECTION_COUNTER,0);
+    }
+    // END: ENSURING THAT PEOPLE ARE WATCHING ADS [every ad than cannot be displayed increments this parameter] #################################
+
 
     public void setBackgroundServicePid(int bgServicePid) {
         //only used to kill the process of bg service
@@ -112,7 +141,7 @@ public class GlobalAppSettingsMgr {
 
 
             //USE broadcast receivers
-            (new CustomNotification(this.getContext(), CountdownActivity.class, (NotificationManager) this.getContext().getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications(this.getContext());
+            (new CustomNotification(this.getContext(), LoadingScreenActivity.class, (NotificationManager) this.getContext().getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications(this.getContext());
             Log.d(TAG, "OnCreate: Scheduled broadcast receivers. ");
         } else {
             //Stop all broadcast receivers
