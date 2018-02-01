@@ -8,14 +8,20 @@
         android:id="@+id/action_addCountdown"
         android:orderInCategory="0"
         android:icon="@drawable/plus"
-        android:title="Add new"
+        android:title="@string/actionBar_menu_addNewCountdown"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_removeAllCountdowns"
         android:orderInCategory="1"
         android:icon="@drawable/delete"
-        android:title="Delete all"
+        android:title="@string/actionBar_menu_deleteAllCountdowns"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_removeAdsTemporary"
+        android:orderInCategory="2"
+        android:title="@string/actionBar_menu_removeAdsTemporarily"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_settings"

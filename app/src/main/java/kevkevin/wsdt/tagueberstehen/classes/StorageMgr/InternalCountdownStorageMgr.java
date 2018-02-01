@@ -142,7 +142,7 @@ public class InternalCountdownStorageMgr {
                 }
             }
         } catch (NumberFormatException e) {
-            Log.e(TAG, "Could not parse String to Integer or boolean! ");
+            Log.e(TAG, "Could not parse String to Integer or boolean!");
             e.printStackTrace();
         } catch (NullPointerException e) {
             Log.e(TAG, "Entry or a splitted index of array is null!");
@@ -202,11 +202,13 @@ public class InternalCountdownStorageMgr {
     }
 
     public void restartNotificationService() {
+        //TODO: BEST: ONLY EXECUTE this method, IF especially a relevant setting got changed (but hard to implement, because shared prefs get overwritten) --> would solve comment below with only st
         Log.d(TAG, "restartNofificationService: Did not restart service (not necessary). Tried broadcast receiver.");
         //would not be necessary because on broadcastreceiver the current countdown gets automatically loaded!
         //except if countdown was created, then we have to reload it! (only changes/deletes do not require a reload) [but for bgservice mode it is necessary]
 
         if (new GlobalAppSettingsMgr(this.getContext()).useForwardCompatibility()) {
+            //TODO: only do this when not already active (otherwise intervals will get restarted)
             (new CustomNotification(this.getContext(), LoadingScreenActivity.class, (NotificationManager) this.getContext().getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications(this.getContext());
             Log.d(TAG, "restartNotificationService: Rescheduled all broadcast receivers.");
         } else {

@@ -14,18 +14,64 @@ public class Constants {
         Locale LOCALE = Locale.GERMAN;
     }
 
+    public interface INAPP_PURCHASES {
+        boolean USE_STATIC_TEST_INAPP_PRODUCTS = true;
+
+        interface TEST_INAPP_PRODUCTS {
+            interface STATIC_TEST {
+                String BUY_PRODUCT_DEFAULT_RESPONSE = GOOGLE_PLAY_STATIC_RESPONSES.PRODUCT_PURCHASED.toString(); //let test purchases success (here changeable)
+                enum GOOGLE_PLAY_STATIC_RESPONSES { //as enum to iterate through it
+                    PRODUCT_PURCHASED("android.test.purchased"),
+                    PRODUCT_CANCELED("android.test.canceled"),
+                    PRODUCT_REFUND("android.test.refunded"),
+                    PRODUCT_ITEM_UNAVAILABLE("android.test.item_unavailable");
+
+                    private final String responseId;
+                    GOOGLE_PLAY_STATIC_RESPONSES(final String responseId) {
+                        this.responseId = responseId;
+                    }
+                    @Override
+                    public String toString() {
+                        return this.responseId;
+                    }
+                }
+            }
+        }
+
+        //As enum so we can iterate through it more easily and ensure data types
+        enum INAPP_PRODUCTS { //all other informations should be delivered by Google Play (following infos not translateable)
+            BUY_EVERYTHING_ID("buy_everything"),
+            CHANGE_NOTIFICATION_COLOR("countdownnode_notificationcategory_color_change"),
+            CREATE_COUNTDOWNS_LONGER_THAN_24H("create_countdowns_longer_than_24hours"),
+            REMOVE_ALL_ADS("remove_ads"),
+            USE_MORE_COUNTDOWN_NODES("use_more_countdownnodes");
+
+            private final String productId;
+            INAPP_PRODUCTS(final String productId) {
+                this.productId = productId;
+            }
+            @Override
+            public String toString() {
+                return this.productId;
+            }
+        }
+    }
+
     public interface ADMANAGER {
-        boolean useTestAds = true;
+        boolean USE_TEST_ADS = true;
         String ADMOB_USER_ID = "ca-app-pub-8160960481527784~1956004763";
         int NO_INTERNET_CONNECTION_MAX = 5; //after 5 ads which cannot be displayed notify user that this app gets financed by ads
+        //Reward for rewarded video must be changed on Admob Console AND the following constant has to be the same Value!!!!
 
         interface TEST {
             String BANNER_AD_ID = "ca-app-pub-3940256099942544/6300978111";
             String INTERSTITIAL_AD_ID = "ca-app-pub-3940256099942544/1033173712";
+            String REWARDED_VIDEO_AD_ID = "ca-app-pub-3940256099942544/5224354917";
         }
         interface REAL {
             String BANNER_AD_ID = "ca-app-pub-8160960481527784/8464916252";
             String INTERSTITIAL_AD_ID = "ca-app-pub-8160960481527784/3526438439";
+            String REWARDED_VIDEO_AD_ID = "ca-app-pub-8160960481527784/1260589901";
         }
     }
 
@@ -42,7 +88,7 @@ public class Constants {
 
     public interface CUSTOMNOTIFICATION {
         //MUST BE LOWER than NOTIFICATION_ID of COUNTDOWNCOUNTERSERVICE! Below this no. a motivational notification gets its random notification id
-        int NOTIFICATION_ID = 999999949;
+        int NOTIFICATION_ID = (COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID-1); //currently 999999949
 
         //LED light of notification (how long to blink on/off)
         int NOTIFICATION_BLINK_OFF_TIME_IN_MS = 1000;
@@ -93,6 +139,7 @@ public class Constants {
             String SPIDENTIFIER_USE_FORWARD_COMPATIBILITY = "USE_FORWARD_COMPATIBILITY";
             String SPIDENTIFIER_SAVE_BATTERY = "SAVE_BATTERY";
             String NO_INTERNET_CONNECTION_COUNTER = "NO_INTERNET_CONNECTION_COUNTER";
+            String REMOVE_ADS_TEMPORARLY_IN_MINUTES = "REMOVE_ADS_TEMPORARLY_IN_MINUTES";
         }
     }
 }

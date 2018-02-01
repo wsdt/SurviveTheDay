@@ -218,6 +218,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 reloadEverything(); //because onResume gets not called
                 Toast.makeText(this,R.string.mainActivity_deletedAllCountdowns,Toast.LENGTH_LONG).show();
                 break;
+            case R.id.action_removeAdsTemporary:
+                Log.d(TAG, "onOptionsItemSelected: Tried to startRewardedAdActivity.");
+                startActivity(new Intent(this, RewardedVideoAdActivity.class));
+                break;
             case R.id.action_credits:
                 Log.d(TAG, "onOptionsItemSelected: Tried to open CreditsActivity.");
                 startActivity(new Intent(this, CreditsActivity.class));

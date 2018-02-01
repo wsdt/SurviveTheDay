@@ -5,9 +5,14 @@
     <string name="app_version_label">App-Version: </string>
 
     <!-- ACTIONBAR TITLES -->
-    <string name="title_activity_credits">Credits</string>
-    <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_credits">Credits</string><!-- entry also used in actionBar menu-->
+    <string name="title_activity_settings">Settings</string><!-- entry also used in actionBar menu-->
     <string name="title_activity_modify_countdown">Create/Edit a countdown</string>
+
+    <!-- ACTIONBAR MENU -->
+    <string name="actionBar_menu_addNewCountdown">Add new</string>
+    <string name="actionBar_menu_deleteAllCountdowns">Delete all</string>
+    <string name="actionBar_menu_removeAdsTemporarily">Remove Ads temporary</string>
 
     <!-- BUTTONS -->
     <string name="button_save">Save</string>
@@ -345,5 +350,7 @@
     <!-- AdManager/GlobalStorageMgr -->
     <string name="adManager_noInternetConnectionMaxExceeded_notification_title">Could not display ads. :(</string>
     <string name="adManager_noInternetConnectionMaxExceeded_notification_normalAndBigText">SurviveTheDay gets financed by ads. Please use this app when you have a working internet connection. Thank you very much :).</string>
+    <string name="adManager_loadRewardedVideoInRewardActivity_reward_successMessage">You got rewarded with %1$d minutes free of ads!</string>
+    <string name="adManager_loadRewardedVideoInRewardActivity_reward_introductionMessage">After watching this video, all ads will be hidden for a certain period of time! :)</string>
 
 </resources>
