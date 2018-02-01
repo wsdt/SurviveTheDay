@@ -73,11 +73,14 @@ public class CountdownCounterService extends Service {
     }
 
     private void startRefreshAllNotificationCounters() {
-        this.setLoadedCountdownsForLiveCountdown(getInternalCountdownStorageMgr().getAllCountdowns(false, true)); //false because this service should be also possible when motivateMe is off
         int foregroundNotificationCount = 0;
-        //TODO: do not remove all (blinking) only unnecessary ones [validation again]
-        removeAllServiceLiveCountdownNotifications(); //so older ones (not acc. to constraints and validations get removed)
+        if (this.getLoadedCountdownsForLiveCountdown() == null) {
+            //Only do when null at first, because notifications would not be removed when expired! (so we will have to restart whole service for new countdowns)
+            this.setLoadedCountdownsForLiveCountdown(getInternalCountdownStorageMgr().getAllCountdowns(false, true)); //false because this service should be also possible when motivateMe is off
+        }
+
         for (Map.Entry<Integer, Countdown> countdown : this.getLoadedCountdownsForLiveCountdown().entrySet()) {
+            Log.d(TAG, "startRefreshAllNotificationCounters: Found entry: "+countdown.getKey());
             //IMPORTANT: 999999950 - 999999999 reserved for FOREGROUNDCOUNTERSERVICE [999999950+countdownId = foregroundNotificationID, etc.]
             //only show if setting set for that countdown
             //NO FURTHER VALIDATION NECESSARY [untilStartDateTime Value constraints AND onlyLiveCountdowns are all validated in getAllCountdowns]
@@ -95,6 +98,9 @@ public class CountdownCounterService extends Service {
         if (foregroundNotificationCount <= 0) {
             killThisService();
         }
+
+        //Do after above lines, because so expired countdowns can be modified/removed in createCounterServiceNotification()
+        this.setLoadedCountdownsForLiveCountdown(getInternalCountdownStorageMgr().getAllCountdowns(false, true)); //false because this service should be also possible when motivateMe is off
     }
 
     private void shouldThisServiceBeKilled(Intent intent) {
@@ -136,10 +142,11 @@ public class CountdownCounterService extends Service {
 
 
     public HashMap<Integer, Countdown> getLoadedCountdownsForLiveCountdown() {
-        if (this.loadedCountdownsForLiveCountdown == null) {
+        //Should be null so we can evaluate it
+        /*if (this.loadedCountdownsForLiveCountdown == null) {
             this.loadedCountdownsForLiveCountdown = new HashMap<Integer, Countdown>();
             Log.d(TAG, "getLoadedCountdownsForLiveCountdown: Created empty HashMap, because Getter called before value assigned! (Preventing Nullpointers!)");
-        }
+        }*/
         return loadedCountdownsForLiveCountdown;
     }
 

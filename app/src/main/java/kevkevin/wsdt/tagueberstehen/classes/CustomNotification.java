@@ -90,8 +90,6 @@ public class CustomNotification { //one instance for every countdown or similar
     }
 
     public Notification createCounterServiceNotification(Countdown countdown) {
-        //TODO: use this function for foreground service (live countdown)
-
         Intent tmpIntent = new Intent(this.getActivityThisTarget(), getTargetActivityClass());
         tmpIntent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID,countdown.getCountdownId()); //countdown to open
         //make this locally because of the same reason why pending intent has no getter
@@ -104,16 +102,36 @@ public class CustomNotification { //one instance for every countdown or similar
         //because one notification for countdown
         //return (Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID+countdown.getCountdownId()); //e.g. 100 (high enough for collision avoidance) + countdownId (0,1,2,...) = 100,101,102 so easy to modify afterwards
         //not deprecated one requires api 16 (min is 15)
-        return new NotificationCompat.Builder(this.getActivityThisTarget())
-                        .setSmallIcon(R.drawable.app_icon)
-                        .setLargeIcon(BitmapFactory.decodeResource(this.getRes(),R.drawable.notification_timebased_color))
-                        .setContentTitle(countdown.getCountdownTitle())
-                        .setAutoCancel(false) //remove after clicking on it
-                        .setContentIntent(pendingIntent)
-                        .setOngoing(true) //notification is NOT REMOVEABLE
-                        //maybe no big text here because maybe hard to make notification small again (refresh etc.): .setStyle(new NotificationCompat.BigTextStyle().bigText("Remaining: "+countdown.getBigCountdownCurrentValues_String()+"\nTotal Years: 0\nTotal Months: 0\nTotal Weeks: 0\nTotal Days: 0\nTotal Hours: 0\nTotal Minutes: 0\nTotal Seconds: 0")) //make notification extendable
-                        .setContentText("Remaining: "+countdown.getBigCountdownCurrentValues_String())
-                        .build();
+        Notification counterServiceNotification;
+
+        if (!countdown.isUntilDateInTheFuture()) {
+            //Remove countdown if it has expired (this method will never be called again for that countdown!
+            Log.d(TAG, "createCounterServiceNotification: Countdown has expired! Making notification removable and making small changes.");
+            counterServiceNotification = new NotificationCompat.Builder(this.getActivityThisTarget())
+                    .setSmallIcon(R.drawable.app_icon)
+                    //.setLargeIcon(BitmapFactory.decodeResource(this.getRes(),R.drawable.notification_timebased_color))
+                    .setContentTitle(countdown.getCountdownTitle())
+                    .setAutoCancel(true) //remove after clicking on it
+                    .setContentIntent(pendingIntent)
+                    .setOngoing(false) //notification is NOT REMOVEABLE
+                    //maybe no big text here because maybe hard to make notification small again (refresh etc.): .setStyle(new NotificationCompat.BigTextStyle().bigText("Remaining: "+countdown.getBigCountdownCurrentValues_String()+"\nTotal Years: 0\nTotal Months: 0\nTotal Weeks: 0\nTotal Days: 0\nTotal Hours: 0\nTotal Minutes: 0\nTotal Seconds: 0")) //make notification extendable
+                    .setContentText("Countdown has expired on "+countdown.getUntilDateTime())
+                    .build();
+        } else { //Countdown has not expired
+            counterServiceNotification = new NotificationCompat.Builder(this.getActivityThisTarget())
+                    .setSmallIcon(R.drawable.app_icon)
+                    //Large icon is too small on new smartphones
+                    //.setLargeIcon(BitmapFactory.decodeResource(this.getRes(),R.drawable.notification_timebased_color))
+                    .setContentTitle(countdown.getCountdownTitle())
+                    .setAutoCancel(false) //remove after clicking on it
+                    .setContentIntent(pendingIntent)
+                    .setOngoing(true) //notification is NOT REMOVEABLE
+                    //maybe no big text here because maybe hard to make notification small again (refresh etc.): .setStyle(new NotificationCompat.BigTextStyle().bigText("Remaining: "+countdown.getBigCountdownCurrentValues_String()+"\nTotal Years: 0\nTotal Months: 0\nTotal Weeks: 0\nTotal Days: 0\nTotal Hours: 0\nTotal Minutes: 0\nTotal Seconds: 0")) //make notification extendable
+                    .setContentText("Remaining: "+countdown.getBigCountdownCurrentValues_String())
+                    .build();
+        }
+
+        return counterServiceNotification;
     }
 
     //Public so we can create also other notifications (if not needed we can place a dummy countdown)

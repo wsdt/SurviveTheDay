@@ -6,8 +6,8 @@ android {
         applicationId "kevkevin.wsdt.tagueberstehen"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 6
-        versionName "0.6"
+        versionCode 8
+        versionName "0.71"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -25,6 +25,7 @@ android {
 }
 
 dependencies {
+    //api 'com.android.billingclient:billing:1.0'
     implementation 'com.github.yukuku:ambilwarna:2.0.1'
     implementation 'com.google.firebase:firebase-ads:11.8.0'
     // For time picker with seconds
@@ -41,6 +42,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 }
+
+
 
 
 

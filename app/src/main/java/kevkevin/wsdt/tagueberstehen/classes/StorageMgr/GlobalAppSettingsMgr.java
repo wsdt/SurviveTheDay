@@ -30,8 +30,38 @@ public class GlobalAppSettingsMgr {
         this.setGlobalSettings_SharedPref(context.getSharedPreferences(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.SHAREDPREFERENCES_DBNAME, Context.MODE_PRIVATE));
     }
 
+    //Save system.currentTimeMillis()+rewardedValue() in Milliseoncds or so as new grenzwert
+    public void setRemoveAdsTemporarlyInMinutes(int adFreeMinutes) {
+        this.getGlobalSettings_SharedPref().edit().putLong(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.REMOVE_ADS_TEMPORARLY_IN_MINUTES, System.currentTimeMillis()+ (adFreeMinutes*60*1000)).apply(); //convert to milliseconds (as long current timestamp is smaller ads will be hidden)
+        Log.d(TAG, "setRemoveAdsTemporarlyInMinutes: Tried to save new adFreeTemporarly value.");
+    }
+
+
+    public boolean isRemoveAdsTemporarlyInMinutesActiveValid() {
+        boolean isRemoveAdsTemporarlyInMinutesActiveValid = false;
+        //FALSE = Show all ads / TRUE = hide all ads except rewarded video ads
+
+        long lastRewardedVideoSeenCheckpoint = this.getGlobalSettings_SharedPref().getLong(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.REMOVE_ADS_TEMPORARLY_IN_MINUTES,-1); //-1 by default, because an impossible value
+        if (lastRewardedVideoSeenCheckpoint < 0) {
+            Log.e(TAG, "isRemoveAdsTemporarlyInMinutesActiveValid: Never watched a rewarded video, because no last temporary ad free video watched.");
+        } else {
+            //Found value
+            long systemCurrentTimeMillis = System.currentTimeMillis();
+            if ((lastRewardedVideoSeenCheckpoint) > (systemCurrentTimeMillis)) {
+                //lastCheckpoint is bigger than now so we can hide ads (because var = thatMoment+rewardedMinutes)
+                Log.d(TAG, "isRemoveAdsTemporarlyInMinutesActiveValid: Ads will be hidden, because last checkpoint is within constraints: "+lastRewardedVideoSeenCheckpoint+" - Now: "+systemCurrentTimeMillis);
+                isRemoveAdsTemporarlyInMinutesActiveValid = true;
+            } else {
+                Log.d(TAG, "isRemoveAdsTemporarlyInMinutesActiveValid: Ads will be shown, because last checkpoint is outside constraints: "+lastRewardedVideoSeenCheckpoint+" - Now: "+systemCurrentTimeMillis);
+            }
+        }
+
+
+        return isRemoveAdsTemporarlyInMinutesActiveValid;
+    }
+
     // ENSURING THAT PEOPLE ARE WATCHING ADS [every ad than cannot be displayed increments this parameter] #################################
-    //TODO: Value is incremented, but until now only a message will be shown if int e.g. is higher than 5 [do not forget the user experience, so do not block user from using app AND do not forget playstore guidelines) --> because of that until now only a message]
+    //Value is incremented, but until now only a message will be shown if int e.g. is higher than 5 [do not forget the user experience, so do not block user from using app AND do not forget playstore guidelines) --> because of that until now only a message]
     public void incrementNoInternetConnectionCounter() {
         int newNoInternetConnectionValue = getNoInternetConnectionCounter()+1;
         if (newNoInternetConnectionValue >= Constants.ADMANAGER.NO_INTERNET_CONNECTION_MAX) {

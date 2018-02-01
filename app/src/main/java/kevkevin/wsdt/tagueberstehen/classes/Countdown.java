@@ -100,7 +100,7 @@ public class Countdown {
             } else {
                 percentageValueUnformatted = 100-((leftXpercentSeconds / all100percentSeconds) * 100); //get passed percentage if false
             }
-            //TODO: now again with more than only two nachkommastellen (formatting not working)
+            //TODO: now again with more than only two nachkommastellen (formatting not working) --> as string formatted, but then back to float with multiple digits
             float result = df.parse(df.format(percentageValueUnformatted)).floatValue(); //formatting percentage to 2 nachkommastellen
             //Double result = Double.parseDouble((new DecimalFormat("##,"+nachkommaStellen)).format((leftXpercentSeconds / all100percentSeconds) * 100)); //formatting percentage to 2 nachkommastellen
             return (result >= 0) ? ((result <= 100) ? result : 100) : 0; //always return 0-100

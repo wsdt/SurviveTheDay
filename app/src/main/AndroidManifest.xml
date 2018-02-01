@@ -15,18 +15,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <!-- screenOrientation and configChanges so only portrait mode -->
         <activity
             android:name=".LoadingScreenActivity"
-            android:noHistory="true"
             android:configChanges="orientation"
+            android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+
         </activity>
         <!-- Also splash theme here, so we can show appIcon while opening app from notification -->
         <activity
@@ -34,27 +31,43 @@
             android:label="@string/app_name"
             android:noHistory="true"
             android:theme="@style/SplashTheme">
-            <intent-filter><action android:name="android.intent.action.VIEW"/></intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
         </activity>
         <!-- Credits activity needs parent of splashtheme or noActionBar Theme (better: because color so primary and not black) -->
         <activity
             android:name=".CreditsActivity"
             android:label="@string/title_activity_credits">
-            <intent-filter><action android:name="android.intent.action.VIEW"/></intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
         </activity>
-        <!--<activity
+        <!--
+            <activity
             android:name=".util.InAppPurchaseActivity"
             android:label="In App Purchase"
-            android:theme="@style/AppTheme.NoActionBar" />-->
-        <activity android:name=".ModifyCountdownActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        -->
+        <activity
+            android:name=".ModifyCountdownActivity"
             android:label="@string/title_activity_modify_countdown">
-            <intent-filter><action android:name="android.intent.action.VIEW"/></intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
         </activity>
         <activity android:name=".MainActivity">
-            <intent-filter><action android:name="android.intent.action.VIEW"/></intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
         </activity>
-        <activity android:name=".AppSettingsActivity"
-            android:label="@string/title_activity_settings"/>
+        <activity
+            android:name=".AppSettingsActivity"
+            android:label="@string/title_activity_settings" />
+        <activity
+            android:name=".RewardedVideoAdActivity"
+            android:noHistory="true"
+            android:theme="@style/SplashTheme" />
 
         <!-- BROADCAST RECEIVERS FOR REGULAR NOTIFICATIONS (maybe replacing background service in future) -->
         <receiver
@@ -66,8 +79,10 @@
         </receiver>
         <receiver android:name=".classes.services.NotificationService_AlarmmanagerBroadcastReceiver" />
 
-        <!-- FOREGROUND COUNTDOWN COUNTER SERVICE -
-        // ADDED IF EVERYTHING WORKS FINE-->
+        <!--
+        FOREGROUND COUNTDOWN COUNTER SERVICE -
+        // ADDED IF EVERYTHING WORKS FINE
+        -->
         <service
             android:name=".classes.services.CountdownCounterService"
             android:exported="false"
@@ -75,12 +90,15 @@
             android:stopWithTask="false">
             <intent-filter>
                 <action android:name=".classes.CountdownCounterService" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
 
-        <!-- BACKGROUND NOTIFICATION SERVICE
-             directBootAware (allows running service also when phone is locked), if not supported by current device then savely IGNORED! -->
+        <!--
+             BACKGROUND NOTIFICATION SERVICE
+             directBootAware (allows running service also when phone is locked), if not supported by current device then savely IGNORED!
+        -->
         <service
             android:name=".classes.services.NotificationService"
             android:directBootAware="true"
@@ -94,6 +112,15 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
+
+        <activity android:name=".TEST_InAppPurchase">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
