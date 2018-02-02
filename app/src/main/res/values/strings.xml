@@ -353,4 +353,9 @@
     <string name="adManager_loadRewardedVideoInRewardActivity_reward_successMessage">You got rewarded with %1$d minutes free of ads!</string>
     <string name="adManager_loadRewardedVideoInRewardActivity_reward_introductionMessage">After watching this video, all ads will be hidden for a certain period of time! :)</string>
 
+    <!-- InApp Purchase Manager -->
+    <string name="inAppPurchaseManager_buyManagedInAppProduct_msg_ProductAlreadyBoughtORnotLoggedInOnGoogle">This item might have been already purchased by you or you need to login onto your Google account.</string>
+
+    <string name="inAppProductsNode_default_title">Product could not be loaded</string>
+
 </resources>

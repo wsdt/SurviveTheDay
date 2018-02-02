@@ -6,15 +6,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
 
-public class TEST_InAppPurchase extends AppCompatActivity{
+public class InAppPurchaseActivity extends AppCompatActivity{
     private InAppPurchaseManager inAppPurchaseManager;
-    private static final String TAG = "TEST_InAppPurchase";
+    private static final String TAG = "InAppPurchaseActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +40,7 @@ public class TEST_InAppPurchase extends AppCompatActivity{
         try {
             Intent futureResultIntent = new Intent();
             futureResultIntent.putExtra("INAPP_PRODUCT_ID", Constants.INAPP_PURCHASES.INAPP_PRODUCTS.BUY_EVERYTHING_ID.toString());
-            startIntentSenderForResult(this.inAppPurchaseManager.buyInAppProduct("android.test.purchased"/*Constants.INAPP_PURCHASES.INAPP_PRODUCTS.BUY_EVERYTHING_ID.toString()*/).getIntentSender(),0, futureResultIntent,0,0,0);
+            startIntentSenderForResult(this.inAppPurchaseManager.buyManagedInAppProduct(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.BUY_EVERYTHING_ID.toString()).getIntentSender(),0, futureResultIntent,0,0,0);
         } catch (IntentSender.SendIntentException | NullPointerException e) {
             e.printStackTrace();
         }
@@ -50,4 +51,11 @@ public class TEST_InAppPurchase extends AppCompatActivity{
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "Product: "+data.getStringExtra("INAPP_PRODUCT_ID")+"\nRequest-Code: "+requestCode+"\nResult-Code: "+resultCode);//intent
     }
+
+    /*show all  ArrayList<String> detailsList = getAllInAppProducts().getStringArrayList("DETAILS_LIST");
+            Log.d(TAG, "onServiceConnected: RESPONSE-CODE-->"+getAllInAppProducts().getInt("RESPONSE_CODE")+" // PRODUCT-LIST: "+detailsList);*/
+
+
+
+
 }
