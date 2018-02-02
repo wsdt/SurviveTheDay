@@ -4,9 +4,9 @@
     style="@style/countdownNode"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:drawable/dialog_holo_dark_frame"
+    android:background="@drawable/shape_shadow_rectangle"
     android:layout_marginBottom="-10dp"
-    android:onClick="onClick">
+    android:onClick="onClick"><!-- android:background="@android:drawable/dialog_holo_light_frame" -->
     <!-- Only add this programmatically: android:tag="COUNTDOWN_0"-->
 
     <TextView
@@ -14,7 +14,8 @@
         style="@style/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         android:text="@string/node_countdownTitleError404" />
     <TextView
         android:id="@+id/countdownDescription"
@@ -36,12 +37,17 @@
         android:src="@drawable/switchtoggle_16px"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@null"
+        android:layout_marginTop="5dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
+    <!-- @null as background for transparency -->
     <ImageButton
         android:id="@+id/countdownEdit"
         android:onClick="onCountdownModifyButtons"
+        android:background="@null"
+        android:layout_marginTop="5dp"
         android:contentDescription="editButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -56,6 +62,8 @@
         android:contentDescription="deleteButton"
         android:onClick="onCountdownModifyButtons"
         android:id="@+id/countdownDelete"
+        android:background="@null"
+        android:layout_marginTop="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/delete_16px"

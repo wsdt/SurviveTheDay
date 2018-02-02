@@ -1,14 +1,17 @@
 package kevkevin.wsdt.tagueberstehen;
 
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 
-import java.util.ArrayList;
+import com.android.vending.billing.IInAppBillingService;
 
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
@@ -20,13 +23,23 @@ public class InAppPurchaseActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_test__in_app_purchase);
+        setContentView(R.layout.activity_in_app_purchase);
 
         this.inAppPurchaseManager = new InAppPurchaseManager(this);
-        this.inAppPurchaseManager.bindInAppService();
+        this.inAppPurchaseManager.setmServiceConn(new ServiceConnection() { //serviceconnection must be overwritten BEFORE bindservice gets called
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                inAppPurchaseManager.setmService(IInAppBillingService.Stub.asInterface(iBinder));
+                //call this method for that activity if loaded:
+                inAppPurchaseManager.printAllInAppProductsAsNode((LinearLayout) findViewById(R.id.inappProductList));
+            }
 
-
-
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                inAppPurchaseManager.setmService(null);
+            }
+        });
+        this.inAppPurchaseManager.bindInAppService(); //call after overwriting serviceconnectionlistener
     }
 
     @Override
@@ -35,16 +48,6 @@ public class InAppPurchaseActivity extends AppCompatActivity{
         this.inAppPurchaseManager.unbindInAppService();
     }
 
-
-    public void testbuy(View v) {
-        try {
-            Intent futureResultIntent = new Intent();
-            futureResultIntent.putExtra("INAPP_PRODUCT_ID", Constants.INAPP_PURCHASES.INAPP_PRODUCTS.BUY_EVERYTHING_ID.toString());
-            startIntentSenderForResult(this.inAppPurchaseManager.buyManagedInAppProduct(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.BUY_EVERYTHING_ID.toString()).getIntentSender(),0, futureResultIntent,0,0,0);
-        } catch (IntentSender.SendIntentException | NullPointerException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

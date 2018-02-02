@@ -354,8 +354,11 @@
     <string name="adManager_loadRewardedVideoInRewardActivity_reward_introductionMessage">After watching this video, all ads will be hidden for a certain period of time! :)</string>
 
     <!-- InApp Purchase Manager -->
-    <string name="inAppPurchaseManager_buyManagedInAppProduct_msg_ProductAlreadyBoughtORnotLoggedInOnGoogle">This item might have been already purchased by you or you need to login onto your Google account.</string>
+    <string name="inAppPurchaseManager_buyManagedInAppProduct_msg_ProductAlreadyBoughtORnotLoggedInOnGoogle">This item might have been already purchased by you or you need to login into your Google account.</string>
 
     <string name="inAppProductsNode_default_title">Product could not be loaded</string>
+    <string name="inAppProductsNode_default_description">Maybe you have no active internet connection or this is an internal error. </string>
+    <string name="inAppProductsNode_default_price">0.00 €</string>
+    <string name="inAppProductsNode_default_status">Already bought</string>
 
 </resources>
