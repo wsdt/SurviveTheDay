@@ -11,11 +11,16 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
 
 import java.util.ArrayList;
+import java.util.UUID;
+
+import kevkevin.wsdt.tagueberstehen.R;
 
 public class InAppPurchaseManager {
     private static final String TAG = "InAppPurchaseManager";
@@ -23,29 +28,30 @@ public class InAppPurchaseManager {
     private Bundle allAvailableProducts;
     private Context context;
     private IInAppBillingService mService;
-    private ServiceConnection mServiceConn = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            setmService(IInAppBillingService.Stub.asInterface(iBinder));
-            ArrayList<String> detailsList = getAllInAppProducts().getStringArrayList("DETAILS_LIST");
-            Log.d(TAG, "onServiceConnected: RESPONSE-CODE-->"+getAllInAppProducts().getInt("RESPONSE_CODE")+" // PRODUCT-LIST: "+detailsList);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            setmService(null);
-        }
-    };
+    private ServiceConnection mServiceConn;
 
     //TODO: all methods in thread (not on mainthread)
     //TODO: all strings into strings.xml etc. and constants
     public InAppPurchaseManager(@NonNull Context context) {
         this.setContext(context);
+
         //IMPORTANT: Call unbindInAppService after Purchase or loadingofproducts is DONE!!!
         this.bindInAppService(); //bindService so we can do sth
     }
 
     public void bindInAppService() {
+        this.setmServiceConn(new ServiceConnection() { //must be called BEFORE bindService()!
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                setmService(IInAppBillingService.Stub.asInterface(iBinder));
+
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                setmService(null);
+            }
+        });
         Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
         serviceIntent.setPackage("com.android.vending"); //important for security
         this.getContext().bindService(serviceIntent, this.getmServiceConn(), Context.BIND_AUTO_CREATE);
@@ -90,21 +96,16 @@ public class InAppPurchaseManager {
         }
     }
 
-    public PendingIntent buyInAppProduct(String skuInAppProductId) {
+    public PendingIntent buyManagedInAppProduct(String skuInAppProductId) {
         skuInAppProductId = (Constants.INAPP_PURCHASES.USE_STATIC_TEST_INAPP_PRODUCTS ? Constants.INAPP_PURCHASES.TEST_INAPP_PRODUCTS.STATIC_TEST.BUY_PRODUCT_DEFAULT_RESPONSE : skuInAppProductId);
         try {
             //Use static test in app products or real products (which is delivered by method parameter)
             Log.d(TAG, "buyInAppProduct: Buying following product --> "+skuInAppProductId);
-            Bundle buyIntentBundle = this.getmService().getBuyIntent(3, this.getContext().getPackageName(), "android.test.purchased", "inapp", "");
-            if (buyIntentBundle == null) {
-                Log.e(TAG, "buyInAppProduct: BuyIntentBundle is NULL!");
-            } else {
-                Log.e(TAG, "buyInAppProduct: Bundle --> "+buyIntentBundle.toString()+"\nBUY INTENT: "+buyIntentBundle.get("BUY_INTENT"));
-            }
+            Bundle buyIntentBundle = this.getmService().getBuyIntent(3, this.getContext().getPackageName(), skuInAppProductId, "inapp", generateUniquePayload());
             PendingIntent buyPendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
             if (buyPendingIntent == null) {
-                Toast.makeText(this.getContext(), "Please login into your Google account.",Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "buyInAppProduct: PendingIntent is NULL!");
+                Toast.makeText(this.getContext(), R.string.inAppPurchaseManager_buyManagedInAppProduct_msg_ProductAlreadyBoughtORnotLoggedInOnGoogle,Toast.LENGTH_LONG).show();
+                Log.e(TAG, "buyInAppProduct: PendingIntent is NULL! Item might be already have been purchased or user needs to login into his Google account.");
             }
             return buyPendingIntent;
         } catch (RemoteException e) {
@@ -122,6 +123,18 @@ public class InAppPurchaseManager {
             e.printStackTrace();
         }
         return this.getOwnedProducts();
+    }
+
+    private String generateUniquePayload() {
+        //For every purchase we need an unique payload (otherwise pendingintent is null!)
+        String uuid = UUID.randomUUID().toString();
+        Log.d(TAG, "generateUniquePayload: Generated unique payload: "+uuid);
+        return uuid;
+    }
+
+    public void printAllBuyableInAppProductsAsNode(@NonNull LinearLayout nodeContainer) {
+        //NodeContainer should have a vertical orientation and maybe be scrollable (so nodeContainer should be within a Scrollview)
+
     }
 
 

@@ -47,6 +47,15 @@
         <item name="android:layout_width">match_parent</item>
     </style>
 
+    <style name="inappProductNode" parent="page">
+        <item name="android:layout_marginLeft">5dp</item>
+        <item name="android:layout_marginRight">5dp</item>
+        <item name="android:background">#666</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
     <!-- COUNTDOWN VIEW -->
     <style name="ContentMain">
         <item name="android:background">@color/dark</item>

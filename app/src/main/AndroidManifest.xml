@@ -113,7 +113,7 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".TEST_InAppPurchase">
+        <activity android:name=".InAppPurchaseActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
