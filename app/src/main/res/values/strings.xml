@@ -13,6 +13,7 @@
     <string name="actionBar_menu_addNewCountdown">Add new</string>
     <string name="actionBar_menu_deleteAllCountdowns">Delete all</string>
     <string name="actionBar_menu_removeAdsTemporarily">Remove Ads temporary</string>
+    <string name="actionBar_menu_showInAppProducts">In-App-Products</string>
 
     <!-- BUTTONS -->
     <string name="button_save">Save</string>
