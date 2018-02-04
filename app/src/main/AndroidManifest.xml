@@ -23,7 +23,12 @@
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <!-- Also splash theme here, so we can show appIcon while opening app from notification -->
         <activity
@@ -68,6 +73,7 @@
             android:name=".RewardedVideoAdActivity"
             android:noHistory="true"
             android:theme="@style/SplashTheme" />
+        <activity android:name=".InAppPurchaseActivity"/>
 
         <!-- BROADCAST RECEIVERS FOR REGULAR NOTIFICATIONS (maybe replacing background service in future) -->
         <receiver
@@ -113,14 +119,6 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".InAppPurchaseActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>

@@ -16,10 +16,14 @@
         android:icon="@drawable/delete"
         android:title="@string/actionBar_menu_deleteAllCountdowns"
         app:showAsAction="ifRoom" />
-
+    <item
+        android:id="@+id/action_showInAppProducts"
+        android:orderInCategory="2"
+        app:showAsAction="never"
+        android:title="@string/actionBar_menu_showInAppProducts"/>
     <item
         android:id="@+id/action_removeAdsTemporary"
-        android:orderInCategory="2"
+        android:orderInCategory="3"
         android:title="@string/actionBar_menu_removeAdsTemporarily"
         app:showAsAction="never" />
 
