@@ -19,7 +19,7 @@ public class Constants {
 
         interface TEST_INAPP_PRODUCTS {
             interface STATIC_TEST {
-                String BUY_PRODUCT_DEFAULT_RESPONSE = GOOGLE_PLAY_STATIC_RESPONSES.PRODUCT_CANCELED.toString(); //let test purchases success (here changeable)
+                //String BUY_PRODUCT_DEFAULT_RESPONSE = GOOGLE_PLAY_STATIC_RESPONSES.PRODUCT_CANCELED.toString(); //let test purchases success (here changeable)
                 enum GOOGLE_PLAY_STATIC_RESPONSES { //as enum to iterate through it
                     PRODUCT_PURCHASED("android.test.purchased"),
                     PRODUCT_CANCELED("android.test.canceled"),
