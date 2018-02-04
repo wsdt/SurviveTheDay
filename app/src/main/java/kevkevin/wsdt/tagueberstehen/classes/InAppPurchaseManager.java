@@ -107,7 +107,7 @@ public class InAppPurchaseManager {
     }
 
     public PendingIntent buyManagedInAppProduct(String skuInAppProductId) {
-        skuInAppProductId = (Constants.INAPP_PURCHASES.USE_STATIC_TEST_INAPP_PRODUCTS ? Constants.INAPP_PURCHASES.TEST_INAPP_PRODUCTS.STATIC_TEST.BUY_PRODUCT_DEFAULT_RESPONSE : skuInAppProductId);
+        //DO NOT [USE TEST PRODUCTS WHEN THEY ARE GIVEN TO THIS METHOD]: skuInAppProductId = (Constants.INAPP_PURCHASES.USE_STATIC_TEST_INAPP_PRODUCTS ? Constants.INAPP_PURCHASES.TEST_INAPP_PRODUCTS.STATIC_TEST.BUY_PRODUCT_DEFAULT_RESPONSE : skuInAppProductId);
         try {
             //Use static test in app products or real products (which is delivered by method parameter)
             Log.d(TAG, "buyInAppProduct: Buying following product --> "+skuInAppProductId);
@@ -135,6 +135,8 @@ public class InAppPurchaseManager {
         return this.getOwnedProducts();
     }
 
+    //TODO: Is product bought by user already (use with getallowned products etc. over getter etc.) --> return bolean
+
     private String generateUniquePayload() {
         //For every purchase we need an unique payload (otherwise pendingintent is null!)
         String uuid = UUID.randomUUID().toString();
@@ -155,7 +157,7 @@ public class InAppPurchaseManager {
         } else {Log.w(TAG, "printAllInAppProductsAsNode: detailsList is NULL! Maybe no products in Google Play Console created or no internet?");}
     }
 
-    private RelativeLayout printInAppProductAsNode(@NonNull LinearLayout nodeContainer, String json) {
+    private void printInAppProductAsNode(@NonNull LinearLayout nodeContainer, String json) {
         //json must be the playstore string
         RelativeLayout inappProductNode = null;
         try {
@@ -168,12 +170,12 @@ public class InAppPurchaseManager {
             ((TextView) inappProductNode.findViewById(R.id.inappProductPrice)).setText(jsonObject.getString("price"));
 
             //Buy when clicking on it
-            //TODO: productId is for every node the same (should not be)
             final String productId = jsonObject.getString("productId");
             inappProductNode.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     try {
+                        Log.d(TAG, "onClick: Setting intentSender for productId: "+productId);
                         Intent futureResultIntent = new Intent();
                         futureResultIntent.putExtra("INAPP_PRODUCT_ID", productId);
                         getContext().startIntentSenderForResult(buyManagedInAppProduct(productId).getIntentSender(),0, futureResultIntent,0,0,0);
@@ -189,7 +191,6 @@ public class InAppPurchaseManager {
             e.printStackTrace();
         }
         if (inappProductNode == null) {Log.e(TAG, "craftInAppProductAsNode: Node is NULL. This should not happen!");}
-        return inappProductNode;
     }
 
 
