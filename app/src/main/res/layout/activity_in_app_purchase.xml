@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/inAppPurchaseAct_RL"
     tools:context="kevkevin.wsdt.tagueberstehen.InAppPurchaseActivity">
 
     <LinearLayout
