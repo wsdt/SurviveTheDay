@@ -17,6 +17,19 @@ public class Constants {
     public interface INAPP_PURCHASES {
         boolean USE_STATIC_TEST_INAPP_PRODUCTS = true;
 
+        interface BASE64ENCODED_PUBLICKEY {
+            char SEPARATOR = '/';
+            String[] substr_arr = new String[] {"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjgvR22VPMnYUNA6WRQIwrgnjLUp1hb+fkHB2nkyJSq9sg9LaY1fs",
+                "0TLTPpRpDWHipYfI58671lIuUKL",
+                "pOokXDC6RMefoRYhNS3ikl8O3",
+                "sOkBB3vFJb+Fgwk+b",
+                "FvIp3Xes33s",
+                "UJ6ZiC1Eidt1fT3xbPWZd+ss76sp3remAzFcHJ44UeU9jVECowmfnMTuddv62lb1QSsPo3la4bmBIwTaGdsTyemx92wjwHUYkZdIBxHwIiRxM3as72Q6s1PIK+YLC7+kRzsxE0QYLcCGbMt1Y2Ox",
+                "asv",
+                "8yRbKLE63",
+                "9RRpFjjRdyNc5HbtnKBoHVmr6TeKDGUJWgiomVExqQIDAQAB"};
+        }
+
         interface TEST_INAPP_PRODUCTS {
             interface STATIC_TEST {
                 //String BUY_PRODUCT_DEFAULT_RESPONSE = GOOGLE_PLAY_STATIC_RESPONSES.PRODUCT_CANCELED.toString(); //let test purchases success (here changeable)

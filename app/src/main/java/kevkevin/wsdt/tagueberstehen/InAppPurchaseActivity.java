@@ -10,14 +10,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.android.vending.billing.IInAppBillingService;
 
+import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
+import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager_newUsedHelper;
 
 public class InAppPurchaseActivity extends AppCompatActivity{
-    private InAppPurchaseManager inAppPurchaseManager;
+    private InAppPurchaseManager_newUsedHelper inAppPurchaseManager;
     private static final String TAG = "InAppPurchaseActivity";
 
     @Override
@@ -25,8 +28,14 @@ public class InAppPurchaseActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_in_app_purchase);
 
-        this.inAppPurchaseManager = new InAppPurchaseManager(this);
-        this.inAppPurchaseManager.setmServiceConn(new ServiceConnection() { //serviceconnection must be overwritten BEFORE bindservice gets called
+        //Load ads
+        AdManager adManager = new AdManager(this);
+        adManager.initializeAdmob();
+        adManager.loadBannerAd((RelativeLayout) findViewById(R.id.inAppPurchaseAct_RL));
+
+        this.inAppPurchaseManager = new InAppPurchaseManager_newUsedHelper(this);
+        this.inAppPurchaseManager.printAllInAppProductsAsNode((LinearLayout) findViewById(R.id.inappProductList));
+        /*this.inAppPurchaseManager.setmServiceConn(new ServiceConnection() { //serviceconnection must be overwritten BEFORE bindservice gets called
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                 inAppPurchaseManager.setmService(IInAppBillingService.Stub.asInterface(iBinder));
@@ -38,27 +47,29 @@ public class InAppPurchaseActivity extends AppCompatActivity{
             public void onServiceDisconnected(ComponentName componentName) {
                 inAppPurchaseManager.setmService(null);
             }
-        });
-        this.inAppPurchaseManager.bindInAppService(); //call after overwriting serviceconnectionlistener
+        });*/
+        //this.inAppPurchaseManager.bindInAppService(); //call after overwriting serviceconnectionlistener
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        this.inAppPurchaseManager.unbindInAppService();
+        this.inAppPurchaseManager.unbindIabHelper();
+        Log.d(TAG, "onDestroy: Tried to unbind IabHelper.");
     }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "Product: "+data.getStringExtra("INAPP_PRODUCT_ID")+"\nRequest-Code: "+requestCode+"\nResult-Code: "+resultCode);//intent
+        Log.d(TAG, "onActivityResult: "+requestCode+", "+resultCode+", "+data);
+
+        //This procedure seems to be vital that everything works fine
+        //Pass on the activity result to the helper for handling
+        if (!this.inAppPurchaseManager.getIabHelper().handleActivityResult(requestCode, resultCode, data)) {
+            super.onActivityResult(requestCode, resultCode, data);
+        } else {
+            Log.d(TAG, "onActivityResult handled by IABUtil.");
+        }
     }
-
-    /*show all  ArrayList<String> detailsList = getAllInAppProducts().getStringArrayList("DETAILS_LIST");
-            Log.d(TAG, "onServiceConnected: RESPONSE-CODE-->"+getAllInAppProducts().getInt("RESPONSE_CODE")+" // PRODUCT-LIST: "+detailsList);*/
-
-
-
 
 }

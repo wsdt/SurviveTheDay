@@ -25,29 +25,29 @@ package kevkevin.wsdt.tagueberstehen.util;
  * An Inventory is returned by such methods as {@link IabHelper#queryInventory}.
  */
 public class Inventory {
-    Map<String,SkuDetails> mSkuMap = new HashMap<String,SkuDetails>();
-    Map<String,Purchase> mPurchaseMap = new HashMap<String,Purchase>();
+    private Map<String,SkuDetails> mSkuMap = new HashMap<String,SkuDetails>();
+    private Map<String,Purchase> mPurchaseMap = new HashMap<String,Purchase>();
 
     Inventory() { }
 
     /** Returns the listing details for an in-app product. */
     public SkuDetails getSkuDetails(String sku) {
-        return mSkuMap.get(sku);
+        return getmSkuMap().get(sku);
     }
 
     /** Returns purchase information for a given product, or null if there is no purchase. */
     public Purchase getPurchase(String sku) {
-        return mPurchaseMap.get(sku);
+        return getmPurchaseMap().get(sku);
     }
 
     /** Returns whether or not there exists a purchase of the given product. */
     public boolean hasPurchase(String sku) {
-        return mPurchaseMap.containsKey(sku);
+        return getmPurchaseMap().containsKey(sku);
     }
 
     /** Return whether or not details about the given product are available. */
     public boolean hasDetails(String sku) {
-        return mSkuMap.containsKey(sku);
+        return getmSkuMap().containsKey(sku);
     }
 
     /**
@@ -59,18 +59,18 @@ public class Inventory {
      * a new Inventory.
      */
     public void erasePurchase(String sku) {
-        if (mPurchaseMap.containsKey(sku)) mPurchaseMap.remove(sku);
+        if (getmPurchaseMap().containsKey(sku)) getmPurchaseMap().remove(sku);
     }
 
     /** Returns a list of all owned product IDs. */
     List<String> getAllOwnedSkus() {
-        return new ArrayList<String>(mPurchaseMap.keySet());
+        return new ArrayList<String>(getmPurchaseMap().keySet());
     }
 
     /** Returns a list of all owned product IDs of a given type */
     List<String> getAllOwnedSkus(String itemType) {
         List<String> result = new ArrayList<String>();
-        for (Purchase p : mPurchaseMap.values()) {
+        for (Purchase p : getmPurchaseMap().values()) {
             if (p.getItemType().equals(itemType)) result.add(p.getSku());
         }
         return result;
@@ -78,14 +78,32 @@ public class Inventory {
 
     /** Returns a list of all purchases. */
     List<Purchase> getAllPurchases() {
-        return new ArrayList<Purchase>(mPurchaseMap.values());
+        return new ArrayList<Purchase>(getmPurchaseMap().values());
     }
 
     void addSkuDetails(SkuDetails d) {
-        mSkuMap.put(d.getSku(), d);
+        getmSkuMap().put(d.getSku(), d);
     }
 
     void addPurchase(Purchase p) {
-        mPurchaseMap.put(p.getSku(), p);
+        getmPurchaseMap().put(p.getSku(), p);
+    }
+
+
+    //Added for iterating over them
+    public Map<String, SkuDetails> getmSkuMap() {
+        return mSkuMap;
+    }
+
+    public void setmSkuMap(Map<String, SkuDetails> mSkuMap) {
+        this.mSkuMap = mSkuMap;
+    }
+
+    public Map<String, Purchase> getmPurchaseMap() {
+        return mPurchaseMap;
+    }
+
+    public void setmPurchaseMap(Map<String, Purchase> mPurchaseMap) {
+        this.mPurchaseMap = mPurchaseMap;
     }
 }

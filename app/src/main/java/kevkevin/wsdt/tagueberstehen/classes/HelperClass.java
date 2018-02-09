@@ -23,4 +23,18 @@ public class HelperClass {
         Log.d(TAG, "setIntervalSpinnerConfigurations: Tried to set spinner properties.");
         return spinner;
     }
+
+    //So we can pass future values to other methods when they are successfully loaded
+    public interface Listener<T> {
+        void isDataLoaded(T arg);
+    }
+
+    /*public static void letThreadSleepInMilliseconds(int milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            Log.e(TAG, "letThreadSleepInMilliseconds: Tried to wait for "+milliseconds+" ms.");
+            e.printStackTrace();
+        }
+    }*/
 }
