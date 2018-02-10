@@ -22,6 +22,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import kevkevin.wsdt.tagueberstehen.R;
@@ -35,18 +37,19 @@ public class InAppPurchaseManager_newUsedHelper {
     private final static String TAG = "InAppPurchaseMgr_new";
     private Activity activityContext;
     private IabHelper iabHelper;
-    private Inventory allInAppProducts;
+    private static Inventory allInAppProducts; //static so data is shared over all instances (faster, no reload except on forceReload==true)
     private String base64EncodedPublicKey; //see GooglePlayConsole
 
     public InAppPurchaseManager_newUsedHelper(Activity activityContext) {
         this.setActivityContext(activityContext);
-        this.setIabHelper(new IabHelper(activityContext, this.getBase64EncodedPublicKey())); //important!!
+        this.setIabHelper(new IabHelper(activityContext, this.getBase64EncodedPublicKey()), null); //important!!
     }
 
 
     public boolean isProductBought(String productSkuId) {
+
         try { //if internet should not happen, because at instantiation all products get downloaded
-            return this.getAllInAppProducts().hasPurchase(productSkuId);
+            return getAllInAppProducts().hasPurchase(productSkuId);
         } catch (NullPointerException e) {
             Log.e(TAG, "isProductBought: Inventory not already set. Try it later again. WARNING: Method returned FALSE!");
             Toast.makeText(this.getActivityContext(), R.string.inAppPurchaseManager_error_isProductPurchasedFailure, Toast.LENGTH_SHORT).show(); //maybe remove, because if not internet and not bought this msg is useless [but useful if no internet and bought]
@@ -55,6 +58,7 @@ public class InAppPurchaseManager_newUsedHelper {
     }
 
     public void purchaseProduct(String productSkuId, int resultCode, @Nullable IabHelper.OnIabPurchaseFinishedListener onIabPurchaseFinishedListener) {
+
         try { //use given onPurchaseListener, if not given (= null) then use default one
             this.getIabHelper().launchPurchaseFlow(this.getActivityContext(), productSkuId, resultCode, (onIabPurchaseFinishedListener != null) ? onIabPurchaseFinishedListener : new IabHelper.OnIabPurchaseFinishedListener() {
                 @Override
@@ -67,11 +71,11 @@ public class InAppPurchaseManager_newUsedHelper {
 
                     if (result.isFailure()) {
                         Log.e(TAG, "purchaseProduct:onIabPurchaseFinished: Purchase failed --> " + result);
-                        Toast.makeText(getActivityContext(), String.format(getActivityContext().getResources().getString(R.string.countdown_info_startDateInFuture), info.getSku()) + " / Result: " + result, Toast.LENGTH_LONG).show();
+                        Toast.makeText(activityContext, R.string.inAppPurchaseManager_error_purchaseProductFailure, Toast.LENGTH_SHORT).show();
                     } else { //else if with separate productSkus?
                         //inventory.hasPurchase(SKU) --> wurde gekauft
                         //TODO: maybe we have to reload all views
-                        Toast.makeText(activityContext, R.string.inAppPurchaseManager_success_purchaesProductSuccess, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivityContext(), String.format(getActivityContext().getResources().getString(R.string.inAppPurchaseManager_success_purchaseProductSuccess), info.getSku()) + " / Result: " + result, Toast.LENGTH_LONG).show();
                         //RECOMMENDATION: Give custom OnPurchaseFinishedListener, because this one does not that much! After purchase completed the inventory.hasPurchase should be true for that sku!
                     }
 
@@ -92,6 +96,7 @@ public class InAppPurchaseManager_newUsedHelper {
     }
 
     public SkuDetails getProductDetails(String productSkuId) {
+
         Log.d(TAG, "getProductDetails: Returning SkuDetails of product: " + productSkuId);
         try {
             return this.queryAllProducts(false).getSkuDetails(productSkuId);
@@ -103,8 +108,7 @@ public class InAppPurchaseManager_newUsedHelper {
     }
 
     public Inventory queryAllProducts(boolean forceRefresh) {
-        //TODO: why is setup not done????? (while printing)
-        if (this.getAllInAppProducts() == null || forceRefresh) {
+        if (getAllInAppProducts() == null || forceRefresh) {
             try {
                 ArrayList<String> skuList = new ArrayList<>();
 
@@ -137,21 +141,10 @@ public class InAppPurchaseManager_newUsedHelper {
                     }
                 });*/
                 //TODO: asynctask or similar or solution for async so value always available or method would have to wait without blocking UI
-                this.setAllInAppProducts(this.getIabHelper().queryInventory(true, skuList, null)); //here we have a fixed return value! but we have to wait on the UI thread --> asynctask so to show on UI thread with progress bar or similar
+                setAllInAppProducts(this.getIabHelper().queryInventory(true, skuList, null)); //here we have a fixed return value! but we have to wait on the UI thread --> asynctask so to show on UI thread with progress bar or similar
                 Log.w(TAG, "queryAllProducts: Tried to download new product details. ");
 
-                /*int count = 0;
-                while(this.getAllInAppProducts() == null) {
-
-                    //do not use thread sleep! sleep as long as inventory is not downloaded! (refresh every half second)
-                    if ((count++) > 25) { //(25*500ms) --> appr. 15s timeout
-                        Log.e(TAG, "queryAllProducts: Could not download inventory. Timeout exceeded.");
-                        Toast.makeText(this.getActivityContext(), R.string.inAppPurchaseManager_error_inventoryDownloadFailure, Toast.LENGTH_LONG).show();
-                        break;
-                    }
-                }*/
-
-                return this.getAllInAppProducts(); //because of while until not null it should be always an inventory there except on error [prevent endless pause so it could nevertheless return NULL!] (always evaluate if value null)
+                return getAllInAppProducts(); //because of while until not null it should be always an inventory there except on error [prevent endless pause so it could nevertheless return NULL!] (always evaluate if value null)
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.e(TAG, "queryAllProducts: WARNING an error occured while receiving product details. Method returned NULL!");
@@ -159,7 +152,7 @@ public class InAppPurchaseManager_newUsedHelper {
             }
         } else {
             Log.d(TAG, "queryAllProducts: AllInAppProducts-Bundle already downloaded for this session. Used it instead of reloading.");
-            return this.getAllInAppProducts();
+            return getAllInAppProducts();
         }
     }
 
@@ -172,21 +165,71 @@ public class InAppPurchaseManager_newUsedHelper {
                 e.printStackTrace();
             }
         }
-        this.setIabHelper(null);
+        this.setIabHelper(null, null);
     }
+
+    /*private void waitUntilInAppPurchaseMgrReady(/*final Runnable runnable*) {
+        if (!this.getIabHelper_NOREADYCHECK().mSetupDone) { //only create thread if not already ready
+            /*new Thread(new Runnable() {
+                @Override
+                public void run() {*
+
+            Thread purchaseMgrReadyControllerThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    int timeoutCounter = 0;
+                    while (!getIabHelper_NOREADYCHECK().mSetupDone) { //if inventory load async then we would need to add it here also
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        if ((timeoutCounter++) > 50) {
+                            Log.d(TAG, "waitUntilInAppPurchaseMgrReady:Thread: Timeout exceeded. Leaving loop.");
+//                            Toast.makeText(activityContext, R.string.inAppPurchaseManager_error_iabHelperSetupFailure, Toast.LENGTH_SHORT).show();
+                            break; //exit loop because of timeout
+                        } else if (timeoutCounter == 25) { //needs to be the 2nd if else (because 25 always true before 50 would be called
+                            //trying to resetup instance
+                            Log.d(TAG, "waitUntilInAppPurchaseMgrReady:Thread: First timeout exceeded. Trying to resetup Manager.");
+                            setIabHelper(new IabHelper(activityContext, getBase64EncodedPublicKey()),null);
+                            //No break here
+                        }
+                        //}
+//                getActivityContext().runOnUiThread(runnable); //what to run after everything loaded
+                    }
+                }
+            });
+            purchaseMgrReadyControllerThread.start();
+            try {
+                purchaseMgrReadyControllerThread.join(); //wait on other thread to finish before continue
+            } catch (InterruptedException e) {
+                Log.w(TAG, "waitUntilAppPurchaseMgrReady: Purchase Manager might not be successfully set up!");
+                e.printStackTrace();
+            }
+            //exit thread (not necessary but better)
+            //Thread.currentThread().interrupt();
+            //return;
+        } else {
+            Log.d(TAG, "waitUntilInAppPurchaseMgrReady: Manager ready. Successfully set up!");
+        }
+    }*/
 
     //VIEW-Operations ###################################################################################
-    public void printAllInAppProductsAsNode(@NonNull LinearLayout nodeContainer) {
+    public void printAllInAppProductsAsNode(final @NonNull LinearLayout nodeContainer) {
+
         //NodeContainer should have a vertical orientation and maybe be scrollable (so nodeContainer should be within a Scrollview)
         //validate whether relativelayout of craft function is null otherwise do not add it
-        this.queryAllProducts(false); //query all products btw. refresh them IF they are NULL (internally evaluated)
+        queryAllProducts(false); //query all products btw. refresh them IF they are NULL (internally evaluated)
 
-        if (this.getAllInAppProducts() != null) {
-            for (Map.Entry<String, SkuDetails> entryStrSkuDetails : this.getAllInAppProducts().getmSkuMap().entrySet()) {
+        if (getAllInAppProducts() != null) {
+            for (Map.Entry<String, SkuDetails> entryStrSkuDetails : getAllInAppProducts().getmSkuMap().entrySet()) {
                 printInAppProductAsNode(nodeContainer, entryStrSkuDetails);
             }
-        } else {Log.w(TAG, "printAllInAppProductsAsNode: getAllInAppProducts() is NULL! Maybe no products in Google Play Console created or no internet?");}
+        } else {
+            Log.w(TAG, "printAllInAppProductsAsNode: getAllInAppProducts() is NULL! Maybe no products in Google Play Console created or no internet?");
+        }
     }
+
 
     private void printInAppProductAsNode(@NonNull LinearLayout nodeContainer, Map.Entry<String, SkuDetails> entryStrSkuDetails) {
         //json must be the playstore string
@@ -205,7 +248,7 @@ public class InAppPurchaseManager_newUsedHelper {
                 @Override
                 public void onClick(View v) {
                     try {
-                        Log.d(TAG, "printInAppProductAsNode:onClick: purchaseWorkflow for productId: "+productId);
+                        Log.d(TAG, "printInAppProductAsNode:onClick: purchaseWorkflow for productId: " + productId);
                         Intent futureResultIntent = new Intent();
                         futureResultIntent.putExtra("INAPP_PRODUCT_ID", productId);
                         purchaseProduct(productId, 0, null);
@@ -220,39 +263,56 @@ public class InAppPurchaseManager_newUsedHelper {
             Log.e(TAG, "printInAppProductAsNode: Could not print inApp product to view.");
             e.printStackTrace();
         }
-        if (inappProductNode == null) {Log.e(TAG, "printInAppProductAsNode: Node is NULL. This should not happen!");}
+        if (inappProductNode == null) {
+            Log.e(TAG, "printInAppProductAsNode: Node is NULL. This should not happen!");
+        }
     }
-
-
 
 
     //GETTER/SETTER #####################################################################################
+    /*private IabHelper getIabHelper_NOREADYCHECK() {
+        //use this special getter only for the waitUntilInAppPurchaseMgrReady() method (because of stackoverflow)!
+        return this.iabHelper;
+    }*/
+
     public IabHelper getIabHelper() {
-        return iabHelper;
+        //Return helper if he is ready, but do not if it is not !
+        //waitUntilInAppPurchaseMgrReady();
+        return this.iabHelper;
     }
 
-    public void setIabHelper(IabHelper iabHelper) {
-        if (iabHelper != null) {
-            this.iabHelper = iabHelper;
-            this.iabHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
-                @Override
-                public void onIabSetupFinished(IabResult result) {
-                    if (!result.isSuccess()) {
-                        //problem while setting up
-                        Log.e(TAG, "setIabHelper:OnIabSetupFinishedListener: Could not setup iabHelper!");
-                        Toast.makeText(getActivityContext(), R.string.inAppPurchaseManager_error_iabHelperSetupFailure, Toast.LENGTH_SHORT).show();
-                    } else {
-                        Log.d(TAG, "onIabSetupFinished: Setup successful. Trying to download all product details now.");
-                        //Downloading inventory (so not null in future (or less likely to))
-                        queryAllProducts(false); //async if not already downloaded what will be here the case!
-                        //= good because if multiple getproduct hintereinander, so nicht viele anfragen zum Server gleichzeitig da Listener noch nicht erfüllt.
-                    }
-                }
-            });
+    public void setIabHelper(IabHelper iabHelper, @Nullable IabHelper.OnIabSetupFinishedListener onIabSetupFinishedListener) {
+        if (iabHelper == null) {
+            this.iabHelper = null;
+            Log.d(TAG, "setIabHelper: Provided iabHelper is NULL!");
         } else {
-            Log.e(TAG, "setIabHelper: IabHelper is null!");
+            this.iabHelper = iabHelper;
+            if (!this.iabHelper.mSetupDone) { //if not already set up set it up and execute function after it
+                this.iabHelper.startSetup((onIabSetupFinishedListener != null) ? onIabSetupFinishedListener : new IabHelper.OnIabSetupFinishedListener() {
+                    @Override
+                    public void onIabSetupFinished(IabResult result) {
+                        if (!result.isSuccess()) {
+                            //problem while setting up
+                            Log.e(TAG, "setIabHelper:OnIabSetupFinishedListener: Could not setup iabHelper!");
+                            Toast.makeText(getActivityContext(), R.string.inAppPurchaseManager_error_iabHelperSetupFailure, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.d(TAG, "onIabSetupFinished: Setup successful. Trying to download all product details now.");
+                            //Downloading inventory (so not null in future (or less likely to)) --> because static, app might need a restart in order to see refreshed inventory
+                            queryAllProducts(false); //async if not already downloaded what will be here the case!
+                            //= good because if multiple getproduct hintereinander, so nicht viele anfragen zum Server gleichzeitig da Listener noch nicht erfüllt.
+                        }
+                    }
+                });
+            } else {
+                Log.d(TAG, "setIabHelper: Setup already done for this instance!");
+                if (onIabSetupFinishedListener != null) {
+                    Log.d(TAG, "setIabHelper: Setup done and trying to execute provided listener (not null) manually.");
+                    onIabSetupFinishedListener.onIabSetupFinished(new IabResult(IabHelper.BILLING_RESPONSE_RESULT_OK, "Setup already done, executed listener manually."));
+                }
+            }
         }
     }
+
 
     public Activity getActivityContext() {
         return activityContext;
@@ -279,15 +339,15 @@ public class InAppPurchaseManager_newUsedHelper {
         return this.base64EncodedPublicKey;
     }
 
-    public Inventory getAllInAppProducts() {
-        if (this.allInAppProducts == null) {
+    public static Inventory getAllInAppProducts() {
+        if (allInAppProducts == null) {
             Log.w(TAG, "getAllInAppProducts: Inventory is NULL!");
         }
         return allInAppProducts;
     }
 
-    public void setAllInAppProducts(Inventory allInAppProducts) {
-        this.allInAppProducts = allInAppProducts;
+    public static void setAllInAppProducts(Inventory allInAppProductsNew) {
+        allInAppProducts = allInAppProductsNew;
     }
 
 }

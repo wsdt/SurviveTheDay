@@ -30,6 +30,7 @@ public class AdManager {
     private Context context;
     private static final String TAG = "AdManager";
     private GlobalAppSettingsMgr globalAppSettingsMgr;
+    private InAppPurchaseManager_newUsedHelper inAppPurchaseManager;
 
 
     //TODO: für internet permission prüfen und verlangen usw.
@@ -44,6 +45,14 @@ public class AdManager {
         } else {
             Log.d(TAG, "initializeAdMob: Did not initialize admob, because app is temporarily ad free. [Important, that this method has lower or at maximum the same constraints as loadAd() methods!!]");
         }
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+
+        //On destroy for object
+        this.getInAppPurchaseManager().unbindIabHelper(); //remove it when throwing away instance
     }
 
     public RewardedVideoAd loadRewardedVideoInRewardActivity(@NonNull final Activity activityContext, @Nullable RewardedVideoAdListener adListener, @Nullable final Intent goToActivityAfterShown) {
@@ -134,7 +143,7 @@ public class AdManager {
 
     public void loadFullPageAd(@Nullable AdListener adListener, @Nullable final Intent goToActivityAfterShown) {
         if (getGlobalAppSettingsMgr().isRemoveAdsTemporarlyInMinutesActiveValid()) {
-            Log.d(TAG, "loadFullPageAd: Did not show ad, because temporarly ad freee! Redirecting to next activity if given.");
+            Log.d(TAG, "loadFullPageAd: Did not show ad, because temporarly ad free! Redirecting to next activity if given.");
             if (goToActivityAfterShown != null) {
                 Log.d(TAG, "loadFullPageAd: Hid ad, redirecting to next activity.");
                 this.getContext().startActivity(goToActivityAfterShown);
@@ -242,5 +251,13 @@ public class AdManager {
 
     public void setGlobalAppSettingsMgr(GlobalAppSettingsMgr globalAppSettingsMgr) {
         this.globalAppSettingsMgr = globalAppSettingsMgr;
+    }
+
+    public InAppPurchaseManager_newUsedHelper getInAppPurchaseManager() {
+        return inAppPurchaseManager;
+    }
+
+    public void setInAppPurchaseManager(InAppPurchaseManager_newUsedHelper inAppPurchaseManager) {
+        this.inAppPurchaseManager = inAppPurchaseManager;
     }
 }

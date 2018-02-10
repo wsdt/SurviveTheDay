@@ -363,7 +363,7 @@
     <string name="inAppProductsNode_default_status">Already bought</string>
 
     <!-- InApp Purchase Manager NEW (with Helper) -->
-    <string name="inAppPurchaseManager_success_purchaesProductSuccess">Your purchase (%1$s) has been approved!</string>
+    <string name="inAppPurchaseManager_success_purchaseProductSuccess">Your purchase (%1$s) has been approved!</string>
     <string name="inAppPurchaseManager_error_iabHelperSetupFailure">Could not initialize In-App Billing. Please contact administrator.</string>
     <string name="inAppPurchaseManager_error_queryAllProductsFailure">Could not download In-App-Products. :(</string>
     <string name="inAppPurchaseManager_error_purchaseProductFailure">Could not purchase product. Do you have internet?</string>

@@ -18,10 +18,13 @@ import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
 import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager_newUsedHelper;
+import kevkevin.wsdt.tagueberstehen.util.IabHelper;
+import kevkevin.wsdt.tagueberstehen.util.IabResult;
 
 public class InAppPurchaseActivity extends AppCompatActivity{
     private InAppPurchaseManager_newUsedHelper inAppPurchaseManager;
     private static final String TAG = "InAppPurchaseActivity";
+    private static int counterActivityResume = 0; //how often got activity into foreground (so no repeat in showing all products [print method]) --> because in onCreate/onStart UI Thread is blocked despite Thread and join
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,23 +36,18 @@ public class InAppPurchaseActivity extends AppCompatActivity{
         adManager.initializeAdmob();
         adManager.loadBannerAd((RelativeLayout) findViewById(R.id.inAppPurchaseAct_RL));
 
+        //IMPORTANT: Purchase failed is only when we clicked on buttons before. But this code worked before!
         this.inAppPurchaseManager = new InAppPurchaseManager_newUsedHelper(this);
-        this.inAppPurchaseManager.printAllInAppProductsAsNode((LinearLayout) findViewById(R.id.inappProductList));
-        /*this.inAppPurchaseManager.setmServiceConn(new ServiceConnection() { //serviceconnection must be overwritten BEFORE bindservice gets called
+        Log.d(TAG, "onStart: Now trying to load resources from Google play.");
+        this.inAppPurchaseManager.setIabHelper(this.inAppPurchaseManager.getIabHelper(), new IabHelper.OnIabSetupFinishedListener() {
             @Override
-            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-                inAppPurchaseManager.setmService(IInAppBillingService.Stub.asInterface(iBinder));
-                //call this method for that activity if loaded:
+            public void onIabSetupFinished(IabResult result) {
+                //just to ensure all products are downloaded the queryAllProducts is in printAllInAppProductsAsNode (because we might overwrite constructors listener when we are too fast)
                 inAppPurchaseManager.printAllInAppProductsAsNode((LinearLayout) findViewById(R.id.inappProductList));
             }
-
-            @Override
-            public void onServiceDisconnected(ComponentName componentName) {
-                inAppPurchaseManager.setmService(null);
-            }
-        });*/
-        //this.inAppPurchaseManager.bindInAppService(); //call after overwriting serviceconnectionlistener
+        });
     }
+
 
     @Override
     protected void onDestroy() {

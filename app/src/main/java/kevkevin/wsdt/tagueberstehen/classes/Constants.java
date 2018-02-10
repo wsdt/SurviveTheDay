@@ -53,7 +53,6 @@ public class Constants {
 
         //As enum so we can iterate through it more easily and ensure data types
         enum INAPP_PRODUCTS { //all other informations should be delivered by Google Play (following infos not translateable)
-            BUY_EVERYTHING_ID("buy_everything"),
             CHANGE_NOTIFICATION_COLOR("countdownnode_notificationcategory_color_change"),
             CREATE_COUNTDOWNS_LONGER_THAN_24H("create_countdowns_longer_than_24hours"),
             REMOVE_ALL_ADS("remove_ads"),
