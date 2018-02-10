@@ -77,7 +77,7 @@ public class IabHelper {
     String mDebugTag = "IabHelper";
 
     // Is setup done?
-    boolean mSetupDone = false;
+    public boolean mSetupDone = false; //needed to evaluate
 
     // Has this object been disposed of? (If so, we should ignore callbacks, etc)
     boolean mDisposed = false;

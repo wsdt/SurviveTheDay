@@ -25,7 +25,7 @@ public class HelperClass {
     }
 
     //So we can pass future values to other methods when they are successfully loaded
-    public interface Listener<T> {
+    public interface InAppPurchaseMgrReadyListener<T> {
         void isDataLoaded(T arg);
     }
 
