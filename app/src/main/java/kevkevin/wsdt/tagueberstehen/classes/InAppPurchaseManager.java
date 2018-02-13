@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.util.IabHelper;
-import kevkevin.wsdt.tagueberstehen.util.IabResult;
-import kevkevin.wsdt.tagueberstehen.util.Inventory;
 
 public class InAppPurchaseManager {
     private static final String TAG = "InAppPurchaseManager";

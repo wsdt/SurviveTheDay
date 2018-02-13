@@ -13,14 +13,34 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            /*productFlavors.free.signingConfig signingConfigs.freeRelease
+            productFlavors.paid.signingConfig signingConfigs.paidRelease*/
         }
     }
     //this creates resource string while compiling with current versionName! (e.g. Loading screen)
     applicationVariants.all {
         variant ->
             variant.resValue "string", "versionName", variant.versionName
+    }
+
+    // Specifies dimensions (for different dependencies and similar or so)
+    flavorDimensions "dim"
+    productFlavors {
+        free {
+            //applicationIdSuffix ".free"
+            versionNameSuffix "-f"
+            dimension "dim"
+            buildConfigField "boolean", "PAID_VERSION", "false"
+        }
+        paid {
+            //applicationIdSuffix ".paid"
+            versionNameSuffix "-p"
+            dimension "dim"
+            buildConfigField "boolean", "PAID_VERSION", "true"
+        }
     }
 }
 

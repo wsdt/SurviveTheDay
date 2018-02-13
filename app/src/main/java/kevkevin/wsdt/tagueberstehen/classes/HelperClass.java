@@ -1,7 +1,6 @@
 package kevkevin.wsdt.tagueberstehen.classes;
 
 
-import android.content.Context;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -24,17 +23,28 @@ public class HelperClass {
         return spinner;
     }
 
-    //So we can pass future values to other methods when they are successfully loaded
-    public interface InAppPurchaseMgrReadyListener<T> {
-        void isDataLoaded(T arg);
+    //inner class
+    public interface ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation {
+        //New interface for newest inappPurchaseHelper and maybe other classes
+        void success_is_true();
+        void failure_is_false();
     }
 
-    /*public static void letThreadSleepInMilliseconds(int milliseconds) {
-        try {
-            Thread.sleep(milliseconds);
-        } catch (InterruptedException e) {
-            Log.e(TAG, "letThreadSleepInMilliseconds: Tried to wait for "+milliseconds+" ms.");
-            e.printStackTrace();
-        }
+
+
+    public interface ExecuteIfTrueFalseAfterCompletation {
+        //also to be able to distinguish for booleans
+        void is_true();
+        void is_false();
+    }
+    public interface ExecuteAfterCompletation {
+        void execute();
+    }
+
+    //So we can pass future values to other methods when they are successfully loaded
+    /*public interface InAppPurchaseMgrReadyListener<T> {
+        void isDataLoaded(T arg);
     }*/
+
+
 }

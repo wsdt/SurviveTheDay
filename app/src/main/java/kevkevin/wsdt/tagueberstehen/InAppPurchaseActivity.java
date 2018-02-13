@@ -1,25 +1,15 @@
 package kevkevin.wsdt.tagueberstehen;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.IntentSender;
-import android.content.ServiceConnection;
-import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import com.android.vending.billing.IInAppBillingService;
-
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
-import kevkevin.wsdt.tagueberstehen.classes.Constants;
-import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
+import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager_newUsedHelper;
-import kevkevin.wsdt.tagueberstehen.util.IabHelper;
-import kevkevin.wsdt.tagueberstehen.util.IabResult;
 
 public class InAppPurchaseActivity extends AppCompatActivity{
     private InAppPurchaseManager_newUsedHelper inAppPurchaseManager;
@@ -39,9 +29,10 @@ public class InAppPurchaseActivity extends AppCompatActivity{
         //IMPORTANT: Purchase failed is only when we clicked on buttons before. But this code worked before!
         this.inAppPurchaseManager = new InAppPurchaseManager_newUsedHelper(this);
         Log.d(TAG, "onStart: Now trying to load resources from Google play.");
-        this.inAppPurchaseManager.setIabHelper(this.inAppPurchaseManager.getIabHelper(), new IabHelper.OnIabSetupFinishedListener() {
+        this.inAppPurchaseManager.executeAfterIabHelperSetup(this.inAppPurchaseManager.createNewIabHelper(), new HelperClass.ExecuteAfterCompletation() {
             @Override
-            public void onIabSetupFinished(IabResult result) {
+            public void execute() {
+                inAppPurchaseManager.queryAllProducts(false);
                 //just to ensure all products are downloaded the queryAllProducts is in printAllInAppProductsAsNode (because we might overwrite constructors listener when we are too fast)
                 inAppPurchaseManager.printAllInAppProductsAsNode((LinearLayout) findViewById(R.id.inappProductList));
             }

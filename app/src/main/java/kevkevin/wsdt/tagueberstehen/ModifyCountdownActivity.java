@@ -1,26 +1,17 @@
 package kevkevin.wsdt.tagueberstehen;
 
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
-import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.sax.RootElement;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-
-import org.w3c.dom.Text;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -32,17 +23,27 @@ import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.DateTimePicker.DateTimePicker;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
+import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager_newUsedHelper;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
 public class ModifyCountdownActivity extends AppCompatActivity {
     private Countdown newEditedCountdown;
     private static final String TAG = "ModifyCountdownActivity";
     private int existingCountdownId = (-1); //if edit then this value will be updated and used to overwrite existing countdown
+    private InAppPurchaseManager_newUsedHelper inAppPurchaseManager_newUsedHelper;
+    private InternalCountdownStorageMgr internalCountdownStorageMgr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modify_countdown);
+
+        //Must be before inapppurchase mgr!
+        this.setInternalCountdownStorageMgr(new InternalCountdownStorageMgr(this));
+
+        //InAppPurchaseMgr if validation is too low countdown can be saved, but it will not be displayed
+        this.setInAppPurchaseManager_newUsedHelper(new InAppPurchaseManager_newUsedHelper(this));
+
 
         //ADS - START
         AdManager adManager = new AdManager(this);
@@ -59,7 +60,6 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         HelperClass.setIntervalSpinnerConfigurations((Spinner) findViewById(R.id.notificationIntervalSpinner),R.array.countdownIntervalSpinner_LABELS);
         //setIntervalSpinnerConfigurations();
 
-
         try {
             this.existingCountdownId = getIntent().getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID,-1);
             //say that we want to edit an existing countdown and not create a new one
@@ -68,11 +68,36 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         }
 
         if (this.existingCountdownId >= 0) {
-            setFormValues((new InternalCountdownStorageMgr(this).getCountdown(this.existingCountdownId)));
+            Log.d(TAG, "onCreate: Being in EditMode, because countdown already exists.");
+            setFormValues((this.getInternalCountdownStorageMgr().getCountdown(this.existingCountdownId)));
         }
 
         onMotivateMeToggleClick(findViewById(R.id.isActive)); //simulate click so it is always at its correct state (enabled/disabled)
 
+
+        //Is Product bought?
+        /*this.getInAppPurchaseManager_newUsedHelper().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueFalseAfterCompletation() {
+            @Override
+            public void is_true() {
+                Log.d(TAG, "onCreate:executeIfProductIsBought: UseMoreCountdownNodes is bought. Not blocking anything.");
+            }
+
+            @Override
+            public void is_false() {*/
+                Log.d(TAG, "onCreate:executeIfProductIsBought: UseMoreCountdownNodes is NOT bought. Blocking save-Button IF already one node saved AND NOT in editing mode.");
+                if (getInternalCountdownStorageMgr().getAllCountdowns(false, false).size() > 0 && (existingCountdownId < 0)) {
+                    ModifyCountdownActivity.this.findViewById(R.id.saveCountdown).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Log.d(TAG, "onCreate:executeIfProductIsBought:OnClick: Did not save countdown, because inapp product not bought and more than one node already saved. EditMode disabled, Countdown-Id: "+existingCountdownId);
+                            Toast.makeText(ModifyCountdownActivity.this, R.string.inAppProduct_notBought_useMoreCountdownNodes, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    Log.d(TAG, "onCreate:executeIfProductIsBought: No node saved OR being in edit-mode [because countdown submitted in intent (existingCountdownId >= 0)]. So we allow saving the first one.");
+                }
+            /*}
+        });*/
     }
 
     public void onSaveClick(View view) {
@@ -200,6 +225,14 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         this.newEditedCountdown = newEditedCountdown;
     }
 
+    public InAppPurchaseManager_newUsedHelper getInAppPurchaseManager_newUsedHelper() {
+        return inAppPurchaseManager_newUsedHelper;
+    }
+
+    public void setInAppPurchaseManager_newUsedHelper(InAppPurchaseManager_newUsedHelper inAppPurchaseManager_newUsedHelper) {
+        this.inAppPurchaseManager_newUsedHelper = inAppPurchaseManager_newUsedHelper;
+    }
+
 
     // ################################################################################################################
     // TIMER/DATE PICKER ##############################################################################################
@@ -218,6 +251,11 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         });
     }
 
+    public InternalCountdownStorageMgr getInternalCountdownStorageMgr() {
+        return internalCountdownStorageMgr;
+    }
 
-
+    public void setInternalCountdownStorageMgr(InternalCountdownStorageMgr internalCountdownStorageMgr) {
+        this.internalCountdownStorageMgr = internalCountdownStorageMgr;
+    }
 }

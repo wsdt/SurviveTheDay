@@ -18,7 +18,7 @@
 
         <!-- screenOrientation and configChanges so only portrait mode -->
         <activity
-            android:name=".LoadingScreenActivity"
+            android:name=".free.LoadingScreenActivity"
             android:configChanges="orientation"
             android:noHistory="true"
             android:screenOrientation="portrait"
@@ -32,7 +32,7 @@
         </activity>
         <!-- Also splash theme here, so we can show appIcon while opening app from notification -->
         <activity
-            android:name=".CountdownActivity"
+            android:name=".free.CountdownActivity"
             android:label="@string/app_name"
             android:noHistory="true"
             android:theme="@style/SplashTheme">
@@ -42,7 +42,7 @@
         </activity>
         <!-- Credits activity needs parent of splashtheme or noActionBar Theme (better: because color so primary and not black) -->
         <activity
-            android:name=".CreditsActivity"
+            android:name=".free.CreditsActivity"
             android:label="@string/title_activity_credits">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -55,42 +55,42 @@
             android:theme="@style/AppTheme.NoActionBar" />
         -->
         <activity
-            android:name=".ModifyCountdownActivity"
+            android:name=".free.ModifyCountdownActivity"
             android:label="@string/title_activity_modify_countdown">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".free.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".AppSettingsActivity"
+            android:name=".free.AppSettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".RewardedVideoAdActivity"
+            android:name=".free.RewardedVideoAdActivity"
             android:noHistory="true"
             android:theme="@style/SplashTheme" />
-        <activity android:name=".InAppPurchaseActivity"/>
+        <activity android:name=".free.InAppPurchaseActivity"/>
 
         <!-- BROADCAST RECEIVERS FOR REGULAR NOTIFICATIONS (maybe replacing background service in future) -->
         <receiver
-            android:name=".classes.services.BootReceiver"
+            android:name=".free.classes.services.BootReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".classes.services.NotificationService_AlarmmanagerBroadcastReceiver" />
+        <receiver android:name=".free.classes.services.NotificationService_AlarmmanagerBroadcastReceiver" />
 
         <!--
         FOREGROUND COUNTDOWN COUNTER SERVICE -
         // ADDED IF EVERYTHING WORKS FINE
         -->
         <service
-            android:name=".classes.services.CountdownCounterService"
+            android:name=".free.classes.services.CountdownCounterService"
             android:exported="false"
             android:process=":countdowncounter"
             android:stopWithTask="false">
@@ -106,7 +106,7 @@
              directBootAware (allows running service also when phone is locked), if not supported by current device then savely IGNORED!
         -->
         <service
-            android:name=".classes.services.NotificationService"
+            android:name=".free.classes.services.NotificationService"
             android:directBootAware="true"
             android:exported="false"
             android:label="@string/app_name"
