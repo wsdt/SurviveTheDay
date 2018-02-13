@@ -90,6 +90,7 @@
     <string name="modifyCountdownActivity_countdown_untilDateTime_textview_exampleValue">15.12.2018 08:00:00</string>
     <string name="modifyCountdownActivity_countdown_category_label">Category</string>
     <string name="modifyCountdownActivity_countdown_category_textview_fieldDescription">Color will be used e.g. for notifications (led-color, &#8320;)</string>
+    <string name="modifyCountdownActivity_countdown_interval_textview_fieldDescription">Short intervals (e.g. 5 seconds) might not execute on point (battery-saving). If you insist on it, you can turn the Forward-Compatibility setting off!</string>
     <string name="modifyCountdownActivity_countdown_motivateMe_label">Motivate me</string>
     <string name="modifyCountdownActivity_countdown_motivateMeInterval_label">Interval</string>
     <string name="modifyCountdownActivity_countdown_showLiveCountdown_label">Live countdown</string>
@@ -369,5 +370,8 @@
     <string name="inAppPurchaseManager_error_purchaseProductFailure">Could not purchase product. Do you have internet?</string>
     <string name="inAppPurchaseManager_error_isProductPurchasedFailure">Could not validate whether you bought in-app-product. Do you have internet?</string>
     <string name="inAppPurchaseManager_error_inventoryDownloadFailure">Could not download inventory. Timeout exceeded. Do you have internet?</string>
+
+    <!-- InAppProduct NOT BOUGHT Msg -->
+    <string name="inAppProduct_notBought_useMoreCountdownNodes">Please buy the Use-More-Nodes package to display more nodes!</string>
 
 </resources>

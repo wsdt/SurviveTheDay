@@ -23,18 +23,25 @@ import java.util.Map;
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
+import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager_newUsedHelper;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private LinearLayout nodeList;
     private static final String TAG = "MainActivity";
+    private InAppPurchaseManager_newUsedHelper inAppPurchaseManager_newUsedHelper;
+    private int nodeCount = 0; //inapppurchase (only allow one node if product not bought)
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //InAppPurchaseMgr
+        this.setInAppPurchaseManager_newUsedHelper(new InAppPurchaseManager_newUsedHelper(this));
 
         //Initiliaze AdMob
         AdManager adManager = new AdManager(this);
@@ -73,9 +80,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void loadAddNodes() {
         InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(this);
         int anzahlCountdowns = 0;
-        for (Map.Entry<Integer,Countdown> countdown : storageMgr.getAllCountdowns(false, false).entrySet()) {
-            createAddNodeToLayout(countdown.getValue());
-            anzahlCountdowns++;
+        for (final Map.Entry<Integer,Countdown> countdown : storageMgr.getAllCountdowns(false, false).entrySet()) {
+            if (anzahlCountdowns > 0) {
+                //Already at least one node shown! Not showing more without purchasing product
+                /*this.getInAppPurchaseManager_newUsedHelper().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueFalseAfterCompletation() {
+                    @Override
+                    public void is_true() {*/
+                        Log.d(TAG, "createAddNodeToLayout:isProductBought:is_true: Product is bought. Showing more than one node (if there are any).");
+                        createAddNodeToLayout(countdown.getValue());
+                        //incrementation of anzahlCountdowns not necessary because only used for == 0 (No Countdowns found) or > 0 (is inapp product bought) because already incremented always 1 and so bigger than 0
+                    //}
+
+                    /*@Override
+                    public void is_false() {
+                        Log.d(TAG, "createAddNodeToLayout:isProductBought:is_false: UseMoreCountdown-Nodes Product not bought! Not displaying more.");
+                        Toast.makeText(MainActivity.this, R.string.inAppProduct_notBought_useMoreCountdownNodes, Toast.LENGTH_SHORT).show();
+                    }
+                });*/
+            } else { //first node
+                createAddNodeToLayout(countdown.getValue());
+                anzahlCountdowns++;
+            }
         }
 
         if (anzahlCountdowns <= 0) {
@@ -169,26 +194,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void createAddNodeToLayout(Countdown countdown) {
-        RelativeLayout countdownView = (RelativeLayout) getLayoutInflater().inflate(R.layout.node_template,(LinearLayout) findViewById(R.id.nodeList), false); //give relativelayout so layoutparams get done
-        ((TextView)countdownView.findViewById(R.id.countdownTitle)).setText(countdown.getCountdownTitle());
-        ((TextView)countdownView.findViewById(R.id.countdownDescription)).setText(countdown.getCountdownDescription());
-        ((TextView)countdownView.findViewById(R.id.startAndUntilDateTime)).setText(String.format(getResources().getString(R.string.mainActivity_countdownNode_DateTimeValues),countdown.getStartDateTime(),countdown.getUntilDateTime()));
-        countdownView.setTag(Constants.MAIN_ACTIVITY.COUNTDOWN_VIEW_TAG_PREFIX+countdown.getCountdownId()); //IMPORTANT: to determine what countdown to open in CountdownActivity
+            RelativeLayout countdownView = (RelativeLayout) getLayoutInflater().inflate(R.layout.node_template, (LinearLayout) findViewById(R.id.nodeList), false); //give relativelayout so layoutparams get done
+            ((TextView) countdownView.findViewById(R.id.countdownTitle)).setText(countdown.getCountdownTitle());
+            ((TextView) countdownView.findViewById(R.id.countdownDescription)).setText(countdown.getCountdownDescription());
+            ((TextView) countdownView.findViewById(R.id.startAndUntilDateTime)).setText(String.format(getResources().getString(R.string.mainActivity_countdownNode_DateTimeValues), countdown.getStartDateTime(), countdown.getUntilDateTime()));
+            countdownView.setTag(Constants.MAIN_ACTIVITY.COUNTDOWN_VIEW_TAG_PREFIX + countdown.getCountdownId()); //IMPORTANT: to determine what countdown to open in CountdownActivity
 
-        //set category color, if not valid or other then overwrite it with default color and save that countdown so this error will not happen again
-        try {
-            (countdownView.findViewById(R.id.categoryColorView)).setBackgroundColor(Color.parseColor(countdown.getCategory()));
-        } catch (Exception e) {
-            Log.e(TAG, "createAddNodeToLayout: ParseException by defining color! Selected default color and saved it into countdown.");
-            //Set default color
-            (countdownView.findViewById(R.id.categoryColorView)).setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
-            //save into countdown itself
-            countdown.setCategory("#"+Integer.toHexString(ContextCompat.getColor(this,R.color.colorPrimaryDark)));
-            countdown.savePersistently();
-            Toast.makeText(this, R.string.mainActivity_countdownNode_error_categoryColorWrongRetained, Toast.LENGTH_SHORT).show();
-        }
-        nodeList.addView(countdownView);
-        Log.d(TAG, "createAddNodeToLayout: Added countdown as node to layout: "+countdownView.getTag());
+            //set category color, if not valid or other then overwrite it with default color and save that countdown so this error will not happen again
+            try {
+                (countdownView.findViewById(R.id.categoryColorView)).setBackgroundColor(Color.parseColor(countdown.getCategory()));
+            } catch (Exception e) {
+                Log.e(TAG, "createAddNodeToLayout: ParseException by defining color! Selected default color and saved it into countdown.");
+                //Set default color
+                (countdownView.findViewById(R.id.categoryColorView)).setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                //save into countdown itself
+                countdown.setCategory("#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDark)));
+                countdown.savePersistently();
+                Toast.makeText(this, R.string.mainActivity_countdownNode_error_categoryColorWrongRetained, Toast.LENGTH_SHORT).show();
+            }
+            nodeList.addView(countdownView);
+            Log.d(TAG, "createAddNodeToLayout: Added countdown as node to layout: " + countdownView.getTag());
+
     }
 
     private void removeAllNodesFromLayout() {
@@ -210,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.action_addCountdown:
-                startActivity(new Intent(this,ModifyCountdownActivity.class));
+                startActivity(new Intent(this, ModifyCountdownActivity.class));
                 break;
             case R.id.action_removeAllCountdowns:
                 InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(this);
@@ -237,5 +263,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             default: Log.e(TAG,"onOptionsItemSelected: Button does not exist: "+item.getItemId());
         }
         return true;
+    }
+
+    public InAppPurchaseManager_newUsedHelper getInAppPurchaseManager_newUsedHelper() {
+        return inAppPurchaseManager_newUsedHelper;
+    }
+
+    public void setInAppPurchaseManager_newUsedHelper(InAppPurchaseManager_newUsedHelper inAppPurchaseManager_newUsedHelper) {
+        this.inAppPurchaseManager_newUsedHelper = inAppPurchaseManager_newUsedHelper;
     }
 }

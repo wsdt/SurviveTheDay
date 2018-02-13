@@ -3,8 +3,6 @@ package kevkevin.wsdt.tagueberstehen.classes;
 
 import java.util.Locale;
 
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
-
 public class Constants {
     public interface GLOBAL {
         //FORMATTING PERCENTAGE and BIG NUMBERS or DATES
@@ -55,8 +53,8 @@ public class Constants {
         enum INAPP_PRODUCTS { //all other informations should be delivered by Google Play (following infos not translateable)
             CHANGE_NOTIFICATION_COLOR("countdownnode_notificationcategory_color_change"),
             CREATE_COUNTDOWNS_LONGER_THAN_24H("create_countdowns_longer_than_24hours"),
-            REMOVE_ALL_ADS("remove_ads"),
-            USE_MORE_COUNTDOWN_NODES("use_more_countdownnodes");
+            REMOVE_ALL_ADS("remove_ads"), //implemented
+            USE_MORE_COUNTDOWN_NODES("use_more_countdownnodes"); //implemented
 
             private final String productId;
             INAPP_PRODUCTS(final String productId) {
@@ -152,6 +150,9 @@ public class Constants {
             String SPIDENTIFIER_SAVE_BATTERY = "SAVE_BATTERY";
             String NO_INTERNET_CONNECTION_COUNTER = "NO_INTERNET_CONNECTION_COUNTER";
             String REMOVE_ADS_TEMPORARLY_IN_MINUTES = "REMOVE_ADS_TEMPORARLY_IN_MINUTES";
+        }
+        interface INTERNAL_INAPPPURCHASE_STR_MGR {
+            String SHAREDPREFERENCES_DBNAME = "INAPP_PURCHASES";
         }
     }
 }
