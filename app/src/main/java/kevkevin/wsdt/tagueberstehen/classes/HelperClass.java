@@ -30,21 +30,4 @@ public class HelperClass {
         void failure_is_false();
     }
 
-
-
-    public interface ExecuteIfTrueFalseAfterCompletation {
-        //also to be able to distinguish for booleans
-        void is_true();
-        void is_false();
-    }
-    public interface ExecuteAfterCompletation {
-        void execute();
-    }
-
-    //So we can pass future values to other methods when they are successfully loaded
-    /*public interface InAppPurchaseMgrReadyListener<T> {
-        void isDataLoaded(T arg);
-    }*/
-
-
 }

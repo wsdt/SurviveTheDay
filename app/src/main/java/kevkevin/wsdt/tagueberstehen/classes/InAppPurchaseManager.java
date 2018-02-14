@@ -26,6 +26,9 @@ import kevkevin.wsdt.tagueberstehen.util.Inventory;
 import kevkevin.wsdt.tagueberstehen.util.Purchase;
 import kevkevin.wsdt.tagueberstehen.util.SkuDetails;
 
+
+
+//TODO: App stürzt ab sobald PRODUKT GEKAUFT!!!!!!!!!!!!
 public class InAppPurchaseManager {
     //IMPORTANT: Helper should NOT be a global MEMBER! (only locally for each listener etc.) --> to avoid overlapping
     private Activity activityContext;
@@ -156,16 +159,9 @@ public class InAppPurchaseManager {
         try {
             inappProductNode = (RelativeLayout) ((LayoutInflater) getActivityContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.inappproductnode_template, nodeContainer, false); //to use layoutparams of xml file correctly
 
-            //Remove from title PRODUCT_NAME (APPLICATION_NAME) the APPLICATION NAME incl. parenthesis
+            //Remove from title PRODUCT_NAME (APPLICATION_NAME) the APPLICATION NAME incl. parenthesis --> happens now in SkuDetails itself!
             //now assign values to views
-            String tmpProductTitle = entryStrSkuDetails.getValue().getTitle(); //used for removing/shortening product title to that we named in play console
-            try {
-                tmpProductTitle = tmpProductTitle.substring(0, tmpProductTitle.indexOf('('));
-            } catch (Exception e) {
-                Log.e(TAG, "pintInAppProductsAsNode: Could not remove application name with parenthesis from product title!");
-                e.printStackTrace();
-            }
-            ((TextView) inappProductNode.findViewById(R.id.inappProductTitle)).setText(tmpProductTitle);
+            ((TextView) inappProductNode.findViewById(R.id.inappProductTitle)).setText(entryStrSkuDetails.getValue().getTitle());
             ((TextView) inappProductNode.findViewById(R.id.inappProductDescription)).setText(entryStrSkuDetails.getValue().getDescription());
             Button inAppProductPrice = (Button) inappProductNode.findViewById(R.id.inAppProductPrice);
             inAppProductPrice.setText(entryStrSkuDetails.getValue().getPrice());

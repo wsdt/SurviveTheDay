@@ -83,6 +83,7 @@ public class NotificationService extends Service {
         //for each countdown do that following
         //iterate through all countdown data sets
         int count = 0;
+        //TODO: only start more than one if more nodes package is bought
         for (Map.Entry<Integer, Countdown> countdown : this.allCountdowns.entrySet()) {
             Log.d(TAG, "Countdown-Id: " + countdown.getValue().getCountdownId());
             count++; //increment because at least one countdown is there

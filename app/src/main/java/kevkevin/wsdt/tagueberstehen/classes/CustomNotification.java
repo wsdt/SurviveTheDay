@@ -190,6 +190,7 @@ public class CustomNotification { //one instance for every countdown or similar
                 this.getmNotificationId(),// instead of notificationId this was set (Problem: Always last intent was used): countdown.getCountdownId(),
                 tmpIntent,PendingIntent.FLAG_UPDATE_CURRENT);
 
+        //TODO: https://material.io/icons/
         //add notification
         this.getNotifications().put((long) this.getmNotificationId(), //save with current id
                 new NotificationCompat.Builder(this.getActivityThisTarget())
@@ -199,7 +200,8 @@ public class CustomNotification { //one instance for every countdown or similar
                 //USE category color
                 .setLights(Color.parseColor(countdown.getCategory()), Constants.CUSTOMNOTIFICATION.NOTIFICATION_BLINK_ON_TIME_IN_MS, Constants.CUSTOMNOTIFICATION.NOTIFICATION_BLINK_OFF_TIME_IN_MS)
                 .setTicker(this.getRes().getString(R.string.customNotification_notificationTicker))
-                .setAutoCancel(true) //remove after clicking on it
+                .setAutoCancel(false) //remove NOT after clicking on it (realizing with button instead [action below])
+                .setOngoing(false) //notification IS REMOVABLE
                 .setContentIntent(pendingIntent)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(text)) //make notification extendable
                 .setContentText(text));
