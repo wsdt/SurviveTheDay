@@ -20,7 +20,7 @@
     <!-- MainPage - CountdownList MainActivity -->
     <style name="page">
         <item name="android:textColor">@color/dark</item>
-        <item name="android:background">@color/colorAccentLight</item>
+        <item name="android:background">@color/light</item>
     </style>
     <style name="heading" parent="page">
         <item name="android:textSize">40sp</item>

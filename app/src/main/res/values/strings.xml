@@ -361,7 +361,7 @@
     <string name="inAppProductsNode_default_title">Product could not be loaded</string>
     <string name="inAppProductsNode_default_description">Maybe you have no active internet connection or this is an internal error. </string>
     <string name="inAppProductsNode_default_price">0.00 €</string>
-    <string name="inAppProductsNode_default_status">Already bought</string>
+    <string name="inAppProductsNode_default_status">Product not bought</string>
 
     <!-- InApp Purchase Manager NEW (with Helper) -->
     <string name="inAppPurchaseManager_success_purchaseProductSuccess">Your purchase (%1$s) has been approved!</string>
@@ -373,5 +373,15 @@
 
     <!-- InAppProduct NOT BOUGHT Msg -->
     <string name="inAppProduct_notBought_useMoreCountdownNodes">Please buy the Use-More-Nodes package to display more nodes!</string>
+    <string name="inAppProduct_notBought_changeNotificationColor">Please buy the Change-Notification-Color package to change this!</string>
+
+    <!-- DialogManager - In App Purchase -->
+    <string name="dialog_inAppProduct_button_positive_buy">Buy now</string>
+    <string name="dialog_inAppProduct_button_negative_buy">Cancel</string>
+    <string name="dialog_generic_button_positive">OK</string>
+    <string name="dialog_generic_button_negative">Cancel</string>
+    <string name="dialog_generic_error_title">Connection error</string>
+    <string name="dialog_generic_error_msg">Data not available. Presumably you tried to access premium content without having an internet connection.</string>
+
 
 </resources>

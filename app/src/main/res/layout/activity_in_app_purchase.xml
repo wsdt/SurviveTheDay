@@ -2,15 +2,20 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/inAppPurchaseAct_RL"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/inAppPurchaseAct_RL"
     tools:context="kevkevin.wsdt.tagueberstehen.InAppPurchaseActivity">
 
-    <LinearLayout
-        android:id="@+id/inappProductList"
-        android:orientation="vertical"
+    <!-- parent rl is not useless because of admob banner added programmatically -->
+    <ScrollView
+        android:layout_marginBottom="50dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/inappProductList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"/>
+    </ScrollView>
 </RelativeLayout>

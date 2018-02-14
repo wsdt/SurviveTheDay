@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- With that we can assign programmatically new ids to dynamically created views -->
+    <item name="MainActivity_TextView_NoCountdownsFound" type="id"/>
+</resources>

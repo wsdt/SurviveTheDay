@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/shape_shadow_rectangle"
-    android:layout_marginBottom="-10dp"
     android:onClick="onClick"><!-- android:background="@android:drawable/dialog_holo_light_frame" -->
     <!-- Only add this programmatically: android:tag="COUNTDOWN_0"-->
 

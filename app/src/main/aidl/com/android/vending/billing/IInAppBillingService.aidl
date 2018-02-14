@@ -34,7 +34,7 @@ import android.os.Bundle;
  *
  * All calls will give a response code with the following possible values
  * RESULT_OK = 0 - success
- * RESULT_USER_CANCELED = 1 - User pressed back or canceled a dialog
+ * RESULT_USER_CANCELED = 1 - User pressed back or canceled a dialogManager
  * RESULT_SERVICE_UNAVAILABLE = 2 - The network connection is down
  * RESULT_BILLING_UNAVAILABLE = 3 - This billing API version is not supported for the type requested
  * RESULT_ITEM_UNAVAILABLE = 4 - Requested SKU is not available for purchase
