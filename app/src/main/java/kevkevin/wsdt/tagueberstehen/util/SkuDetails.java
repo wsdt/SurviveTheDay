@@ -15,6 +15,11 @@ package kevkevin.wsdt.tagueberstehen.util;
  * limitations under the License.
  */
 
+// -----------------------------------------------------------------------------------------------------------------------------
+//ALSO MODIFIED BY ME (KEVIN) --------------------------------------------------------------------------------------------------
+
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -45,7 +50,25 @@ public class SkuDetails {
         mPrice = o.optString("price");
         mPriceAmountMicros = o.optLong("price_amount_micros");
         mPriceCurrencyCode = o.optString("price_currency_code");
-        mTitle = o.optString("title");
+        //mTitle = o.optString("title"); --> old line
+
+        String mTmpTitle = o.optString("title"); //separate string because mTitle is final!
+        String mTmpTitle_ConvertionSuccessful = null; //because field is final
+        //(added by Kevin): used for removing/shortening product title to that we named in play console
+        try {
+            mTmpTitle_ConvertionSuccessful = mTmpTitle.substring(0, mTmpTitle.indexOf('('));
+        } catch (Exception e) {
+            Log.e("SkuDetails", "SkuDetails Constructor: Could not remove application name with parenthesis from product title!");
+            e.printStackTrace();
+        }
+        if (mTmpTitle_ConvertionSuccessful == null) {
+            //could not remove brackets just saving normal title
+            mTitle = mTmpTitle;
+        } else {
+            //if successful then save filtered string
+            mTitle = mTmpTitle_ConvertionSuccessful;
+        }
+
         mDescription = o.optString("description");
     }
 

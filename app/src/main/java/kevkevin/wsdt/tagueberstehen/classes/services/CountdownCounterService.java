@@ -88,6 +88,7 @@ public class CountdownCounterService extends Service {
                 //only make foreground notification for first countdown, others just get a non-removable notification
                 startForeground(foregroundServiceNotificationId, customNotificationMgr.createCounterServiceNotification(countdown.getValue()));//customNotificationMgr.getNotifications().get((long) foregroundServiceNotificationId).build());
             } else {
+                //TODO: only do this if more than one node-package bought! (better realize in getLoadedCountdowns() --> harder to implement so maybe better here in service)
                 //non-removable notifications
                 customNotificationMgr.getmNotifyMgr().notify(foregroundServiceNotificationId, customNotificationMgr.createCounterServiceNotification(countdown.getValue()));
             }
