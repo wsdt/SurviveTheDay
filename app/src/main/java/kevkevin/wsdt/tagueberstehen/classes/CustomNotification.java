@@ -45,14 +45,33 @@ public class CustomNotification { //one instance for every countdown or similar
         Log.d(TAG,"mNotificationId: "+getmNotificationId());
     }
 
-    public HashMap<Integer, Countdown> scheduleAllActiveCountdownNotifications(Context context) {
+    public void scheduleAllActiveCountdownNotifications(Context context) {
         Log.d(TAG, "scheduleAllActiveCountdownNotifications: Started method.");
         HashMap<Integer, Countdown> allCountdowns = (new InternalCountdownStorageMgr(context)).getAllCountdowns(true, false);
-        for (Map.Entry<Integer, Countdown> countdown : allCountdowns.entrySet()) {
-            scheduleNotification(countdown.getValue().getCountdownId(), (long) countdown.getValue().getNotificationInterval());
+
+        int count = 0;
+        //do not call purchaseWorkflow or similar when only providing context [altough we mostly give an activity to this class we should not risk it]
+        InAppPurchaseManager inAppPurchaseManager = new InAppPurchaseManager(this.getActivityThisTarget());
+        for (final Map.Entry<Integer, Countdown> countdown : allCountdowns.entrySet()) {
+            if ((count++) > 0) {
+                inAppPurchaseManager.executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                    @Override
+                    public void success_is_true() {
+                        Log.d(TAG, "scheduleAllActiveCountdownNotifications:success_is_true: Product is bought. Scheduling countdown.");
+                        scheduleNotification(countdown.getValue().getCountdownId(), (long) countdown.getValue().getNotificationInterval());
+                    }
+
+                    @Override
+                    public void failure_is_false() {
+                        Log.d(TAG, "scheduleAllActiveCountdownNotifications:failure_is_false: Product not bought. Not scheduling countdown.");
+                    }
+                });
+            } else {
+                Log.d(TAG, "scheduleAllActiveCountdownNotifications: Scheduling first countdown (always free).");
+                scheduleNotification(countdown.getValue().getCountdownId(), (long) countdown.getValue().getNotificationInterval());
+            }
         }
         Log.d(TAG, "scheduleAllActiveCountdownNotifications: Ended method.");
-        return allCountdowns;
     }
 
     //Only for broadcast receiver mode! When background service used, this function SHOULDNT BE CALLED

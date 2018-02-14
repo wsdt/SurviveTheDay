@@ -72,6 +72,7 @@ public class Security {
      */
     public static PublicKey generatePublicKey(String encodedPublicKey) {
         try {
+            //Log.d(TAG, "generatePublicKey: "+encodedPublicKey);
             byte[] decodedKey = Base64.decode(encodedPublicKey, Base64.DEFAULT);
             KeyFactory keyFactory = KeyFactory.getInstance(KEY_FACTORY_ALGORITHM);
             return keyFactory.generatePublic(new X509EncodedKeySpec(decodedKey));

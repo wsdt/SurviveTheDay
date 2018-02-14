@@ -41,7 +41,6 @@ public class NotificationService_AlarmmanagerBroadcastReceiver extends Broadcast
 
         if (currCountdown != null) {
             //If countdown found, then show random generated notification of loaded countdown (this function gets only called on its interval)
-            //TODO: Only display more than ONE if more-nodes package bought!
             if (currCountdown.isActive() && currCountdown.isUntilDateInTheFuture() && currCountdown.isStartDateInThePast()) {
                 CustomNotification customNotificationManager = new CustomNotification(context, LoadingScreenActivity.class, (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE));
 
@@ -68,6 +67,7 @@ public class NotificationService_AlarmmanagerBroadcastReceiver extends Broadcast
     }
 
     private void deleteAlarmService(Context context, int alarmId) throws NullPointerException {
+        //throws ok because called in deleteAllAlarmServices.
         ((AlarmManager) context.getSystemService(Context.ALARM_SERVICE)).cancel(PendingIntent.getBroadcast(context, alarmId, new Intent(context, NotificationService_AlarmmanagerBroadcastReceiver.class), 0));
     }
 
