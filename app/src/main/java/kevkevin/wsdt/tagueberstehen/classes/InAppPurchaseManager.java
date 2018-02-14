@@ -27,16 +27,20 @@ import kevkevin.wsdt.tagueberstehen.util.Purchase;
 import kevkevin.wsdt.tagueberstehen.util.SkuDetails;
 
 
-
+//TODO IMPORTANT TO RESOLVE ######################################################################################
 //TODO: App stürzt ab sobald PRODUKT GEKAUFT!!!!!!!!!!!!
 public class InAppPurchaseManager {
     //IMPORTANT: Helper should NOT be a global MEMBER! (only locally for each listener etc.) --> to avoid overlapping
-    private Activity activityContext;
+    private Context activityContext;
     private String base64EncodedPublicKey;
     private static Inventory allInAppProducts;
     private final static String TAG = "InAppPurchaseMgr_NN";
 
-    public InAppPurchaseManager(Activity activityContext) {
+
+    public InAppPurchaseManager(Context activityContext) {
+        /*IMPORTANT: Context SHOULD be ALWAYS an Activity (esp. for launching purchases [otherwise we get a ClassCastException])
+        * , but we allow normal Context so we can execute other methods in service and similar e.g. */
+        Log.w(TAG, "Constructor: If provided context is NOT an activity, you should NOT launch purchase workflows or similar because you would get ClassCast Exceptions [catched].");
         this.setActivityContext(activityContext);
     }
 
@@ -201,7 +205,8 @@ public class InAppPurchaseManager {
                 public void onIabSetupFinished(IabResult result) {
                     if (result.isSuccess() && iabHelper != null) {
                         try {
-                            iabHelper.launchPurchaseFlow(getActivityContext(), productSkuId, resultCode, new IabHelper.OnIabPurchaseFinishedListener() {
+                            //HERE context has to be an Activity !!
+                            iabHelper.launchPurchaseFlow((Activity) getActivityContext(), productSkuId, resultCode, new IabHelper.OnIabPurchaseFinishedListener() {
                                 @Override
                                 public void onIabPurchaseFinished(IabResult result, Purchase info) {
                         /*TODO: Security Recommendation: When you receive the purchase response from Google Play,
@@ -212,7 +217,12 @@ public class InAppPurchaseManager {
 
                                     if (result.isFailure()) {
                                         Log.e(TAG, "purchaseProduct:onIabPurchaseFinished: Purchase failed --> " + result);
-                                        Toast.makeText(getActivityContext(), R.string.inAppPurchaseManager_error_purchaseProductFailure, Toast.LENGTH_SHORT).show();
+                                        //custom error messages or generic one if no suitable found
+                                        switch (result.getResponse()) {
+                                            case 7:
+                                                Toast.makeText(getActivityContext(), R.string.inAppPurchaseManager_error_purchaseProductFailureAlreadyBought, Toast.LENGTH_SHORT).show();break;
+                                            default: Toast.makeText(getActivityContext(), R.string.inAppPurchaseManager_error_purchaseProductFailure, Toast.LENGTH_SHORT).show();break;
+                                        }
                                         if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
                                             executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
                                         }
@@ -228,11 +238,17 @@ public class InAppPurchaseManager {
                                     }
                                 }
                             }, ""); //todo: maybe developer payload ?
-                        } catch (IabHelper.IabAsyncInProgressException e) {
+                        } catch (IabHelper.IabAsyncInProgressException | ClassCastException e) {
                             e.printStackTrace();
+                            if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
+                                executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
+                            }
                         }
                     } else {
                         Log.e(TAG, "purchaseProduct:onIabSetupFinished: Setup not successful. ");
+                        if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
+                            executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
+                        }
                     }
                     //DISPOSE HELPER REGARDLESS OF SUCCESS/FAILURE
                     unbindIabHelper(iabHelper);
@@ -242,6 +258,9 @@ public class InAppPurchaseManager {
             Log.e(TAG, "purchaseProduct: Could not purchase Product.");
             Toast.makeText(this.getActivityContext(), R.string.inAppPurchaseManager_error_purchaseProductFailure, Toast.LENGTH_SHORT).show();
             e.printStackTrace();
+            if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
+                executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
+            }
         }
     }
 
@@ -252,7 +271,6 @@ public class InAppPurchaseManager {
         Log.d(TAG, "generateUniquePayload: Generated unique payload: " + uuid);
         return uuid;
     }
-
 
     public void executeIfProductIsBought(final String productSkuId, final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
         this.queryAllProducts_ASYNC(false, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
@@ -328,11 +346,11 @@ public class InAppPurchaseManager {
         InAppPurchaseManager.allInAppProducts = allInAppProducts;
     }
 
-    public Activity getActivityContext() {
+    public Context getActivityContext() {
         return this.activityContext;
     }
 
-    public void setActivityContext(Activity activityContext) {
+    public void setActivityContext(Context activityContext) {
         this.activityContext = activityContext;
     }
 
@@ -346,9 +364,9 @@ public class InAppPurchaseManager {
             StringBuilder base64EncodedPublicKey = new StringBuilder();
             int loopCounter = 0;
             for (String substr : Constants.INAPP_PURCHASES.BASE64ENCODED_PUBLICKEY.substr_arr) {
-                if ((loopCounter++) == 0) {
+                if ((loopCounter++) > 0) {
                     base64EncodedPublicKey.append(Constants.INAPP_PURCHASES.BASE64ENCODED_PUBLICKEY.SEPARATOR);
-                } //only first loop add separator (because it does not start with it)
+                } //only first loop do not add separator (because it does not start with it)
                 base64EncodedPublicKey.append(substr);
             }
             //set new value

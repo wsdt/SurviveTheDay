@@ -12,8 +12,11 @@ import java.util.Map;
 import java.util.TimerTask;
 
 import kevkevin.wsdt.tagueberstehen.LoadingScreenActivity;
+import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
+import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
+import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
@@ -25,6 +28,7 @@ public class NotificationService extends Service {
     private InternalCountdownStorageMgr storageMgr;
     private int startId;
     private HashMap<Integer, Countdown> allCountdowns;
+    private InAppPurchaseManager inAppPurchaseManager;
 
 
     @Nullable
@@ -42,6 +46,9 @@ public class NotificationService extends Service {
 
         storageMgr = new InternalCountdownStorageMgr(this);
         this.allCountdowns = this.storageMgr.getAllCountdowns(true, false); //call this line AFTER assignment of internal storage mgr (otherwise nullpointerexc!)
+
+        //Warning context is NOT an activity, so do NOT launch purchase workflows or similar! (class cast exception)
+        this.inAppPurchaseManager = new InAppPurchaseManager(this);
 
         this.startId = startId; //save current service instance in variable
 
@@ -83,14 +90,26 @@ public class NotificationService extends Service {
         //for each countdown do that following
         //iterate through all countdown data sets
         int count = 0;
-        //TODO: only start more than one if more nodes package is bought
-        for (Map.Entry<Integer, Countdown> countdown : this.allCountdowns.entrySet()) {
+        // only start more than one if more nodes package is bought
+        for (final Map.Entry<Integer, Countdown> countdown : this.allCountdowns.entrySet()) {
             Log.d(TAG, "Countdown-Id: " + countdown.getValue().getCountdownId());
-            count++; //increment because at least one countdown is there
+            if ((count++) > 0) { //increment because at least one countdown is there
+                this.inAppPurchaseManager.executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                    @Override
+                    public void success_is_true() {
+                        Log.d(TAG, "startTimer: UseMoreCountdownNodes-Package bought. Adding more to service.");
+                        initializeTimer(countdown.getValue());
+                        //delay, time after interval starts (random e.g. 0-4 seconds, so multiple countdown timer does not show notification at the same seconds)
+                        countdown.getValue().getTimer().schedule(countdown.getValue().getTimerTask(),0, countdown.getValue().getNotificationInterval() * 1000); //*1000 so every second * interval
+                    }
 
-            initializeTimer(countdown.getValue());
-            //delay, time after interval starts (random e.g. 0-4 seconds, so multiple countdown timer does not show notification at the same seconds)
-            countdown.getValue().getTimer().schedule(countdown.getValue().getTimerTask(),0, countdown.getValue().getNotificationInterval() * 1000); //*1000 so every second * interval
+                    @Override
+                    public void failure_is_false() {
+                        Log.d(TAG, "startTimer: UseMoreCountdownNodes-Package NOT bought. Not adding any more.");
+                    }
+                });
+            }
+
         }
         if (count <= 0) {
             //Kill Service if there is no countdown! Save energy.

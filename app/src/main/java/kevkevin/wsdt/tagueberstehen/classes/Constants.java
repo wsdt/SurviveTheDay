@@ -17,7 +17,8 @@ public class Constants {
 
         interface BASE64ENCODED_PUBLICKEY {
             char SEPARATOR = '/';
-            String[] substr_arr = new String[] {"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjgvR22VPMnYUNA6WRQIwrgnjLUp1hb+fkHB2nkyJSq9sg9LaY1fs",
+            String[] substr_arr = new String[] {
+                "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjgvR22VPMnYUNA6WRQIwrgnjLUp1hb+fkHB2nkyJSq9sg9LaY1fs",
                 "0TLTPpRpDWHipYfI58671lIuUKL",
                 "pOokXDC6RMefoRYhNS3ikl8O3",
                 "sOkBB3vFJb+Fgwk+b",
