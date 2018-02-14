@@ -222,7 +222,7 @@ public class InternalCountdownStorageMgr {
         }
 
         //ALSO RESTART FOREGROUND SERVICE
-        //TODO: does not work
+        //TODO: does not work --> presumably because extra gets submitted despite removing it (also a new intent does not work!?)
         Intent foregroundServiceIntent = new Intent(this.getContext(), CountdownCounterService.class);
         try {
             foregroundServiceIntent.putExtra(Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE_LABEL,Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE);

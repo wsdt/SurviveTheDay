@@ -13,7 +13,7 @@ public class Constants {
     }
 
     public interface INAPP_PURCHASES {
-        boolean USE_STATIC_TEST_INAPP_PRODUCTS = true;
+        boolean USE_STATIC_TEST_INAPP_PRODUCTS = false;
 
         interface BASE64ENCODED_PUBLICKEY {
             char SEPARATOR = '/';
@@ -51,8 +51,7 @@ public class Constants {
 
         //As enum so we can iterate through it more easily and ensure data types
         enum INAPP_PRODUCTS { //all other informations should be delivered by Google Play (following infos not translateable)
-            CHANGE_NOTIFICATION_COLOR("countdownnode_notificationcategory_color_change"),
-            CREATE_COUNTDOWNS_LONGER_THAN_24H("create_countdowns_longer_than_24hours"),
+            CHANGE_NOTIFICATION_COLOR("countdownnode_notificationcategory_color_change"), //implemented
             REMOVE_ALL_ADS("remove_ads"), //implemented
             USE_MORE_COUNTDOWN_NODES("use_more_countdownnodes"); //implemented
 
@@ -150,9 +149,6 @@ public class Constants {
             String SPIDENTIFIER_SAVE_BATTERY = "SAVE_BATTERY";
             String NO_INTERNET_CONNECTION_COUNTER = "NO_INTERNET_CONNECTION_COUNTER";
             String REMOVE_ADS_TEMPORARLY_IN_MINUTES = "REMOVE_ADS_TEMPORARLY_IN_MINUTES";
-        }
-        interface INTERNAL_INAPPPURCHASE_STR_MGR {
-            String SHAREDPREFERENCES_DBNAME = "INAPP_PURCHASES";
         }
     }
 }

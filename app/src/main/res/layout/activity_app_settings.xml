@@ -120,7 +120,7 @@
                     android:layout_weight="1"/>
                 <Spinner
                     android:id="@+id/inappNotificationHowLongToShowValue"
-                    android:background="@color/lightdark"
+                    android:background="@color/slightlygrey"
                     android:spinnerMode="dropdown"
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"

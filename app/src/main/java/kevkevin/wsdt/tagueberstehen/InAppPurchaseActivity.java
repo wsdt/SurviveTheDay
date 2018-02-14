@@ -8,11 +8,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
-import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
-import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager_newUsedHelper;
+import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
 
 public class InAppPurchaseActivity extends AppCompatActivity{
-    private InAppPurchaseManager_newUsedHelper inAppPurchaseManager;
+    private InAppPurchaseManager inAppPurchaseManager;
     private static final String TAG = "InAppPurchaseActivity";
     private static int counterActivityResume = 0; //how often got activity into foreground (so no repeat in showing all products [print method]) --> because in onCreate/onStart UI Thread is blocked despite Thread and join
 
@@ -27,23 +26,16 @@ public class InAppPurchaseActivity extends AppCompatActivity{
         adManager.loadBannerAd((RelativeLayout) findViewById(R.id.inAppPurchaseAct_RL));
 
         //IMPORTANT: Purchase failed is only when we clicked on buttons before. But this code worked before!
-        this.inAppPurchaseManager = new InAppPurchaseManager_newUsedHelper(this);
+        this.inAppPurchaseManager = new InAppPurchaseManager(this);
         Log.d(TAG, "onStart: Now trying to load resources from Google play.");
-        this.inAppPurchaseManager.executeAfterIabHelperSetup(this.inAppPurchaseManager.createNewIabHelper(), new HelperClass.ExecuteAfterCompletation() {
-            @Override
-            public void execute() {
-                inAppPurchaseManager.queryAllProducts(false);
-                //just to ensure all products are downloaded the queryAllProducts is in printAllInAppProductsAsNode (because we might overwrite constructors listener when we are too fast)
-                inAppPurchaseManager.printAllInAppProductsAsNode((LinearLayout) findViewById(R.id.inappProductList));
-            }
-        });
+        this.inAppPurchaseManager.printAllInAppProductsAsNode((LinearLayout) findViewById(R.id.inappProductList));
     }
 
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        this.inAppPurchaseManager.unbindIabHelper();
+        //this.inAppPurchaseManager.unbindIabHelper(); --> not necessary because every helper in all methods gets unbinded
         Log.d(TAG, "onDestroy: Tried to unbind IabHelper.");
     }
 
@@ -54,11 +46,11 @@ public class InAppPurchaseActivity extends AppCompatActivity{
 
         //This procedure seems to be vital that everything works fine
         //Pass on the activity result to the helper for handling
-        if (!this.inAppPurchaseManager.getIabHelper().handleActivityResult(requestCode, resultCode, data)) {
+        /*if (!this.inAppPurchaseManager.getIabHelper().handleActivityResult(requestCode, resultCode, data)) {
             super.onActivityResult(requestCode, resultCode, data);
         } else {
             Log.d(TAG, "onActivityResult handled by IABUtil.");
-        }
+        }*/
     }
 
 }

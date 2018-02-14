@@ -29,33 +29,21 @@ public class AdManager {
     private Activity context;
     private static final String TAG = "AdManager";
     private GlobalAppSettingsMgr globalAppSettingsMgr;
-    private InAppPurchaseManager_newUsedHelper inAppPurchaseManager;
+    private InAppPurchaseManager inAppPurchaseManager;
 
 
     //TODO: für internet permission prüfen und verlangen usw.
     public AdManager(Activity context) {
         this.setContext(context);
         this.setGlobalAppSettingsMgr(new GlobalAppSettingsMgr(context));
-        this.setInAppPurchaseManager(new InAppPurchaseManager_newUsedHelper(context));
+        this.setInAppPurchaseManager(new InAppPurchaseManager(context));
     }
 
     public void initializeAdmob() {
-            MobileAds.initialize(this.getContext(), Constants.ADMANAGER.ADMOB_USER_ID);
-            Log.d(TAG, "initializeAdMob: Tried to initialize Admob. Maybe regardless of temporarily ad-free, because we always want to display rewarded ads!");
+        MobileAds.initialize(this.getContext(), Constants.ADMANAGER.ADMOB_USER_ID);
+        Log.d(TAG, "initializeAdMob: Tried to initialize Admob. Maybe regardless of temporarily ad-free, because we always want to display rewarded ads!");
     }
 
-    @Override
-    protected void finalize() {
-        try {
-            super.finalize();
-        } catch (Throwable throwable) {
-            Log.e(TAG, "finalize: Error while destroying object!");
-            throwable.printStackTrace();
-        }
-
-        //On destroy for object
-        this.getInAppPurchaseManager().unbindIabHelper(); //remove it when throwing away instance
-    }
 
     public RewardedVideoAd loadRewardedVideoInRewardActivity(@NonNull final Activity activityContext, @Nullable RewardedVideoAdListener adListener, @Nullable final Intent goToActivityAfterShown) {
         final String REWARDED_VIDEO_ID = Constants.ADMANAGER.USE_TEST_ADS ? Constants.ADMANAGER.TEST.REWARDED_VIDEO_AD_ID : Constants.ADMANAGER.REAL.REWARDED_VIDEO_AD_ID;
@@ -104,8 +92,8 @@ public class AdManager {
                     Toast.makeText(activityContext, R.string.error_contactAdministrator, Toast.LENGTH_SHORT).show();
                     Log.e(TAG, "onRewarded: Could not reward user, because rewardItem-Amount and Constants-Value is different! Maybe adapt on Google Play console");
                 } else {*/
-                    getGlobalAppSettingsMgr().setRemoveAdsTemporarlyInMinutes(rewardItem.getAmount());
-                    Toast.makeText(activityContext, String.format(getContext().getResources().getString(R.string.adManager_loadRewardedVideoInRewardActivity_reward_successMessage),rewardItem.getAmount()), Toast.LENGTH_LONG).show();
+                getGlobalAppSettingsMgr().setRemoveAdsTemporarlyInMinutes(rewardItem.getAmount());
+                Toast.makeText(activityContext, String.format(getContext().getResources().getString(R.string.adManager_loadRewardedVideoInRewardActivity_reward_successMessage), rewardItem.getAmount()), Toast.LENGTH_LONG).show();
                 //}
             }
 
@@ -117,7 +105,7 @@ public class AdManager {
             @Override
             public void onRewardedVideoAdFailedToLoad(int errorcode) {
                 Toast.makeText(getContext(), R.string.error_noInternetConnection, Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "onAdFailedToLoad: Could not load interstitial ad. Errorcode: "+errorcode);
+                Log.e(TAG, "onAdFailedToLoad: Could not load interstitial ad. Errorcode: " + errorcode);
                 if (errorcode == ERROR_CODE_NETWORK_ERROR) {
                     //only error code where user might be the reason so increment counter
                     getGlobalAppSettingsMgr().incrementNoInternetConnectionCounter();
@@ -136,7 +124,7 @@ public class AdManager {
         } : adListener); //add given listener or create default one
         Log.d(TAG, "loadRewardedVideoInRewardActivity: Created reward video instance etc.");
 
-        rewardedVideoAd.loadAd(REWARDED_VIDEO_ID,new AdRequest.Builder().build());
+        rewardedVideoAd.loadAd(REWARDED_VIDEO_ID, new AdRequest.Builder().build());
         Log.d(TAG, "loadRewardedVideoInRewardActivity: Tried to load rewarded video.");
 
         return rewardedVideoAd;
@@ -154,62 +142,66 @@ public class AdManager {
             return;
         }
 
-        /*this.getInAppPurchaseManager().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.REMOVE_ALL_ADS.toString(), new HelperClass.ExecuteIfTrueFalseAfterCompletation() {
+        this.getInAppPurchaseManager().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.REMOVE_ALL_ADS.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+            @Override
+            public void success_is_true() {
+                Log.d(TAG, "executeIfProductIsBought:is_true: App is ad-free! Not showing ad.");
+                if (goToActivityAfterShown != null) {
+                    Log.d(TAG, "loadFullPageAd: Hid ad, redirecting to next activity.");
+                    getContext().startActivity(goToActivityAfterShown);
+                }
+            }
+
+            @Override
+            public void failure_is_false() {
+                Log.d(TAG, "executeIfProductIsBought:is_false: App is NOT ad-free, so full page ad will be loaded.");
+
+                //IMPORTANT: ADMOB-GUIDELINE only place interestials between activities with contents and not too much!! Showing Fullpage Ad only allowed if loadingActivity shows BEFORE ad! (see: https://support.google.com/admob/answer/6201362?hl=de&ref_topic=2745287)
+                final String FULLPAGE_ID = Constants.ADMANAGER.USE_TEST_ADS ? Constants.ADMANAGER.TEST.INTERSTITIAL_AD_ID : Constants.ADMANAGER.REAL.INTERSTITIAL_AD_ID;
+
+                final InterstitialAd fullpageAd = new InterstitialAd(getContext());
+                fullpageAd.setAdUnitId(FULLPAGE_ID);
+                fullpageAd.loadAd(new AdRequest.Builder().build());
+                fullpageAd.setAdListener((adListener == null) ? new AdListener() {
                     @Override
-                    public void is_true() {
-                        Log.d(TAG, "executeIfProductIsBought:is_true: App is ad-free! Not showing ad.");
+                    public void onAdLoaded() {
+                        //just in case validate whether app is loaded
+                        if (fullpageAd.isLoaded()) {
+                            fullpageAd.show(); //show ad if loaded
+                            Log.d(TAG, "onAdLoaded: Tried to show fullpage ad.");
+                        } else {
+                            Log.e(TAG, "onAdLoaded: This error should not happen.");
+                        }
                     }
 
                     @Override
-                    public void is_false() {*/
-                        Log.d(TAG, "executeIfProductIsBought:is_false: App is NOT ad-free, so full page ad will be loaded.");
+                    public void onAdClosed() {
+                        //if ad closed go to gotoActivity
+                        Log.d(TAG, "onAdClosed: Interstitial ad got closed and new activity got started.");
+                        if (goToActivityAfterShown != null) {
+                            Log.d(TAG, "onAdClosed: gotoActivity is not null.");
+                            getContext().startActivity(goToActivityAfterShown);
+                        }
+                    }
 
-                        //IMPORTANT: ADMOB-GUIDELINE only place interestials between activities with contents and not too much!! Showing Fullpage Ad only allowed if loadingActivity shows BEFORE ad! (see: https://support.google.com/admob/answer/6201362?hl=de&ref_topic=2745287)
-                        final String FULLPAGE_ID = Constants.ADMANAGER.USE_TEST_ADS ? Constants.ADMANAGER.TEST.INTERSTITIAL_AD_ID : Constants.ADMANAGER.REAL.INTERSTITIAL_AD_ID;
+                    @Override
+                    public void onAdFailedToLoad(int errorcode) {
+                        Toast.makeText(getContext(), R.string.error_noInternetConnection, Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "onAdFailedToLoad: Could not load interstitial ad. Errorcode: " + errorcode);
+                        if (errorcode == ERROR_CODE_NETWORK_ERROR) {
+                            //only error code where user might be the reason so increment counter
+                            getGlobalAppSettingsMgr().incrementNoInternetConnectionCounter();
+                            Log.d(TAG, "onAdFailedToLoad: Tried to increment noInternetConnectionCounter.");
+                        }
 
-                        final InterstitialAd fullpageAd = new InterstitialAd(this.getContext());
-                        fullpageAd.setAdUnitId(FULLPAGE_ID);
-                        fullpageAd.loadAd(new AdRequest.Builder().build());
-                        fullpageAd.setAdListener((adListener == null) ? new AdListener() {
-                            @Override
-                            public void onAdLoaded() {
-                                //just in case validate whether app is loaded
-                                if (fullpageAd.isLoaded()) {
-                                    fullpageAd.show(); //show ad if loaded
-                                    Log.d(TAG, "onAdLoaded: Tried to show fullpage ad.");
-                                } else {
-                                    Log.e(TAG, "onAdLoaded: This error should not happen.");
-                                }
-                            }
-
-                            @Override
-                            public void onAdClosed() {
-                                //if ad closed go to gotoActivity
-                                Log.d(TAG, "onAdClosed: Interstitial ad got closed and new activity got started.");
-                                if (goToActivityAfterShown != null) {
-                                    Log.d(TAG, "onAdClosed: gotoActivity is not null.");
-                                    getContext().startActivity(goToActivityAfterShown);
-                                }
-                            }
-
-                            @Override
-                            public void onAdFailedToLoad(int errorcode) {
-                                Toast.makeText(getContext(), R.string.error_noInternetConnection, Toast.LENGTH_SHORT).show();
-                                Log.e(TAG, "onAdFailedToLoad: Could not load interstitial ad. Errorcode: " + errorcode);
-                                if (errorcode == ERROR_CODE_NETWORK_ERROR) {
-                                    //only error code where user might be the reason so increment counter
-                                    getGlobalAppSettingsMgr().incrementNoInternetConnectionCounter();
-                                    Log.d(TAG, "onAdFailedToLoad: Tried to increment noInternetConnectionCounter.");
-                                }
-
-                                if (goToActivityAfterShown != null) {
-                                    Log.d(TAG, "onAdClosed: gotoActivity is not null.");
-                                    getContext().startActivity(goToActivityAfterShown); //does app not prevent from being executed without internet
-                                }
-                            }
-                        } : adListener); //IMPORTANT: add given adListener, if null create default one
-                    /*}
-                });*/
+                        if (goToActivityAfterShown != null) {
+                            Log.d(TAG, "onAdClosed: gotoActivity is not null.");
+                            getContext().startActivity(goToActivityAfterShown); //does app not prevent from being executed without internet
+                        }
+                    }
+                } : adListener); //IMPORTANT: add given adListener, if null create default one
+            }
+        });
     }
 
     public void loadBannerAd(final RelativeLayout viewGroup) {
@@ -218,15 +210,14 @@ public class AdManager {
             return;
         }
 
-
-        /*this.getInAppPurchaseManager().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.REMOVE_ALL_ADS.toString(), new HelperClass.ExecuteIfTrueFalseAfterCompletation() {
+        this.getInAppPurchaseManager().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.REMOVE_ALL_ADS.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
-            public void is_true() {
+            public void success_is_true() {
                 Log.d(TAG, "loadBannerAd:executeIfProductIsBought:is_true: App is ad-free! Not showing ad.");
             }
 
             @Override
-            public void is_false() {*/
+            public void failure_is_false() {
                 final String BANNER_ID = Constants.ADMANAGER.USE_TEST_ADS ? Constants.ADMANAGER.TEST.BANNER_AD_ID : Constants.ADMANAGER.REAL.BANNER_AD_ID;
 
                 final AdView adView = new AdView(getContext());
@@ -257,8 +248,8 @@ public class AdManager {
                         Log.d(TAG, "onAdLoaded (loadBannerAd): Banner successfully loaded.");
                     }
                 });
-            /*}
-        });*/
+            }
+        });
     }
 
 
@@ -279,11 +270,11 @@ public class AdManager {
         this.globalAppSettingsMgr = globalAppSettingsMgr;
     }
 
-    public InAppPurchaseManager_newUsedHelper getInAppPurchaseManager() {
+    public InAppPurchaseManager getInAppPurchaseManager() {
         return inAppPurchaseManager;
     }
 
-    public void setInAppPurchaseManager(InAppPurchaseManager_newUsedHelper inAppPurchaseManager) {
+    public void setInAppPurchaseManager(InAppPurchaseManager inAppPurchaseManager) {
         this.inAppPurchaseManager = inAppPurchaseManager;
     }
 }

@@ -24,14 +24,14 @@ import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
-import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager_newUsedHelper;
+import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private LinearLayout nodeList;
     private static final String TAG = "MainActivity";
-    private InAppPurchaseManager_newUsedHelper inAppPurchaseManager_newUsedHelper;
+    private InAppPurchaseManager inAppPurchaseManager;
     private int nodeCount = 0; //inapppurchase (only allow one node if product not bought)
 
 
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         //InAppPurchaseMgr
-        this.setInAppPurchaseManager_newUsedHelper(new InAppPurchaseManager_newUsedHelper(this));
+        this.setInAppPurchaseManager(new InAppPurchaseManager(this));
 
         //Initiliaze AdMob
         AdManager adManager = new AdManager(this);
@@ -83,20 +83,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         for (final Map.Entry<Integer,Countdown> countdown : storageMgr.getAllCountdowns(false, false).entrySet()) {
             if (anzahlCountdowns > 0) {
                 //Already at least one node shown! Not showing more without purchasing product
-                /*this.getInAppPurchaseManager_newUsedHelper().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueFalseAfterCompletation() {
+                this.getInAppPurchaseManager().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
-                    public void is_true() {*/
+                    public void success_is_true() {
                         Log.d(TAG, "createAddNodeToLayout:isProductBought:is_true: Product is bought. Showing more than one node (if there are any).");
                         createAddNodeToLayout(countdown.getValue());
                         //incrementation of anzahlCountdowns not necessary because only used for == 0 (No Countdowns found) or > 0 (is inapp product bought) because already incremented always 1 and so bigger than 0
-                    //}
+                    }
 
-                    /*@Override
-                    public void is_false() {
+                    @Override
+                    public void failure_is_false() {
                         Log.d(TAG, "createAddNodeToLayout:isProductBought:is_false: UseMoreCountdown-Nodes Product not bought! Not displaying more.");
                         Toast.makeText(MainActivity.this, R.string.inAppProduct_notBought_useMoreCountdownNodes, Toast.LENGTH_SHORT).show();
                     }
-                });*/
+                });
             } else { //first node
                 createAddNodeToLayout(countdown.getValue());
                 anzahlCountdowns++;
@@ -105,13 +105,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (anzahlCountdowns <= 0) {
             //add plus icon or similar to add new countdown
-            TextView noCountdownsFound = new TextView(this);
-            noCountdownsFound.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            TextView noCountdownsFound = new TextView(getApplicationContext());
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+            noCountdownsFound.setLayoutParams(layoutParams);
             noCountdownsFound.setText(R.string.mainActivity_noCountdownsFound);
-            noCountdownsFound.setTextSize(20);
-            noCountdownsFound.setTextColor(Color.WHITE);
+            noCountdownsFound.setTextSize(22);
+            noCountdownsFound.setId(R.id.MainActivity_TextView_NoCountdownsFound);
+            noCountdownsFound.setTextColor(Color.BLACK);
             noCountdownsFound.setGravity(Gravity.CENTER);
-            nodeList.addView(noCountdownsFound);
+            ((RelativeLayout) findViewById(R.id.mainActivityPage)).addView(noCountdownsFound); //add view to rl not to nodelist (=linearlayout) --> otherwise params get ignored!
+        } else {
+            //if not then remove it from layout if already shown!!
+            //TODO: View does not always get hidden after several deletes and creates without restarting app
+            TextView noCountdownsFound = (TextView) findViewById(R.id.MainActivity_TextView_NoCountdownsFound);
+            if (noCountdownsFound != null) {
+                Log.d(TAG, "loadAddNodes: NoCountdownsFound-Textview found, removing it because nodes are found.");
+                noCountdownsFound.setVisibility(View.GONE); //remove it
+            } else {
+                Log.d(TAG, "loadAddNodes: NoCountdownsFound-TextView not found. Will not do anything.");
+            }
         }
     }
 
@@ -265,11 +278,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return true;
     }
 
-    public InAppPurchaseManager_newUsedHelper getInAppPurchaseManager_newUsedHelper() {
-        return inAppPurchaseManager_newUsedHelper;
+    public InAppPurchaseManager getInAppPurchaseManager() {
+        return this.inAppPurchaseManager;
     }
 
-    public void setInAppPurchaseManager_newUsedHelper(InAppPurchaseManager_newUsedHelper inAppPurchaseManager_newUsedHelper) {
-        this.inAppPurchaseManager_newUsedHelper = inAppPurchaseManager_newUsedHelper;
+    public void setInAppPurchaseManager(InAppPurchaseManager inAppPurchaseManager) {
+        this.inAppPurchaseManager = inAppPurchaseManager;
     }
 }

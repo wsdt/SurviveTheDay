@@ -105,7 +105,9 @@ public class CountdownCounterService extends Service {
     private void shouldThisServiceBeKilled(Intent intent) {
         if (intent != null) {
             try {
-                if (Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE == intent.getIntExtra(Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE_LABEL,(Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE)*(-1))) {//*-1 so error value can NEVER equal to correct stopValue
+                int stopServiceLabel = intent.getIntExtra(Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE_LABEL,(Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE)*(-1));
+                if (Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE == stopServiceLabel) {//*-1 so error value can NEVER equal to correct stopValue
+                    Log.d(TAG, "shouldThisServiceBeKilled: Service will be killed: "+stopServiceLabel);
                     killThisService();
                 } else {
                     Log.e(TAG, "shouldThisServiceBeKilled: Maybe no extra found for killing this service or given value is wrong!. So this instance will stay alive.");

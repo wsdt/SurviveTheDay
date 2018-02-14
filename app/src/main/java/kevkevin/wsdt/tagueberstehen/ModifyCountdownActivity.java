@@ -22,16 +22,18 @@ import kevkevin.wsdt.tagueberstehen.classes.ColorPicker;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.DateTimePicker.DateTimePicker;
+import kevkevin.wsdt.tagueberstehen.classes.DialogManager;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
-import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager_newUsedHelper;
+import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
 public class ModifyCountdownActivity extends AppCompatActivity {
     private Countdown newEditedCountdown;
     private static final String TAG = "ModifyCountdownActivity";
     private int existingCountdownId = (-1); //if edit then this value will be updated and used to overwrite existing countdown
-    private InAppPurchaseManager_newUsedHelper inAppPurchaseManager_newUsedHelper;
+    private InAppPurchaseManager inAppPurchaseManager;
     private InternalCountdownStorageMgr internalCountdownStorageMgr;
+    private DialogManager dialogManager; //important that kevkevin dialogManager gets imported and not the one of android!
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +44,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         this.setInternalCountdownStorageMgr(new InternalCountdownStorageMgr(this));
 
         //InAppPurchaseMgr if validation is too low countdown can be saved, but it will not be displayed
-        this.setInAppPurchaseManager_newUsedHelper(new InAppPurchaseManager_newUsedHelper(this));
+        this.setInAppPurchaseManager(new InAppPurchaseManager(this));
 
 
         //ADS - START
@@ -55,13 +57,15 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         setCustomOnClickListener(findViewById(R.id.startDateTimeValue));
         setCustomOnClickListener(findViewById(R.id.untilDateTimeValue));
 
+        //Create dialogManager instance for showing purchaseDialogs when product not bought already
+        this.setDialogManager(new DialogManager(this));
 
         //Set List for intervalsetter (spinner)
-        HelperClass.setIntervalSpinnerConfigurations((Spinner) findViewById(R.id.notificationIntervalSpinner),R.array.countdownIntervalSpinner_LABELS);
+        HelperClass.setIntervalSpinnerConfigurations((Spinner) findViewById(R.id.notificationIntervalSpinner), R.array.countdownIntervalSpinner_LABELS);
         //setIntervalSpinnerConfigurations();
 
         try {
-            this.existingCountdownId = getIntent().getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID,-1);
+            this.existingCountdownId = getIntent().getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID, -1);
             //say that we want to edit an existing countdown and not create a new one
         } catch (Exception e) {
             Log.e(TAG, "onCreate: Could not load existing countdown.");
@@ -75,29 +79,32 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         onMotivateMeToggleClick(findViewById(R.id.isActive)); //simulate click so it is always at its correct state (enabled/disabled)
 
 
-        //Is Product bought?
-        /*this.getInAppPurchaseManager_newUsedHelper().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueFalseAfterCompletation() {
+        //ARE IN APP PRODUCTS BOUGHT? --------------------------------------------------------------
+        //For useMoreCountdown this makes more sense to evaluate in onCreate --> shorter than in onSaveClick and faster
+        this.getInAppPurchaseManager().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
-            public void is_true() {
+            public void success_is_true() {
                 Log.d(TAG, "onCreate:executeIfProductIsBought: UseMoreCountdownNodes is bought. Not blocking anything.");
             }
 
             @Override
-            public void is_false() {*/
+            public void failure_is_false() {
                 Log.d(TAG, "onCreate:executeIfProductIsBought: UseMoreCountdownNodes is NOT bought. Blocking save-Button IF already one node saved AND NOT in editing mode.");
                 if (getInternalCountdownStorageMgr().getAllCountdowns(false, false).size() > 0 && (existingCountdownId < 0)) {
                     ModifyCountdownActivity.this.findViewById(R.id.saveCountdown).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Log.d(TAG, "onCreate:executeIfProductIsBought:OnClick: Did not save countdown, because inapp product not bought and more than one node already saved. EditMode disabled, Countdown-Id: "+existingCountdownId);
+                            Log.d(TAG, "onCreate:executeIfProductIsBought:OnClick: Did not save countdown, because inapp product not bought and more than one node already saved. EditMode disabled, Countdown-Id: " + existingCountdownId);
+                            getDialogManager().showDialog_InAppProductPromotion(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), null, null, R.drawable.app_icon);
+                            //also show toast for additional clarification
                             Toast.makeText(ModifyCountdownActivity.this, R.string.inAppProduct_notBought_useMoreCountdownNodes, Toast.LENGTH_SHORT).show();
                         }
                     });
                 } else {
                     Log.d(TAG, "onCreate:executeIfProductIsBought: No node saved OR being in edit-mode [because countdown submitted in intent (existingCountdownId >= 0)]. So we allow saving the first one.");
                 }
-            /*}
-        });*/
+            }
+        });
     }
 
     public void onSaveClick(View view) {
@@ -132,8 +139,8 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             }
             // Is UntilDateTime AFTER StartDateTime? - END -------------
         } else {
-            Log.e(TAG, "validateFormValue: Dates not valid: "+this.getNewEditedCountdown().getStartDateTime()+" /// "+this.getNewEditedCountdown().getUntilDateTime());
-            Toast.makeText(this,R.string.modifyCountdownActivity_countdown_validation_DateTimeNotValid, Toast.LENGTH_LONG).show();
+            Log.e(TAG, "validateFormValue: Dates not valid: " + this.getNewEditedCountdown().getStartDateTime() + " /// " + this.getNewEditedCountdown().getUntilDateTime());
+            Toast.makeText(this, R.string.modifyCountdownActivity_countdown_validation_DateTimeNotValid, Toast.LENGTH_LONG).show();
             return false;
         }
 
@@ -142,13 +149,13 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         String countdownTitleValue = (((EditText) findViewById(R.id.countdownTitleValue)).getText()).toString();
         if (countdownTitleValue.length() >= Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MAX || countdownTitleValue.length() <= Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MIN) {
             Log.w(TAG, "areFormValuesValid: CountdownTitleValue is not valid!");
-            Toast.makeText(this, String.format(res.getString(R.string.modifyCountdownActivity_countdown_validation_LengthConstraints),"Title",(Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MIN+1),(Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MAX-1)), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, String.format(res.getString(R.string.modifyCountdownActivity_countdown_validation_LengthConstraints), "Title", (Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MIN + 1), (Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MAX - 1)), Toast.LENGTH_SHORT).show();
             return false;
         }
         String countdownDescriptionValue = (((EditText) findViewById(R.id.countdownDescriptionValue)).getText()).toString();
         if (countdownDescriptionValue.length() >= Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MAX || countdownDescriptionValue.length() <= Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MIN) {
             Log.w(TAG, "areFormValuesValid: CountdownDescriptionValue is not valid!");
-            Toast.makeText(this, String.format(res.getString(R.string.modifyCountdownActivity_countdown_validation_LengthConstraints),"Description",(Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MIN+1),(Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MAX-1)), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, String.format(res.getString(R.string.modifyCountdownActivity_countdown_validation_LengthConstraints), "Description", (Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MIN + 1), (Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MAX - 1)), Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -164,7 +171,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         (findViewById(R.id.categoryValue)).setBackgroundColor(Color.parseColor(countdown.getCategory()));
         ((ToggleButton) findViewById(R.id.isActive)).setChecked(countdown.isActive());
         //set associated entry of interval seconds to spinner
-        ((Spinner) findViewById(R.id.notificationIntervalSpinner)).setSelection(Arrays.asList(getResources().getStringArray(R.array.countdownIntervalSpinner_VALUES)).indexOf(""+countdown.getNotificationInterval())); //reduce about 5 otherwise we would add 5 every time we edited it!
+        ((Spinner) findViewById(R.id.notificationIntervalSpinner)).setSelection(Arrays.asList(getResources().getStringArray(R.array.countdownIntervalSpinner_VALUES)).indexOf("" + countdown.getNotificationInterval())); //reduce about 5 otherwise we would add 5 every time we edited it!
         ((ToggleButton) findViewById(R.id.showLiveCountdown)).setChecked(countdown.isShowLiveCountdown());
     }
 
@@ -178,8 +185,8 @@ public class ModifyCountdownActivity extends AppCompatActivity {
                 ((ToggleButton) findViewById(R.id.isActive)).isChecked(),
                 Integer.parseInt(getResources().getStringArray(R.array.countdownIntervalSpinner_VALUES)[((Spinner) findViewById(R.id.notificationIntervalSpinner)).getSelectedItemPosition()]),
                 ((ToggleButton) findViewById(R.id.showLiveCountdown)).isChecked()));
-                // .getProgress()+5 for old seekbar slider +5 seconds by default (because if 0) app crashes
-                //line above: gets selected spinner items position and uses this to get the associated array entry with the correct value in seconds.
+        // .getProgress()+5 for old seekbar slider +5 seconds by default (because if 0) app crashes
+        //line above: gets selected spinner items position and uses this to get the associated array entry with the correct value in seconds.
 
         //Overwrite countdown id if countdown exists already
         if (this.existingCountdownId >= 0) {
@@ -191,9 +198,21 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     }
 
     //Color picker for category value
-    public void onClickOpenColorPicker(View view) {
-        Log.d(TAG, "onClickOpenColorPicker: Tried to open color picker. ");
-        ColorPicker.openColorPickerDialog(this, view, Color.parseColor(ColorPicker.getBackgroundColorHexString(findViewById(R.id.categoryValue))), false);
+    public void onClickOpenColorPicker(final View view) {
+        this.getInAppPurchaseManager().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.CHANGE_NOTIFICATION_COLOR.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+            @Override
+            public void success_is_true() {
+                Log.d(TAG, "onClickOpenColorPicker:executeIfProductIsBought: ChangeNotification is bought. Tried to open color picker");
+                ColorPicker.openColorPickerDialog(ModifyCountdownActivity.this, view, Color.parseColor(ColorPicker.getBackgroundColorHexString(findViewById(R.id.categoryValue))), false);
+            }
+
+            @Override
+            public void failure_is_false() {
+                Log.d(TAG, "onClickOpenColorPicker:executeIfProductIsBought: ChangeNotification is NOT bought. Blocking color-Button.");
+                getDialogManager().showDialog_InAppProductPromotion(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.CHANGE_NOTIFICATION_COLOR.toString(), null, null, R.drawable.app_icon);
+                Toast.makeText(ModifyCountdownActivity.this, R.string.inAppProduct_notBought_changeNotificationColor, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     //Show service specific field if toggle button is ON (isActive)
@@ -225,12 +244,12 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         this.newEditedCountdown = newEditedCountdown;
     }
 
-    public InAppPurchaseManager_newUsedHelper getInAppPurchaseManager_newUsedHelper() {
-        return inAppPurchaseManager_newUsedHelper;
+    public InAppPurchaseManager getInAppPurchaseManager() {
+        return this.inAppPurchaseManager;
     }
 
-    public void setInAppPurchaseManager_newUsedHelper(InAppPurchaseManager_newUsedHelper inAppPurchaseManager_newUsedHelper) {
-        this.inAppPurchaseManager_newUsedHelper = inAppPurchaseManager_newUsedHelper;
+    public void setInAppPurchaseManager(InAppPurchaseManager inAppPurchaseManager) {
+        this.inAppPurchaseManager = inAppPurchaseManager;
     }
 
 
@@ -241,7 +260,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     public void setCustomOnClickListener(View v) {
         //GregorianCalendar now = new GregorianCalendar(); //now
         GregorianCalendar now = new GregorianCalendar(); //so current time gets automatically set
-        final DateTimePicker DATETIMEPICKER = new DateTimePicker(this, getSupportFragmentManager(),(TextView) v,now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND), true);
+        final DateTimePicker DATETIMEPICKER = new DateTimePicker(this, getSupportFragmentManager(), (TextView) v, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND), true);
 
         v.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -257,5 +276,13 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
     public void setInternalCountdownStorageMgr(InternalCountdownStorageMgr internalCountdownStorageMgr) {
         this.internalCountdownStorageMgr = internalCountdownStorageMgr;
+    }
+
+    public DialogManager getDialogManager() {
+        return dialogManager;
+    }
+
+    public void setDialogManager(DialogManager dialogManager) {
+        this.dialogManager = dialogManager;
     }
 }
