@@ -23,7 +23,7 @@ public class RewardedVideoAdActivity extends AppCompatActivity {
         this.setAdManager(new AdManager(this));
         this.getAdManager().initializeAdmob();
         //redirect to mainActivity after ad
-        this.setmRewardedVideoAd(this.getAdManager().loadRewardedVideoInRewardActivity(this,null,null));
+        this.setmRewardedVideoAd(this.getAdManager().loadRewardedVideoInRewardActivity(null,null));
     }
 
 

@@ -33,7 +33,7 @@
         android:contentDescription="MotivateMeToggle"
         android:onClick="onCountdownModifyButtons"
         android:id="@+id/countdownMotivateMeToggle"
-        android:src="@drawable/switchtoggle_16px"
+        android:src="@drawable/dark_switchtoggle_small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@null"
@@ -54,7 +54,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginRight="40dp"
         android:layout_marginEnd="40dp"
-        android:src="@drawable/edit_16px"
+        android:src="@drawable/dark_edit_small"
         android:scaleType="fitXY" />
 
     <ImageButton
@@ -65,7 +65,7 @@
         android:layout_marginTop="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/delete_16px"
+        android:src="@drawable/dark_delete_small"
         android:layout_marginRight="80dp"
         android:layout_marginEnd="80dp"
         android:layout_alignParentRight="true"

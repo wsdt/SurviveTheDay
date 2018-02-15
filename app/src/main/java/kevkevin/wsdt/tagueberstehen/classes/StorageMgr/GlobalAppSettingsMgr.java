@@ -28,7 +28,7 @@ public class GlobalAppSettingsMgr {
         this.setGlobalSettings_SharedPref(context.getSharedPreferences(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.SHAREDPREFERENCES_DBNAME, Context.MODE_PRIVATE));
     }
 
-    //Save system.currentTimeMillis()+rewardedValue() in Milliseoncds or so as new grenzwert
+    //Save system.currentTimeMillis()+rewardedValue() in Milliseconds or so as new grenzwert
     public void setRemoveAdsTemporarlyInMinutes(int adFreeMinutes) {
         this.getGlobalSettings_SharedPref().edit().putLong(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.REMOVE_ADS_TEMPORARLY_IN_MINUTES, System.currentTimeMillis()+ (adFreeMinutes*60*1000)).apply(); //convert to milliseconds (as long current timestamp is smaller ads will be hidden)
         Log.d(TAG, "setRemoveAdsTemporarlyInMinutes: Tried to save new adFreeTemporarly value.");

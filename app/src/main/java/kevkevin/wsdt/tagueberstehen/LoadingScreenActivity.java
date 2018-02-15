@@ -10,6 +10,8 @@ import android.widget.ImageView;
 
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
+import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.services.CountdownCounterService;
 
 public class LoadingScreenActivity extends AppCompatActivity {
@@ -60,6 +62,10 @@ public class LoadingScreenActivity extends AppCompatActivity {
                 Log.d(TAG, "onCreate: Passed all received extras to new intent.");
             }
         }
+
+        //######################### Remove from code! ################################
+        //(new InAppPurchaseManager(this)).resetAllPurchasedItems();
+        //(new GlobalAppSettingsMgr(this)).setRemoveAdsTemporarlyInMinutes(0); //to reset
 
         //FullPageAd etc.
         AdManager adManager = new AdManager(this);

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -45,10 +46,10 @@ public class AdManager {
     }
 
 
-    public RewardedVideoAd loadRewardedVideoInRewardActivity(@NonNull final Activity activityContext, @Nullable RewardedVideoAdListener adListener, @Nullable final Intent goToActivityAfterShown) {
+    public RewardedVideoAd loadRewardedVideoInRewardActivity(@Nullable RewardedVideoAdListener adListener, @Nullable final Intent goToActivityAfterShown) {
         final String REWARDED_VIDEO_ID = Constants.ADMANAGER.USE_TEST_ADS ? Constants.ADMANAGER.TEST.REWARDED_VIDEO_AD_ID : Constants.ADMANAGER.REAL.REWARDED_VIDEO_AD_ID;
 
-        final RewardedVideoAd rewardedVideoAd = MobileAds.getRewardedVideoAdInstance(activityContext);
+        final RewardedVideoAd rewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this.getContext());
         rewardedVideoAd.setRewardedVideoAdListener((adListener == null) ? new RewardedVideoAdListener() {
             @Override
             public void onRewardedVideoAdLoaded() {
@@ -64,7 +65,7 @@ public class AdManager {
             @Override
             public void onRewardedVideoAdOpened() {
                 Log.d(TAG, "onRewardedVideoAdOpened: Opened Rewarded video ad and have informed user.");
-                Toast.makeText(activityContext, R.string.adManager_loadRewardedVideoInRewardActivity_reward_introductionMessage, Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), R.string.adManager_loadRewardedVideoInRewardActivity_reward_introductionMessage, Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -82,19 +83,17 @@ public class AdManager {
                 } else {
                     //IMPORTANT: In this case (because this ad has its own activity) we finish the activity if no target activity is specified.
                     Log.d(TAG, "onRewardedVideoAdClosed: Tried to finish activity.");
-                    activityContext.finish();
+                    getContext().finish();
                 }
             }
 
             @Override
             public void onRewarded(RewardItem rewardItem) {
-                /*if ((rewardItem.getAmount()*60*1000) != Constants.ADMANAGER.REMOVE_ADS_TEMPORARLY_IN_MILLISECONDS) {
-                    Toast.makeText(activityContext, R.string.error_contactAdministrator, Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, "onRewarded: Could not reward user, because rewardItem-Amount and Constants-Value is different! Maybe adapt on Google Play console");
-                } else {*/
                 getGlobalAppSettingsMgr().setRemoveAdsTemporarlyInMinutes(rewardItem.getAmount());
-                Toast.makeText(activityContext, String.format(getContext().getResources().getString(R.string.adManager_loadRewardedVideoInRewardActivity_reward_successMessage), rewardItem.getAmount()), Toast.LENGTH_LONG).show();
-                //}
+                Toast.makeText(getContext(), String.format(getContext().getResources().getString(R.string.adManager_loadRewardedVideoInRewardActivity_reward_successMessage), rewardItem.getAmount()), Toast.LENGTH_LONG).show();
+
+                //Restart activity (to reload all ads [in this case remove them])
+                //Log.d(TAG, "loadRewardedVideoInRewardActivity:onRewarded: Trying to remove Banner Ad on the bottom of MainActivity.");
             }
 
             @Override
@@ -114,11 +113,11 @@ public class AdManager {
 
                 if (goToActivityAfterShown != null) {
                     Log.d(TAG, "onAdClosed: gotoActivity is not null.");
-                    activityContext.startActivity(goToActivityAfterShown); //does app not prevent from being executed without internet
+                    getContext().startActivity(goToActivityAfterShown); //does app not prevent from being executed without internet
                 } else {
                     //IMPORTANT: In this case (because this ad has its own activity) we finish the activity if no target activity is specified.
                     Log.d(TAG, "onRewardedVideoAdFailedToLoad: Tried to finish activity.");
-                    activityContext.finish();
+                    getContext().finish();
                 }
             }
         } : adListener); //add given listener or create default one
@@ -204,9 +203,24 @@ public class AdManager {
         });
     }
 
-    public void loadBannerAd(final RelativeLayout viewGroup) {
+    //Helper method for loadBannerAd() (e.g. when watched RewardedVideoAd then to refresh activity)
+    private void removeBannerAd(RelativeLayout viewGroup) {
+        AdView adView = (AdView) viewGroup.findViewById(R.id.RL_BannerAd_ID);
+        if (adView != null) {
+            Log.d(TAG, "loadBannerAd: Removed ad (im Nachhinein), because ad was displayed but now should be removed.");
+            adView.destroy();
+            adView.setVisibility(View.GONE);
+        } else {
+            Log.d(TAG, "loadBannerAd: There was no banner ad to remove.");
+        }
+    }
+
+    public void loadBannerAd(@NonNull final RelativeLayout viewGroup) {
         if (getGlobalAppSettingsMgr().isRemoveAdsTemporarlyInMinutesActiveValid()) {
             Log.d(TAG, "loadBannerAd: Did not show ad, because temporarly ad free!");
+
+            //Remove ad if already displayed but now while runtime setting has changed! (e.g. when watched RewardedVideoAd)
+            removeBannerAd(viewGroup); //this procedure is only for banner ad necessary (because only one which is seeable the whole time)
             return;
         }
 
@@ -214,6 +228,7 @@ public class AdManager {
             @Override
             public void success_is_true() {
                 Log.d(TAG, "loadBannerAd:executeIfProductIsBought:is_true: App is ad-free! Not showing ad.");
+                removeBannerAd(viewGroup); //also remove here banner ad if already showing
             }
 
             @Override
@@ -221,6 +236,7 @@ public class AdManager {
                 final String BANNER_ID = Constants.ADMANAGER.USE_TEST_ADS ? Constants.ADMANAGER.TEST.BANNER_AD_ID : Constants.ADMANAGER.REAL.BANNER_AD_ID;
 
                 final AdView adView = new AdView(getContext());
+                adView.setId(R.id.RL_BannerAd_ID); //so we can remove it afterwards when e.g. temporarly inactive
                 adView.setAdSize(AdSize.SMART_BANNER); //IMPORTANT: adsize and adunit should be added in the same manner! (programmatically | xml)
                 adView.setAdUnitId(BANNER_ID);
 

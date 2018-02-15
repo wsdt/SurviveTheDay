@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -198,6 +199,7 @@ public class InAppPurchaseManager {
     }
 
     public void purchaseProduct(final String productSkuId, final int resultCode, @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
+        Log.d(TAG, "purchaseProduct: Trying to launch purchase workflow.");
         try { //use given onPurchaseListener, if not given (= null) then use default one
             final IabHelper iabHelper = createNewIabHelper();
             iabHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
@@ -206,7 +208,8 @@ public class InAppPurchaseManager {
                     if (result.isSuccess() && iabHelper != null) {
                         try {
                             //HERE context has to be an Activity !!
-                            iabHelper.launchPurchaseFlow((Activity) getActivityContext(), productSkuId, resultCode, new IabHelper.OnIabPurchaseFinishedListener() {
+                            final Activity activityContext = (Activity) getActivityContext(); //will be also used in on purchase successful!
+                            iabHelper.launchPurchaseFlow(activityContext, productSkuId, resultCode, new IabHelper.OnIabPurchaseFinishedListener() {
                                 @Override
                                 public void onIabPurchaseFinished(IabResult result, Purchase info) {
                         /*TODO: Security Recommendation: When you receive the purchase response from Google Play,
@@ -220,25 +223,38 @@ public class InAppPurchaseManager {
                                         //custom error messages or generic one if no suitable found
                                         switch (result.getResponse()) {
                                             case 7:
-                                                Toast.makeText(getActivityContext(), R.string.inAppPurchaseManager_error_purchaseProductFailureAlreadyBought, Toast.LENGTH_SHORT).show();break;
-                                            default: Toast.makeText(getActivityContext(), R.string.inAppPurchaseManager_error_purchaseProductFailure, Toast.LENGTH_SHORT).show();break;
+                                                Toast.makeText(getActivityContext(), R.string.inAppPurchaseManager_error_purchaseProductFailureAlreadyBought, Toast.LENGTH_SHORT).show();
+                                                break;
+                                            default:
+                                                Toast.makeText(getActivityContext(), R.string.inAppPurchaseManager_error_purchaseProductFailure, Toast.LENGTH_SHORT).show();
+                                                break;
                                         }
                                         if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
                                             executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
                                         }
                                     } else { //else if with separate productSkus?
                                         //inventory.hasPurchase(SKU) --> wurde gekauft
-                                        //TODO: maybe we have to reload all views
+                                        //maybe we have to reload all views (if null then we do it in the else{} with refreshing the whole activity)
                                         Log.d(TAG, "purchaseProduct:onIabPurchaseFinished: Purchase successful: " + result);
                                         Toast.makeText(getActivityContext(), String.format(getActivityContext().getResources().getString(R.string.inAppPurchaseManager_success_purchaseProductSuccess), info.getSku()) + " / Result: " + result, Toast.LENGTH_LONG).show();
                                         if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
                                             executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true();
+                                        } else { //TODO: not called when purchase successful [maybe only when uploaded? Purchase works trotzdem] (Class not found when unmarshalling: com.google.android.finsky.billing.common.PurchaseParams)
+                                            //If interface method null then we just reload the whole activity [context has to be an activity for this method!!]
+                                            Log.d(TAG, "purchaseProduct:onIabPurchaseFinished: No Interface method for success given. Launched default one and reload the whole activity.");
+                                            setAllInAppProducts(null); //so it gets reloaded
+                                            activityContext.finish();
+                                            activityContext.startActivity(activityContext.getIntent());
                                         }
                                         //RECOMMENDATION: Give custom OnPurchaseFinishedListener, because this one does not that much! After purchase completed the inventory.hasPurchase should be true for that sku!
+
+                                        //DISPOSE HELPER REGARDLESS OF SUCCESS/FAILURE
+                                        unbindIabHelper(iabHelper);
                                     }
                                 }
-                            }, ""); //todo: maybe developer payload ?
-                        } catch (IabHelper.IabAsyncInProgressException | ClassCastException e) {
+                                //WARNING: empty string of payload will be null while processing
+                            }, generateUniquePayload()); //todo: maybe developer payload verify!
+                        } catch (Exception e) {
                             e.printStackTrace();
                             if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
                                 executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
@@ -250,8 +266,6 @@ public class InAppPurchaseManager {
                             executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
                         }
                     }
-                    //DISPOSE HELPER REGARDLESS OF SUCCESS/FAILURE
-                    unbindIabHelper(iabHelper);
                 }
             });
         } catch (Exception e) {
@@ -318,6 +332,40 @@ public class InAppPurchaseManager {
         });
     }*/
 
+    public void resetAllPurchasedItems() {
+        //This method consumes all purchased items (although they are not consumable)
+        Log.w(TAG, "resetAllPurchasedItems: WARNING this method should be ONLY called for testing purchases!");
+        final IabHelper iabHelper = createNewIabHelper();
+        iabHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+            @Override
+            public void onIabSetupFinished(IabResult result) {
+                try {
+                    iabHelper.queryInventoryAsync(new IabHelper.QueryInventoryFinishedListener() {
+                        @Override
+                        public void onQueryInventoryFinished(IabResult result, Inventory inv) {
+                            List<Purchase> purchaseList = new ArrayList<>(inv.getmPurchaseMap().values());
+                            try {
+                                iabHelper.consumeAsync(purchaseList, new IabHelper.OnConsumeMultiFinishedListener() {
+                                    @Override
+                                    public void onConsumeMultiFinished(List<Purchase> purchases, List<IabResult> results) {
+                                        Log.d(TAG, "resetAllPurchasedItems: Tried to consume all items. Should have been worked! ");
+                                        Log.w(TAG, "#################################################################################\n" +
+                                                "REMOVE resetAllPurchasedItems() from Code (esp. when releasing app!) #####################\n" +
+                                                "######################################################################################");
+                                        unbindIabHelper(iabHelper);
+                                    }
+                                });
+                            } catch (IabHelper.IabAsyncInProgressException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                } catch (IabHelper.IabAsyncInProgressException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
     //GETTER/SETTER
     public IabHelper createNewIabHelper() {

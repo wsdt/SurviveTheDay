@@ -23,6 +23,7 @@ public class DialogManager {
     private static final String TAG = "DialogManager";
 
     public DialogManager(Activity context) {
+        //Context MUST be an activity, because we reload it if purchase was a success!!
         this.setContext(context);
         this.setRes(context.getResources());
         this.setInAppPurchaseManager(new InAppPurchaseManager(context));

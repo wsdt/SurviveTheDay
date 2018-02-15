@@ -36,9 +36,9 @@
                 android:layout_width="match_parent"
                 android:layout_gravity="start|top"
                 android:layout_marginTop="6dp"
+                android:autoText="true"
                 android:ems="10"
                 android:inputType="text|textAutoComplete|textAutoCorrect"
-                android:autoText="true"
                 android:text="@string/modifyCountdownActivity_countdown_title_edittext_exampleValue" />
             <!-- DESCRIPTION -->
             <TextView
@@ -50,12 +50,12 @@
 
             <!-- inputType and autoText combination (both) -->
             <EditText
-                android:inputType="text|textAutoComplete|textAutoCorrect"
-                android:autoText="true"
                 android:id="@+id/countdownDescriptionValue"
                 style="@style/textForForm"
                 android:layout_width="match_parent"
                 android:layout_gravity="start|top"
+                android:autoText="true"
+                android:inputType="text|textAutoComplete|textAutoCorrect"
                 android:text="@string/modifyCountdownActivity_countdown_description_edittext_exampleValue" />
             <!-- Start Datetime -->
             <TextView
@@ -97,26 +97,27 @@
                 android:layout_marginTop="15dp"
                 android:text="@string/modifyCountdownActivity_countdown_category_label" />
 
-            <LinearLayout
-                android:orientation="vertical">
+            <LinearLayout android:orientation="vertical">
+
                 <View
-                android:id="@+id/categoryValue"
-                style="@style/textForForm"
-                android:layout_width="240dp"
-                android:layout_height="25dp"
-                android:layout_gravity="start|top"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="17dp"
-                android:background="@color/colorPrimaryDark"
-                android:onClick="onClickOpenColorPicker" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:width="225dp"
+                    android:id="@+id/categoryValue"
+                    style="@style/textForForm"
+                    android:layout_width="240dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="start|top"
                     android:layout_marginLeft="5dp"
                     android:layout_marginStart="5dp"
+                    android:layout_marginTop="17dp"
+                    android:background="@color/colorPrimaryDark"
+                    android:onClick="onClickOpenColorPicker" />
+
+                <TextView
                     style="@style/textForForm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
+                    android:width="225dp"
                     android:text="@string/modifyCountdownActivity_countdown_category_textview_fieldDescription"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -132,13 +133,13 @@
             <ToggleButton
                 android:id="@+id/isActive"
                 style="@style/textForForm"
-                android:textSize="15sp"
-                android:textColor="@color/dark"
                 android:layout_width="250dp"
                 android:layout_height="40dp"
-                android:layout_marginTop="5dp"
                 android:layout_gravity="start|top"
-                android:onClick="onMotivateMeToggleClick" />
+                android:layout_marginTop="5dp"
+                android:onClick="onMotivateMeToggleClick"
+                android:textColor="@color/dark"
+                android:textSize="15sp" />
 
             <!-- Service settings (Interval for notifications: by default disabled) -->
             <TextView
@@ -151,24 +152,27 @@
                 android:text="@string/modifyCountdownActivity_countdown_motivateMeInterval_label" />
 
             <!-- SLIDER currently -->
-            <LinearLayout
-                android:orientation="vertical">
-            <Spinner
-                android:id="@+id/notificationIntervalSpinner"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:gravity="center"
-                android:spinnerMode="dropdown" />
+            <LinearLayout android:orientation="vertical"
+                android:id="@+id/notificationIntervalRightCol">
+
+                <Spinner
+                    android:id="@+id/notificationIntervalSpinner"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="start"
+                    android:gravity="start"
+                    android:spinnerMode="dropdown" />
+
                 <TextView
-                    android:width="225dp"
+                    style="@style/textForForm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:layout_marginStart="5dp"
-                    style="@style/textForForm"
+                    android:width="225dp"
                     android:text="@string/modifyCountdownActivity_countdown_interval_textview_fieldDescription"
-                    android:textSize="12sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <TextView
@@ -181,12 +185,12 @@
             <ToggleButton
                 android:id="@+id/showLiveCountdown"
                 style="@style/textForForm"
-                android:textSize="15sp"
-                android:textColor="@color/dark"
                 android:layout_width="250dp"
                 android:layout_height="40dp"
+                android:layout_gravity="start|top"
                 android:layout_marginTop="5dp"
-                android:layout_gravity="start|top" />
+                android:textColor="@color/dark"
+                android:textSize="15sp" />
 
 
             <Button

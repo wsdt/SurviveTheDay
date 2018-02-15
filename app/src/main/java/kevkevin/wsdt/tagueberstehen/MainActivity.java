@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Map;
+
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
@@ -28,11 +30,12 @@ import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private LinearLayout nodeList;
     private static final String TAG = "MainActivity";
     private InAppPurchaseManager inAppPurchaseManager;
-    private int nodeCount = 0; //inapppurchase (only allow one node if product not bought)
+    private AdManager adManager; //used e.g. for banner ad (so we can dynamically remove it etc.)
+    private RelativeLayout mainActivityPage;
 
 
     @Override
@@ -44,9 +47,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.setInAppPurchaseManager(new InAppPurchaseManager(this));
 
         //Initiliaze AdMob
-        AdManager adManager = new AdManager(this);
-        adManager.initializeAdmob(); //no fullpage ad because this happens already in loading screen
-        adManager.loadBannerAd((RelativeLayout) findViewById(R.id.mainActivityPage));
+        this.setAdManager(new AdManager(this));
+        this.getAdManager().initializeAdmob(); //no fullpage ad because this happens already in loading screen
+        this.setMainActivityPage((RelativeLayout) findViewById(R.id.mainActivityPage));
+        this.getAdManager().loadBannerAd(this.getMainActivityPage());
 
         //Nodelist
         nodeList = (LinearLayout) findViewById(R.id.nodeList);
@@ -64,23 +68,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         globalAppSettingsMgr.startBroadcastORBackgroundService();
     }
 
+
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onRestart() {
+        //used onRestart instead of onResume, because maybe better performance (not that often a refresh)
+        super.onRestart();
         reloadEverything();
     }
+
 
     private void reloadEverything() {
         //reload all nodes from sharedpreferences (remove them beforehand)
         removeAllNodesFromLayout();
         loadAddNodes();
+        this.getAdManager().loadBannerAd(this.getMainActivityPage()); //ad might get removed if settings have changed (in app purchase, temporarly ad free etc.)
         //restart of service happens in InternalCountdownStorageMgr!
     }
 
     private void loadAddNodes() {
         InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(this);
         int anzahlCountdowns = 0;
-        for (final Map.Entry<Integer,Countdown> countdown : storageMgr.getAllCountdowns(false, false).entrySet()) {
+        for (final Map.Entry<Integer, Countdown> countdown : storageMgr.getAllCountdowns(false, false).entrySet()) {
             if (anzahlCountdowns > 0) {
                 //Already at least one node shown! Not showing more without purchasing product
                 this.getInAppPurchaseManager().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
@@ -103,34 +111,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
+
+        TextView noCountdownsFound = (TextView) findViewById(R.id.MainActivity_TextView_NoCountdownsFound);
         if (anzahlCountdowns <= 0) {
             //add plus icon or similar to add new countdown
-            TextView noCountdownsFound = new TextView(getApplicationContext());
-            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-            noCountdownsFound.setLayoutParams(layoutParams);
-            noCountdownsFound.setText(R.string.mainActivity_noCountdownsFound);
-            noCountdownsFound.setTextSize(22);
-            noCountdownsFound.setId(R.id.MainActivity_TextView_NoCountdownsFound);
-            noCountdownsFound.setTextColor(Color.BLACK);
-            noCountdownsFound.setGravity(Gravity.CENTER);
-            ((RelativeLayout) findViewById(R.id.mainActivityPage)).addView(noCountdownsFound); //add view to rl not to nodelist (=linearlayout) --> otherwise params get ignored!
+            noCountdownsFound.setVisibility(View.VISIBLE);
         } else {
             //if not then remove it from layout if already shown!!
-            //TODO: View does not always get hidden after several deletes and creates without restarting app
-            TextView noCountdownsFound = (TextView) findViewById(R.id.MainActivity_TextView_NoCountdownsFound);
-            if (noCountdownsFound != null) {
-                Log.d(TAG, "loadAddNodes: NoCountdownsFound-Textview found, removing it because nodes are found.");
-                noCountdownsFound.setVisibility(View.GONE); //remove it
-            } else {
-                Log.d(TAG, "loadAddNodes: NoCountdownsFound-TextView not found. Will not do anything.");
-            }
+            Log.d(TAG, "loadAddNodes: NoCountdownsFound-Textview found, removing it because nodes are found.");
+            //do not use view.gone (if you do then verify when referencing this view that findView is NOT null (nullpointer exception)
+            noCountdownsFound.setVisibility(View.INVISIBLE);
         }
     }
 
     @Override
     public void onClick(View v) { //OnClick on node itself
-        Intent tmpintent = new Intent(this,CountdownActivity.class);
+        Intent tmpintent = new Intent(this, CountdownActivity.class);
         int countdownId = getCountdownIdFromNodeTag((RelativeLayout) v);
 
         if (countdownId >= 0) {
@@ -153,37 +149,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return;
         }
 
-        if (countdown == null) {Log.e(TAG,"onCountdownModifyButtons: Countdown Obj is null!");return;} //exist if null (when other exception occured)
+        if (countdown == null) {
+            Log.e(TAG, "onCountdownModifyButtons: Countdown Obj is null!");
+            return;
+        } //exist if null (when other exception occured)
         switch (v.getId()) {
             case R.id.countdownMotivateMeToggle:
                 if (countdown.isActive()) {
                     countdown.setActive(false);
-                    Log.d(TAG, "onCountdownModifyButtons: Countdown "+countdown.getCountdownId()+" does not motivate now.");
+                    Log.d(TAG, "onCountdownModifyButtons: Countdown " + countdown.getCountdownId() + " does not motivate now.");
                 } else {
                     countdown.setActive(true);
-                    Log.d(TAG, "onCountdownModifyButtons: Countdown "+countdown.getCountdownId()+" does motivate now.");
+                    Log.d(TAG, "onCountdownModifyButtons: Countdown " + countdown.getCountdownId() + " does motivate now.");
                 }
                 countdown.savePersistently();
                 Resources res = getResources();
-                Toast.makeText(this,String.format(res.getString(R.string.mainActivity_countdownMotivationToggleOnOff),((countdown.isActive()) ? res.getString(R.string.mainActivity_countdownMotivationToggleOnOff_activated) : res.getString(R.string.mainActivity_countdownMotivationToggleOnOff_deactivated))),Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, String.format(res.getString(R.string.mainActivity_countdownMotivationToggleOnOff), ((countdown.isActive()) ? res.getString(R.string.mainActivity_countdownMotivationToggleOnOff_activated) : res.getString(R.string.mainActivity_countdownMotivationToggleOnOff_deactivated))), Toast.LENGTH_SHORT).show();
                 break;
             case R.id.countdownEdit:
                 Intent modifyCountdownActivity = new Intent(this, ModifyCountdownActivity.class);
-                modifyCountdownActivity.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID,countdown.getCountdownId());
+                modifyCountdownActivity.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID, countdown.getCountdownId());
                 startActivity(modifyCountdownActivity);
                 break;
             case R.id.countdownDelete:
                 storageMgr.deleteCountdown(countdown.getCountdownId());
-                Toast.makeText(this,R.string.mainActivity_deletedCountdown,Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.mainActivity_deletedCountdown, Toast.LENGTH_SHORT).show();
                 reloadEverything(); //reload everything to remove countdown from nodelist
                 break;
-            default: Log.e(TAG, "onCountdownModifyButtons: Option does not exist: "+v.getId());
+            default:
+                Log.e(TAG, "onCountdownModifyButtons: Option does not exist: " + v.getId());
         }
     }
 
     private int getCountdownIdFromNodeTag(@NonNull RelativeLayout v) { //used from onCountdownModifyButtons and onClick()
         String nodeTag = (String) v.getTag(); //COUNTDOWN_N  --> N = CountdownActivity ID
-        Log.d(TAG, "getCountdownIdFromNodeTag: Nodetag of countdown is: "+((nodeTag==null) ? "null" : nodeTag));
+        Log.d(TAG, "getCountdownIdFromNodeTag: Nodetag of countdown is: " + ((nodeTag == null) ? "null" : nodeTag));
         int nodeId = (-1);
         try {
             if (nodeTag.length() >= 11) {
@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, R.string.mainActivity_countdownNode_error_nodeTagWrongBuild, Toast.LENGTH_SHORT).show();
             }
         } catch (NullPointerException e) {
-            Toast.makeText(this, R.string.error_contactAdministrator,Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error_contactAdministrator, Toast.LENGTH_SHORT).show();
             Log.e(TAG, "getCountdownIdFromNodeTag: Nullpointerexception (presumably nodeTag == null!).");
             e.printStackTrace();
         }
@@ -207,26 +207,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void createAddNodeToLayout(Countdown countdown) {
-            RelativeLayout countdownView = (RelativeLayout) getLayoutInflater().inflate(R.layout.node_template, (LinearLayout) findViewById(R.id.nodeList), false); //give relativelayout so layoutparams get done
-            ((TextView) countdownView.findViewById(R.id.countdownTitle)).setText(countdown.getCountdownTitle());
-            ((TextView) countdownView.findViewById(R.id.countdownDescription)).setText(countdown.getCountdownDescription());
-            ((TextView) countdownView.findViewById(R.id.startAndUntilDateTime)).setText(String.format(getResources().getString(R.string.mainActivity_countdownNode_DateTimeValues), countdown.getStartDateTime(), countdown.getUntilDateTime()));
-            countdownView.setTag(Constants.MAIN_ACTIVITY.COUNTDOWN_VIEW_TAG_PREFIX + countdown.getCountdownId()); //IMPORTANT: to determine what countdown to open in CountdownActivity
+        RelativeLayout countdownView = (RelativeLayout) getLayoutInflater().inflate(R.layout.node_template, (LinearLayout) findViewById(R.id.nodeList), false); //give relativelayout so layoutparams get done
+        ((TextView) countdownView.findViewById(R.id.countdownTitle)).setText(countdown.getCountdownTitle());
+        ((TextView) countdownView.findViewById(R.id.countdownDescription)).setText(countdown.getCountdownDescription());
+        ((TextView) countdownView.findViewById(R.id.startAndUntilDateTime)).setText(String.format(getResources().getString(R.string.mainActivity_countdownNode_DateTimeValues), countdown.getStartDateTime(), countdown.getUntilDateTime()));
+        countdownView.setTag(Constants.MAIN_ACTIVITY.COUNTDOWN_VIEW_TAG_PREFIX + countdown.getCountdownId()); //IMPORTANT: to determine what countdown to open in CountdownActivity
 
-            //set category color, if not valid or other then overwrite it with default color and save that countdown so this error will not happen again
-            try {
-                (countdownView.findViewById(R.id.categoryColorView)).setBackgroundColor(Color.parseColor(countdown.getCategory()));
-            } catch (Exception e) {
-                Log.e(TAG, "createAddNodeToLayout: ParseException by defining color! Selected default color and saved it into countdown.");
-                //Set default color
-                (countdownView.findViewById(R.id.categoryColorView)).setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
-                //save into countdown itself
-                countdown.setCategory("#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDark)));
-                countdown.savePersistently();
-                Toast.makeText(this, R.string.mainActivity_countdownNode_error_categoryColorWrongRetained, Toast.LENGTH_SHORT).show();
-            }
-            nodeList.addView(countdownView);
-            Log.d(TAG, "createAddNodeToLayout: Added countdown as node to layout: " + countdownView.getTag());
+        //set category color, if not valid or other then overwrite it with default color and save that countdown so this error will not happen again
+        try {
+            (countdownView.findViewById(R.id.categoryColorView)).setBackgroundColor(Color.parseColor(countdown.getCategory()));
+        } catch (Exception e) {
+            Log.e(TAG, "createAddNodeToLayout: ParseException by defining color! Selected default color and saved it into countdown.");
+            //Set default color
+            (countdownView.findViewById(R.id.categoryColorView)).setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+            //save into countdown itself
+            countdown.setCategory("#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDark)));
+            countdown.savePersistently();
+            Toast.makeText(this, R.string.mainActivity_countdownNode_error_categoryColorWrongRetained, Toast.LENGTH_SHORT).show();
+        }
+        nodeList.addView(countdownView);
+        Log.d(TAG, "createAddNodeToLayout: Added countdown as node to layout: " + countdownView.getTag());
 
     }
 
@@ -246,8 +246,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(final Menu menu) {
+        //Remove menu points dynamically (not in onCreateOptionsMenu)
+        this.getInAppPurchaseManager().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.REMOVE_ALL_ADS.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+            @Override
+            public void success_is_true() {
+                MenuItem rewardedAdMenuItem = menu.findItem(R.id.action_removeAdsTemporary);
+                if (rewardedAdMenuItem != null) {
+                    Log.d(TAG, "onPrepareOptionsMenu: Tried to hide rewarded Ad menu point, because all ads are already hidden because of buying package.");
+                    rewardedAdMenuItem.setVisible(false);
+                } else {
+                    Log.e(TAG, "onPrepareOptionsMenu: Could not hide menu point, because menu item was not found!");
+                }
+            }
+
+            @Override
+            public void failure_is_false() {
+                Log.d(TAG, "onPrepareOptionsMenu: Not hiding rewardedAd menu button, because failure happened or product not bought!");
+            }
+        });
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.action_addCountdown:
                 startActivity(new Intent(this, ModifyCountdownActivity.class));
                 break;
@@ -255,7 +278,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(this);
                 storageMgr.deleteAllCountdowns();
                 reloadEverything(); //because onResume gets not called
-                Toast.makeText(this,R.string.mainActivity_deletedAllCountdowns,Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.mainActivity_deletedAllCountdowns, Toast.LENGTH_LONG).show();
                 break;
             case R.id.action_showInAppProducts:
                 Log.d(TAG, "onOptionsItemSelected: Tried to start InAppPurchaseActivity.");
@@ -273,7 +296,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d(TAG, "onOptionsItemSelected: Tried to open SettingsActivity.");
                 startActivity(new Intent(this, AppSettingsActivity.class));
                 break;
-            default: Log.e(TAG,"onOptionsItemSelected: Button does not exist: "+item.getItemId());
+            default:
+                Log.e(TAG, "onOptionsItemSelected: Button does not exist: " + item.getItemId());
         }
         return true;
     }
@@ -284,5 +308,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void setInAppPurchaseManager(InAppPurchaseManager inAppPurchaseManager) {
         this.inAppPurchaseManager = inAppPurchaseManager;
+    }
+
+    public AdManager getAdManager() {
+        return adManager;
+    }
+
+    public void setAdManager(AdManager adManager) {
+        this.adManager = adManager;
+    }
+
+    public RelativeLayout getMainActivityPage() {
+        return mainActivityPage;
+    }
+
+    public void setMainActivityPage(RelativeLayout mainActivityPage) {
+        this.mainActivityPage = mainActivityPage;
     }
 }

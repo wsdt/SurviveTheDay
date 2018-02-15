@@ -7,24 +7,24 @@
     <item
         android:id="@+id/action_addCountdown"
         android:orderInCategory="0"
-        android:icon="@drawable/plus"
-        android:title="@string/actionBar_menu_addNewCountdown"
+        android:icon="@drawable/light_add_big"
+        android:title="@string/actionBar_mainActivity_menu_addNewCountdown"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_removeAllCountdowns"
         android:orderInCategory="1"
-        android:icon="@drawable/delete"
-        android:title="@string/actionBar_menu_deleteAllCountdowns"
+        android:icon="@drawable/light_delete_big"
+        android:title="@string/actionBar_mainActivity_menu_deleteAllCountdowns"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_showInAppProducts"
         android:orderInCategory="2"
         app:showAsAction="never"
-        android:title="@string/actionBar_menu_showInAppProducts"/>
+        android:title="@string/actionBar_mainActivity_menu_showInAppProducts"/>
     <item
         android:id="@+id/action_removeAdsTemporary"
         android:orderInCategory="3"
-        android:title="@string/actionBar_menu_removeAdsTemporarily"
+        android:title="@string/actionBar_mainActivity_menu_removeAdsTemporarily"
         app:showAsAction="never" />
 
     <item

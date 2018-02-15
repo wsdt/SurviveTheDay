@@ -64,11 +64,6 @@ public class CreditsActivity extends AppCompatActivity {
         Resources res = getResources();
         String drawableCreditTemplate = getResources().getString(R.string.creditsActivity_drawableCreditTemplate);
         addIconCreditToView(content, String.format(drawableCreditTemplate, res.getString(R.string.creditsActivity_drawableCreditTemplate_app), "http://www.freepik.com", "Freepik", "https://www.flaticon.com/", "Flaticon"), R.drawable.app_icon);
-        addIconCreditToView(content, String.format(drawableCreditTemplate, res.getString(R.string.creditsActivity_drawableCreditTemplate_plus), "https://www.flaticon.com/authors/smashicons", "Smashicons", "https://www.flaticon.com/", "Flaticon"), R.drawable.plus);
-        addIconCreditToView(content, String.format(drawableCreditTemplate, res.getString(R.string.creditsActivity_drawableCreditTemplate_trash), "http://www.freepik.com", "Freepik", "https://www.flaticon.com/", "Flaticon"), R.drawable.delete);
-        addIconCreditToView(content, String.format(drawableCreditTemplate, res.getString(R.string.creditsActivity_drawableCreditTemplate_edit), "https://www.flaticon.com/authors/smashicons", "Smashicons", "https://www.flaticon.com/", "Flaticon"), R.drawable.edit_16px);
-        addIconCreditToView(content, String.format(drawableCreditTemplate, res.getString(R.string.creditsActivity_drawableCreditTemplate_delete), "http://www.freepik.com", "Freepik", "https://www.flaticon.com/", "Flaticon"), R.drawable.delete_16px);
-        addIconCreditToView(content, String.format(drawableCreditTemplate, res.getString(R.string.creditsActivity_drawableCreditTemplate_motivateMe), "http://www.freepik.com", "Freepik", "https://www.flaticon.com/", "Flaticon"), R.drawable.switchtoggle_16px);
         addIconCreditToView(content, String.format(drawableCreditTemplate, res.getString(R.string.creditsActivity_drawableCreditTemplate_conversationMark), "http://www.freepik.com", "Freepik", "https://www.flaticon.com/", "Flaticon"), R.drawable.notification_generic_blue);
         addIconCreditToView(content, String.format(drawableCreditTemplate, res.getString(R.string.creditsActivity_drawableCreditTemplate_stopTimer), "https://www.flaticon.com/authors/smashicons", "Smashicons", "https://www.flaticon.com/", "Flaticon"), R.drawable.notification_timebased_color);
     }

@@ -8,13 +8,17 @@
     android:layout_height="match_parent"
     tools:context="kevkevin.wsdt.tagueberstehen.MainActivity">
 
-    <!--<TextView
-        android:id="@+id/mainHeading"
-        style="@style/heading"
-        android:text="@string/app_name" />-->
 
+    <TextView
+        android:id="@+id/MainActivity_TextView_NoCountdownsFound"
+        android:text="@string/mainActivity_noCountdownsFound"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:textSize="22sp"
+        android:textColor="@color/dark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
-    <!-- android:layout_below="@id/mainHeading" -->
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_marginBottom="50dp"
