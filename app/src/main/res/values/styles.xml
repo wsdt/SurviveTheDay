@@ -6,6 +6,11 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:actionBarStyle">@style/defaultActionbar</item>
+    </style>
+
+    <style name="defaultActionbar">
+        <item name="android:background">@color/colorPrimary</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -83,6 +88,10 @@
         <item name="android:textColor">@color/slightlygrey</item>
     </style>
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/loadingscreen</item>
+    </style>
+    <!-- Works, but by obligatoric Theme.AppCompat colors are different etc. -->
+    <style name="SplashThemeWithActionBar" parent="AppTheme">
         <item name="android:windowBackground">@drawable/loadingscreen</item>
     </style>
 

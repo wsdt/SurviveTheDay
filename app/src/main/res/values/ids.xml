@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- With that we can assign programmatically new ids to dynamically created views -->
-    <item name="MainActivity_TextView_NoCountdownsFound" type="id"/>
+    <!-- Not used (now in xml itself created: <item name="MainActivity_TextView_NoCountdownsFound" type="id"/>-->
+
+    <item name="RL_BannerAd_ID" type="id">RL_BannerAd_ID</item><!-- Only one use per activity! -->
 </resources>

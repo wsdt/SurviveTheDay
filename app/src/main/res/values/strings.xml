@@ -9,11 +9,15 @@
     <string name="title_activity_settings">Settings</string><!-- entry also used in actionBar menu-->
     <string name="title_activity_modify_countdown">Create/Edit a countdown</string>
 
-    <!-- ACTIONBAR MENU -->
-    <string name="actionBar_menu_addNewCountdown">Add new</string>
-    <string name="actionBar_menu_deleteAllCountdowns">Delete all</string>
-    <string name="actionBar_menu_removeAdsTemporarily">Remove Ads temporary</string>
-    <string name="actionBar_menu_showInAppProducts">In-App-Products</string>
+    <!-- ACTIONBAR MENUS:MAINACTIVITY -->
+    <string name="actionBar_mainActivity_menu_addNewCountdown">Add new</string>
+    <string name="actionBar_mainActivity_menu_deleteAllCountdowns">Delete all</string>
+    <string name="actionBar_mainActivity_menu_removeAdsTemporarily">Remove Ads temporary</string>
+    <string name="actionBar_mainActivity_menu_showInAppProducts">In-App-Products</string>
+
+    <!-- ACTIONBAR MENUS:COUNTDOWNACTIVITY -->
+    <string name="actionBar_countdownActivity_menu_shareCountdown_title">Share</string>
+    <string name="actionBar_countdownActivity_menu_shareCountdown_shareContent_text">The moment you just have %1$s seconds for %2$s (%3$s)! Do you also need motivation? SurviveTheDay is now available on Playstore for free!</string>
 
     <!-- BUTTONS -->
     <string name="button_save">Save</string>
@@ -43,11 +47,11 @@
 
     <!-- SettingsActivity -->
     <string name="setting_forwardCompatibility_title">Forward compatibility</string>
-    <string name="setting_forwardCompatibility_description">If activated this app uses broadcast receivers to show notifications, because newer phones block background services. You should only disable this function, if this app does not work properly. But keep in mind that the forward compatibility mode gets tested more often, has more functions and is more reliable.</string>
+    <string name="setting_forwardCompatibility_description">If activated this app will use broadcast receivers to show notifications, because newer phones limit background services. You should only disable this function, if notifications do not show up as expected (e.g. shorter intervals on newer phones tend to work better when you deactivate this setting). Keep in mind that the forward compatibility mode gets tested more often, has more functions and is more reliable.</string>
     <string name="setting_saveBattery_title">Save battery</string>
-    <string name="setting_saveBattery_description">If activated notifications might not show up on-time of the selected interval. Works only with forward compatibility.</string>
+    <string name="setting_saveBattery_description">If activated notifications might not show up on-time. Works only with forward compatibility.</string>
     <string name="setting_durationOfInAppNotifications_title">Duration of In-App-Notifications</string>
-    <string name="setting_durationOfInAppNotifications_description">The higher the no. the longer an in-app-notification will be displayed on screen. In-app-notifications are only displayed when you click on a motivational notification.</string>
+    <string name="setting_durationOfInAppNotifications_description">The higher the no. (labelled in seconds) the longer an in-app-notification will be displayed on screen. In-app-notifications are only displayed when you click on a motivational notification.</string>
 
     <!-- CountdownActivity -->
     <string name="countdownActivity_countdownNotFound">Countdown not found.</string>

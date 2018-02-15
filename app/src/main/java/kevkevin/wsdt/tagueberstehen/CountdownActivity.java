@@ -6,26 +6,36 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.support.v7.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
+import kevkevin.wsdt.tagueberstehen.classes.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.CountdownCounter;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
 public class CountdownActivity extends AppCompatActivity {
-    private AsyncTask<Double,Double,Double> countdownCounter;
+    private AsyncTask<Double, Double, Double> countdownCounter;
     private int countdownId = (-1);
+    private Countdown countdown;
     private static final String TAG = "CountdownActivity";
     private Intent lastIntent;
     private GlobalAppSettingsMgr globalAppSettingsMgr;
+    private Intent shareIntent; //used for refreshing extras
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +43,7 @@ public class CountdownActivity extends AppCompatActivity {
         setContentView(R.layout.activity_countdown);
 
         //Create activity globalStorageMgr
-        this.globalAppSettingsMgr =  new GlobalAppSettingsMgr(this);
+        this.globalAppSettingsMgr = new GlobalAppSettingsMgr(this);
 
         // SHOW FULL PAGE ADD
         AdManager adManager = new AdManager(this);
@@ -50,9 +60,9 @@ public class CountdownActivity extends AppCompatActivity {
 
         //ACTIVITY OPENED BY OTHER ACTIVITY: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         this.setLastIntent(getIntent());
-        this.countdownId = this.getLastIntent().getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID,-1);
+        this.countdownId = this.getLastIntent().getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID, -1);
         //maybe by main menu or notification, but we get the same Extra: COUNTDOWN_ID with the ID
-        startCountdownService(this.countdownId); //0 is default value
+        startCountdownOnUI((new InternalCountdownStorageMgr(this).getCountdown(this.countdownId))); //0 is default value
 
         //Wait until views are drawn (for size etc.)
         final RelativeLayout inAppNotification = ((RelativeLayout) findViewById(R.id.notificationContent));
@@ -71,15 +81,13 @@ public class CountdownActivity extends AppCompatActivity {
         return new InternalCountdownStorageMgr(this).getCountdown(countdownId).getTotalSeconds();
     }
 
-    public void startCountdownService(int countdownId) {
-        try {
+    public void startCountdownOnUI(Countdown countdown) {
+        if (countdown != null) { //if (-1) was e.g. found as intent countdown id then it will be null
             //search in storage and get total seconds then start countdown (if not found because smaller 0 or deleted and notification referenced it
-            this.countdownCounter = new CountdownCounter().execute(loadCountdownFromSharedPreferences(countdownId));
-        } catch (NullPointerException e) {
-            //else everything is implicit 0!
-            Toast.makeText(this,R.string.countdownActivity_countdownNotFound,Toast.LENGTH_LONG).show();
-            Log.e(TAG,"CountdownActivity(): Countdown not found. ID: "+countdownId);
-            e.printStackTrace();
+            new CountdownCounter(this, countdown).runOnUI();
+        } else {
+            Toast.makeText(this, R.string.countdownActivity_countdownNotFound, Toast.LENGTH_LONG).show();
+            Log.e(TAG, "startCountdownOnUI: Countdown not found. ID: " + countdownId);
         }
     }
 
@@ -91,194 +99,21 @@ public class CountdownActivity extends AppCompatActivity {
         this.lastIntent = lastIntent;
     }
 
-    //TODO: REPLACEMENT FOR ASYNCTASK (memory leaks etc.) --> best maybe in complete own class (and there with StringBuilder() and runOnUiThread() and normal thread etc. and give activity context there to findTextViews
-    /*private void countdownCounter_NEW(Double totalseconds) {
-        Thread calculateCountdown = new Thread(new Runnable() {
-            @Override
-            public void run() {
 
-
-                //Send to view
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ((TextView) findViewById(R.id.countdownCounterSeconds)).setText(String.format("%.2f", totalSeconds));
-                        ((TextView) findViewById(R.id.countdownCounterMinutes)).setText(String.format("%.4f", totalMinutes));
-                        ((TextView) findViewById(R.id.countdownCounterHours)).setText(String.format("%.6f", totalHours));
-                        ((TextView) findViewById(R.id.countdownCounterDays)).setText(String.format("%.8f", totalDays));
-                        ((TextView) findViewById(R.id.countdownCounterWeeks)).setText(String.format("%.10f", totalWeeks));
-                        ((TextView) findViewById(R.id.countdownCounterMonths)).setText(String.format("%.12f", totalMonths));
-                        ((TextView) findViewById(R.id.countdownCounterYears)).setText(String.format("%.15f", totalYears));
-
-                        ((TextView) findViewById(R.id.countdownCounter)).setText(new StringBuilder()
-                                .append(years).append(":")
-                                .append(months).append(":")
-                                .append(weeks).append(":")
-                                .append(days).append(":")
-                                .append(hours).append(":")
-                                .append(minutes).append(":")
-                                .append(seconds));
-                    }
-                });
-            }
-        });
-        calculateCountdown.start();
-
-
-    }*/
-
-
-
-    //IMPORTANT: Use by: new CountdownCounter().execute(Übergabeparameter Long);
-    private class CountdownCounter extends AsyncTask<Double,Double,Double> {
-        //public Context countdownContext;
-        private Double totalSeconds = 0D;
-        private Double totalMinutes = 0D;
-        private Double totalHours = 0D;
-        private Double totalDays = 0D;
-        private Double totalWeeks = 0D;
-        private Double totalMonths = 0D;
-        private Double totalYears = 0D;
-
-        //Big countdown parameters
-        private Long seconds = 0L; // [0-59]
-        private Long minutes = 0L; // [0-59]
-        private Long hours = 0L; // [0-23]
-        private Long days = 0L; // [0-6]
-        private Long weeks = 0L; // [0-51/52]
-        private Long months = 0L; // [0-11]
-        private Long years = 0L; // [0 - /]
-
-
-        @Override
-        protected Double doInBackground(Double... totalSeconds) {
-            this.totalSeconds = totalSeconds[0];
-            //this.serviceOrActivity = (totalSeconds[1] != 0D) ? 1D : 0D; //0 for loading into UI / 1 for service
-
-            do {
-                if (!isCancelled()) { //examine whether asynctask is stopped so we have to stop the thread manually
-                    calculateParams(--this.totalSeconds);
-                    publishProgress(this.totalSeconds); //refresh countdown
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        Log.e("CountdownCounter", "Thread Sleep interrupted in doInBackground()! ");
-                        //e.printStackTrace();
-                    }
-                } else {
-                    this.totalSeconds = 0D;
-                    Log.d("doInBackground","AsyncTask successfully stopped.");
-                }
-            } while (this.totalSeconds > 0);
-
-            //publishProgress(count) for calling onProgressUpdate()
-            return 0D; //CountdownActivity at the end is always 0 (after that onPostExecute() ist started)
-        }
-
-        @Override
-        protected void onPostExecute(Double result) {
-            //what happens if countdown = 0
-            setZeroForAll();
-        }
-
-        @Override
-        protected void onProgressUpdate(Double... totalSeconds) {
-            //values[0] set Progress
-                //Change CountdownActivity values
-                ((TextView) findViewById(R.id.countdownCounterSeconds)).setText(String.format("%.2f", this.totalSeconds));
-                ((TextView) findViewById(R.id.countdownCounterMinutes)).setText(String.format("%.4f", this.totalMinutes));
-                ((TextView) findViewById(R.id.countdownCounterHours)).setText(String.format("%.6f", this.totalHours));
-                ((TextView) findViewById(R.id.countdownCounterDays)).setText(String.format("%.8f", this.totalDays));
-                ((TextView) findViewById(R.id.countdownCounterWeeks)).setText(String.format("%.10f", this.totalWeeks));
-                ((TextView) findViewById(R.id.countdownCounterMonths)).setText(String.format("%.12f", this.totalMonths));
-                ((TextView) findViewById(R.id.countdownCounterYears)).setText(String.format("%.15f", this.totalYears));
-
-                ((TextView) findViewById(R.id.countdownCounter)).setText(
-                        this.years + ":" +
-                                this.months + ":" +
-                                this.weeks + ":" +
-                                this.days + ":" +
-                                this.hours + ":" +
-                                this.minutes + ":" +
-                                this.seconds);
-
-        }
-
-        protected void calculateParams(Double totalSeconds) {
-            if (totalSeconds <= 0) { //just in case additional validation
-                setZeroForAll();
-            } else {
-                this.totalSeconds = totalSeconds;
-                this.totalMinutes = totalSeconds / 60;
-                this.totalHours = (this.totalMinutes) / 60;
-                this.totalDays = (this.totalHours) / 24;
-                this.totalWeeks = (this.totalDays) / 7;
-                this.totalMonths = (this.totalDays) / 30; //pauschal mit 30 Tagen pro Monat gerechnet
-                this.totalYears = (this.totalMonths) / 12;
-
-                //Calculation for big countdown
-                this.seconds = this.totalSeconds.longValue();
-                Log.d("calculateParams","Total seconds: "+this.seconds);
-                this.years = this.seconds / (365*24*60*60); this.seconds -= (this.years > 0) ? (365*24*60*60)*this.years : 0; //only subtract if years occurs at least 1 time
-                Log.d("calculateParams","Years: "+this.years+" // Left seconds: "+this.seconds);
-                this.months = this.seconds / (30*24*60*60); this.seconds -= (this.months > 0) ? (30*24*60*60)*this.months : 0;  // * with months e.g. because there might be more than one month to substract
-                Log.d("calculateParams","Months: "+this.months+" // Left seconds: "+this.seconds);
-                this.weeks = this.seconds / (7*24*60*60); this.seconds -= (this.weeks > 0) ? (7*24*60*60)*this.weeks : 0;
-                Log.d("calculateParams","Weeks: "+this.weeks+" // Left seconds: "+this.seconds);
-                this.days = this.seconds / (24*60*60); this.seconds -= (this.days > 0) ? (24*60*60)*this.days : 0;
-                Log.d("calculateParams","Days: "+this.days+" // Left seconds: "+this.seconds);
-                this.hours = this.seconds / (60*60); this.seconds -= (this.hours > 0) ? (60*60)*this.hours : 0;
-                Log.d("calculateParams","Hours: "+this.hours+" // Left seconds: "+this.seconds);
-                this.minutes = this.seconds / 60; this.seconds -= (this.minutes > 0) ? (60)*this.minutes : 0;
-                Log.d("calculateParams","Minutes: "+this.minutes+" // Left seconds: "+this.seconds);
-                //Seconds has the rest!
-            }
-        }
-
-        private void setZeroForAll() {
-            this.totalSeconds = 0D;
-            this.totalMinutes = 0D;
-            this.totalHours = 0D;
-            this.totalDays = 0D;
-            this.totalWeeks = 0D;
-            this.totalMonths = 0D;
-            this.totalYears = 0D;
-            this.seconds = 0L;
-            this.minutes = 0L;
-            this.hours = 0L;
-            this.days = 0L;
-            this.weeks = 0L;
-            this.months = 0L;
-            this.years = 0L;
-        }
-
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-            setZeroForAll();
-        }
+    public Intent getShareIntent() {
+        return shareIntent;
     }
 
-    /*@Override
-    protected void onResume() {
-        super.onResume();
-        //Restart asynctask (otherwise it would be stopped by onPause(), but stop it in onPause because when activity gets in Background!
-        if (this.countdownId >= 0) {
-            startCountdownService(this.countdownId);
-        } else {
-            Log.e(TAG, "onResume: CountdownId negative. Maybe onResume called before countdown loaded or countdown could not be loaded.");
-        }
-    }*/
+    public void setShareIntent(Intent shareIntent) {
+        this.shareIntent = shareIntent;
+    }
 
-    @Override
-    protected void onPause() { //no onstop necessary because it comes after pause
-        super.onPause();
-        try {
-            countdownCounter.cancel(true);
-        } catch (NullPointerException e) {
-            Log.e(TAG, "onPause: NullpointerException while cancelling asynctask.");
-            e.printStackTrace();
-        }
+    public Countdown getCountdown() {
+        return countdown;
+    }
+
+    public void setCountdown(Countdown countdown) {
+        this.countdown = countdown;
     }
 
 
@@ -290,7 +125,7 @@ public class CountdownActivity extends AppCompatActivity {
     private void showInAppNotificationIfAvailable() {
         Log.d(TAG, "showInAppNotificationIfAvailable: Started method.");
         try {
-            int notificationImage = this.getLastIntent().getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_SMALL_ICON,-1);
+            int notificationImage = this.getLastIntent().getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_SMALL_ICON, -1);
             String notificationHeading = this.getLastIntent().getStringExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_CONTENT_TITLE);
             String notificationFullText = this.getLastIntent().getStringExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_CONTENT_TEXT);
             final RelativeLayout notificationContent = (RelativeLayout) findViewById(R.id.notificationContent); //call after values assigned so correct height
@@ -324,9 +159,9 @@ public class CountdownActivity extends AppCompatActivity {
                     public void onAnimationEnd(Animator animator) {
                         if (count++ < 1) { //create new object animator because we want not the same animation but reverse
                             //TODO: works now, but in future if extreme long texts notification might not get hidden completely (*2)
-                            ObjectAnimator objectAnimatorReverse = ObjectAnimator.ofFloat(notificationContent, "y", (hiddenPosition*2)); //get it back to positive animated (*2 so it is in every case outside of screen [no idea why this might be necessary for long codes]
+                            ObjectAnimator objectAnimatorReverse = ObjectAnimator.ofFloat(notificationContent, "y", (hiddenPosition * 2)); //get it back to positive animated (*2 so it is in every case outside of screen [no idea why this might be necessary for long codes]
                             objectAnimatorReverse.setDuration(Constants.COUNTDOWN_ACTIVITY.INAPP_NOTIFICATION_ANIMATION_DURATION_IN_MS);
-                            objectAnimatorReverse.setStartDelay(globalAppSettingsMgr.getInAppNotificationShowDurationInMs()+Constants.COUNTDOWN_ACTIVITY.INAPP_NOTIFICATION_ANIMATION_DURATION_IN_MS); //how long should be notification displayed (adding animation duration because time period delay is inclusive animation)
+                            objectAnimatorReverse.setStartDelay(globalAppSettingsMgr.getInAppNotificationShowDurationInMs() + Constants.COUNTDOWN_ACTIVITY.INAPP_NOTIFICATION_ANIMATION_DURATION_IN_MS); //how long should be notification displayed (adding animation duration because time period delay is inclusive animation)
                             objectAnimatorReverse.start(); //start again
                             Log.d(TAG, "onAnimationEnd: Inapp notification repeated with delay in onAnimationEnd.");
                         } else {
@@ -361,4 +196,73 @@ public class CountdownActivity extends AppCompatActivity {
         super.onNewIntent(intent);
         this.setLastIntent(intent); //set last calling intent (because of single top would not call activity again, so maybe always same intent will be shown)
     }
+
+    // ACTIONBAR - MENU +++++++++++++++++++++++++++++++++++++++++++++++++
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "onCreateOptionsMenu: Trying to create actionbar menu.");
+        //Inflate menu resource file
+        getMenuInflater().inflate(R.menu.menu_countdown, menu);
+
+        // Locate MenuItem with ShareActionProvider
+        MenuItem shareItem = menu.findItem(R.id.action_shareCountdown);
+
+        //fetch and store ShareActionProvider
+        ShareActionProvider shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+        Log.d(TAG, "onCreateOptionsMenu: Trying to set ShareIntent.");
+        if (shareActionProvider != null) {
+            try {
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND); //implicit intent for sharing
+                shareIntent.setType("text/plain"); //currently only text (todo: later picture of countdown? etc.)
+                this.setCountdown(new InternalCountdownStorageMgr(this).getCountdown(this.countdownId));
+                this.setShareIntent(shareIntent); //important, so we can modify extras afterwards
+                refreshShareIntent(); //refreshes set Intent (setShareIntent must be called before!)
+                shareActionProvider.setShareIntent(shareIntent);
+                //TODO: always return current value (not only when created)
+                /*shareActionProvider.setOnShareTargetSelectedListener(new ShareActionProvider.OnShareTargetSelectedListener() {
+                    @Override
+                    public boolean onShareTargetSelected(ShareActionProvider source, Intent intent) {
+                        Log.d(TAG, "onCreateOptionsMenu:onShareTargetSelected: Trying to refresh share intent.");
+                        //class member intent seems not to be refreshed
+                        source.setShareIntent(refreshShareIntent());
+                        return false;
+                    }
+                });*/
+            } catch (NullPointerException e) {
+                Log.e(TAG, "onOptionsItemSelected: Could not share countdown, because countdown not found!");
+            }
+        } else {
+            Log.w(TAG, "setShareIntent: Could not share values, because Actionprovider is null!");
+        }//needing to call in menuOnCreate() first time (but we can change it afterwards with setShareIntent)
+
+        return true;
+    }
+
+
+    private Intent refreshShareIntent() { //call when to refresh! (because of totalSeconds e.g.)
+        /*Set implicit intent with extras and actions so other apps know what to share!
+        Extra method, so we can setShareIntent dynamically not only on activity creation [countdown values share etc.]*/
+        if (this.getCountdown() != null && this.getShareIntent() != null) {
+            Log.d(TAG, "refreshShareIntent: Trying to refresh message (reset extras).");
+            this.getShareIntent().putExtra(Intent.EXTRA_TEXT, String.format(getResources().getString(R.string.actionBar_countdownActivity_menu_shareCountdown_shareContent_text), this.getCountdown().getTotalSecondsNoScientificNotation(), this.getCountdown().getCountdownTitle(), this.getCountdown().getCountdownDescription()));
+        } else {
+            Log.e(TAG, "refreshShareIntent: ShareIntent or/and Countdown is NULL! Cannot set/refresh share content.");
+        }
+        return this.getShareIntent();
+    }
+
+
+    /*@Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_shareCountdown:
+                Log.d(TAG, "onOptionsItemSelected: Trying to share countdown (start procedure).");
+                this.refreshShareIntent(); //refresh values
+                break;
+            default:
+                Log.e(TAG, "onOptionsItemSelected: Button does not exist: " + item.getItemId());
+        }
+        return true;
+    }*/
 }

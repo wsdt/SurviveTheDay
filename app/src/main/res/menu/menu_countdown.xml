@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainActionbar"
+    tools:context="kevkevin.wsdt.tagueberstehen.MainActivity">
+
+    <!-- Icon is set by ShareActionProvider -->
+    <item
+        android:id="@+id/action_shareCountdown"
+        android:orderInCategory="0"
+        android:title="@string/actionBar_countdownActivity_menu_shareCountdown_title"
+        app:actionProviderClass="android.support.v7.widget.ShareActionProvider"
+        app:showAsAction="always" />
+</menu>

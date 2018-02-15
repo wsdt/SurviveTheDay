@@ -68,7 +68,7 @@ public class Constants {
     }
 
     public interface ADMANAGER {
-        boolean USE_TEST_ADS = false;
+        boolean USE_TEST_ADS = true;
         String ADMOB_USER_ID = "ca-app-pub-8160960481527784~1956004763";
         int NO_INTERNET_CONNECTION_MAX = 5; //after 5 ads which cannot be displayed notify user that this app gets financed by ads
         //Reward for rewarded video must be changed on Admob Console AND the following constant has to be the same Value!!!!
@@ -129,6 +129,13 @@ public class Constants {
         Integer COUNTDOWN_WEEK_IDENTIFIER = 4;
         Integer COUNTDOWN_MONTH_IDENTIFIER = 5;
         Integer COUNTDOWN_YEAR_IDENTIFIER = 6;
+    }
+
+    public interface COUNTDOWN_COUNTER {
+        //was in early versions the asynctask (now outsourced in own class with threads etc.)
+        int REFRESH_UI_EVERY_X_MS = 400;
+        String TOTAL_TIMEUNIT_ZERO_VALUE = "0.00";
+        String BIG_COUNTDOWN_ZERO_VALUE = "0:0:0:0:0:0:0";
     }
 
     public interface COUNTDOWN_ACTIVITY {

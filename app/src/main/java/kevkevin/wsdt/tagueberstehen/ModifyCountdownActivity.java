@@ -7,11 +7,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import org.w3c.dom.Text;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -222,16 +225,16 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
         //disable/enable fields (if toggle button is checked = active then buttons should be enabled. otherwise it is false
         TextView notificationIntervalTextView = (TextView) findViewById(R.id.notificationIntervalTextView);
-        Spinner notificationIntervalSpinner = (Spinner) findViewById(R.id.notificationIntervalSpinner);
+        LinearLayout notificationIntervalDescriptionAndSpinner = (LinearLayout) findViewById(R.id.notificationIntervalRightCol);
         //notificationIntervalTextView.setEnabled(tbIsChecked);
         //notificationIntervalSpinner.setEnabled(tbIsChecked);
 
         if (!tbIsChecked) {
             notificationIntervalTextView.setVisibility(View.GONE);
-            notificationIntervalSpinner.setVisibility(View.GONE);
+            notificationIntervalDescriptionAndSpinner.setVisibility(View.GONE);
         } else {
             notificationIntervalTextView.setVisibility(View.VISIBLE);
-            notificationIntervalSpinner.setVisibility(View.VISIBLE);
+            notificationIntervalDescriptionAndSpinner.setVisibility(View.VISIBLE);
         }
     }
 
