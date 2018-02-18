@@ -6,10 +6,10 @@ import java.util.Locale;
 public class Constants {
     public interface GLOBAL {
         //FORMATTING PERCENTAGE and BIG NUMBERS or DATES
+        Locale LOCALE = Locale.ENGLISH;
         Character THOUSAND_GROUPING_SEPERATOR = ',';
         String DATETIME_FORMAT = "dd.MM.yyyy hh:mm:ss";
         String DATETIME_FORMAT_REGEX = "\\d{1,2}\\.\\d{1,2}\\.\\d{4} \\d{1,2}:\\d{1,2}:\\d{1,2}";
-        Locale LOCALE = Locale.GERMAN;
     }
 
     public interface INAPP_PURCHASES {
@@ -119,7 +119,7 @@ public class Constants {
         int COUNTDOWN_TITLE_LENGTH_MIN = 0; //(including this nr. and below all values will be rejected!)
         int COUNTDOWN_TITLE_LENGTH_MAX = 14; //including this nr. and above all values will be rejected
         int COUNTDOWN_DESCRIPTION_LENGTH_MIN = 0; //same constraint as above
-        int COUNTDOWN_DESCRIPTION_LENGTH_MAX = 29; //same constraint as above
+        int COUNTDOWN_DESCRIPTION_LENGTH_MAX = 60; //(old before multiline: 29) same constraint as above
 
         //Countdown UNITS (e.g. for HashMap identification)
         Integer COUNTDOWN_SECOND_IDENTIFIER = 0;
@@ -158,5 +158,9 @@ public class Constants {
             String NO_INTERNET_CONNECTION_COUNTER = "NO_INTERNET_CONNECTION_COUNTER";
             String REMOVE_ADS_TEMPORARLY_IN_MINUTES = "REMOVE_ADS_TEMPORARLY_IN_MINUTES";
         }
+    }
+
+    public interface KICKSTARTER_BOOTANDGENERALRECEIVER {
+        String BROADCASTRECEIVER_ACTION_RESTART_ALL_SERVICES = "kevkevin.wsdt.tagueberstehen.classes.services.RESTART_ALL_SERVICES";
     }
 }

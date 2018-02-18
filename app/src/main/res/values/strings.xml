@@ -39,6 +39,12 @@
     <string name="mainActivity_countdownNode_error_nodeTagWrongBuild">Could not perform action. Node maybe wrong build.</string>
     <string name="mainActivity_countdownNode_error_categoryColorWrongRetained">Category color could not be applied. We chose one for you.</string>
     <string name="mainActivity_countdownNode_DateTimeValues">%1$s - %2$s</string>
+    <string name="mainActivity_countdownNode_delete_warningDialog_title">Delete countdown?</string>
+    <string name="mainActivity_countdownNode_delete_warningDialog_description">By clicking \'Delete\' your countdown will be deleted. This action can\'t be undone!</string>
+    <string name="mainActivity_countdownNode_deleteAll_warningDialog_title">Delete all countdowns?</string>
+    <string name="mainActivity_countdownNode_deleteAll_warningDialog_description">By clicking \'Delete\' ALL countdowns will be deleted. This action can\'t be undone!</string>
+    <string name="mainActivity_countdownNode_delete_warningDialog_yesDelete">Delete</string>
+    <string name="mainActivity_countdownNode_delete_warningDialog_noCancel">Cancel</string>
 
     <!-- Nodes -->
     <string name="node_countdownTitleError404">Countdown not found</string>

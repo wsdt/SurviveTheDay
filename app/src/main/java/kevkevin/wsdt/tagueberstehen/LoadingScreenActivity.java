@@ -35,8 +35,6 @@ public class LoadingScreenActivity extends AppCompatActivity {
         animator.setRepeatMode(ValueAnimator.REVERSE);
         animator.start();
 
-        //TODO: following line is only for testing
-        startService(new Intent(this, CountdownCounterService.class));
 
         //TODO:dismiss Progressbar from XML after leaving
 

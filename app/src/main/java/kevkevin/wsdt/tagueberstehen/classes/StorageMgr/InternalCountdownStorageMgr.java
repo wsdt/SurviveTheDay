@@ -1,7 +1,9 @@
 package kevkevin.wsdt.tagueberstehen.classes.StorageMgr;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,6 +19,7 @@ import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
 import kevkevin.wsdt.tagueberstehen.classes.services.CountdownCounterService;
+import kevkevin.wsdt.tagueberstehen.classes.services.Kickstarter_BootAndGeneralReceiver;
 import kevkevin.wsdt.tagueberstehen.classes.services.NotificationService;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -30,7 +33,7 @@ public class InternalCountdownStorageMgr {
 
 
     public InternalCountdownStorageMgr(Context context) {
-        setAllCountdowns_SharedPref(context.getSharedPreferences(Constants.STORAGE_MANAGERS.INTERNAL_COUNTDOWN_STR_MGR.SHAREDPREFERENCES_DBNAME, Context.MODE_PRIVATE));
+        setAllCountdowns_SharedPref(context.getSharedPreferences(Constants.STORAGE_MANAGERS.INTERNAL_COUNTDOWN_STR_MGR.SHAREDPREFERENCES_DBNAME, Context.MODE_MULTI_PROCESS)); //Multi_mode process necessary so we have update contents in our services
         this.setContext(context);
     }
 
@@ -88,7 +91,7 @@ public class InternalCountdownStorageMgr {
         boolean fallbackResaveCountdown; //save countdown in sharedPreferences if e.g. sth. wrong saved (older versions etc.)
 
         //Override also if already loaded
-        allCountdowns = new HashMap<>(); //delete list directly not over setter because this would also delete preferences!
+        this.allCountdowns = new HashMap<>(); //delete list directly not over setter because this would also delete preferences!
 
         //Create for each entry an own Countdown instance and save it into arraylist
         Map<String, ?> keys = getAllCountdowns_SharedPref().getAll();
@@ -111,32 +114,39 @@ public class InternalCountdownStorageMgr {
 
                 //Countdown Id determines indexposition of that element in arraylist!
                 Countdown tmp = new Countdown(this.getContext(), Integer.parseInt(lineArrList.get(0)), lineArrList.get(1), lineArrList.get(2), lineArrList.get(3), lineArrList.get(4), lineArrList.get(5), lineArrList.get(6), lineArrList.get(7), Boolean.parseBoolean(lineArrList.get(8)), Integer.parseInt(lineArrList.get(9)), Boolean.parseBoolean(lineArrList.get(10)));
-                Log.d(TAG, "getAllCountdowns: PARSED-STRING: "+Integer.parseInt(lineArrList.get(0))+";"+lineArrList.get(1)+";"+lineArrList.get(2)+";"+lineArrList.get(3)+";"+ lineArrList.get(4)+";"+lineArrList.get(5)+";"+lineArrList.get(6)+";"+lineArrList.get(7)+";"+Boolean.parseBoolean(lineArrList.get(8))+";"+Integer.parseInt(lineArrList.get(9))+";"+Boolean.parseBoolean(lineArrList.get(10)));
-                Log.d(TAG, "getAllCountdowns: Directly EXTRACTED-STRING: "+tmp.getCountdownId()+";"+tmp.getCountdownTitle()+";"+tmp.getCountdownDescription()+";"+tmp.getStartDateTime()+";"+tmp.getUntilDateTime()+";"+tmp.getCreatedDateTime()+";"+tmp.getLastEditDateTime()+";"+ tmp.getCategory()+";"+Boolean.toString(tmp.isActive())+";"+tmp.getNotificationInterval()+";"+Boolean.toString(tmp.isShowLiveCountdown()));
+                //Log.d(TAG, "getAllCountdowns: PARSED-STRING: "+Integer.parseInt(lineArrList.get(0))+";"+lineArrList.get(1)+";"+lineArrList.get(2)+";"+lineArrList.get(3)+";"+ lineArrList.get(4)+";"+lineArrList.get(5)+";"+lineArrList.get(6)+";"+lineArrList.get(7)+";"+Boolean.parseBoolean(lineArrList.get(8))+";"+Integer.parseInt(lineArrList.get(9))+";"+Boolean.parseBoolean(lineArrList.get(10)));
+                //Log.d(TAG, "getAllCountdowns: Directly EXTRACTED-STRING: "+tmp.getCountdownId()+";"+tmp.getCountdownTitle()+";"+tmp.getCountdownDescription()+";"+tmp.getStartDateTime()+";"+tmp.getUntilDateTime()+";"+tmp.getCreatedDateTime()+";"+tmp.getLastEditDateTime()+";"+ tmp.getCategory()+";"+Boolean.toString(tmp.isActive())+";"+tmp.getNotificationInterval()+";"+Boolean.toString(tmp.isShowLiveCountdown()));
                 Log.d(TAG, "getAllCountdowns: Countdown-String --> "+tmp.toString());
 
 
                 if (fallbackResaveCountdown) {
                     //resave countdown if resolved error happened, so that this operation will not be necessary next time
                     tmp.savePersistently();
-                    Log.d(TAG, "getAllCountdowns:fallbackResaveCountdown: Tried to save countdown persitently.");
+                    Log.d(TAG, "getAllCountdowns:fallbackResaveCountdown: Tried to save countdown persistently.");
                 }
 
                 if (onlyActiveCountdowns || onlyShowLiveCountdowns) {
+                    Log.d(TAG, "getAllCountdowns: Trying to filter onlyActive or onlyShowLiveCountdowns!");
                     if (tmp.isStartDateInThePast() && tmp.isUntilDateInTheFuture()) { //only add to activeCountdowns|onlyShowLiveCountdowns if startDate is in the past and untilDate is in Future (because otherwise service would run if motivateMe is on but startdate in the past
+                        Log.d(TAG, "getAllCountdowns: Startdate is in the past and until Date is in the future.");
                         if (onlyActiveCountdowns) {
                             if (tmp.isActive()) { //is this specific countdown active? only then add it, because we only want active countdowns
-                                allCountdowns.put(tmp.getCountdownId(), tmp);
+                                this.allCountdowns.put(tmp.getCountdownId(), tmp);
                             }
                         } else { //else because with simple if countdown could be added twice (true, true)
+                            Log.d(TAG, "getAllCountdowns: Trying to filter for live countdowns.");
                             if (tmp.isShowLiveCountdown()) { //is this specific countdown active? only then add it, because we only want active countdowns
-                                allCountdowns.put(tmp.getCountdownId(), tmp);
+                                Log.d(TAG, "getAllCountdowns: FOUND entry for live countdown! Adding it to list.");
+                                this.allCountdowns.put(tmp.getCountdownId(), tmp);
                             }
                         }
-                    } //both services are counting down, so we only want to add countdowns where until/startDate constraints are true
+                    } else {
+                        //both services are counting down, so we only want to add countdowns where until/startDate constraints are true
+                        Log.d(TAG, "getAllCountdowns: Ignoring countdown, because startDate in future or untilDate in past!");
+                    }
                 } else {
                     //add all countdowns
-                    allCountdowns.put(tmp.getCountdownId(), tmp);
+                    this.allCountdowns.put(tmp.getCountdownId(), tmp);
                 }
             }
         } catch (NumberFormatException e) {
@@ -153,7 +163,7 @@ public class InternalCountdownStorageMgr {
             e.printStackTrace();
         }
         Log.d(TAG, "getAllCountdowns: Length of returned arraylist is " + allCountdowns.size());
-        return allCountdowns; //IMPORTANT: It is extremely important that the arraylist is ordered (for that we assign objects with index = countdown id
+        return this.allCountdowns; //IMPORTANT: It is extremely important that the arraylist is ordered (for that we assign objects with index = countdown id
     }
 
 
@@ -174,6 +184,21 @@ public class InternalCountdownStorageMgr {
             //setSaveAllCountdowns(); //save modified arraylist to shared preferences
             getAllCountdowns_SharedPref().edit().putString(Constants.MAIN_ACTIVITY.COUNTDOWN_VIEW_TAG_PREFIX+countdown.getCountdownId(), countdown.toString()).apply();
             Log.d(TAG, "setSaveCountdown: Saved entry: (other countdowns not resaved) "+countdown.toString());
+
+            //When saved then validate whether startDate is in future and if so, then schedule broadcast receiver for restarting all services so countdown gets started without opening app
+            if (!countdown.isStartDateInThePast()) {
+                Log.d(TAG, "setSaveCountdown: New saved countdown's StartDate is in the future! Scheduling broadcast receiver for restarting services.");
+                AlarmManager alarmManager = ((AlarmManager) context.getSystemService(Context.ALARM_SERVICE));
+                if (alarmManager != null) {
+                    Intent intent = new Intent(this.getContext(), Kickstarter_BootAndGeneralReceiver.class);
+                    intent.setAction(Constants.KICKSTARTER_BOOTANDGENERALRECEIVER.BROADCASTRECEIVER_ACTION_RESTART_ALL_SERVICES);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getContext(), 1, intent, 0);
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, countdown.getDateTime(countdown.getStartDateTime()).getTimeInMillis(), pendingIntent);
+                    Log.d(TAG, "setSaveCountdown: Tried setting alarm for restarting all services when startdate gets into past.");
+                } else {
+                    Log.e(TAG, "setSaveCountdown: Could not set alarm for future start date. Alarmmanager is null!");
+                }
+            }
         } else {
             Log.d(TAG, "setSaveCountdown: Did not save countdown to sharedpreferences!");
         }
@@ -199,7 +224,7 @@ public class InternalCountdownStorageMgr {
         restartNotificationService();
     }
 
-    public void restartNotificationService() {
+    public void restartNotificationService() { //also called by Kickstarter_BootAndGeneralReceiver
         //TODO: BEST: ONLY EXECUTE this method, IF especially a relevant setting got changed (but hard to implement, because shared prefs get overwritten) --> would solve comment below with only st
         Log.d(TAG, "restartNofificationService: Did not restart service (not necessary). Tried broadcast receiver.");
         //would not be necessary because on broadcastreceiver the current countdown gets automatically loaded!
@@ -222,13 +247,17 @@ public class InternalCountdownStorageMgr {
         }
 
         //ALSO RESTART FOREGROUND SERVICE
-        //TODO: does not work --> presumably because extra gets submitted despite removing it (also a new intent does not work!?)
         Intent foregroundServiceIntent = new Intent(this.getContext(), CountdownCounterService.class);
         try {
+            /* Like this we could simply stop the service by extra! BUT IMPORTANT: To restart service we just need to start it again, because onStart gets executed and only one instance is created!
             foregroundServiceIntent.putExtra(Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE_LABEL,Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE);
-            this.getContext().startService(foregroundServiceIntent); //startService instead of stopService, react to extra and stopSelf()
-            Log.d(TAG, "restartNotificationService: Tried to stop and restart foregroundService.");
-            foregroundServiceIntent.removeExtra(Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE_LABEL); //remove stopService Extra so service gets started
+            this.getContext().startService(foregroundServiceIntent); //startService instead of stopService, react to extra and stopSelf()*/
+            Log.d(TAG, "restartNotificationService: Trying to restart foregroundService.");
+            if (CountdownCounterService.refreshAllNotificationCounters_Interval_Thread != null) {
+                Log.d(TAG, "restartNotificationService: Trying to kill thread of countdownCounterService.");
+                CountdownCounterService.refreshAllNotificationCounters_Interval_Thread.interrupt();
+            } //interrupt running thread
+            this.getContext().stopService(foregroundServiceIntent);
             this.getContext().startService(foregroundServiceIntent);
         } catch (NullPointerException e) {
             Log.e(TAG, "restartNotificationService: foregroundServiceIntent equals null! Could not restart foregroundService.");

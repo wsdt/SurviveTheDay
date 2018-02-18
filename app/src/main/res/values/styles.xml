@@ -89,6 +89,12 @@
     </style>
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/loadingscreen</item>
+        <!-- Following params are to make it to a fullscreen activity [because this theme is
+        used to display interstitial ads which can only be done in fullscreen at the newest API!] -->
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
     </style>
     <!-- Works, but by obligatoric Theme.AppCompat colors are different etc. -->
     <style name="SplashThemeWithActionBar" parent="AppTheme">

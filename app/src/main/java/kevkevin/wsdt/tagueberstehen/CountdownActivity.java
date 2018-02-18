@@ -4,10 +4,7 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -29,13 +26,13 @@ import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
 public class CountdownActivity extends AppCompatActivity {
-    private AsyncTask<Double, Double, Double> countdownCounter;
     private int countdownId = (-1);
     private Countdown countdown;
     private static final String TAG = "CountdownActivity";
     private Intent lastIntent;
     private GlobalAppSettingsMgr globalAppSettingsMgr;
     private Intent shareIntent; //used for refreshing extras
+    private CountdownCounter countdownCounter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +74,13 @@ public class CountdownActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        //IMPORTANT: Stop thread of countdowncounterservice when activity gets hidden
+        this.getCountdownCounter().getCountdownCounterThread().interrupt(); //stop it
+    }
+
     public Double loadCountdownFromSharedPreferences(int countdownId) {
         return new InternalCountdownStorageMgr(this).getCountdown(countdownId).getTotalSeconds();
     }
@@ -84,7 +88,8 @@ public class CountdownActivity extends AppCompatActivity {
     public void startCountdownOnUI(Countdown countdown) {
         if (countdown != null) { //if (-1) was e.g. found as intent countdown id then it will be null
             //search in storage and get total seconds then start countdown (if not found because smaller 0 or deleted and notification referenced it
-            new CountdownCounter(this, countdown).runOnUI();
+            this.setCountdownCounter(new CountdownCounter(this, countdown));
+            this.getCountdownCounter().runOnUI();
         } else {
             Toast.makeText(this, R.string.countdownActivity_countdownNotFound, Toast.LENGTH_LONG).show();
             Log.e(TAG, "startCountdownOnUI: Countdown not found. ID: " + countdownId);
@@ -250,6 +255,14 @@ public class CountdownActivity extends AppCompatActivity {
             Log.e(TAG, "refreshShareIntent: ShareIntent or/and Countdown is NULL! Cannot set/refresh share content.");
         }
         return this.getShareIntent();
+    }
+
+    public CountdownCounter getCountdownCounter() {
+        return countdownCounter;
+    }
+
+    public void setCountdownCounter(CountdownCounter countdownCounter) {
+        this.countdownCounter = countdownCounter;
     }
 
 

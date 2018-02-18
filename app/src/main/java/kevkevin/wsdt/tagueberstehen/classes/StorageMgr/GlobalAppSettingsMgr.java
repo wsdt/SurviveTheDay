@@ -25,7 +25,7 @@ public class GlobalAppSettingsMgr {
 
     public GlobalAppSettingsMgr (@NonNull Context context) {
         this.setContext(context);
-        this.setGlobalSettings_SharedPref(context.getSharedPreferences(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.SHAREDPREFERENCES_DBNAME, Context.MODE_PRIVATE));
+        this.setGlobalSettings_SharedPref(context.getSharedPreferences(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.SHAREDPREFERENCES_DBNAME, Context.MODE_MULTI_PROCESS)); //Multi_mode process necessary so we have update contents in our services
     }
 
     //Save system.currentTimeMillis()+rewardedValue() in Milliseconds or so as new grenzwert
