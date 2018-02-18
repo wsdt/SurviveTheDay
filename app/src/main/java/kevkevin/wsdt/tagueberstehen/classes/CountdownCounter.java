@@ -38,7 +38,7 @@ public class CountdownCounter {
         this.setCountdown(countdown);
     }
 
-    public void runOnUI() {
+    public void runOnUI() { //######## IMPORTANT: Ensure that thread gets interrupted in onDestroy() of an activity ###################
         this.setCountdownCounterThread(new Thread(new Runnable() {
             @Override
             public void run() {
@@ -51,7 +51,7 @@ public class CountdownCounter {
                     try {
                         Thread.sleep(Constants.COUNTDOWN_COUNTER.REFRESH_UI_EVERY_X_MS); //a little bit smaller than 1 seconds so always the correct time
                     } catch (InterruptedException e) { //gets thrown when interrupted or/and when updateUI(true) is set!
-                        Log.e(TAG, "runOnUI: Thread Sleep interrupted in countdownCounterThread! Exiting thread. This happens e.g. when countdown is 0, because we called interrupt().");
+                        Log.e(TAG, "runOnUI: Thread Sleep interrupted in countdownCounterThread! Exiting thread. This happens e.g. when countdown is 0 or activity called interrupt because it got destroyed/stopped, because we called interrupt().");
                         break;
                     }
                 }
@@ -73,14 +73,13 @@ public class CountdownCounter {
                 }
                 //values[0] set Progress
                 //Change CountdownActivity values
-                //TODO: setZero Values into constants and rest into strings.xml with placeholder
-                ((TextView) getActivityContext().findViewById(R.id.countdownCounterSeconds)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format("%.2f", getTotalSeconds_SYNCED()));
-                ((TextView) getActivityContext().findViewById(R.id.countdownCounterMinutes)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format("%.4f", getTotalMinutes()));
-                ((TextView) getActivityContext().findViewById(R.id.countdownCounterHours)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format("%.6f", getTotalHours()));
-                ((TextView) getActivityContext().findViewById(R.id.countdownCounterDays)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format("%.8f", getTotalDays()));
-                ((TextView) getActivityContext().findViewById(R.id.countdownCounterWeeks)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format("%.10f", getTotalWeeks()));
-                ((TextView) getActivityContext().findViewById(R.id.countdownCounterMonths)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format("%.12f", getTotalMonths()));
-                ((TextView) getActivityContext().findViewById(R.id.countdownCounterYears)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format("%.15f", getTotalYears()));
+                ((TextView) getActivityContext().findViewById(R.id.countdownCounterSeconds)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format(Constants.GLOBAL.LOCALE,"%.2f", getTotalSeconds_SYNCED()));
+                ((TextView) getActivityContext().findViewById(R.id.countdownCounterMinutes)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format(Constants.GLOBAL.LOCALE,"%.4f", getTotalMinutes()));
+                ((TextView) getActivityContext().findViewById(R.id.countdownCounterHours)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format(Constants.GLOBAL.LOCALE,"%.6f", getTotalHours()));
+                ((TextView) getActivityContext().findViewById(R.id.countdownCounterDays)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format(Constants.GLOBAL.LOCALE,"%.8f", getTotalDays()));
+                ((TextView) getActivityContext().findViewById(R.id.countdownCounterWeeks)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format(Constants.GLOBAL.LOCALE,"%.10f", getTotalWeeks()));
+                ((TextView) getActivityContext().findViewById(R.id.countdownCounterMonths)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format(Constants.GLOBAL.LOCALE,"%.12f", getTotalMonths()));
+                ((TextView) getActivityContext().findViewById(R.id.countdownCounterYears)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format(Constants.GLOBAL.LOCALE,"%.15f", getTotalYears()));
 
                 ((TextView) getActivityContext().findViewById(R.id.countdownCounter)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.BIG_COUNTDOWN_ZERO_VALUE :
                         getYears() + ":" +

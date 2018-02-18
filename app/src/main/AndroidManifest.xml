@@ -77,7 +77,7 @@
 
         <!-- BROADCAST RECEIVERS FOR REGULAR NOTIFICATIONS (maybe replacing background service in future) -->
         <receiver
-            android:name=".classes.services.BootReceiver"
+            android:name=".classes.services.Kickstarter_BootAndGeneralReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

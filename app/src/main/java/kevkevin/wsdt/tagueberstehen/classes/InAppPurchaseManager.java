@@ -287,7 +287,8 @@ public class InAppPurchaseManager {
     }
 
     public void executeIfProductIsBought(final String productSkuId, final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
-        this.queryAllProducts_ASYNC(false, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+        //forceReload:true necessary (when false you would buy sth and you would need to restart app to see changes!)
+        this.queryAllProducts_ASYNC(true, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
             public void success_is_true() {
                 //Querying and setup successfull then verify purchase and execute again different interface methods

@@ -151,35 +151,6 @@ public class Countdown {
     }
 
     // COUNTDOWN COUNTER METHOD ----------------------------------------------------------
-    public HashMap<Integer, Double> getBigCountdownCurrentValues_HashMap() {
-        //Calculation for big countdown
-        Double seconds = this.getTotalSeconds();
-        Log.d("calculateParams","Total seconds: "+seconds);
-        Double years = seconds / (365*24*60*60); seconds -= (years > 0) ? (365*24*60*60)*years : 0; //only subtract if years occurs at least 1 time
-        Log.d("calculateParams","Years: "+years+" // Left seconds: "+seconds);
-        Double months = seconds / (30*24*60*60); seconds -= (months > 0) ? (30*24*60*60)*months : 0;  // * with months e.g. because there might be more than one month to substract
-        Log.d("calculateParams","Months: "+months+" // Left seconds: "+seconds);
-        Double weeks = seconds / (7*24*60*60); seconds -= (weeks > 0) ? (7*24*60*60)*weeks : 0;
-        Log.d("calculateParams","Weeks: "+weeks+" // Left seconds: "+seconds);
-        Double days = seconds / (24*60*60); seconds -= (days > 0) ? (24*60*60)*days : 0;
-        Log.d("calculateParams","Days: "+days+" // Left seconds: "+seconds);
-        Double hours = seconds / (60*60); seconds -= (hours > 0) ? (60*60)*hours : 0;
-        Log.d("calculateParams","Hours: "+hours+" // Left seconds: "+seconds);
-        Double minutes = seconds / 60; seconds -= (minutes > 0) ? (60)*minutes : 0;
-        Log.d("calculateParams","Minutes: "+minutes+" // Left seconds: "+seconds);
-        //Seconds has the rest!
-
-        //assign to hashmap so we can distinguish them
-        HashMap<Integer, Double> result = new HashMap<>();
-        result.put(Constants.COUNTDOWN.COUNTDOWN_SECOND_IDENTIFIER,seconds);
-        result.put(Constants.COUNTDOWN.COUNTDOWN_MINUTE_IDENTIFIER,minutes);
-        result.put(Constants.COUNTDOWN.COUNTDOWN_HOUR_IDENTIFIER,hours);
-        result.put(Constants.COUNTDOWN.COUNTDOWN_DAY_IDENTIFIER,days);
-        result.put(Constants.COUNTDOWN.COUNTDOWN_WEEK_IDENTIFIER,weeks);
-        result.put(Constants.COUNTDOWN.COUNTDOWN_MONTH_IDENTIFIER,months);
-        result.put(Constants.COUNTDOWN.COUNTDOWN_YEAR_IDENTIFIER,years);
-        return result;
-    }
     public String getBigCountdownCurrentValues_String() {
         //IMPORTANT: Lieber so extra nochmal rechnen (zwar mehr code, aber weniger abarbeitung, da nicht zusätzlich noch HashMap.put und get
         Long seconds = this.getTotalSeconds().longValue();

@@ -25,10 +25,12 @@ import java.util.Map;
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.DialogManager;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
+import kevkevin.wsdt.tagueberstehen.classes.services.CountdownCounterService;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private LinearLayout nodeList;
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private InAppPurchaseManager inAppPurchaseManager;
     private AdManager adManager; //used e.g. for banner ad (so we can dynamically remove it etc.)
     private RelativeLayout mainActivityPage;
+    private DialogManager dialogManager;
 
 
     @Override
@@ -45,6 +48,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //InAppPurchaseMgr
         this.setInAppPurchaseManager(new InAppPurchaseManager(this));
+
+        //Dialog Manager (deleting e.g.)
+        this.setDialogManager(new DialogManager(this));
 
         //Initiliaze AdMob
         this.setAdManager(new AdManager(this));
@@ -58,14 +64,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //Create for each saved countdown one node
         loadAddNodes();
 
-        //TODO: test foreground service, wenn noch statisch dann nullpointer exception wenn kein Countdown in app gespeichert!
-        //startService(new Intent(this, CountdownCounterService.class));
-
 
         //IMPORTANT: IF ELSE so NOT BOTH get started !!
         //Start background service is forward compatibility off/false OR startBroadcast Receivers if ON
         GlobalAppSettingsMgr globalAppSettingsMgr = new GlobalAppSettingsMgr(this);
         globalAppSettingsMgr.startBroadcastORBackgroundService();
+        //Start foreground service
+        startService(new Intent(this, CountdownCounterService.class));
     }
 
 
@@ -74,8 +79,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //used onRestart instead of onResume, because maybe better performance (not that often a refresh)
         super.onRestart();
         reloadEverything();
+        this.invalidateOptionsMenu(); //invalidate also options menu (no need in reloadEverything, would be too often [only in PurchaseActivity ads will be removed, so restart() is enough])
     }
-
 
     private void reloadEverything() {
         //reload all nodes from sharedpreferences (remove them beforehand)
@@ -140,8 +145,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void onCountdownModifyButtons(View v) { //when clicked on a node buttons (not node itself)
         //Get countdownId of corresponding node to perform actions
-        InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(this);
-        Countdown countdown;
+        final InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(this);
+        final Countdown countdown;
         try {
             countdown = storageMgr.getCountdown(getCountdownIdFromNodeTag((RelativeLayout) v.getParent()));
         } catch (ClassCastException e) {
@@ -172,9 +177,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(modifyCountdownActivity);
                 break;
             case R.id.countdownDelete:
-                storageMgr.deleteCountdown(countdown.getCountdownId());
-                Toast.makeText(this, R.string.mainActivity_deletedCountdown, Toast.LENGTH_SHORT).show();
-                reloadEverything(); //reload everything to remove countdown from nodelist
+                //create dialog to ask user whether he wants really delete countdown
+                this.getDialogManager().showDialog_Generic(
+                        getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_title),
+                        getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_description),
+                        getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_yesDelete),
+                        getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_noCancel),
+                        R.drawable.dark_delete_small, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                            @Override
+                            public void success_is_true() {
+                                Log.d(TAG, "onCountdownModifyButtons:countdownDelete:success_is_true: User clicked on delete. Trying to erase countdown.");
+                                storageMgr.deleteCountdown(countdown.getCountdownId());
+                                Toast.makeText(MainActivity.this, R.string.mainActivity_deletedCountdown, Toast.LENGTH_SHORT).show();
+                                reloadEverything(); //reload everything to remove countdown from nodelist
+                            }
+
+                            @Override
+                            public void failure_is_false() {
+                                Log.d(TAG, "onCountdownModifyButtons:countdownDelete:failure_is_false: Countdown won't be deleted.");
+                            }
+                        });
                 break;
             default:
                 Log.e(TAG, "onCountdownModifyButtons: Option does not exist: " + v.getId());
@@ -275,10 +297,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(this, ModifyCountdownActivity.class));
                 break;
             case R.id.action_removeAllCountdowns:
-                InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(this);
-                storageMgr.deleteAllCountdowns();
-                reloadEverything(); //because onResume gets not called
-                Toast.makeText(this, R.string.mainActivity_deletedAllCountdowns, Toast.LENGTH_LONG).show();
+                this.getDialogManager().showDialog_Generic(
+                        getResources().getString(R.string.mainActivity_countdownNode_deleteAll_warningDialog_title),
+                        getResources().getString(R.string.mainActivity_countdownNode_deleteAll_warningDialog_description),
+                        getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_yesDelete),
+                        getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_noCancel),
+                        R.drawable.light_delete_big, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                            @Override
+                            public void success_is_true() {
+                                Log.d(TAG, "onOptionsItemSelected:removeAllCountdowns:success_is_true: User clicked on delete. Trying to erase all countdowns.");
+                                InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(MainActivity.this);
+                                storageMgr.deleteAllCountdowns();
+                                reloadEverything(); //because onResume gets not called
+                                Toast.makeText(MainActivity.this, R.string.mainActivity_deletedAllCountdowns, Toast.LENGTH_LONG).show();
+                            }
+
+                            @Override
+                            public void failure_is_false() {
+                                Log.d(TAG, "onOptionsItemSelected:removeAllCountdowns:failure_is_false: Countdowns won't be deleted.");
+                            }
+                        });
                 break;
             case R.id.action_showInAppProducts:
                 Log.d(TAG, "onOptionsItemSelected: Tried to start InAppPurchaseActivity.");
@@ -324,5 +362,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void setMainActivityPage(RelativeLayout mainActivityPage) {
         this.mainActivityPage = mainActivityPage;
+    }
+
+    public DialogManager getDialogManager() {
+        return dialogManager;
+    }
+
+    public void setDialogManager(DialogManager dialogManager) {
+        this.dialogManager = dialogManager;
     }
 }

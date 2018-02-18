@@ -33,6 +33,7 @@ public class CountdownCounterService extends Service {
     private CustomNotification customNotificationMgr;
     private InternalCountdownStorageMgr internalCountdownStorageMgr;
     private InAppPurchaseManager inAppPurchaseManager;
+    public static Thread refreshAllNotificationCounters_Interval_Thread;
 
     @Nullable
     @Override
@@ -42,16 +43,30 @@ public class CountdownCounterService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (refreshAllNotificationCounters_Interval_Thread != null) {
+            Log.d(TAG, "onStartCommand: Thread is not null. Killing it to provide restart of service.");
+            refreshAllNotificationCounters_Interval_Thread.interrupt();
+            refreshAllNotificationCounters_Interval_Thread = null;
+        }
+        //set everything null
+        this.setLoadedCountdownsForLiveCountdown(null);
+        this.setCustomNotificationMgr(null);
+        this.setInternalCountdownStorageMgr(null);
+        this.setInAppPurchaseManager(null);
+
+
         //Notification Manager and Internal Storage Mgr in shouldThisServiceBeKilled() NEEDED! (NullPointerException)
         this.setCustomNotificationMgr(new CustomNotification(this, LoadingScreenActivity.class, (NotificationManager) getSystemService(NOTIFICATION_SERVICE)));
         this.setInternalCountdownStorageMgr(new InternalCountdownStorageMgr(this));
 
-        //normally inapp purhcase mgr context should be an activity, but as long as we do not try to launch purchases we will not get an error!
+        //normally inapp purchase mgr context should be an activity, but as long as we do not try to launch purchases we will not get an error!
         this.setInAppPurchaseManager(new InAppPurchaseManager(this));
 
         shouldThisServiceBeKilled(intent); //third function call should be this!! (because service gets killed with startService = goodPractice
 
-        //todo for testing
+        //Only do when null at first, because notifications would not be removed when expired! (so we will have to restart whole service for new countdowns)
+        this.setLoadedCountdownsForLiveCountdown(getInternalCountdownStorageMgr().getAllCountdowns(false, true)); //false because this service should be also possible when motivateMe is off
+
         refreshAllNotificationCounters_Interval();
 
         Log.d(TAG, "Finished onStartCommand().");
@@ -61,7 +76,7 @@ public class CountdownCounterService extends Service {
 
     private void refreshAllNotificationCounters_Interval() {
         Log.d(TAG, "refreshALlNotificationCounters_Interval: Started method.");
-        new Thread(new Runnable() {
+        refreshAllNotificationCounters_Interval_Thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 Looper.prepare(); //so Handler in Countdown.class can be created (only necessary for background service)
@@ -72,26 +87,24 @@ public class CountdownCounterService extends Service {
                         Thread.sleep(1000); //refresh after 1 second
                     } catch (InterruptedException e) {
                         e.printStackTrace();
+                        break;
                     }
                 }
             }
-        }).start();
+        });
+        refreshAllNotificationCounters_Interval_Thread.start();
     }
 
     private void startRefreshAllNotificationCounters() {
         int foregroundNotificationCount = 0;
-        if (this.getLoadedCountdownsForLiveCountdown() == null) {
-            //Only do when null at first, because notifications would not be removed when expired! (so we will have to restart whole service for new countdowns)
-            this.setLoadedCountdownsForLiveCountdown(getInternalCountdownStorageMgr().getAllCountdowns(false, true)); //false because this service should be also possible when motivateMe is off
-        }
 
         for (final Map.Entry<Integer, Countdown> countdown : this.getLoadedCountdownsForLiveCountdown().entrySet()) {
-            Log.d(TAG, "startRefreshAllNotificationCounters: Found entry: "+countdown.getKey());
+            Log.d(TAG, "startRefreshAllNotificationCounters: Found entry: " + countdown.getKey());
             //IMPORTANT: 999999950 - 999999999 reserved for FOREGROUNDCOUNTERSERVICE [999999950+countdownId = foregroundNotificationID, etc.]
             //only show if setting set for that countdown
             //NO FURTHER VALIDATION NECESSARY [untilStartDateTime Value constraints AND onlyLiveCountdowns are all validated in getAllCountdowns]
             int foregroundServiceNotificationId = Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID + countdown.getValue().getCountdownId();
-            Log.d(TAG, "startRefreshAllNotificationCounters: foregroundServiceNotification-Id: "+foregroundServiceNotificationId+" (foregroundCount: "+foregroundNotificationCount+")");
+            Log.d(TAG, "startRefreshAllNotificationCounters: foregroundServiceNotification-Id: " + foregroundServiceNotificationId + " (foregroundCount: " + foregroundNotificationCount + ")");
             if ((foregroundNotificationCount++) <= 0) {
                 //only make foreground notification for first countdown, others just get a non-removable notification
                 startForeground(foregroundServiceNotificationId, customNotificationMgr.createCounterServiceNotification(countdown.getValue()));//customNotificationMgr.getNotifications().get((long) foregroundServiceNotificationId).build());
@@ -115,6 +128,7 @@ public class CountdownCounterService extends Service {
 
         //Kill service if NO countdowns should be active
         if (foregroundNotificationCount <= 0) {
+            Log.d(TAG, "startRefreshAllNotificationCounters: No live countdown candidate found. Killing myself.");
             killThisService();
         }
 
@@ -125,9 +139,9 @@ public class CountdownCounterService extends Service {
     private void shouldThisServiceBeKilled(Intent intent) {
         if (intent != null) {
             try {
-                int stopServiceLabel = intent.getIntExtra(Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE_LABEL,(Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE)*(-1));
+                int stopServiceLabel = intent.getIntExtra(Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE_LABEL, (Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE) * (-1));
                 if (Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE == stopServiceLabel) {//*-1 so error value can NEVER equal to correct stopValue
-                    Log.d(TAG, "shouldThisServiceBeKilled: Service will be killed: "+stopServiceLabel);
+                    Log.d(TAG, "shouldThisServiceBeKilled: Service will be killed: " + stopServiceLabel);
                     killThisService();
                 } else {
                     Log.e(TAG, "shouldThisServiceBeKilled: Maybe no extra found for killing this service or given value is wrong!. So this instance will stay alive.");
