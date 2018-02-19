@@ -6,14 +6,16 @@ android {
         applicationId "kevkevin.wsdt.tagueberstehen"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 10
-        versionName "0.85"
+        versionCode 11
+        versionName "0.88"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
-            minifyEnabled true
+            /*Making the app smaller, BUT could be also the source of errors!*/
+            shrinkResources true /*shrinks unused res (drawables etc.)*/
+            minifyEnabled true /*same as shrinkResources but for code itself*/
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             /*productFlavors.free.signingConfig signingConfigs.freeRelease
@@ -45,28 +47,22 @@ android {
 }
 
 dependencies {
-    //api 'com.android.billingclient:billing:1.0'
-    implementation 'com.github.yukuku:ambilwarna:2.0.1'
+    implementation 'com.android.support:recyclerview-v7:27.0.2' //also necessary for swipelayout
+    implementation "com.daimajia.swipelayout:library:1.2.0@aar" //swipelayout for nodes etc.
+    implementation 'com.github.yukuku:ambilwarna:2.0.1' //Color picker
     implementation 'com.google.firebase:firebase-ads:11.8.0'
-    // For time picker with seconds
-    implementation 'com.kovachcode:timePickerWithSeconds:1.0.1'
+    implementation 'com.kovachcode:timePickerWithSeconds:1.0.1' //For time picker with seconds
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.0.2'
-    //implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.android.support:design:27.0.2'
     implementation 'com.google.firebase:firebase-core:11.8.0'
-    implementation 'com.android.support:support-v4:27.0.2'
+    implementation 'com.android.support:support-v4:27.0.2' //needed for swipelayout and many other things
     implementation 'com.android.support:support-vector-drawable:27.0.2'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 }
-
-
-
-
-
 
 
 apply plugin: 'com.google.gms.google-services'

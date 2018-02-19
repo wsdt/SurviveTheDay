@@ -8,14 +8,13 @@
     android:layout_height="match_parent"
     tools:context="kevkevin.wsdt.tagueberstehen.MainActivity">
 
-
     <TextView
         android:id="@+id/MainActivity_TextView_NoCountdownsFound"
         android:text="@string/mainActivity_noCountdownsFound"
         android:layout_centerInParent="true"
         android:gravity="center"
         android:textSize="22sp"
-        android:textColor="@color/dark"
+        android:textColor="@color/colorDark"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

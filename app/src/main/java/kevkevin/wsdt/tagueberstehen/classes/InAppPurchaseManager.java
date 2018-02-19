@@ -212,12 +212,7 @@ public class InAppPurchaseManager {
                             iabHelper.launchPurchaseFlow(activityContext, productSkuId, resultCode, new IabHelper.OnIabPurchaseFinishedListener() {
                                 @Override
                                 public void onIabPurchaseFinished(IabResult result, Purchase info) {
-                        /*TODO: Security Recommendation: When you receive the purchase response from Google Play,
-     todo                   ensure that you check the returned data signature and the orderId. Verify that the orderId
-     todo                   exists and is a unique value that you have not previously processed. For added security,
-     todo                   you should perform purchase validation on your own secure server.
-     todo                   Query*/
-
+                                    //security recommendations might be done in security.java by iabhelper.java (but not absolutely sure, but code is certainly here)
                                     if (result.isFailure()) {
                                         Log.e(TAG, "purchaseProduct:onIabPurchaseFinished: Purchase failed --> " + result);
                                         //custom error messages or generic one if no suitable found
@@ -239,7 +234,7 @@ public class InAppPurchaseManager {
                                         Toast.makeText(getActivityContext(), String.format(getActivityContext().getResources().getString(R.string.inAppPurchaseManager_success_purchaseProductSuccess), info.getSku()) + " / Result: " + result, Toast.LENGTH_LONG).show();
                                         if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
                                             executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true();
-                                        } else { //TODO: not called when purchase successful [maybe only when uploaded? Purchase works trotzdem] (Class not found when unmarshalling: com.google.android.finsky.billing.common.PurchaseParams)
+                                        } else {
                                             //If interface method null then we just reload the whole activity [context has to be an activity for this method!!]
                                             Log.d(TAG, "purchaseProduct:onIabPurchaseFinished: No Interface method for success given. Launched default one and reload the whole activity.");
                                             setAllInAppProducts(null); //so it gets reloaded

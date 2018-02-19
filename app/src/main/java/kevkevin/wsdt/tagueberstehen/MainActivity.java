@@ -20,6 +20,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.daimajia.swipe.SwipeLayout;
+
 import java.util.Map;
 
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
@@ -229,7 +231,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void createAddNodeToLayout(Countdown countdown) {
-        RelativeLayout countdownView = (RelativeLayout) getLayoutInflater().inflate(R.layout.node_template, (LinearLayout) findViewById(R.id.nodeList), false); //give relativelayout so layoutparams get done
+        //node_template's superior tag is now a swipelayout from that we can extract the relativelayout by [2]
+        SwipeLayout swipeLayout = (SwipeLayout) getLayoutInflater().inflate(R.layout.node_template, (LinearLayout) findViewById(R.id.nodeList), false); //give relativelayout so layoutparams get done
+
+        //[2]: extract old relativelayout from swipelayout
+        RelativeLayout countdownView = swipeLayout.findViewById(R.id.node_countdown);
         ((TextView) countdownView.findViewById(R.id.countdownTitle)).setText(countdown.getCountdownTitle());
         ((TextView) countdownView.findViewById(R.id.countdownDescription)).setText(countdown.getCountdownDescription());
         ((TextView) countdownView.findViewById(R.id.startAndUntilDateTime)).setText(String.format(getResources().getString(R.string.mainActivity_countdownNode_DateTimeValues), countdown.getStartDateTime(), countdown.getUntilDateTime()));
@@ -247,9 +253,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             countdown.savePersistently();
             Toast.makeText(this, R.string.mainActivity_countdownNode_error_categoryColorWrongRetained, Toast.LENGTH_SHORT).show();
         }
-        nodeList.addView(countdownView);
-        Log.d(TAG, "createAddNodeToLayout: Added countdown as node to layout: " + countdownView.getTag());
+        nodeList.addView(swipeLayout);
+        Log.d(TAG, "createAddNodeToLayout: Crafted countdown as node: " + countdownView.getTag());
 
+
+        //Swipe layout configuration (node menu)
+        swipeLayout.setShowMode(SwipeLayout.ShowMode.LayDown); //set show mode
+
+        //Add drag edge (If BottomView has "layout_gravity" attribute, this line is unnecessary
+        //IMPORTANT: findViewById mit vorangestellter SwipeLayout Instanz (damit mehrere Nodes möglich [error was: spec. Child already has a parent])
+        swipeLayout.addDrag(SwipeLayout.DragEdge.Right, swipeLayout.findViewById(R.id.node_sl_bottomview_rightMenu));
+
+        //SwipeLayout listener
+        swipeLayout.addSwipeListener(new SwipeLayout.SwipeListener() {
+            @Override
+            public void onStartOpen(SwipeLayout layout) {
+
+            }
+
+            @Override
+            public void onOpen(SwipeLayout layout) {
+
+            }
+
+            @Override
+            public void onStartClose(SwipeLayout layout) {
+
+            }
+
+            @Override
+            public void onClose(SwipeLayout layout) {
+
+            }
+
+            @Override
+            public void onUpdate(SwipeLayout layout, int leftOffset, int topOffset) {
+
+            }
+
+            @Override
+            public void onHandRelease(SwipeLayout layout, float xvel, float yvel) {
+
+            }
+        });
     }
 
     private void removeAllNodesFromLayout() {

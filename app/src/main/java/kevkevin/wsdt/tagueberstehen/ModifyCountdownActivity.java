@@ -14,8 +14,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import org.w3c.dom.Text;
-
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -24,7 +22,7 @@ import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.ColorPicker;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
-import kevkevin.wsdt.tagueberstehen.classes.DateTimePicker.DateTimePicker;
+import kevkevin.wsdt.tagueberstehen.classes.customviews.DateTimePicker.DateTimePicker;
 import kevkevin.wsdt.tagueberstehen.classes.DialogManager;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
@@ -80,43 +78,41 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         }
 
         onMotivateMeToggleClick(findViewById(R.id.isActive)); //simulate click so it is always at its correct state (enabled/disabled)
+    }
 
-
-        //ARE IN APP PRODUCTS BOUGHT? --------------------------------------------------------------
-        //For useMoreCountdown this makes more sense to evaluate in onCreate --> shorter than in onSaveClick and faster
+    public void onSaveClick(View view) {
+        //Is use-more-nodes package bought? (here in onclick, so it gets refreshed!) --------------------------------------------------------------
         this.getInAppPurchaseManager().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
             public void success_is_true() {
                 Log.d(TAG, "onCreate:executeIfProductIsBought: UseMoreCountdownNodes is bought. Not blocking anything.");
+                //Get values from form
+                saveCountdownOfForm();
             }
 
             @Override
             public void failure_is_false() {
                 Log.d(TAG, "onCreate:executeIfProductIsBought: UseMoreCountdownNodes is NOT bought. Blocking save-Button IF already one node saved AND NOT in editing mode.");
                 if (getInternalCountdownStorageMgr().getAllCountdowns(false, false).size() > 0 && (existingCountdownId < 0)) {
-                    ModifyCountdownActivity.this.findViewById(R.id.saveCountdown).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Log.d(TAG, "onCreate:executeIfProductIsBought:OnClick: Did not save countdown, because inapp product not bought and more than one node already saved. EditMode disabled, Countdown-Id: " + existingCountdownId);
-                            getDialogManager().showDialog_InAppProductPromotion(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString());
-                            //also show toast for additional clarification
-                            Toast.makeText(ModifyCountdownActivity.this, R.string.inAppProduct_notBought_useMoreCountdownNodes, Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    Log.d(TAG, "onCreate:executeIfProductIsBought:OnClick: Did not save countdown, because inapp product not bought and more than one node already saved. EditMode disabled, Countdown-Id: " + existingCountdownId);
+                    getDialogManager().showDialog_InAppProductPromotion(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString());
+                    //also show toast for additional clarification
+                    Toast.makeText(ModifyCountdownActivity.this, R.string.inAppProduct_notBought_useMoreCountdownNodes, Toast.LENGTH_SHORT).show();
                 } else {
                     Log.d(TAG, "onCreate:executeIfProductIsBought: No node saved OR being in edit-mode [because countdown submitted in intent (existingCountdownId >= 0)]. So we allow saving the first one.");
+                    saveCountdownOfForm();
                 }
             }
         });
     }
 
-    public void onSaveClick(View view) {
-        //Get values from form
+    private void saveCountdownOfForm() {
+        //Helper method because needed twice (in onSaveClick())
         loadFormValues();
         if (areFormValuesValid()) {
-            new InternalCountdownStorageMgr(this).setSaveCountdown(this.getNewEditedCountdown(), true);
+            new InternalCountdownStorageMgr(ModifyCountdownActivity.this).setSaveCountdown(ModifyCountdownActivity.this.getNewEditedCountdown(), true);
             Log.d(TAG, "onSaveClick: Tried to save new countdown.");
-            finish(); //go back to main
+            ModifyCountdownActivity.this.finish(); //go back to main
         } else {
             //Toast.makeText(this, "Value(s) not allowed!", Toast.LENGTH_SHORT).show(); --> toasts in areFormValuesValid() more specific!
             Log.w(TAG, "onSaveClick: areFormValuesValid() delivered not true!");

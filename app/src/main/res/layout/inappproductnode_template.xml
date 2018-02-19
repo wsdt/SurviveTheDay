@@ -4,7 +4,7 @@
     style="@style/inappProductNode"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/shape_shadow_rectangle">
+    android:background="@color/colorWhite"><!-- TODO: Use swipelayout -->
     <!-- Only add this programmatically: android:tag="COUNTDOWN_0"-->
 
     <TextView
@@ -30,7 +30,7 @@
         android:id="@+id/inAppProductPrice"
         android:text="@string/inAppProductsNode_default_price"
         android:textSize="14sp"
-        android:textColor="@color/light"
+        android:textColor="@color/colorLight"
         android:background="@color/colorPrimaryDark"
         android:padding="5dp"
         android:minHeight="1dp"

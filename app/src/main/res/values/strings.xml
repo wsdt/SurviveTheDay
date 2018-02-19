@@ -28,6 +28,11 @@
     <string name="error_contactAdministrator">Operation failed. Please contact administrator.</string>
     <string name="error_noInternetConnection">Please check your internet connection!</string>
 
+    <!-- Content Descriptions -->
+    <string name="nodeTemplate_motivateMeBtn_contentDescription">MotivateMeToggle is used to turn motivational notifications on.</string>
+    <string name="nodeTemplate_editBtn_contentDescription">Edit-Button is used to modify an existing countdown.</string>
+    <string name="nodeTemplate_deleteBtn_contentDescription">Delete-Button is used to delete an existing countdown.</string>
+
     <!-- #################################### ACTIVITIES ################################################## -->
     <!-- MainActivity -->
     <string name="mainActivity_noCountdownsFound">No countdowns found.</string>
@@ -38,7 +43,7 @@
     <string name="mainActivity_countdownMotivationToggleOnOff_deactivated">deactivated</string>
     <string name="mainActivity_countdownNode_error_nodeTagWrongBuild">Could not perform action. Node maybe wrong build.</string>
     <string name="mainActivity_countdownNode_error_categoryColorWrongRetained">Category color could not be applied. We chose one for you.</string>
-    <string name="mainActivity_countdownNode_DateTimeValues">%1$s - %2$s</string>
+    <string name="mainActivity_countdownNode_DateTimeValues" translatable="false">%1$s - %2$s</string>
     <string name="mainActivity_countdownNode_delete_warningDialog_title">Delete countdown?</string>
     <string name="mainActivity_countdownNode_delete_warningDialog_description">By clicking \'Delete\' your countdown will be deleted. This action can\'t be undone!</string>
     <string name="mainActivity_countdownNode_deleteAll_warningDialog_title">Delete all countdowns?</string>
@@ -49,7 +54,7 @@
     <!-- Nodes -->
     <string name="node_countdownTitleError404">Countdown not found</string>
     <string name="node_countdownDescriptionError404">Please contact system administrator.</string>
-    <string name="node_countdownDateTimeValuesError404">dd.MM.JJJJ hh:mm:ss - dd.MM.JJJJ hh:mm:ss</string>
+    <string name="node_countdownDateTimeValuesError404" translatable="false">dd.MM.JJJJ hh:mm:ss - dd.MM.JJJJ hh:mm:ss</string>
 
     <!-- SettingsActivity -->
     <string name="setting_forwardCompatibility_title">Forward compatibility</string>
@@ -61,9 +66,9 @@
 
     <!-- CountdownActivity -->
     <string name="countdownActivity_countdownNotFound">Countdown not found.</string>
-    <string name="countdownActivity_countdownMainCounter_zero">00:00:00:00</string>
+    <string name="countdownActivity_countdownMainCounter_zero" translatable="false">00:00:00:00</string>
     <string name="countdownActivity_countdownSubCounter_zero">00.00</string>
-    <string name="countdownActivity_countdownSubCounter_totalYears_label">Total Years: </string>
+    <string name="countdownActivity_countdownSubCounter_totalYears_label">"Total Years: "</string>
     <string name="countdownActivity_countdownSubCounter_totalMonths_label">Total Months: </string>
     <string name="countdownActivity_countdownSubCounter_totalWeeks_label">Total Weeks: </string>
     <string name="countdownActivity_countdownSubCounter_totalDays_label">Total Days: </string>
@@ -95,9 +100,9 @@
     <string name="modifyCountdownActivity_countdown_description_label">Description</string>
     <string name="modifyCountdownActivity_countdown_description_edittext_exampleValue">Being vendor in IKEA</string>
     <string name="modifyCountdownActivity_countdown_fromDateTime_label">From</string>
-    <string name="modifyCountdownActivity_countdown_fromDateTime_textview_exampleValue">15.12.2017 08:00:00</string>
+    <string name="modifyCountdownActivity_countdown_fromDateTime_textview_exampleValue" translatable="false">15.12.2017 08:00:00</string>
     <string name="modifyCountdownActivity_countdown_untilDateTime_label">Until</string>
-    <string name="modifyCountdownActivity_countdown_untilDateTime_textview_exampleValue">15.12.2018 08:00:00</string>
+    <string name="modifyCountdownActivity_countdown_untilDateTime_textview_exampleValue" translatable="false">15.12.2018 08:00:00</string>
     <string name="modifyCountdownActivity_countdown_category_label">Category</string>
     <string name="modifyCountdownActivity_countdown_category_textview_fieldDescription">Color will be used e.g. for notifications (led-color, &#8320;)</string>
     <string name="modifyCountdownActivity_countdown_interval_textview_fieldDescription">Short intervals (e.g. 5 seconds) might not execute on point (battery-saving). If you insist on it, you can turn the Forward-Compatibility setting off!</string>
@@ -117,11 +122,6 @@
             "<div><b>%1$s Icon</b><br />Icons made by <a href=\"%2$s\" title=\"%3$s\">%3$s</a> from <br /><a href=\"%4$s\" title=\"%5$s\">%4$s</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div></string>"
             ]]></string>
     <string name="creditsActivity_drawableCreditTemplate_app">App</string>
-    <string name="creditsActivity_drawableCreditTemplate_plus">Plus</string>
-    <string name="creditsActivity_drawableCreditTemplate_trash">Trash</string>
-    <string name="creditsActivity_drawableCreditTemplate_edit">Edit</string>
-    <string name="creditsActivity_drawableCreditTemplate_delete">Delete</string>
-    <string name="creditsActivity_drawableCreditTemplate_motivateMe">Motivate me</string>
     <string name="creditsActivity_drawableCreditTemplate_conversationMark">Conversation mark</string>
     <string name="creditsActivity_drawableCreditTemplate_stopTimer">Stoptimer</string>
     <string name="creditsActivity_creditsIntroductionText">
@@ -131,7 +131,9 @@
         "<p>Business: <a href='mailto:kevin.riedl.privat@gmail.com'>kevin.riedl.privat@gmail.com</a></p>"
         "<p>Special thanks to following external authors:</p>"
         "[1]: Generic quotes from <a href="https://www.briantracy.com/blog/personal-success/26-motivational-quotes-for-success/">Briantracy.com, Motivational quotes</a> (last seen: 2018-01-06)<br />"
-        "[2]: Generic quotes from <a href="https://www.brainyquote.com/topics/inspirational">Brainyquote.com, Inspirational Quotes</a> (last seen: 2018-01-06)"
+        "[2]: Generic quotes from <a href="https://www.brainyquote.com/topics/inspirational">Brainyquote.com, Inspirational Quotes</a> (last seen: 2018-01-06)<br />"
+        "[3]: German proverbs from <a href="https://www.fluentu.com/blog/german/learn-german-proverbs/">Fluentu.com, German proverbs</a> (last seen: 2018-02-18)<br />"
+        "[4]: Generic quotes from <a href="http://zitate.net">Zitate.net</a> (last seen: 2018-02-18)"
         ]]>
     </string>
     <!-- IMPORTANT: Following two arrays must be the same size and order!! -->
@@ -187,7 +189,10 @@
         <item>You got it soon!</item>
         <item>Be confident, the end is near.</item>
     </string-array>
-    <string-array name="customNotification_random_generic_texts">
+
+    <!-- DEFAULT (EN) QUOTES [do not make an superior array with them, because they would need the same row count!]
+    TODO: ALL LANGUAGE QUOTES HERE IN ENGLISH STRINGS.XML (also german etc.) and then let USER select which languages to use (show also count in parenthesis) -->
+    <string-array name="customNotification_random_generic_texts_en">
         <item>The way get started is to quit talking and begin doing. (Walt Disney)</item>
         <item>The pessimist sees difficulty in every opportunity. The optimist sees opportunity in every difficulty. (Winston Churchill)</item>
         <item>Don\'t let yesterday take up too much of today. (Will Rogers)</item>
@@ -345,6 +350,73 @@
         <item>A champion is someone who gets up when he can\'t. (Jack Dempsey)</item>
         <!-- IMPORTANT einfaches Apostroph in XML innerhalb Attribut verboten! -->
     </string-array>
+    <!-- German generic quotes array (here in english strings.xml because user of all languages should be able to choose which packages they want to use -->
+<!--todo: make selectable which languages to show    <string-array name="customNotification_random_generic_texts_de">
+        <item>Aller Anfang ist schwer.</item>
+        <item>Des Teufels liebstes Möbelstück ist die lange Bank.</item>
+        <item>Wer rastet, der rostet.</item>
+        <item>Anfangen ist leicht, Beharren eine Kunst.</item>
+        <item>Erst denken, dann handeln.</item>
+        <item>Eile mit Weile.</item>
+        <item>Kümmere dich nicht um ungelegte Eier.</item>
+        <item>Krummes Holz gibt auch gerades Feuer.</item>
+        <item>Man muss die Dinge nehmen, wie sie kommen.</item>
+        <item>Morgenstund hat Gold im Mund.</item>
+        <item>Selbst ist der Mann/die Frau.</item>
+        <item>Taten sagen mehr als Worte.</item>
+        <item>Übung macht den Meister.</item>
+        <item>Wer zwei Hasen auf einmal jagt bekommt keinen.</item>
+        <item>Wer A sagt, muss auch B sagen.</item>
+        <item>Wenn der Reiter nichts taugt, ist das Pferd schuld.</item>
+        <item>Dienst ist Dienst und Schnaps ist Schnaps.</item>
+        <item>Aufklärung ist der Ausgang des Menschen aus seiner selbst verschuldeten Unmündigkeit. (Immanuel Kant)</item>
+        <item>Eine Wahrheit kann erst wirken, wenn der Empfänger für sie reif ist. (Christian Morgenstern)</item>
+        <item>Die beste und sicherste Tarnung ist immer noch die blanke und nackte Wahrheit. Die glaubt niemand! (Max Frisch)</item>
+        <item>Die Strafe des Lügners ist nicht, dass ihm niemand mehr glaubt, sondern dass er selbst Niemandem mehr glauben kann. (George Bernard Shaw)</item>
+        <item>Mancher Mensch hat ein großes Feuer in seiner Seele, und niemand kommt, um sich daran zu wärmen. (Vincent van Gogh)</item>
+        <item>Wer sich den Gesetzen nicht fügen will, muss die Gegen verlassen, wo sie gelten. (Johann Wolfgang von Goethe)</item>
+        <item>Jeder kann wütend werden, das ist einfach. Aber wütend auf den Richtigen zu sein, im richtigen Maß, zur richtigen Zeit, zum richtigen Zweck und auf die richtige Art, das ist schwer. (Aristoteles)</item>
+        <item>Der Tod eines Mannes ist eine Tragödie, aber der Tod von Millionen nur eine Statistik. (Josef Stalin)</item>
+        <item>Der Gescheitere gibt nach! Eine traurige Wahrheit, sie begründet die Weltherrschaft der Dummheit. (Marie von Ebner-Eschenbach)</item>
+        <item>Fallen ist weder gefährlich noch eine Schande. Liegenbleiben ist beides. (Konrad Adenauer)</item>
+        <item>Alle Revolutionen haben bisher nur eines bewiesen, nämlich, dass sich vieles ändern lässt, bloß nicht die Menschen. (Karl Marx)</item>
+        <item>Der große Jammer mit den Menschen ist, dass sie so genau wissen, was man ihnen schuldet, und so wenig Empfindungen dafür haben, was sie anderen schulden. (Franz von Sales)</item>
+        <item>Dem Kapitalismus wohnt ein Laster inne: Die ungleiche Verteilung der Güter. Dem Sozialismus hingegen wohnt eine Tugend inne: Die gleichmäßige Verteilung des Elends. (Winston Churchill)</item>
+        <item>Unser größter Ruhm ist nicht, niemals zu fallen, sondern jedes Mal wieder aufzustehen. (Nelson Mandela)</item>
+        <item>Die Freiheit des Menschen liegt nicht darin, dass er tun kann, was er will, sondern, dass er nicht tun muss, was er nicht will. (Jean-Jacques Rousseau)</item>
+        <item>Wahlen allein machen noch keine Demokratie. (Barack Obama)</item>
+        <item>Die Lüge ist wie ein Schneeball: Je länger man ihn wälzt, desto größer wird er. (Martin Luther)</item>
+        <item>Nachrichtensprecher fangen stets mit \'Guten Abend\' an und brauchen dann 15 Minuten, um zu erklären, dass es kein guter Abend ist. (Rudi Carrell)</item>
+        <item>Anmut ist ein Ausströmen der inneren Harmonie. (Marie von Ebner-Eschenbach)</item>
+        <item>Das Ärgerliche am Ärger ist, dass man sich schadet, ohne anderen zu nützen. (Kurt Tucholsky)</item>
+        <item>Vermutlich hat Gott die Frau erschaffen, um den Mann kleinzukriegen. (Voltaire)</item>
+        <item>Keinem vernünftigen Menschen wird es einfallen, Tintenflecken mit Tinte, Ölflecken mit Öl wegwaschen zu wollen. Nur Blut soll immer wieder mit Blut abgewaschen werden. (Bertha von Suttner)</item>
+        <item>Bescheiden können nur die Menschen sein, die genug Selbstbewusstsein haben. (Gabriel Laub)</item>
+        <item>Die Öffentlich-Rechtlichen machen sich in jede Hose, die man ihnen hinhält, und die Privaten senden das, was darin ist. (Dieter Hildebrandt)</item>
+        <item>Wer nicht kann, was er will, muss wollen, was er kann. Denn das zu wollen, was er nicht kann, wäre töricht. (Leonardo da Vinci)</item>
+        <item>Suche nicht nach Fehlern, suche nach Lösungen. (Henry Ford)</item>
+        <item>Gott würfelt nicht. (Albert Einstein)</item>
+        <item>Die größten Enttäuschungen haben ihren Ursprung in zu großen Erwartungen. (Ernst Ferstl)</item>
+        <item>Niemand wird mit dem Hass auf andere Menschen wegen ihrer Hautfarbe, ethnischen Herkunft oder Religion geboren. Hass wird gelernt. Und wenn man Hass lernen kann, kann man auch lernen zu lieben. Denn Liebe ist ein viel natürlicheres Empfinden im Herzen eines Menschen als ihr Gegenteil. (Nelson Mandela)</item>
+        <item>Die Leute hatten die Gewohnheit, mich anzuschauen, als sei ich eine Art Spiegel und keine Person. Sie sahen nicht mich, sondern ihre eigenen lüsternen Gedanken und dann spielten sie selbst die Unschuldigen, indem sie mich als lüstern bezeichneten. (Marilyn Monroe)</item>
+        <item>Man löst keine Probleme, indem man sie auf Eis legt. (Winston Churchill)</item>
+        <item>Die ganze Mannigfaltigkeit, der ganze Reiz und die ganze Schönheit des Lebens setzten sich aus Licht und Schatten zusammen. (Leo Tolstoi)</item>
+        <item>Freundschaft ist nicht nur ein köstliches Geschenk, sondern auch eine dauernde Aufgabe. (Ernst Zacharias)</item>
+        <item>Wenn wir alt werden, so beginnen wir zu disputieren, wollen klug sein und doch sind wir die größten Narren. (Martin Luther)</item>
+        <item>Der große Sport fängt da an, wo er längst aufgehört hat, gesund zu sein. (Bertolt Brecht)</item>
+        <item>Der Sport ist ein sehr vernünftiger Versucht des modernen Zivilisationsmenschen, sich die Strapaze künstlich zu verschaffen. (Peter Bamm)</item>
+        <item>Sport: Opium für das Volk. (Percy Clummings)</item>
+        <item>Es gibt tausend Krankheiten, aber nur eine Gesundheit. (Ludwig Börne)</item>
+        <item>Seien Sie vorsichtig mit Gesundheitsbüchern - Sie könnten an einem Druckfehler sterben. (Mark Twain)</item>
+        <item>Wer nicht jeden Tag etwas für seine Gesundheit aufbringt, muss eines Tages sehr viel Zeit für die Krankheit opfern. (Sebastian Kneipp)</item>
+        <item>Ein leidenschaftlicher Raucher, der immer von der Gefahr des Rauchens für die Gesundheit liest, hört in den meisten Fällen auf zu lesen. (Winston Churchill)</item>
+        <item>Glück, das ist einfach eine gute Gesundheit und ein schlechtes Gedächtnis. (Ernest Hemmingway)</item>
+        <item>Ich bin körperlich und physisch topfit. (Thomas Häßler)</item>
+        <item>Ein ungeübtes Gehirn ist schädlicher für die Gesundheit als ein ungeübter Körper. (George Bernard Shaw)</item>
+        <item>Die Ehefrau ist das beste Trainingslager. (Otto Rehhagel)</item>
+        <item>Ich messe den Erfolg nicht an meinen Siegen, sondern daran, ob ich jedes Jahr besser werde. (Tiger Woods)</item>
+    </string-array>-->
+
     <!-- TIMEBASED ARRAY WITH PLACEHOLDER COULD NOt BE SET AS ARRAY, because STRING-ARRAYS DO NOT ALLOW PLACEHOLDERS! -->
     <string name="customNotification_random_timebased_text_0_secondsToGo">%1$s - Only %2$s seconds to go!</string>
     <string name="customNotification_random_timebased_text_1_percentageLeft">%1$s - Just %2$f %% left.</string> <!-- double % because escaping so it is not a var -->
@@ -372,7 +444,6 @@
     <string name="inAppProductsNode_default_title">Product could not be loaded</string>
     <string name="inAppProductsNode_default_description">Maybe you have no active internet connection or this is an internal error. </string>
     <string name="inAppProductsNode_default_price">0.00 €</string>
-    <string name="inAppProductsNode_default_status">Product not bought</string>
 
     <!-- InApp Purchase Manager NEW (with Helper) -->
     <string name="inAppPurchaseManager_success_purchaseProductSuccess">Your purchase (%1$s) has been approved!</string>
@@ -395,5 +466,9 @@
     <string name="dialog_generic_button_negative">Cancel</string>
     <string name="dialog_generic_error_title">Connection error</string>
     <string name="dialog_generic_error_msg">Data not available. Presumably you tried to access premium content without having an internet connection.</string>
+
+    <!-- CustomViews:CustomEdittext -->
+    <string name="customEdittext_default_hint">Write something</string>
+
 
 </resources>

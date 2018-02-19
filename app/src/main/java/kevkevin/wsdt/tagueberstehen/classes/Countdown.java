@@ -213,9 +213,18 @@ public class Countdown {
 
 
     // ESCAPE METHODS FOR SHARED PREFERENCES ------------------------------------
-    private String escapeForSharedPreferences(@NonNull String string) {
-        if (string.contains(";")) {
-            string = string.replace(";",",");
+    private String escapeForSharedPreferences(@NonNull String string) { //replaces ; to , e.g.
+        Log.d(TAG, "escapeForSharedPreferences: Trying to escape string for shared preferences.");
+        if (string.contains(Constants.COUNTDOWN.ESCAPE.escapeForSharedPreferences_illegalCharacter)) {
+            string = string.replace(Constants.COUNTDOWN.ESCAPE.escapeForSharedPreferences_illegalCharacter,Constants.COUNTDOWN.ESCAPE.escapeForSharedPreferences_legalCharacter);
+        }
+        return string;
+    }
+    private String escapeEnter(@NonNull String string) {
+        Log.d(TAG, "escapeEnter: Trying to escape string for enter!");
+        /* Used for CustomEdittext e.g. where no enter is allowed (so do not call this function on all countdown values (because we do not know whether new errors occur)*/
+        for (String illegalCharacter : Constants.COUNTDOWN.ESCAPE.escapeEnter_illegalCharacters) {
+            string = string.replaceAll(illegalCharacter, Constants.COUNTDOWN.ESCAPE.escapeEnter_legalCharacter);
         }
         return string;
     }
@@ -242,16 +251,16 @@ public class Countdown {
         return countdownTitle;
     }
 
-    public void setCountdownTitle(String countdownTitle) {
-        this.countdownTitle = escapeForSharedPreferences(countdownTitle);
+    public void setCountdownTitle(String countdownTitle) { //also escape enter here, because we have a customedittext, which blocks enter (do not call this escapeEnter-method on other values [error preventing])
+        this.countdownTitle = escapeEnter(escapeForSharedPreferences(countdownTitle));
     }
 
     public String getCountdownDescription() {
         return countdownDescription;
     }
 
-    public void setCountdownDescription(String countdownDescription) {
-        this.countdownDescription = escapeForSharedPreferences(countdownDescription);
+    public void setCountdownDescription(String countdownDescription) { //also escape enter here, because we have a customedittext, which blocks enter
+        this.countdownDescription = escapeEnter(escapeForSharedPreferences(countdownDescription));
     }
 
     public String getUntilDateTime() {
