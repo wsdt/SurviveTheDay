@@ -1,95 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/countdownId_0"
-    style="@style/countdownNode"
+
+
+<com.daimajia.swipe.SwipeLayout
+    android:id="@+id/node_swipeLayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/shape_shadow_rectangle"
-    android:onClick="onClick"><!-- android:background="@android:drawable/dialog_holo_light_frame" -->
-    <!-- Only add this programmatically: android:tag="COUNTDOWN_0"-->
+    android:layout_gravity="start"
+    android:layout_marginTop="5dp">
 
-    <TextView
-        android:id="@+id/countdownTitle"
-        style="@style/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:text="@string/node_countdownTitleError404" />
-    <TextView
-        android:id="@+id/countdownDescription"
-        style="@style/text"
-        android:textSize="15sp"
-        android:text="@string/node_countdownDescriptionError404"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_below="@id/countdownTitle"/>
+    <!-- 1. The last child is the SurfaceView [=content], other children are BottomViews [=dragable menus].
+         2. You'd better add the 'layout_gravity' attribute to the BottomView in your layout file. (usage like DrawerLayout). -->
 
-    <!-- IMPORTANT: If you change IDs of those buttons you need to adapt MainActivity.java:onCountdownModifyButtons() method! -->
-    <ImageButton
-        android:contentDescription="MotivateMeToggle"
-        android:onClick="onCountdownModifyButtons"
-        android:id="@+id/countdownMotivateMeToggle"
-        android:src="@drawable/dark_switchtoggle_small"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        android:layout_marginTop="5dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+    <!-- Bottom View Start -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:id="@+id/node_sl_bottomview_rightMenu"
+        android:layout_height="match_parent"
+        android:layout_width="100dp"
+        android:weightSum="1">
+        <ImageView
+            android:contentDescription="deleteNode"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:background="@color/colorRed"
+            android:src="@drawable/light_delete_big"/>
+        <ImageView
+            android:contentDescription="editNode"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:background="@color/colorBlue"
+            android:src="@drawable/dark_edit_small"/>
+    </LinearLayout>
+    <!-- Bottom View End -->
 
-    <!-- @null as background for transparency -->
-    <ImageButton
-        android:id="@+id/countdownEdit"
-        android:onClick="onCountdownModifyButtons"
-        android:background="@null"
-        android:layout_marginTop="5dp"
-        android:contentDescription="editButton"
-        android:layout_width="wrap_content"
+    <!-- Surface View Start (= last one is always displayed [so not our menu, but the content] -->
+    <RelativeLayout
+        android:id="@+id/node_countdown"
+        style="@style/countdownNode"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="40dp"
-        android:layout_marginEnd="40dp"
-        android:src="@drawable/dark_edit_small"
-        android:scaleType="fitXY" />
+        android:padding="5dp"
+        android:background="@color/colorWhite"
+        android:onClick="onClick"><!-- android:background="@android:drawable/dialog_holo_light_frame" -->
+        <!-- Only add this programmatically: android:tag="COUNTDOWN_0"-->
 
-    <ImageButton
-        android:contentDescription="deleteButton"
-        android:onClick="onCountdownModifyButtons"
-        android:id="@+id/countdownDelete"
-        android:background="@null"
-        android:layout_marginTop="5dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/dark_delete_small"
-        android:layout_marginRight="80dp"
-        android:layout_marginEnd="80dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"/>
+        <!-- Because of text expansion there is maximum of 13 chars in this view [while editing]-->
+        <TextView
+            android:id="@+id/countdownTitle"
+            style="@style/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:text="@string/node_countdownTitleError404" />
+        <TextView
+            android:id="@+id/countdownDescription"
+            style="@style/text"
+            android:textSize="15sp"
+            android:text="@string/node_countdownDescriptionError404"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="5dp"
+            android:gravity="start"
+            android:layout_below="@id/countdownTitle"/>
 
-    <View
-        android:id="@+id/categoryColorView"
-        android:background="@color/colorPrimaryDark"
-        android:layout_margin="5dp"
-        android:layout_below="@id/countdownDescription"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_width="20dp"
-        android:layout_height="20dp"/>
+        <!-- IMPORTANT: If you change IDs of those buttons you need to adapt MainActivity.java:onCountdownModifyButtons() method! -->
+        <ImageButton
+            android:contentDescription="@string/nodeTemplate_motivateMeBtn_contentDescription"
+            android:onClick="onCountdownModifyButtons"
+            android:id="@+id/countdownMotivateMeToggle"
+            android:src="@drawable/dark_switchtoggle_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:layout_marginTop="5dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
-    <TextView
-        android:id="@+id/startAndUntilDateTime"
-        style="@style/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/countdownDescription"
-        android:layout_margin="5dp"
-        android:text="@string/node_countdownDateTimeValuesError404"
-        android:textSize="15sp" />
-</RelativeLayout>
+        <!-- @null as background for transparency -->
+        <ImageButton
+            android:contentDescription="@string/nodeTemplate_editBtn_contentDescription"
+            android:id="@+id/countdownEdit"
+            android:onClick="onCountdownModifyButtons"
+            android:background="@null"
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="40dp"
+            android:layout_marginEnd="40dp"
+            android:src="@drawable/dark_edit_small"
+            android:scaleType="fitXY" />
+
+        <ImageButton
+            android:contentDescription="@string/nodeTemplate_deleteBtn_contentDescription"
+            android:onClick="onCountdownModifyButtons"
+            android:id="@+id/countdownDelete"
+            android:background="@null"
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/dark_delete_small"
+            android:layout_marginRight="80dp"
+            android:layout_marginEnd="80dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"/>
+
+        <View
+            android:id="@+id/categoryColorView"
+            android:background="@color/colorPrimaryDark"
+            android:layout_margin="5dp"
+            android:layout_below="@id/countdownDescription"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_width="20dp"
+            android:layout_height="20dp"/>
+
+        <TextView
+            android:id="@+id/startAndUntilDateTime"
+            style="@style/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/countdownDescription"
+            android:layout_margin="5dp"
+            android:text="@string/node_countdownDateTimeValuesError404"
+            android:textSize="15sp" />
+    </RelativeLayout>
+    <!-- Surface View End -->
+</com.daimajia.swipe.SwipeLayout>
+
+

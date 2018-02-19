@@ -30,16 +30,14 @@
                 android:layout_marginTop="15dp"
                 android:text="@string/modifyCountdownActivity_countdown_title_label" />
 
-            <EditText
+            <kevkevin.wsdt.tagueberstehen.classes.customviews.CustomEdittext
                 android:id="@+id/countdownTitleValue"
-                style="@style/textForForm"
+                style="@style/customEdittext"
                 android:layout_width="240dp"
                 android:layout_gravity="start|top"
                 android:layout_marginTop="6dp"
-                android:autoText="true"
-                android:ems="10"
-                android:inputType="text|textAutoComplete|textAutoCorrect"
                 android:text="@string/modifyCountdownActivity_countdown_title_edittext_exampleValue" />
+
             <!-- DESCRIPTION -->
             <TextView
                 style="@style/textForForm"
@@ -49,18 +47,14 @@
                 android:text="@string/modifyCountdownActivity_countdown_description_label" />
 
             <!-- inputType and autoText combination (both) -->
-            <EditText
+            <kevkevin.wsdt.tagueberstehen.classes.customviews.CustomEdittext
                 android:id="@+id/countdownDescriptionValue"
-                style="@style/textForForm"
+                style="@style/customEdittext"
                 android:layout_width="240dp"
                 android:layout_gravity="start|top"
-                android:autoText="true"
-                android:inputType="text|textAutoComplete|textAutoCorrect|textMultiLine"
                 android:text="@string/modifyCountdownActivity_countdown_description_edittext_exampleValue"
-                android:lines="2"
-                android:minLines="1"
-                android:maxLines="5"
-                android:scrollbars="vertical"/>
+                android:hint="@string/modifyCountdownActivity_countdown_description_edittext_exampleValue" />
+
             <!-- Start Datetime -->
             <TextView
                 style="@style/textForForm"
@@ -142,7 +136,7 @@
                 android:layout_gravity="start|top"
                 android:layout_marginTop="5dp"
                 android:onClick="onMotivateMeToggleClick"
-                android:textColor="@color/dark"
+                android:textColor="@color/colorDark"
                 android:textSize="15sp" />
 
             <!-- Service settings (Interval for notifications: by default disabled) -->
@@ -193,7 +187,7 @@
                 android:layout_height="40dp"
                 android:layout_gravity="start|top"
                 android:layout_marginTop="5dp"
-                android:textColor="@color/dark"
+                android:textColor="@color/colorDark"
                 android:textSize="15sp" />
 
 

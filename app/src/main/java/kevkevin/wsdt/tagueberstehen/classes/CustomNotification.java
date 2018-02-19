@@ -278,7 +278,7 @@ public class CustomNotification { //one instance for every countdown or similar
     private NotificationContent createRandomNotification_GENERIC(Countdown countdown) {
         NotificationContent randomNotification = new NotificationContent(); //create custom instance (important not to use same instance for each cateogry)
         randomNotification.titleList.addAll(Arrays.asList(this.getRes().getStringArray(R.array.customNotification_random_generic_titles))); //converts array to list and adds all of them
-        randomNotification.textList.addAll(Arrays.asList(this.getRes().getStringArray(R.array.customNotification_random_generic_texts)));
+        randomNotification.textList.addAll(Arrays.asList(this.getRes().getStringArray(R.array.customNotification_random_generic_texts_en))); //TODO: add here all countdown selected languages for quotes
         randomNotification.iconList.addAll(Arrays.asList(R.drawable.notification_generic_blue,R.drawable.notification_generic_green,R.drawable.notification_generic_purple,R.drawable.notification_generic_red));
 
         //Choose one for each arraylist by random index (max is size-1!)

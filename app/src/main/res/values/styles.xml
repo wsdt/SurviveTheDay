@@ -24,8 +24,8 @@
 
     <!-- MainPage - CountdownList MainActivity -->
     <style name="page">
-        <item name="android:textColor">@color/dark</item>
-        <item name="android:background">@color/light</item>
+        <item name="android:textColor">@color/colorDark</item>
+        <item name="android:background">@color/colorLight</item>
     </style>
     <style name="heading" parent="page">
         <item name="android:textSize">40sp</item>
@@ -36,7 +36,7 @@
         <item name="android:layout_marginBottom">5dp</item>
     </style>
     <style name="text">
-        <item name="android:textColor">@color/dark</item>
+        <item name="android:textColor">@color/colorDark</item>
         <item name="android:textSize">20sp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
@@ -46,7 +46,7 @@
     <style name="countdownNode" parent="page">
         <item name="android:layout_marginLeft">5dp</item>
         <item name="android:layout_marginRight">5dp</item>
-        <item name="android:background">@color/slightlygrey</item>
+        <item name="android:background">@color/colorSlightlygrey</item>
         <item name="android:layout_marginTop">5dp</item>
         <item name="android:gravity">center_horizontal</item>
         <item name="android:layout_width">match_parent</item>
@@ -55,7 +55,7 @@
     <style name="inappProductNode" parent="page">
         <item name="android:layout_marginLeft">5dp</item>
         <item name="android:layout_marginRight">5dp</item>
-        <item name="android:background">@color/slightlygrey</item>
+        <item name="android:background">@color/colorSlightlygrey</item>
         <item name="android:layout_marginTop">5dp</item>
         <item name="android:gravity">center_horizontal</item>
         <item name="android:layout_width">match_parent</item>
@@ -63,7 +63,7 @@
 
     <!-- COUNTDOWN VIEW -->
     <style name="ContentMain">
-        <item name="android:background">@color/light</item>
+        <item name="android:background">@color/colorLight</item>
     </style>
 
     <style name="Countdown">
@@ -72,20 +72,38 @@
     </style>
 
     <style name="CountdownSmall">
-        <item name="android:textColor">@color/dark</item>
+        <item name="android:textColor">@color/colorDark</item>
         <item name="android:textSize">20sp</item>
     </style>
 
     <!-- Modify Countdown Styles -->
     <style name="textForForm"><!-- If you place here a textcolor the disabled spinner and corr. textview will be always that way colored!! -->
-        <item name="android:textColor">@color/dark</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/colorDark</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <!-- Custom Views -->
+    <!-- customEdittext: This edittext does not allow enter! [combine with CustomEdittext.java! ] -->
+    <style name="customEdittext" parent="textForForm">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:inputType">text|textAutoComplete|textAutoCorrect</item>
+        <item name="android:autoText">true</item>
+        <item name="android:scrollHorizontally">true</item>
+        <item name="android:ellipsize">end</item><!-- seems to be (e.g ...) when text too long for field -->
+        <!--<item name="android:drawablePadding">10dp</item>
+        TODO: <item name="android:background">@drawable/customedittext</item>
+        <item name="android:drawableLeft">@drawable/folder_full</item>
+        <item name="android:drawableRight">@drawable/search</item>
+        <item name="android:paddingLeft">15dp</item>-->
+        <item name="android:hint">@string/customEdittext_default_hint</item>
+
     </style>
 
     <!-- Loading screen -->
     <style name="loadingText">
         <item name="android:layout_centerHorizontal">true</item>
-        <item name="android:textColor">@color/slightlygrey</item>
+        <item name="android:textColor">@color/colorSlightlygrey</item>
     </style>
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/loadingscreen</item>
@@ -103,7 +121,7 @@
 
     <!-- Setting activity -->
     <style name="settingText">
-        <item name="android:textColor">@color/dark</item>
+        <item name="android:textColor">@color/colorDark</item>
         <item name="android:textSize">16sp</item>
     </style>
 

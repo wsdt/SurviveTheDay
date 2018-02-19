@@ -87,7 +87,7 @@ public class CreditsActivity extends AppCompatActivity {
         }
 
         newTextView.setMovementMethod(LinkMovementMethod.getInstance());
-        newTextView.setTextColor(getResources().getColor(R.color.dark));
+        newTextView.setTextColor(getResources().getColor(R.color.colorDark));
 
         creditList.addView(newImageButton);
         creditList.addView(newTextView);

@@ -1,4 +1,4 @@
-package kevkevin.wsdt.tagueberstehen.classes.DateTimePicker;
+package kevkevin.wsdt.tagueberstehen.classes.customviews.DateTimePicker;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;

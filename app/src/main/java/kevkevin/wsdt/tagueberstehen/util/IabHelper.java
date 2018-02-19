@@ -483,8 +483,8 @@ public class IabHelper {
                     Integer.valueOf(0), Integer.valueOf(0),
                     Integer.valueOf(0));
         }
-        catch (SendIntentException e) {
-            logError("SendIntentException while launching purchase flow for sku " + sku);
+        catch (SendIntentException | NullPointerException e) {
+            logError("SendIntentException or NullpointerException while launching purchase flow for sku " + sku);
             e.printStackTrace();
             flagEndAsync();
 

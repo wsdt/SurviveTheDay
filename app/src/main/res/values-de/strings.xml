@@ -1,0 +1,307 @@
+<resources>
+    <string name="app_version_label">App-Version: </string>
+
+    <!-- ACTIONBAR TITLES -->
+    <string name="title_activity_credits">Danksagung</string><!-- entry also used in actionBar menu-->
+    <string name="title_activity_settings">Einstellungen</string><!-- entry also used in actionBar menu-->
+    <string name="title_activity_modify_countdown">Countdown erstellen/editieren</string>
+
+    <!-- ACTIONBAR MENUS:MAINACTIVITY -->
+    <string name="actionBar_mainActivity_menu_addNewCountdown">Hinzufügen</string>
+    <string name="actionBar_mainActivity_menu_deleteAllCountdowns">Alle löschen</string>
+    <string name="actionBar_mainActivity_menu_removeAdsTemporarily">Werbung temp. deaktivieren</string>
+    <string name="actionBar_mainActivity_menu_showInAppProducts">In-App-Produkte</string>
+
+    <!-- ACTIONBAR MENUS:COUNTDOWNACTIVITY -->
+    <string name="actionBar_countdownActivity_menu_shareCountdown_title">Teilen</string>
+    <string name="actionBar_countdownActivity_menu_shareCountdown_shareContent_text">Der Moment in dem du nur noch %1$s Sekunden für %2$s (%3$s) hast! Möchtest du deinen Alltag auch motivierter angehen? SurviveTheDay jetzt kostenlos in deinem Playstore!</string>
+
+    <!-- BUTTONS -->
+    <string name="button_save">Speichern</string>
+    <string name="button_abort">Abbrechen</string>
+
+    <!-- GENERIC ERROR MESSAGES -->
+    <string name="error_title_systemError">Systemfehler</string>
+    <string name="error_contactAdministrator">Operation fehlgeschlagen. Bitte Systemadministrator kontaktieren!</string>
+    <string name="error_noInternetConnection">Bitte überprüfe deine Internetverbindung!</string>
+
+    <!-- Content Descriptions -->
+    <string name="nodeTemplate_motivateMeBtn_contentDescription">MotivateMeToggle wird verwendet, um motivierende Benachrichtigungen zu aktivieren/deaktivieren.</string>
+    <string name="nodeTemplate_editBtn_contentDescription">Der Bearbeiten-Button wird verwendet, um einen bestehenden Countdown zu modifizieren.</string>
+    <string name="nodeTemplate_deleteBtn_contentDescription">Der Löschen-Button wird verwendet, um einen bestehenden Countdown zu löschen.</string>
+
+    <!-- #################################### ACTIVITIES ################################################## -->
+    <!-- MainActivity -->
+    <string name="mainActivity_noCountdownsFound">Keine Countdowns gefunden.</string>
+    <string name="mainActivity_deletedCountdown">Countdown gelöscht.</string>
+    <string name="mainActivity_deletedAllCountdowns">Alle Countdowns gelöscht.</string>
+    <string name="mainActivity_countdownMotivationToggleOnOff">Countdown Motivation wurde %1$s.</string>
+    <string name="mainActivity_countdownMotivationToggleOnOff_activated">aktiviert</string>
+    <string name="mainActivity_countdownMotivationToggleOnOff_deactivated">deaktiviert</string>
+    <string name="mainActivity_countdownNode_error_nodeTagWrongBuild">Aktion nicht verfügbar. Node wahrscheinlich fehlerhaft erstellt.</string>
+    <string name="mainActivity_countdownNode_error_categoryColorWrongRetained">Kategorie-Farbe ungültig. Verwende Standardfarbe.</string>
+    <string name="mainActivity_countdownNode_delete_warningDialog_title">Countdown löschen?</string>
+    <string name="mainActivity_countdownNode_delete_warningDialog_description">Mit Klicken auf \'Löschen\' wird dein Countdown gelöscht. Dies kann nicht rückgängig gemacht werden!</string>
+    <string name="mainActivity_countdownNode_deleteAll_warningDialog_title">Alle Countdowns löschen?</string>
+    <string name="mainActivity_countdownNode_deleteAll_warningDialog_description">Mit Klicken auf \'Löschen\' werden ALLE countdowns gelöscht. Dies kann nicht rückgängig gemacht werden.</string>
+    <string name="mainActivity_countdownNode_delete_warningDialog_yesDelete">Löschen</string>
+    <string name="mainActivity_countdownNode_delete_warningDialog_noCancel">Abbrechen</string>
+
+    <!-- Nodes -->
+    <string name="node_countdownTitleError404">Countdown nicht gefunden</string>
+    <string name="node_countdownDescriptionError404">Bitte Systemadministrator kontaktieren.</string>
+
+    <!-- SettingsActivity -->
+    <string name="setting_forwardCompatibility_title">Vorwärtskompatibilität</string>
+    <string name="setting_forwardCompatibility_description">Da neuere Smartphones restriktiver sind, werden, wenn du diese Option aktiviert hast, Broadcast-Receiver anstatt eines Hintergrundservices zur Anzeige von Benachrichtigungen verwendet. Diese Funktion sollte nur deaktiviert werden, wenn Benachrichtigungen nicht wie geplant angezeigt werden (z.B. kurze Intervalle funktionieren meist besser, wenn diese Funktion deaktiviert ist). Bitte beachte aber, dass die App grundsätzlich stabiler läuft, wenn diese Einstellung aktiviert ist.</string>
+    <string name="setting_saveBattery_title">Batterie sparen</string>
+    <string name="setting_saveBattery_description">Wenn aktiviert, dann erscheinen Benachrichtigungen möglicherweise in unregelmäßigeren Abständen. Funktioniert nur mit aktiver Vorwärtskompatibilität.</string>
+    <string name="setting_durationOfInAppNotifications_title">In-App-Benachrichtigungen</string>
+    <string name="setting_durationOfInAppNotifications_description">Je höher die Nr. (in Sekunden angegeben), deso länger wird eine In-App-Benachrichtigung am Bildschirm angezeigt. Diese erscheinen nur, wenn du auf eine motivierende Benachrichtigung klickst.</string>
+
+    <!-- CountdownActivity -->
+    <string name="countdownActivity_countdownNotFound">Countdown nicht gefunden.</string>
+    <string name="countdownActivity_countdownSubCounter_zero">00,00</string>
+    <string name="countdownActivity_countdownSubCounter_totalYears_label">Jahre: </string>
+    <string name="countdownActivity_countdownSubCounter_totalMonths_label">Monate: </string>
+    <string name="countdownActivity_countdownSubCounter_totalWeeks_label">Wochen: </string>
+    <string name="countdownActivity_countdownSubCounter_totalDays_label">Tage: </string>
+    <string name="countdownActivity_countdownSubCounter_totalHours_label">Stunden: </string>
+    <string name="countdownActivity_countdownSubCounter_totalMinutes_label">Minutes: </string>
+    <string name="countdownActivity_countdownSubCounter_totalSeconds_label">Sekunden: </string>
+    <string name="countdownActivity_inAppNotification_error404_title">Systemfehler</string>
+    <string name="countdownActivity_inAppNotification_error404_description">Bitte melde diesen Fehler dem Systemadministrator.</string>
+    <string-array name="inAppNotificationShowSpinner_LABELS_VALUES">
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>10</item>
+        <item>12</item>
+        <item>15</item>
+        <item>20</item>
+        <item>25</item>
+        <item>30</item>
+        <item>45</item>
+        <item>60</item>
+    </string-array>
+
+    <!-- ModifyCountdownActivity -->
+    <string name="modifyCountdownActivity_countdown_title_label">Titel</string>
+    <string name="modifyCountdownActivity_countdown_title_edittext_exampleValue">Arbeit</string>
+    <string name="modifyCountdownActivity_countdown_description_label">Beschreibung</string>
+    <string name="modifyCountdownActivity_countdown_description_edittext_exampleValue">IKEA Verkäufer</string>
+    <string name="modifyCountdownActivity_countdown_fromDateTime_label">Von</string>
+    <string name="modifyCountdownActivity_countdown_untilDateTime_label">Bis</string>
+    <string name="modifyCountdownActivity_countdown_category_label">Kategorie</string>
+    <string name="modifyCountdownActivity_countdown_category_textview_fieldDescription">Farbe wird z.B. für Benachrichtigungen verwendet (Led-Farbe, &#8320;)</string>
+    <string name="modifyCountdownActivity_countdown_interval_textview_fieldDescription">Kürzere Intervalle (z.B. 5 Sekunden) sind unzuverlässiger (da Android versucht Ressourcen zu sparen). Wenn du darauf bestehst kannst du in den Einstellungen die Vorwärtskompatibilität ausschalten!</string>
+    <string name="modifyCountdownActivity_countdown_motivateMe_label">Motiviere mich</string>
+    <string name="modifyCountdownActivity_countdown_motivateMeInterval_label">Intervall</string>
+    <string name="modifyCountdownActivity_countdown_showLiveCountdown_label">Echtzeit-Countdown</string>
+    <string name="modifyCountdownActivity_countdown_validation_LengthConstraints">%1$s muss zwischen %2$d - %3$d Zeichen haben!</string>
+    <string name="modifyCountdownActivity_countdown_validation_UntilAfterStartDateTime">Das Bis-Datum muss NACH dem Von-Datum sein!</string>
+    <string name="modifyCountdownActivity_countdown_validation_DateTimeNotValid">Zeitwert nicht gültig! Dies könnte ein interner Fehler sein.</string>
+
+    <!-- CreditsActivity -->
+    <string name="creditsActivity_floatingButton_contactAppOwnerMailIntent_mail_subject">SurviveTheDay: Rezension</string>
+    <string name="creditsActivity_floatingButton_contactAppOwnerMailIntent_mail_body">Bitte ausschließlich deutsch- oder englischsprachige Nachrichten. :)</string>
+    <string name="creditsActivity_floatingButton_contactAppOwnerMailIntent_mail_intentTitle">E-Mail senden..</string>
+    <string name="creditsActivity_drawableCreditTemplate">
+        <![CDATA[
+            "<div><b>%1$s Icon</b><br />Icons erstellt von <a href=\"%2$s\" title=\"%3$s\">%3$s</a> von <br /><a href=\"%4$s\" title=\"%5$s\">%4$s</a> ist lizenziert unter <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div></string>"
+            ]]></string>
+    <string name="creditsActivity_drawableCreditTemplate_app">App</string>
+    <string name="creditsActivity_drawableCreditTemplate_conversationMark">Conversation mark</string>
+    <string name="creditsActivity_drawableCreditTemplate_stopTimer">Stoptimer</string>
+    <string name="creditsActivity_creditsIntroductionText">
+        <!-- CDATA FOR HTML SUPPORT -->
+        <![CDATA[
+        "<h3>SurviveTheDay - © Riedl Kevin, 2018</h3>"
+        "<p>Geschäftliches: <a href='mailto:kevin.riedl.privat@gmail.com'>kevin.riedl.privat@gmail.com</a></p>"
+        "<p>Spezieller Dank an folgende externe Autoren:</p>"
+        "[1]: Generische Zitate von <a href="https://www.briantracy.com/blog/personal-success/26-motivational-quotes-for-success/">Briantracy.com, Motivierende Zitate</a> (letzter Aufruf: 2018-01-06)<br />"
+        "[2]: Generische Zitate von <a href="https://www.brainyquote.com/topics/inspirational">Brainyquote.com, Inspirierende Zitate</a> (letzter Aufruf: 2018-01-06)<br />"
+        "[3]: Deutsche Sprichwörter von <a href="https://www.fluentu.com/blog/german/learn-german-proverbs/">Fluentu.com, Deutsche Sprichwörter</a> (letzter Aufruf: 2018-02-18)<br />"
+        "[4]: Generische Zitate von <a href="http://zitate.net">Zitate.net</a> (letzter Aufruf: 2018-02-18)"
+        ]]>
+    </string>
+    <!-- IMPORTANT: Following two arrays must be the same size and order!! -->
+    <string-array name="countdownIntervalSpinner_LABELS">
+        <item>5 Sekunden</item>
+        <item>30 Sekunden</item>
+        <item>1 Minute</item>
+        <item>5 Minuten</item>
+        <item>10 Minuten</item>
+        <item>15 Minuten</item>
+        <item>30 Minuten</item>
+        <item>45 Minuten</item>
+        <item>1 Stunde</item>
+        <item>2 Stunden</item>
+        <item>3 Stunden</item>
+        <item>5 Stunden</item>
+        <item>8 Stunden</item>
+        <item>12 Stunden</item>
+    </string-array>
+    <!-- IMPORTANT: If smartphone gets restarted the interval might be start from 0, so e.g. 2 days will never be executed -->
+    <string-array name="countdownIntervalSpinner_VALUES">
+        <!-- Values from above in seconds! -->
+        <item>5</item>
+        <item>30</item>
+        <item>60</item>
+        <item>300</item>
+        <item>600</item>
+        <item>900</item>
+        <item>1800</item>
+        <item>2700</item>
+        <item>3600</item>
+        <item>7200</item>
+        <item>10800</item>
+        <item>18000</item>
+        <item>28800</item>
+        <item>43200</item>
+    </string-array>
+
+    <!-- CLASSES ###################################################################################################### -->
+    <!-- CustomNotification -->
+    <string name="customNotification_notificationTicker">SurviveTheDay - Motivation</string>
+    <string-array name="customNotification_random_generic_titles">
+        <item>Weiter so!</item>
+        <item>Gib nicht auf!</item>
+        <item>Nicht nachlassen!</item>
+        <item>Du schaffst das!</item>
+        <item>Das ist ja gar Nichts!</item>
+        <item>Mühelos :)</item>
+        <item>Nicht aufhören!</item>
+    </string-array>
+    <string-array name="customNotification_random_timebased_titles">
+        <item>Fast vorbei!</item>
+        <item>Du hast es gleich geschafft!</item>
+        <item>Geduldig bleiben, das Ende naht.</item>
+    </string-array>
+    <!-- IMPORTANT: Zitate selbst sind alle in default Strings.xml und haben ihre ORIGINALSPRACHE. Für jede unterstützte Sprache gibt es eigensprachige Zitate.
+    TODO: aber es soll die Möglichkeit geben, sich per checkbox zu entscheiden, ob man nur englische, deutsche zitate möchte usw.-->
+    <string-array name="customNotification_random_generic_texts_en"><!-- TODO: Just temporary [for supporting german quotes] (but REMOVE and use array (de and en) from callback strings.xml with decision which packages to take (at least one, but all also possible)-->
+        <item>Aller Anfang ist schwer.</item>
+        <item>Des Teufels liebstes Möbelstück ist die lange Bank.</item>
+        <item>Wer rastet, der rostet.</item>
+        <item>Anfangen ist leicht, Beharren eine Kunst.</item>
+        <item>Erst denken, dann handeln.</item>
+        <item>Eile mit Weile.</item>
+        <item>Kümmere dich nicht um ungelegte Eier.</item>
+        <item>Krummes Holz gibt auch gerades Feuer.</item>
+        <item>Man muss die Dinge nehmen, wie sie kommen.</item>
+        <item>Morgenstund hat Gold im Mund.</item>
+        <item>Selbst ist der Mann/die Frau.</item>
+        <item>Taten sagen mehr als Worte.</item>
+        <item>Übung macht den Meister.</item>
+        <item>Wer zwei Hasen auf einmal jagt bekommt keinen.</item>
+        <item>Wer A sagt, muss auch B sagen.</item>
+        <item>Wenn der Reiter nichts taugt, ist das Pferd schuld.</item>
+        <item>Dienst ist Dienst und Schnaps ist Schnaps.</item>
+        <item>Aufklärung ist der Ausgang des Menschen aus seiner selbst verschuldeten Unmündigkeit. (Immanuel Kant)</item>
+        <item>Eine Wahrheit kann erst wirken, wenn der Empfänger für sie reif ist. (Christian Morgenstern)</item>
+        <item>Die beste und sicherste Tarnung ist immer noch die blanke und nackte Wahrheit. Die glaubt niemand! (Max Frisch)</item>
+        <item>Die Strafe des Lügners ist nicht, dass ihm niemand mehr glaubt, sondern dass er selbst Niemandem mehr glauben kann. (George Bernard Shaw)</item>
+        <item>Mancher Mensch hat ein großes Feuer in seiner Seele, und niemand kommt, um sich daran zu wärmen. (Vincent van Gogh)</item>
+        <item>Wer sich den Gesetzen nicht fügen will, muss die Gegen verlassen, wo sie gelten. (Johann Wolfgang von Goethe)</item>
+        <item>Jeder kann wütend werden, das ist einfach. Aber wütend auf den Richtigen zu sein, im richtigen Maß, zur richtigen Zeit, zum richtigen Zweck und auf die richtige Art, das ist schwer. (Aristoteles)</item>
+        <item>Der Tod eines Mannes ist eine Tragödie, aber der Tod von Millionen nur eine Statistik. (Josef Stalin)</item>
+        <item>Der Gescheitere gibt nach! Eine traurige Wahrheit, sie begründet die Weltherrschaft der Dummheit. (Marie von Ebner-Eschenbach)</item>
+        <item>Fallen ist weder gefährlich noch eine Schande. Liegenbleiben ist beides. (Konrad Adenauer)</item>
+        <item>Alle Revolutionen haben bisher nur eines bewiesen, nämlich, dass sich vieles ändern lässt, bloß nicht die Menschen. (Karl Marx)</item>
+        <item>Der große Jammer mit den Menschen ist, dass sie so genau wissen, was man ihnen schuldet, und so wenig Empfindungen dafür haben, was sie anderen schulden. (Franz von Sales)</item>
+        <item>Dem Kapitalismus wohnt ein Laster inne: Die ungleiche Verteilung der Güter. Dem Sozialismus hingegen wohnt eine Tugend inne: Die gleichmäßige Verteilung des Elends. (Winston Churchill)</item>
+        <item>Unser größter Ruhm ist nicht, niemals zu fallen, sondern jedes Mal wieder aufzustehen. (Nelson Mandela)</item>
+        <item>Die Freiheit des Menschen liegt nicht darin, dass er tun kann, was er will, sondern, dass er nicht tun muss, was er nicht will. (Jean-Jacques Rousseau)</item>
+        <item>Wahlen allein machen noch keine Demokratie. (Barack Obama)</item>
+        <item>Die Lüge ist wie ein Schneeball: Je länger man ihn wälzt, desto größer wird er. (Martin Luther)</item>
+        <item>Nachrichtensprecher fangen stets mit \'Guten Abend\' an und brauchen dann 15 Minuten, um zu erklären, dass es kein guter Abend ist. (Rudi Carrell)</item>
+        <item>Anmut ist ein Ausströmen der inneren Harmonie. (Marie von Ebner-Eschenbach)</item>
+        <item>Das Ärgerliche am Ärger ist, dass man sich schadet, ohne anderen zu nützen. (Kurt Tucholsky)</item>
+        <item>Vermutlich hat Gott die Frau erschaffen, um den Mann kleinzukriegen. (Voltaire)</item>
+        <item>Keinem vernünftigen Menschen wird es einfallen, Tintenflecken mit Tinte, Ölflecken mit Öl wegwaschen zu wollen. Nur Blut soll immer wieder mit Blut abgewaschen werden. (Bertha von Suttner)</item>
+        <item>Bescheiden können nur die Menschen sein, die genug Selbstbewusstsein haben. (Gabriel Laub)</item>
+        <item>Die Öffentlich-Rechtlichen machen sich in jede Hose, die man ihnen hinhält, und die Privaten senden das, was darin ist. (Dieter Hildebrandt)</item>
+        <item>Wer nicht kann, was er will, muss wollen, was er kann. Denn das zu wollen, was er nicht kann, wäre töricht. (Leonardo da Vinci)</item>
+        <item>Suche nicht nach Fehlern, suche nach Lösungen. (Henry Ford)</item>
+        <item>Gott würfelt nicht. (Albert Einstein)</item>
+        <item>Die größten Enttäuschungen haben ihren Ursprung in zu großen Erwartungen. (Ernst Ferstl)</item>
+        <item>Niemand wird mit dem Hass auf andere Menschen wegen ihrer Hautfarbe, ethnischen Herkunft oder Religion geboren. Hass wird gelernt. Und wenn man Hass lernen kann, kann man auch lernen zu lieben. Denn Liebe ist ein viel natürlicheres Empfinden im Herzen eines Menschen als ihr Gegenteil. (Nelson Mandela)</item>
+        <item>Die Leute hatten die Gewohnheit, mich anzuschauen, als sei ich eine Art Spiegel und keine Person. Sie sahen nicht mich, sondern ihre eigenen lüsternen Gedanken und dann spielten sie selbst die Unschuldigen, indem sie mich als lüstern bezeichneten. (Marilyn Monroe)</item>
+        <item>Man löst keine Probleme, indem man sie auf Eis legt. (Winston Churchill)</item>
+        <item>Die ganze Mannigfaltigkeit, der ganze Reiz und die ganze Schönheit des Lebens setzten sich aus Licht und Schatten zusammen. (Leo Tolstoi)</item>
+        <item>Freundschaft ist nicht nur ein köstliches Geschenk, sondern auch eine dauernde Aufgabe. (Ernst Zacharias)</item>
+        <item>Wenn wir alt werden, so beginnen wir zu disputieren, wollen klug sein und doch sind wir die größten Narren. (Martin Luther)</item>
+        <item>Der große Sport fängt da an, wo er längst aufgehört hat, gesund zu sein. (Bertolt Brecht)</item>
+        <item>Der Sport ist ein sehr vernünftiger Versucht des modernen Zivilisationsmenschen, sich die Strapaze künstlich zu verschaffen. (Peter Bamm)</item>
+        <item>Sport: Opium für das Volk. (Percy Clummings)</item>
+        <item>Es gibt tausend Krankheiten, aber nur eine Gesundheit. (Ludwig Börne)</item>
+        <item>Seien Sie vorsichtig mit Gesundheitsbüchern - Sie könnten an einem Druckfehler sterben. (Mark Twain)</item>
+        <item>Wer nicht jeden Tag etwas für seine Gesundheit aufbringt, muss eines Tages sehr viel Zeit für die Krankheit opfern. (Sebastian Kneipp)</item>
+        <item>Ein leidenschaftlicher Raucher, der immer von der Gefahr des Rauchens für die Gesundheit liest, hört in den meisten Fällen auf zu lesen. (Winston Churchill)</item>
+        <item>Glück, das ist einfach eine gute Gesundheit und ein schlechtes Gedächtnis. (Ernest Hemmingway)</item>
+        <item>Ich bin körperlich und physisch topfit. (Thomas Häßler)</item>
+        <item>Ein ungeübtes Gehirn ist schädlicher für die Gesundheit als ein ungeübter Körper. (George Bernard Shaw)</item>
+        <item>Die Ehefrau ist das beste Trainingslager. (Otto Rehhagel)</item>
+        <item>Ich messe den Erfolg nicht an meinen Siegen, sondern daran, ob ich jedes Jahr besser werde. (Tiger Woods)</item>
+    </string-array>
+
+
+
+    <!-- TIMEBASED ARRAY WITH PLACEHOLDER COULD NOt BE SET AS ARRAY, because STRING-ARRAYS DO NOT ALLOW PLACEHOLDERS! -->
+    <string name="customNotification_random_timebased_text_0_secondsToGo">%1$s - Nur noch %2$s Sekunden!</string>
+    <string name="customNotification_random_timebased_text_1_percentageLeft">%1$s - Nur %2$f %% übrig.</string> <!-- double % because escaping so it is not a var -->
+    <string name="customNotification_random_timebased_text_2_countdownEndsOn">%1$s - Countdown endet am %2$s</string>
+    <string name="customNotification_random_timebased_text_3_percentageAchieved">%1$s - Schon %2$f %% geschafft!</string> <!-- % twice to escape -->
+    <string name="customNotification_random_timebased_text_4_notificationInterval">%1$s - Wir schicken dir alle %2$s eine motivierende Benachrichtigung auf deinen Bildschirm. :)</string>
+
+    <!-- Countdown -->
+    <string name="countdown_info_startDateInFuture">Countdown startet um: %1$s</string>
+    <string name="countdown_info_untilDateInPast">Countdown bereits abgelaufen: %1$s</string>
+
+    <!-- DateTimePicker -->
+    <string name="dateTimePicker_format_date">%1$d.%2$d.%3$d</string>
+    <string name="dateTimePicker_format_DateTime">%1$s %2$s:%3$s:%4$s</string>
+
+    <!-- AdManager/GlobalStorageMgr -->
+    <string name="adManager_noInternetConnectionMaxExceeded_notification_title">Konnte Werbung nicht anzeigen. :(</string>
+    <string name="adManager_noInternetConnectionMaxExceeded_notification_normalAndBigText">SurviveTheDay wird mit Werbeanzeigen finanziert. Bitte benutze diese App wenn du eine Verbindung zum Internet hast. Vielen Dank :).</string>
+    <string name="adManager_loadRewardedVideoInRewardActivity_reward_successMessage">Du wirst von uns %1$d Minuten mit Werbung verschont.</string>
+    <string name="adManager_loadRewardedVideoInRewardActivity_reward_introductionMessage">Nach dem Anschauen dieser Anzeige werden alle Werbeanzeigen für eine bestimmte Zeit deaktiviert! :)</string>
+
+    <!-- InApp Purchase Manager -->
+    <string name="inAppPurchaseManager_buyManagedInAppProduct_msg_ProductAlreadyBoughtORnotLoggedInOnGoogle">Entweder du hast dieses Produkt bereits erworben oder du musst dich in deinen Google-Account einloggen.</string>
+
+    <string name="inAppProductsNode_default_title">Produkt konnte nicht geladen werden.</string>
+    <string name="inAppProductsNode_default_description">Vielleicht hast du keine aktive Internetverbindung oder das ist ein interner Fehler.</string>
+    <string name="inAppProductsNode_default_price">0.00 €</string>
+
+    <!-- InApp Purchase Manager NEW (with Helper) -->
+    <string name="inAppPurchaseManager_success_purchaseProductSuccess">Danke für deinen Einkauf von %1$s!</string>
+    <string name="inAppPurchaseManager_error_iabHelperSetupFailure">Konnte In-App-Billing nicht initiieren. Bitte Administrator kontaktieren.</string>
+    <string name="inAppPurchaseManager_error_queryAllProductsFailure">Konnte Produkte nicht herunterladen. Bist du mit dem Internet verbunden?</string>
+    <string name="inAppPurchaseManager_error_purchaseProductFailure">Konnte Produkt nicht kaufen. Bist du mit dem Internet verbunden?</string>
+    <string name="inAppPurchaseManager_error_purchaseProductFailureAlreadyBought">Produkt bereits gekauft. :)</string>
+    <string name="inAppPurchaseManager_error_isProductPurchasedFailure">Konnte nicht verifizieren, ob du das Produkt bereits gekauft hast. Bist du mit dem Internet verbunden?</string>
+    <string name="inAppPurchaseManager_error_inventoryDownloadFailure">Konnte Inventar nicht downloaden. Timeout überschritten. Bist du mit dem Internet verbunden?</string>
+    <string name="inAppPurchaseManager_error_queriedInventoryDoesNotContainProduct">In-App-Produkt nicht gefunden (evtl. ein interner Fehler).</string>
+
+    <!-- InAppProduct NOT BOUGHT Msg -->
+    <string name="inAppProduct_notBought_useMoreCountdownNodes">Zum Anzeigen mehrerer Nodes benötigst du das In-App-Produkt: Nutz-mehr-Nodes.</string>
+    <string name="inAppProduct_notBought_changeNotificationColor">Zum Ändern der Benachrichtigungsfarbe benötigst du das In-App-Produkt: Benachrichtigungsfarbe-ändern.</string>
+
+    <!-- DialogManager - In App Purchase -->
+    <string name="dialog_inAppProduct_button_positive_buy">Jetzt kaufen</string>
+    <string name="dialog_inAppProduct_button_negative_buy">Abbrechen</string>
+    <string name="dialog_generic_button_positive">OK</string>
+    <string name="dialog_generic_button_negative">Abbrechen</string>
+    <string name="dialog_generic_error_title">Verbindungsfehler</string>
+    <string name="dialog_generic_error_msg">Daten nicht verfügbar. Wahrscheinlich versuchst du Premiuminhalte zu nutzen, ohne eine aktive Internetverbindung zu haben!</string>
+
+    <!-- CustomViews:CustomEdittext -->
+    <string name="customEdittext_default_hint">Schreibe etwas</string>
+
+</resources>

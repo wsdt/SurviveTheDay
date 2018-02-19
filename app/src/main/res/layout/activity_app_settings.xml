@@ -72,7 +72,7 @@
                 <!-- description for row above -->
                 <TextView
                     android:text="@string/setting_forwardCompatibility_description"
-                    android:textColor="@color/lightdark"
+                    android:textColor="@color/colorLightdark"
                     android:layout_span="2" />
             </TableRow>
 
@@ -101,7 +101,7 @@
                 <!-- description for row above -->
                 <TextView
                     android:text="@string/setting_saveBattery_description"
-                    android:textColor="@color/lightdark"
+                    android:textColor="@color/colorLightdark"
                     android:layout_span="2" />
             </TableRow>
 
@@ -120,7 +120,7 @@
                     android:layout_weight="1"/>
                 <Spinner
                     android:id="@+id/inappNotificationHowLongToShowValue"
-                    android:background="@color/slightlygrey"
+                    android:background="@color/colorSlightlygrey"
                     android:spinnerMode="dropdown"
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
@@ -134,7 +134,7 @@
                 <!-- description for row above -->
                 <TextView
                     android:text="@string/setting_durationOfInAppNotifications_description"
-                    android:textColor="@color/lightdark"
+                    android:textColor="@color/colorLightdark"
                     android:layout_span="2" />
             </TableRow>
 
