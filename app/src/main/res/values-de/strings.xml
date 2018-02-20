@@ -71,7 +71,7 @@
     <string name="countdownActivity_countdownSubCounter_totalWeeks_label">Wochen: </string>
     <string name="countdownActivity_countdownSubCounter_totalDays_label">Tage: </string>
     <string name="countdownActivity_countdownSubCounter_totalHours_label">Stunden: </string>
-    <string name="countdownActivity_countdownSubCounter_totalMinutes_label">Minutes: </string>
+    <string name="countdownActivity_countdownSubCounter_totalMinutes_label">Minuten: </string>
     <string name="countdownActivity_countdownSubCounter_totalSeconds_label">Sekunden: </string>
     <string name="countdownActivity_inAppNotification_error404_title">Systemfehler</string>
     <string name="countdownActivity_inAppNotification_error404_description">Bitte melde diesen Fehler dem Systemadministrator.</string>
