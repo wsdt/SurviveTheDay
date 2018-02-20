@@ -16,7 +16,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!-- screenOrientation and configChanges so only portrait mode -->
+
+        <!-- Declare interstitial ad (admob) explicitely fullscreen [because Admob for Android 8.0 not uptodate enough] -->
+        <activity
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            tools:replace="android:theme"/>
+
+
+        <!-- screenOrientation and configChanges so only portrait mode [For Android 8.0 NEEDS TO BE FULLSCREEN!!] -->
         <activity
             android:name=".LoadingScreenActivity"
             android:configChanges="orientation"

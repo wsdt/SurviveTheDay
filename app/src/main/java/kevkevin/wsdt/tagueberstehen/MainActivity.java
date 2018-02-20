@@ -284,18 +284,20 @@ public class MainActivity extends AppCompatActivity {
         RelativeLayout countdownView = swipeLayout.findViewById(R.id.node_countdown);
         ((TextView) countdownView.findViewById(R.id.countdownTitle)).setText(countdown.getCountdownTitle());
         ((TextView) countdownView.findViewById(R.id.countdownDescription)).setText(countdown.getCountdownDescription());
-        ((TextView) countdownView.findViewById(R.id.startAndUntilDateTime)).setText(String.format(getResources().getString(R.string.mainActivity_countdownNode_DateTimeValues), countdown.getStartDateTime(), countdown.getUntilDateTime()));
+        ((TextView) countdownView.findViewById(R.id.countdownEventMsg)).setText(countdown.getEventMsg());
+        //((TextView) countdownView.findViewById(R.id.startAndUntilDateTime)).setText(String.format(getResources().getString(R.string.mainActivity_countdownNode_DateTimeValues), countdown.getStartDateTime(), countdown.getUntilDateTime()));
         //Set tag to swipeLayout! so we can access it from every top/right menu etc.
         swipeLayout.setTag(Constants.MAIN_ACTIVITY.COUNTDOWN_VIEW_TAG_PREFIX + countdown.getCountdownId()); //IMPORTANT: to determine what countdown to open in CountdownActivity
 
         //set category color
-        View categoryColor = (countdownView.findViewById(R.id.categoryColorView));
+        View categoryColor = countdownView.findViewById(R.id.categoryColorView);
         categoryColor.setBackgroundColor(Color.parseColor(countdown.getCategory()));
 
         //expand categorycolor to whole height of node (because of wrap content) --> HAS TO BE AFTER SETTEXT (because they change the size of the view)
         countdownView.measure(countdownView.getLayoutParams().width, countdownView.getLayoutParams().height); //remeasure because of settext etc.
-        //remain old width with own layoutparam.width and set new height with new measured parent height (-10 because of padding top/bottom in sum)
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(categoryColor.getLayoutParams().width, countdownView.getMeasuredHeight()); //set height of categorycolor view to same as relativelayout (not wrap content or match parent!)
+        //remain old width with own layoutparam.width and set new height with new measured parent height (-25 because of padding top/bottom in sum)
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(categoryColor.getLayoutParams().width, countdownView.getMeasuredHeight()-25); //set height of categorycolor view to same as relativelayout (not wrap content or match parent!)
+        Log.d(TAG, "createAddNodeToLayout: CategoryColorView: Future height -> "+countdownView.getMeasuredHeight());
         categoryColor.setLayoutParams(layoutParams);
 
         //Swipe layout configuration (node menu) -------------------------------

@@ -54,6 +54,7 @@
     <!-- Nodes -->
     <string name="node_countdownTitleError404">Countdown nicht gefunden</string>
     <string name="node_countdownDescriptionError404">Bitte Systemadministrator kontaktieren.</string>
+    <string name="node_countdownEventMsg_nothingFound">Nicht zu melden</string>
 
     <!-- SettingsActivity -->
     <string name="setting_forwardCompatibility_title">Vorwärtskompatibilität</string>

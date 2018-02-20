@@ -98,6 +98,10 @@
         <TextView
             android:id="@+id/countdownTitle"
             style="@style/text"
+            android:layout_toRightOf="@+id/categoryColorView"
+            android:layout_toEndOf="@+id/categoryColorView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
@@ -113,21 +117,38 @@
             android:layout_marginLeft="15dp"
             android:layout_marginStart="15dp"
             android:layout_marginBottom="5dp"
-            android:layout_below="@id/countdownTitle"/>
+            android:layout_below="@id/countdownTitle"
+            android:layout_toEndOf="@+id/categoryColorView"
+            android:layout_toRightOf="@+id/categoryColorView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
 
         <!-- IMPORTANT: If you change IDs of those buttons you need to adapt MainActivity.java:onCountdownModifyButtons() method! -->
         <!-- @null as background for transparency -->
+        <TextView
+            android:id="@+id/countdownEventMsg"
+            android:text=""
+            style="@style/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/countdownDescription"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="5dp"
+            android:textSize="15sp"/>
 
+
+        <!-- TODO -->
         <TextView
             android:id="@+id/startAndUntilDateTime"
             style="@style/text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/countdownDescription"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_below="@+id/countdownDescription"
             android:layout_margin="5dp"
-            android:text="@string/node_countdownDateTimeValuesError404"
+            android:text="@string/node_countdownEventMsg_nothingFound"
             android:textSize="15sp" />
     </RelativeLayout>
     <!-- Surface View End -->
