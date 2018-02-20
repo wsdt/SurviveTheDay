@@ -10,27 +10,33 @@
 
     <TextView
         android:id="@+id/MainActivity_TextView_NoCountdownsFound"
-        android:text="@string/mainActivity_noCountdownsFound"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:gravity="center"
-        android:textSize="22sp"
+        android:text="@string/mainActivity_noCountdownsFound"
         android:textColor="@color/colorDark"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:textSize="22sp" />
 
-    <ScrollView
-        android:id="@+id/scrollView"
+    <!-- MarginBottom so BannerAd does not hide anything -->
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_marginBottom="50dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <!-- This part should be added programmatically later / Tag identifies COUNTDOWN!
-        IMPORTANT: If you change Layouttype of nodeList then you need to adapt MainActivity:onCountdownModifyButtons() -->
-        <LinearLayout
-            android:id="@+id/nodeList"
+        android:layout_height="match_parent">
+        <ScrollView
+            android:id="@+id/scrollView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
+            <!-- This part should be added programmatically later / Tag identifies COUNTDOWN!
+            IMPORTANT: If you change Layouttype of nodeList then you need to adapt MainActivity:onCountdownModifyButtons() -->
+            <LinearLayout
+                android:id="@+id/nodeList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-        </LinearLayout>
-    </ScrollView>
+            </LinearLayout>
+        </ScrollView>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </RelativeLayout>

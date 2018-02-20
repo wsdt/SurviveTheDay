@@ -32,9 +32,13 @@
     <string name="nodeTemplate_motivateMeBtn_contentDescription">MotivateMeToggle is used to turn motivational notifications on.</string>
     <string name="nodeTemplate_editBtn_contentDescription">Edit-Button is used to modify an existing countdown.</string>
     <string name="nodeTemplate_deleteBtn_contentDescription">Delete-Button is used to delete an existing countdown.</string>
+    <string name="nodeTemplate_openCountdownBtn_contentDescription">Open-Button is used to calculate/open the current countdown.</string>
 
     <!-- #################################### ACTIVITIES ################################################## -->
     <!-- MainActivity -->
+    <string name="mainActivity_swipeLayout_topMenu_openCountdown_text">Open countdown</string>
+    <string name="mainActivity_swipeLayout_onClickInstruction">Swipe left or right for options.</string>
+    <string name="mainActivity_swipeRefreshLayout_pulledDown_refreshDone">Refreshed displayed content and restarted notification services.</string>
     <string name="mainActivity_noCountdownsFound">No countdowns found.</string>
     <string name="mainActivity_deletedCountdown">Deleted countdown.</string>
     <string name="mainActivity_deletedAllCountdowns">Deleted all countdowns.</string>
