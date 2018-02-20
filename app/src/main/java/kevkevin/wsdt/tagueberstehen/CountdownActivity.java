@@ -78,9 +78,13 @@ public class CountdownActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         //IMPORTANT: Stop thread of countdowncounterservice when activity gets hidden
-        if (this.getCountdownCounter().getCountdownCounterThread() != null) {
-            this.getCountdownCounter().getCountdownCounterThread().interrupt(); //stop it
-        } else {Log.d(TAG, "onStop: CountdownCounterThread is null. Could not stop it.");}
+        if (this.getCountdownCounter() != null) {
+            if (this.getCountdownCounter().getCountdownCounterThread() != null) {
+                this.getCountdownCounter().getCountdownCounterThread().interrupt(); //stop it
+            } else {
+                Log.d(TAG, "onStop: CountdownCounterThread is null. Could not stop it.");
+            }
+        } else {Log.e(TAG, "onStop: CountdownCounter itself is null. (Countdown might have been deleted before)");}
     }
 
     public Double loadCountdownFromSharedPreferences(int countdownId) {
