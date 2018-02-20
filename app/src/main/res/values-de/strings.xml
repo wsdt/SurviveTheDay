@@ -29,9 +29,13 @@
     <string name="nodeTemplate_motivateMeBtn_contentDescription">MotivateMeToggle wird verwendet, um motivierende Benachrichtigungen zu aktivieren/deaktivieren.</string>
     <string name="nodeTemplate_editBtn_contentDescription">Der Bearbeiten-Button wird verwendet, um einen bestehenden Countdown zu modifizieren.</string>
     <string name="nodeTemplate_deleteBtn_contentDescription">Der Löschen-Button wird verwendet, um einen bestehenden Countdown zu löschen.</string>
+    <string name="nodeTemplate_openCountdownBtn_contentDescription">Der Öffnen-Button wird verwendet, um den bestehenden Countdown zu öffnen.</string>
 
     <!-- #################################### ACTIVITIES ################################################## -->
     <!-- MainActivity -->
+    <string name="mainActivity_swipeLayout_topMenu_openCountdown_text">Countdown öffnen</string>
+    <string name="mainActivity_swipeLayout_onClickInstruction">Nach links oder rechts wischen für mehr Optionen.</string>
+    <string name="mainActivity_swipeRefreshLayout_pulledDown_refreshDone">Angezeigte Inhalte und Hintergrundservices wurden aktualisiert bzw. neugestartet.</string>
     <string name="mainActivity_noCountdownsFound">Keine Countdowns gefunden.</string>
     <string name="mainActivity_deletedCountdown">Countdown gelöscht.</string>
     <string name="mainActivity_deletedAllCountdowns">Alle Countdowns gelöscht.</string>

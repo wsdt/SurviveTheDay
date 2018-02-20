@@ -9,6 +9,6 @@
     <color name="colorLight">#ddd</color>
     <color name="colorWhite">#fff</color>
 
-    <color name="colorRed">#ff0000</color>
-    <color name="colorBlue">#0000ff</color>
+    <color name="colorRed">#bf0000</color>
+    <color name="colorBlue">#000c9f</color>
 </resources>

@@ -4,17 +4,14 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -34,13 +31,15 @@ import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 import kevkevin.wsdt.tagueberstehen.classes.services.CountdownCounterService;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
     private LinearLayout nodeList;
     private static final String TAG = "MainActivity";
     private InAppPurchaseManager inAppPurchaseManager;
     private AdManager adManager; //used e.g. for banner ad (so we can dynamically remove it etc.)
     private RelativeLayout mainActivityPage;
     private DialogManager dialogManager;
+    private InternalCountdownStorageMgr internalCountdownStorageMgr;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
 
     @Override
@@ -48,11 +47,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //InAppPurchaseMgr
+        //Manager setting up
         this.setInAppPurchaseManager(new InAppPurchaseManager(this));
-
-        //Dialog Manager (deleting e.g.)
         this.setDialogManager(new DialogManager(this));
+        this.setInternalCountdownStorageMgr(new InternalCountdownStorageMgr(this));
 
         //Initiliaze AdMob
         this.setAdManager(new AdManager(this));
@@ -73,6 +71,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         globalAppSettingsMgr.startBroadcastORBackgroundService();
         //Start foreground service
         startService(new Intent(this, CountdownCounterService.class));
+
+        //Set up onRefresh for pulling down
+        initializePullForRefresh();
     }
 
 
@@ -90,6 +91,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         loadAddNodes();
         this.getAdManager().loadBannerAd(this.getMainActivityPage()); //ad might get removed if settings have changed (in app purchase, temporarly ad free etc.)
         //restart of service happens in InternalCountdownStorageMgr!
+
+        //Stop refreshing
+        if (this.getSwipeRefreshLayout() != null) {
+            if (this.getSwipeRefreshLayout().isRefreshing()) {
+                //Only restart services etc. when user really wants to refresh
+                Log.d(TAG, "reloadEverything:isRefreshing: User wants to refresh. So we are also refreshing the services.");
+                this.getInternalCountdownStorageMgr().restartNotificationService();
+                Toast.makeText(this, R.string.mainActivity_swipeRefreshLayout_pulledDown_refreshDone, Toast.LENGTH_SHORT).show();
+                this.getSwipeRefreshLayout().setRefreshing(false); //done with loading
+            }
+        }
     }
 
     private void loadAddNodes() {
@@ -118,7 +130,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
-
         TextView noCountdownsFound = (TextView) findViewById(R.id.MainActivity_TextView_NoCountdownsFound);
         if (anzahlCountdowns <= 0) {
             //add plus icon or similar to add new countdown
@@ -131,81 +142,116 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    @Override
-    public void onClick(View v) { //OnClick on node itself
-        Intent tmpintent = new Intent(this, CountdownActivity.class);
-        int countdownId = getCountdownIdFromNodeTag((RelativeLayout) v);
+    //Pull to refresh view - SwipeREFRESHLayout
+    private void initializePullForRefresh() {
+        setSwipeRefreshLayout((SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout));
+        getSwipeRefreshLayout().setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.d(TAG, "onRefreshListener: Calling reloadEverything().");
+                reloadEverything(); //IMPORTANT: Do not forget to call setRefreshing(false) to stop it
+            }
+        });
+        getSwipeRefreshLayout().setColorSchemeResources(
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light,
+                android.R.color.holo_blue_bright
+        );
+    }
 
+
+    //SWIPELAYOUT - ONCLICK METHODS ###################################################################
+    public void onClick_node_sl_instruction(View v) {
+        Toast.makeText(this,R.string.mainActivity_swipeLayout_onClickInstruction, Toast.LENGTH_SHORT).show();
+    }
+
+    public void onClick_node_sl_bottomview_leftMenu_openCountdown(View v) {
+        Intent tmpintent = new Intent(this, CountdownActivity.class);
+        int countdownId;
+        try {
+            countdownId = getCountdownIdFromNodeTag((SwipeLayout) v.getParent());
+        } catch (ClassCastException e) {
+            Log.e(TAG, "onClick_node_sl_bottomview_leftMenu_openCountdown: Could not cast parent view to SwipeLayout. Maybe it's not a node.");
+            return;
+        }
+
+        //Open CountdownActivity
         if (countdownId >= 0) {
             tmpintent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID, countdownId);
             startActivity(tmpintent);
         } else {
             //Toast was made in getCountdownIdFromNodeTag()
-            Log.e(TAG, "onClick: An error occured in getCountdownIdFromNodeTag(). Did not open next activity.");
+            Log.e(TAG, "onClick_node_sl_bottomview_leftMenu_openCountdown: An error occured in getCountdownIdFromNodeTag(). Did not open next activity.");
         }
     }
 
-    public void onCountdownModifyButtons(View v) { //when clicked on a node buttons (not node itself)
+    public void onClick_node_sl_bottomview_rightMenu_deleteNode(View v) {
         //Get countdownId of corresponding node to perform actions
-        final InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(this);
-        final Countdown countdown;
-        try {
-            countdown = storageMgr.getCountdown(getCountdownIdFromNodeTag((RelativeLayout) v.getParent()));
-        } catch (ClassCastException e) {
-            Log.e(TAG, "Could not cast parent view to RelativeLayout. Maybe it is not a node.");
-            return;
-        }
+        final Countdown countdown = getCountdownFromNode(v);
+        if (countdown == null) {Log.e(TAG, "onClick_node_sl_bottomview_rightMenu_deleteNode: Countdown obj is null!");return;}
 
-        if (countdown == null) {
-            Log.e(TAG, "onCountdownModifyButtons: Countdown Obj is null!");
-            return;
-        } //exist if null (when other exception occured)
-        switch (v.getId()) {
-            case R.id.countdownMotivateMeToggle:
-                if (countdown.isActive()) {
-                    countdown.setActive(false);
-                    Log.d(TAG, "onCountdownModifyButtons: Countdown " + countdown.getCountdownId() + " does not motivate now.");
-                } else {
-                    countdown.setActive(true);
-                    Log.d(TAG, "onCountdownModifyButtons: Countdown " + countdown.getCountdownId() + " does motivate now.");
-                }
-                countdown.savePersistently();
-                Resources res = getResources();
-                Toast.makeText(this, String.format(res.getString(R.string.mainActivity_countdownMotivationToggleOnOff), ((countdown.isActive()) ? res.getString(R.string.mainActivity_countdownMotivationToggleOnOff_activated) : res.getString(R.string.mainActivity_countdownMotivationToggleOnOff_deactivated))), Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.countdownEdit:
-                Intent modifyCountdownActivity = new Intent(this, ModifyCountdownActivity.class);
-                modifyCountdownActivity.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID, countdown.getCountdownId());
-                startActivity(modifyCountdownActivity);
-                break;
-            case R.id.countdownDelete:
-                //create dialog to ask user whether he wants really delete countdown
-                this.getDialogManager().showDialog_Generic(
-                        getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_title),
-                        getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_description),
-                        getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_yesDelete),
-                        getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_noCancel),
-                        R.drawable.dark_delete_small, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
-                            @Override
-                            public void success_is_true() {
-                                Log.d(TAG, "onCountdownModifyButtons:countdownDelete:success_is_true: User clicked on delete. Trying to erase countdown.");
-                                storageMgr.deleteCountdown(countdown.getCountdownId());
-                                Toast.makeText(MainActivity.this, R.string.mainActivity_deletedCountdown, Toast.LENGTH_SHORT).show();
-                                reloadEverything(); //reload everything to remove countdown from nodelist
-                            }
+        //create dialog to ask user whether he wants really delete countdown
+        this.getDialogManager().showDialog_Generic(
+                getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_title),
+                getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_description),
+                getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_yesDelete),
+                getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_noCancel),
+                R.drawable.light_delete, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                    @Override
+                    public void success_is_true() {
+                        Log.d(TAG, "onClick_node_sl_bottomview_rightMenu_deleteNode:success_is_true: User clicked on delete. Trying to erase countdown.");
+                        getInternalCountdownStorageMgr().deleteCountdown(countdown.getCountdownId());
+                        Toast.makeText(MainActivity.this, R.string.mainActivity_deletedCountdown, Toast.LENGTH_SHORT).show();
+                        reloadEverything(); //reload everything to remove countdown from nodelist
+                    }
 
-                            @Override
-                            public void failure_is_false() {
-                                Log.d(TAG, "onCountdownModifyButtons:countdownDelete:failure_is_false: Countdown won't be deleted.");
-                            }
-                        });
-                break;
-            default:
-                Log.e(TAG, "onCountdownModifyButtons: Option does not exist: " + v.getId());
-        }
+                    @Override
+                    public void failure_is_false() {
+                        Log.d(TAG, "onClick_node_sl_bottomview_rightMenu_deleteNode:failure_is_false: Countdown won't be deleted.");
+                    }
+                });
     }
 
-    private int getCountdownIdFromNodeTag(@NonNull RelativeLayout v) { //used from onCountdownModifyButtons and onClick()
+    public void onClick_node_sl_bottomview_rightMenu_editNode(View v) {
+        //Get countdownId of corresponding node to perform actions
+        Countdown countdown = getCountdownFromNode(v);
+        if (countdown == null) {Log.e(TAG, "onClick_node_sl_bottomview_rightMenu_editNode: Countdown obj is null!");return;}
+
+        Intent modifyCountdownActivity = new Intent(this, ModifyCountdownActivity.class);
+        modifyCountdownActivity.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID, countdown.getCountdownId());
+        startActivity(modifyCountdownActivity);
+    }
+
+    public void onClick_node_sl_bottomview_rightMenu_toggleMotivationNode(View v) {
+        //Get countdownId of corresponding node to perform actions
+        Countdown countdown = getCountdownFromNode(v);
+        if (countdown == null) {Log.e(TAG, "onClick_node_sl_bottomview_rightMenu_toggleMotivationNode: Countdown obj is null!");return;}
+
+        if (countdown.isActive()) {
+            countdown.setActive(false);
+            Log.d(TAG, "onCountdownModifyButtons: Countdown " + countdown.getCountdownId() + " does not motivate now.");
+        } else {
+            countdown.setActive(true);
+            Log.d(TAG, "onCountdownModifyButtons: Countdown " + countdown.getCountdownId() + " does motivate now.");
+        }
+        countdown.savePersistently();
+        Resources res = getResources();
+        Toast.makeText(this, String.format(res.getString(R.string.mainActivity_countdownMotivationToggleOnOff), ((countdown.isActive()) ? res.getString(R.string.mainActivity_countdownMotivationToggleOnOff_activated) : res.getString(R.string.mainActivity_countdownMotivationToggleOnOff_deactivated))), Toast.LENGTH_SHORT).show();
+    }
+
+    private Countdown getCountdownFromNode(View v) { //needs to be Swipelayout!
+        Countdown countdown;
+        try {
+            countdown = this.getInternalCountdownStorageMgr().getCountdown(getCountdownIdFromNodeTag((SwipeLayout) v.getParent().getParent())); //2 getparent() because right Menu consists of more buttons
+        } catch (ClassCastException e) {
+            Log.e(TAG, "onClick_node_sl_bottomview_rightMenu_editNode: Could not cast parent view to SwipeLayout. Maybe it is not a node.");
+            return null;
+        }
+        return countdown;
+    }
+
+    private int getCountdownIdFromNodeTag(@NonNull SwipeLayout v) { //used from onCountdownModifyButtons and onClick()
         String nodeTag = (String) v.getTag(); //COUNTDOWN_N  --> N = CountdownActivity ID
         Log.d(TAG, "getCountdownIdFromNodeTag: Nodetag of countdown is: " + ((nodeTag == null) ? "null" : nodeTag));
         int nodeId = (-1);
@@ -239,30 +285,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ((TextView) countdownView.findViewById(R.id.countdownTitle)).setText(countdown.getCountdownTitle());
         ((TextView) countdownView.findViewById(R.id.countdownDescription)).setText(countdown.getCountdownDescription());
         ((TextView) countdownView.findViewById(R.id.startAndUntilDateTime)).setText(String.format(getResources().getString(R.string.mainActivity_countdownNode_DateTimeValues), countdown.getStartDateTime(), countdown.getUntilDateTime()));
-        countdownView.setTag(Constants.MAIN_ACTIVITY.COUNTDOWN_VIEW_TAG_PREFIX + countdown.getCountdownId()); //IMPORTANT: to determine what countdown to open in CountdownActivity
+        //Set tag to swipeLayout! so we can access it from every top/right menu etc.
+        swipeLayout.setTag(Constants.MAIN_ACTIVITY.COUNTDOWN_VIEW_TAG_PREFIX + countdown.getCountdownId()); //IMPORTANT: to determine what countdown to open in CountdownActivity
 
-        //set category color, if not valid or other then overwrite it with default color and save that countdown so this error will not happen again
-        try {
-            (countdownView.findViewById(R.id.categoryColorView)).setBackgroundColor(Color.parseColor(countdown.getCategory()));
-        } catch (Exception e) {
-            Log.e(TAG, "createAddNodeToLayout: ParseException by defining color! Selected default color and saved it into countdown.");
-            //Set default color
-            (countdownView.findViewById(R.id.categoryColorView)).setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
-            //save into countdown itself
-            countdown.setCategory("#" + Integer.toHexString(ContextCompat.getColor(this, R.color.colorPrimaryDark)));
-            countdown.savePersistently();
-            Toast.makeText(this, R.string.mainActivity_countdownNode_error_categoryColorWrongRetained, Toast.LENGTH_SHORT).show();
-        }
-        nodeList.addView(swipeLayout);
-        Log.d(TAG, "createAddNodeToLayout: Crafted countdown as node: " + countdownView.getTag());
+        //set category color
+        View categoryColor = (countdownView.findViewById(R.id.categoryColorView));
+        categoryColor.setBackgroundColor(Color.parseColor(countdown.getCategory()));
 
+        //expand categorycolor to whole height of node (because of wrap content) --> HAS TO BE AFTER SETTEXT (because they change the size of the view)
+        countdownView.measure(countdownView.getLayoutParams().width, countdownView.getLayoutParams().height); //remeasure because of settext etc.
+        //remain old width with own layoutparam.width and set new height with new measured parent height (-10 because of padding top/bottom in sum)
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(categoryColor.getLayoutParams().width, countdownView.getMeasuredHeight()); //set height of categorycolor view to same as relativelayout (not wrap content or match parent!)
+        categoryColor.setLayoutParams(layoutParams);
 
-        //Swipe layout configuration (node menu)
+        //Swipe layout configuration (node menu) -------------------------------
         swipeLayout.setShowMode(SwipeLayout.ShowMode.LayDown); //set show mode
 
         //Add drag edge (If BottomView has "layout_gravity" attribute, this line is unnecessary
         //IMPORTANT: findViewById mit vorangestellter SwipeLayout Instanz (damit mehrere Nodes möglich [error was: spec. Child already has a parent])
         swipeLayout.addDrag(SwipeLayout.DragEdge.Right, swipeLayout.findViewById(R.id.node_sl_bottomview_rightMenu));
+        swipeLayout.addDrag(SwipeLayout.DragEdge.Left, swipeLayout.findViewById(R.id.node_sl_bottomview_leftMenu));
+        //When superior layout is scrollable the swipelayout is not very useful because scrollview reacts
 
         //SwipeLayout listener
         swipeLayout.addSwipeListener(new SwipeLayout.SwipeListener() {
@@ -296,6 +339,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
+
+        nodeList.addView(swipeLayout);
+        Log.d(TAG, "createAddNodeToLayout: Crafted countdown as node: " + countdownView.getTag());
     }
 
     private void removeAllNodesFromLayout() {
@@ -348,7 +394,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         getResources().getString(R.string.mainActivity_countdownNode_deleteAll_warningDialog_description),
                         getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_yesDelete),
                         getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_noCancel),
-                        R.drawable.light_delete_big, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                        R.drawable.light_delete, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                             @Override
                             public void success_is_true() {
                                 Log.d(TAG, "onOptionsItemSelected:removeAllCountdowns:success_is_true: User clicked on delete. Trying to erase all countdowns.");
@@ -416,5 +462,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void setDialogManager(DialogManager dialogManager) {
         this.dialogManager = dialogManager;
+    }
+
+    public InternalCountdownStorageMgr getInternalCountdownStorageMgr() {
+        return internalCountdownStorageMgr;
+    }
+
+    public void setInternalCountdownStorageMgr(InternalCountdownStorageMgr internalCountdownStorageMgr) {
+        this.internalCountdownStorageMgr = internalCountdownStorageMgr;
+    }
+
+    public SwipeRefreshLayout getSwipeRefreshLayout() {
+        return swipeRefreshLayout;
+    }
+
+    public void setSwipeRefreshLayout(SwipeRefreshLayout swipeRefreshLayout) {
+        this.swipeRefreshLayout = swipeRefreshLayout;
     }
 }

@@ -51,9 +51,10 @@ public class AppSettingsActivity extends AppCompatActivity {
 
     private void enableDisableBatteryFields(boolean enabled) {
         //Hide battery field if forward compatibility off or reverse (because batterysaving does not do anything if deactivated)
-        int viewVisibility = (enabled) ? View.VISIBLE : View.GONE;
-        ((TableRow) findViewById(R.id.saveBattery_ROW)).setVisibility(viewVisibility);
-        ((TableRow) findViewById(R.id.saveBatteryDescription)).setVisibility(viewVisibility);
+        int viewVisibility = (enabled) ? View.VISIBLE : View.GONE; //use gone to make space
+        findViewById(R.id.saveBattery).setVisibility(viewVisibility);
+        findViewById(R.id.saveBatteryDescription).setVisibility(viewVisibility);
+        findViewById(R.id.saveBatteryLbl).setVisibility(viewVisibility);
     }
 
     private void setCustomListeners() {
