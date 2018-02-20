@@ -77,6 +77,13 @@ public class Countdown {
         this.setShowLiveCountdown(showLiveCountdown);
     }
 
+    public String getEventMsg() { //TODO: Only one msg (most relevant one) e.g. Expired, Starts on x, Expires on ..
+        //Craft event messages for countdown nodes (e.g.)
+        String eventMsg = "";
+
+        return eventMsg; //TODO: custom colors evtl. mini icons for special messages
+    }
+
     public void savePersistently() {
         InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(this.getContext());
         storageMgr.setSaveCountdown(this,true);

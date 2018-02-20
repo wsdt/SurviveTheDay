@@ -58,7 +58,7 @@
     <!-- Nodes -->
     <string name="node_countdownTitleError404">Countdown not found</string>
     <string name="node_countdownDescriptionError404">Please contact system administrator.</string>
-    <string name="node_countdownDateTimeValuesError404" translatable="false">dd.MM.JJJJ hh:mm:ss - dd.MM.JJJJ hh:mm:ss</string>
+    <string name="node_countdownEventMsg_nothingFound">Nothing interesting</string>
 
     <!-- SettingsActivity -->
     <string name="setting_forwardCompatibility_title">Forward compatibility</string>
