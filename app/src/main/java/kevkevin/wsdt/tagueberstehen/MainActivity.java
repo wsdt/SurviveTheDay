@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         //Manager setting up
         this.setInAppPurchaseManager(new InAppPurchaseManager(this));
         this.setDialogManager(new DialogManager(this));
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         this.getAdManager().initializeAdmob(); //no fullpage ad because this happens already in loading screen
         this.setMainActivityPage((RelativeLayout) findViewById(R.id.mainActivityPage));
         this.getAdManager().loadBannerAd(this.getMainActivityPage());
-        this.getAdManager().loadFullPageAd(null, null);
+        this.getAdManager().loadFullPageAd(null, null); //now frequency capping (so real interstitial ad is only 2x every 10 minutes shown when calling main activity)
 
         //Nodelist
         nodeList = (LinearLayout) findViewById(R.id.nodeList);

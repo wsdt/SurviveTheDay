@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import kevkevin.wsdt.tagueberstehen.R;
@@ -70,7 +71,11 @@ public class CountdownCounter {
             public void run() {
                 if (setZero) {
                     Log.d(TAG, "updateUI: Method called with setZero param! Setting all values to zero.");
+                    //TODO: Maybe dialog with share us or similar
                 }
+                //Set value for progressbar
+                ((ProgressBar) getActivityContext().findViewById(R.id.countdownProgressBar)).setProgress((setZero) ? Constants.COUNTDOWN_COUNTER.PROGRESS_ZERO_VALUE : (int) countdown.getRemainingPercentage(2, false));
+
                 //values[0] set Progress
                 //Change CountdownActivity values
                 ((TextView) getActivityContext().findViewById(R.id.countdownCounterSeconds)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format(Constants.GLOBAL.LOCALE,"%.2f", getTotalSeconds_SYNCED()));

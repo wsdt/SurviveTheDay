@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.support.v7.widget.ShareActionProvider;
 import android.widget.TextView;
@@ -22,6 +24,7 @@ import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CountdownCounter;
+import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
@@ -50,7 +53,7 @@ public class CountdownActivity extends AppCompatActivity {
         //make it possible to load and prevent stopping ui (also afterwards: because coutndown does not refresh!) --> esp. when fullpage from other activities opens to slow and gets closed in the countdownactivity
         //IMPORTANT: Do not place here fullpage ad because this blocks the countdown!
         adManager.loadBannerAd((RelativeLayout) findViewById(R.id.content_main));
-        //adManager.loadFullPageAd(null, null);
+        //adManager.loadFullPageAd(null, null); //why returns this asshole back to mainActivity?
 
 
         //Notifications regularly: How long do you need to work today or similar and easy type in maybe in notification bar!
@@ -155,6 +158,15 @@ public class CountdownActivity extends AppCompatActivity {
                 notificationContent.setY(hiddenPosition); //assign height*-1 so notification will get exactly behind display
                 Log.d(TAG, "showInAppNotificationIfAvailable: Tried to positionate inapp-notification outside screen: " + hiddenPosition);
 
+                //Set OnClickListener for close Button
+                notificationContent.findViewById(R.id.notificationClose).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, "showInAppNotificationIfAvailable:onClick: Tried to close inapp notification, because close btn clicked.");
+                        closeActiveInAppNotification(notificationContent, 0); //close instantly when clicking on button
+                    }
+                });
+
                 //TODO: multiple properties (alpha also so it hides or comes): https://stackoverflow.com/questions/28352352/change-multiple-properties-with-single-objectanimator
                 final ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(notificationContent, "y", 0); //get it back to positive animated (0 because we want no small space above shape)
                 objectAnimator.setDuration(Constants.COUNTDOWN_ACTIVITY.INAPP_NOTIFICATION_ANIMATION_DURATION_IN_MS); //1,5 seconds
@@ -171,12 +183,7 @@ public class CountdownActivity extends AppCompatActivity {
                     @Override
                     public void onAnimationEnd(Animator animator) {
                         if (count++ < 1) { //create new object animator because we want not the same animation but reverse
-                            //TODO: works now, but in future if extreme long texts notification might not get hidden completely (*2)
-                            ObjectAnimator objectAnimatorReverse = ObjectAnimator.ofFloat(notificationContent, "y", (hiddenPosition * 2)); //get it back to positive animated (*2 so it is in every case outside of screen [no idea why this might be necessary for long codes]
-                            objectAnimatorReverse.setDuration(Constants.COUNTDOWN_ACTIVITY.INAPP_NOTIFICATION_ANIMATION_DURATION_IN_MS);
-                            objectAnimatorReverse.setStartDelay(globalAppSettingsMgr.getInAppNotificationShowDurationInMs() + Constants.COUNTDOWN_ACTIVITY.INAPP_NOTIFICATION_ANIMATION_DURATION_IN_MS); //how long should be notification displayed (adding animation duration because time period delay is inclusive animation)
-                            objectAnimatorReverse.start(); //start again
-                            Log.d(TAG, "onAnimationEnd: Inapp notification repeated with delay in onAnimationEnd.");
+                            closeActiveInAppNotification(notificationContent, globalAppSettingsMgr.getInAppNotificationShowDurationInMs() + Constants.COUNTDOWN_ACTIVITY.INAPP_NOTIFICATION_ANIMATION_DURATION_IN_MS); //how long should be notification displayed (adding animation duration because time period delay is inclusive animation));
                         } else {
                             Log.d(TAG, "onAnimationEnd: Inapp notification animation finished.");
                         }
@@ -203,6 +210,16 @@ public class CountdownActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+    //Helper method for closeBtn of inAppNotification and objectAnimator end
+    private void closeActiveInAppNotification(@NonNull RelativeLayout notificationContent, int delay) {
+        ObjectAnimator objectAnimatorClose = ObjectAnimator.ofFloat(notificationContent, "alpha", 0);
+        objectAnimatorClose.setDuration(Constants.COUNTDOWN_ACTIVITY.INAPP_NOTIFICATION_CLOSE_ANIMATION_DURATION_IN_MS);
+        objectAnimatorClose.setStartDelay(delay);
+        objectAnimatorClose.start(); //no delay if clicked on close btn, but delay if automatic close
+        Log.d(TAG, "closeActiveInAppNotification: Tried to close active in app notification.");
+    }
+
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -272,18 +289,4 @@ public class CountdownActivity extends AppCompatActivity {
     public void setCountdownCounter(CountdownCounter countdownCounter) {
         this.countdownCounter = countdownCounter;
     }
-
-
-    /*@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_shareCountdown:
-                Log.d(TAG, "onOptionsItemSelected: Trying to share countdown (start procedure).");
-                this.refreshShareIntent(); //refresh values
-                break;
-            default:
-                Log.e(TAG, "onOptionsItemSelected: Button does not exist: " + item.getItemId());
-        }
-        return true;
-    }*/
 }
