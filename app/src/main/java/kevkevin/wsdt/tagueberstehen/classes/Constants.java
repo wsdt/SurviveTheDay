@@ -142,12 +142,14 @@ public class Constants {
     public interface COUNTDOWN_COUNTER {
         //was in early versions the asynctask (now outsourced in own class with threads etc.)
         int REFRESH_UI_EVERY_X_MS = 400;
+        int PROGRESS_ZERO_VALUE = 100; //so finished
         String TOTAL_TIMEUNIT_ZERO_VALUE = "0.00";
         String BIG_COUNTDOWN_ZERO_VALUE = "0:0:0:0:0:0:0";
     }
 
     public interface COUNTDOWN_ACTIVITY {
         int INAPP_NOTIFICATION_ANIMATION_DURATION_IN_MS = 1500;
+        int INAPP_NOTIFICATION_CLOSE_ANIMATION_DURATION_IN_MS = 500;
     }
 
     public interface MAIN_ACTIVITY {

@@ -176,7 +176,7 @@ public class AdManager {
                     @Override
                     public void onAdClosed() {
                         //if ad closed go to gotoActivity
-                        Log.d(TAG, "onAdClosed: Interstitial ad got closed and new activity got started.");
+                        Log.d(TAG, "onAdClosed: Interstitial ad got closed and new activity might get started.");
                         if (goToActivityAfterShown != null) {
                             Log.d(TAG, "onAdClosed: gotoActivity is not null.");
                             getContext().startActivity(goToActivityAfterShown);

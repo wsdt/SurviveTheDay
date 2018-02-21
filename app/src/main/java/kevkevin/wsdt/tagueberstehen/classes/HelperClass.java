@@ -1,8 +1,12 @@
 package kevkevin.wsdt.tagueberstehen.classes;
 
 
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import kevkevin.wsdt.tagueberstehen.R;
@@ -10,7 +14,7 @@ import kevkevin.wsdt.tagueberstehen.R;
 public class HelperClass {
     private static final String TAG = "HelperClass";
 
-    public static Spinner setIntervalSpinnerConfigurations(Spinner spinner, int arrayIntervalSpinnerLabels, int defaultPos) {
+    public static void setIntervalSpinnerConfigurations(Spinner spinner, int arrayIntervalSpinnerLabels, int defaultPos) {
         //Spinner spinner = (Spinner) findViewById(R.id.notificationIntervalSpinner);
         //Create an arrayadapter using string array from strings.xml and default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(spinner.getContext(),
@@ -25,7 +29,6 @@ public class HelperClass {
             Log.e(TAG, "setIntervalSpinnerConfigurations: Did not find entry for Spinner: "+defaultPos);
         }
         Log.d(TAG, "setIntervalSpinnerConfigurations: Tried to set spinner properties.");
-        return spinner;
     }
 
     //inner class

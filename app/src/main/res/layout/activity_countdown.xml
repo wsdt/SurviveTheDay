@@ -22,13 +22,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+
+            <!-- PROGRESSBAR for countdown (how much achieved) -->
+            <ProgressBar
+                android:id="@+id/countdownProgressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_centerHorizontal="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_margin="5dp"
+                android:progress="100"
+                android:max="100"
+                android:minWidth="200dp"
+                android:indeterminate="false"/>
+
             <TextView
                 android:id="@+id/countdownCounter"
                 style="@style/Countdown"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="75dp"
+                android:layout_marginTop="15dp"
+                android:layout_below="@id/countdownProgressBar"
                 android:text="@string/countdownActivity_countdownMainCounter_zero" />
 
 
@@ -228,8 +244,26 @@
             android:layout_below="@id/notificationHeading"
             android:layout_marginLeft="44dp"
             android:layout_marginStart="44dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginRight="25dp"
+            android:justificationMode="inter_word"
+            android:layout_marginBottom="5dp"
             android:text="@string/countdownActivity_inAppNotification_error404_description"
-            android:textSize="13sp" />
+            android:textSize="13sp" /><!-- MarginRight/End to prevent operlapping with close button -->
+
+        <ImageView
+            android:id="@+id/notificationClose"
+            android:src="@drawable/light_close"
+            android:contentDescription="inAppNotification_Close"
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"/>
     </RelativeLayout>
 </RelativeLayout>
 
