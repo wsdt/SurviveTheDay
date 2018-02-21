@@ -5,6 +5,8 @@
     <color name="colorAccent">#FF8140</color>
     <color name="colorDark">#111</color>
     <color name="colorLightdark">#555</color>
+    <color name="colorGrey">#666</color>
+    <color name="colorLightGrey">#888</color>
     <color name="colorSlightlygrey">#aaa</color>
     <color name="colorLight">#ddd</color>
     <color name="colorWhite">#fff</color>

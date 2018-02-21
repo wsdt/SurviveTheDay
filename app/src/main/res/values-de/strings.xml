@@ -30,6 +30,7 @@
     <string name="nodeTemplate_editBtn_contentDescription">Der Bearbeiten-Button wird verwendet, um einen bestehenden Countdown zu modifizieren.</string>
     <string name="nodeTemplate_deleteBtn_contentDescription">Der Löschen-Button wird verwendet, um einen bestehenden Countdown zu löschen.</string>
     <string name="nodeTemplate_openCountdownBtn_contentDescription">Der Öffnen-Button wird verwendet, um den bestehenden Countdown zu öffnen.</string>
+    <string name="nodeTemplate_eventMsg_icon_error">Error-Icon wenn Event-Nachricht nicht gesetzt wurde.</string>
 
     <!-- #################################### ACTIVITIES ################################################## -->
     <!-- MainActivity -->
@@ -55,6 +56,11 @@
     <string name="node_countdownTitleError404">Countdown nicht gefunden</string>
     <string name="node_countdownDescriptionError404">Bitte Systemadministrator kontaktieren.</string>
     <string name="node_countdownEventMsg_nothingFound">Nicht zu melden</string>
+    <string name="node_countdownEventMsg_countdownNotStartedYet">Startet am %1$s</string>
+    <string name="node_countdownEventMsg_countdownRunning">Aktiv (%1$s)</string>
+    <string name="node_countdownEventMsg_countdownRunning_MotivationStatus_active">Motiviert</string>
+    <string name="node_countdownEventMsg_countdownRunning_MotivationStatus_inactive">Motiviert nicht</string>
+    <string name="node_countdownEventMsg_countdownExpired">Abgelaufen am %1$s</string>
 
     <!-- SettingsActivity -->
     <string name="setting_forwardCompatibility_title">Vorwärtskompatibilität</string>

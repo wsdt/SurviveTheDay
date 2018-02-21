@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">SurviveTheDay</string>
+    <string name="app_name" translatable="false">Survive The Day</string>
     <string name="app_owner" translatable="false">© Kevin Riedl, 2018</string>
     <string name="app_owner_mail" translatable="false">kevin.riedl.privat@gmail.com</string>
     <string name="app_version_label">App-Version: </string>
@@ -33,6 +33,7 @@
     <string name="nodeTemplate_editBtn_contentDescription">Edit-Button is used to modify an existing countdown.</string>
     <string name="nodeTemplate_deleteBtn_contentDescription">Delete-Button is used to delete an existing countdown.</string>
     <string name="nodeTemplate_openCountdownBtn_contentDescription">Open-Button is used to calculate/open the current countdown.</string>
+    <string name="nodeTemplate_eventMsg_icon_error">Error-Icon when message was not set.</string>
 
     <!-- #################################### ACTIVITIES ################################################## -->
     <!-- MainActivity -->
@@ -59,6 +60,11 @@
     <string name="node_countdownTitleError404">Countdown not found</string>
     <string name="node_countdownDescriptionError404">Please contact system administrator.</string>
     <string name="node_countdownEventMsg_nothingFound">Nothing interesting</string>
+    <string name="node_countdownEventMsg_countdownNotStartedYet">Starts on %1$s</string>
+    <string name="node_countdownEventMsg_countdownRunning">Running (%1$s)</string>
+    <string name="node_countdownEventMsg_countdownRunning_MotivationStatus_active">Motivating</string>
+    <string name="node_countdownEventMsg_countdownRunning_MotivationStatus_inactive">Not motivating</string>
+    <string name="node_countdownEventMsg_countdownExpired">Expired on %1$s</string>
 
     <!-- SettingsActivity -->
     <string name="setting_forwardCompatibility_title">Forward compatibility</string>

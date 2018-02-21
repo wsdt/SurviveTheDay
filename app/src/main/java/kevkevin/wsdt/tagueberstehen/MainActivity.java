@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         this.getAdManager().initializeAdmob(); //no fullpage ad because this happens already in loading screen
         this.setMainActivityPage((RelativeLayout) findViewById(R.id.mainActivityPage));
         this.getAdManager().loadBannerAd(this.getMainActivityPage());
+        this.getAdManager().loadFullPageAd(null, null);
 
         //Nodelist
         nodeList = (LinearLayout) findViewById(R.id.nodeList);
@@ -85,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         this.invalidateOptionsMenu(); //invalidate also options menu (no need in reloadEverything, would be too often [only in PurchaseActivity ads will be removed, so restart() is enough])
     }
 
-    private void reloadEverything() {
+    private void reloadEverything() { //TODO: use if possible for small changes (like motivation toggle not this method (only change text --> better user experience)
         //reload all nodes from sharedpreferences (remove them beforehand)
         removeAllNodesFromLayout();
         loadAddNodes();
@@ -237,6 +238,7 @@ public class MainActivity extends AppCompatActivity {
         }
         countdown.savePersistently();
         Resources res = getResources();
+        reloadEverything(); //reloadEverything because we have now eventMessages on node which might be different now!
         Toast.makeText(this, String.format(res.getString(R.string.mainActivity_countdownMotivationToggleOnOff), ((countdown.isActive()) ? res.getString(R.string.mainActivity_countdownMotivationToggleOnOff_activated) : res.getString(R.string.mainActivity_countdownMotivationToggleOnOff_deactivated))), Toast.LENGTH_SHORT).show();
     }
 
@@ -284,7 +286,9 @@ public class MainActivity extends AppCompatActivity {
         RelativeLayout countdownView = swipeLayout.findViewById(R.id.node_countdown);
         ((TextView) countdownView.findViewById(R.id.countdownTitle)).setText(countdown.getCountdownTitle());
         ((TextView) countdownView.findViewById(R.id.countdownDescription)).setText(countdown.getCountdownDescription());
-        ((TextView) countdownView.findViewById(R.id.countdownEventMsg)).setText(countdown.getEventMsg());
+        //set event msg to view (with icon, color etc. in method automatically)
+        countdown.getEventMsgOrAndSetView(((LinearLayout) countdownView.findViewById(R.id.countdownEventMsg_ll))); //sets text etc. (works because of reference)
+
         //((TextView) countdownView.findViewById(R.id.startAndUntilDateTime)).setText(String.format(getResources().getString(R.string.mainActivity_countdownNode_DateTimeValues), countdown.getStartDateTime(), countdown.getUntilDateTime()));
         //Set tag to swipeLayout! so we can access it from every top/right menu etc.
         swipeLayout.setTag(Constants.MAIN_ACTIVITY.COUNTDOWN_VIEW_TAG_PREFIX + countdown.getCountdownId()); //IMPORTANT: to determine what countdown to open in CountdownActivity

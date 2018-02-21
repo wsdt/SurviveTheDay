@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.daimajia.swipe.SwipeLayout
+<com.daimajia.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/node_swipeLayout"
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="5dp">
@@ -12,67 +11,72 @@
     <!-- LEFT MENU: Bottom View Start (width as match parent so full width for this case nicer) -->
     <LinearLayout
         android:id="@+id/node_sl_bottomview_leftMenu"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorDark"
         android:onClick="onClick_node_sl_bottomview_leftMenu_openCountdown"
+        android:orientation="horizontal"
         android:weightSum="1">
+
         <ImageView
-            android:contentDescription="@string/nodeTemplate_openCountdownBtn_contentDescription"
             android:layout_width="70dp"
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
+            android:contentDescription="@string/nodeTemplate_openCountdownBtn_contentDescription"
             android:padding="15dp"
-            android:src="@drawable/light_open"/>
+            android:scaleType="fitCenter"
+            android:src="@drawable/light_open" />
+
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:text="@string/mainActivity_swipeLayout_topMenu_openCountdown_text"
             android:textColor="@color/colorWhite"
-            android:layout_gravity="center_vertical"
-            android:textSize="20sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:textSize="20sp" />
     </LinearLayout>
     <!-- TOP MENU: Bottom View End -->
 
     <!-- RIGHT MENU: Bottom View Start -->
     <LinearLayout
-        android:orientation="horizontal"
         android:id="@+id/node_sl_bottomview_rightMenu"
-        android:layout_height="match_parent"
         android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
         android:weightSum="1">
+
         <ImageView
-            android:contentDescription="@string/nodeTemplate_motivateMeBtn_contentDescription"
             android:layout_width="70dp"
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:padding="15dp"
             android:background="@color/colorPrimaryDark"
+            android:contentDescription="@string/nodeTemplate_motivateMeBtn_contentDescription"
             android:onClick="onClick_node_sl_bottomview_rightMenu_toggleMotivationNode"
-            android:src="@drawable/light_togglemotivation"/>
+            android:padding="15dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/light_togglemotivation" />
+
         <ImageView
-            android:contentDescription="@string/nodeTemplate_editBtn_contentDescription"
             android:layout_width="70dp"
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:padding="15dp"
             android:background="@color/colorBlue"
+            android:contentDescription="@string/nodeTemplate_editBtn_contentDescription"
             android:onClick="onClick_node_sl_bottomview_rightMenu_editNode"
-            android:src="@drawable/light_edit"/>
+            android:padding="15dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/light_edit" />
+
         <ImageView
-            android:contentDescription="@string/nodeTemplate_deleteBtn_contentDescription"
             android:layout_width="70dp"
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:padding="15dp"
             android:background="@color/colorRed"
+            android:contentDescription="@string/nodeTemplate_deleteBtn_contentDescription"
             android:onClick="onClick_node_sl_bottomview_rightMenu_deleteNode"
-            android:src="@drawable/light_delete"/>
+            android:padding="15dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/light_delete" />
     </LinearLayout>
     <!-- RIGHT MENU: Bottom View End -->
 
@@ -82,74 +86,81 @@
         style="@style/node"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="onClick_node_sl_instruction"
-        android:background="@color/colorWhite"><!-- android:background="@android:drawable/dialog_holo_light_frame" -->
+        android:background="@color/colorWhite"
+        android:onClick="onClick_node_sl_instruction"><!-- android:background="@android:drawable/dialog_holo_light_frame" -->
         <!-- Only add this programmatically: android:tag="COUNTDOWN_0"-->
 
         <View
             android:id="@+id/categoryColorView"
-            android:background="@color/colorPrimaryDark"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
             android:layout_width="5dp"
-            android:layout_height="5dp"/><!-- Height has to be programmatically set (default is 5)-->
+            android:layout_height="5dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="@color/colorPrimaryDark" /><!-- Height has to be programmatically set (default is 5)-->
 
         <!-- Because of text expansion there is maximum of 13 chars in this view [while editing]-->
         <TextView
             android:id="@+id/countdownTitle"
             style="@style/text"
-            android:layout_toRightOf="@+id/categoryColorView"
-            android:layout_toEndOf="@+id/categoryColorView"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_marginLeft="15dp"
             android:layout_marginStart="15dp"
+            android:layout_toEndOf="@+id/categoryColorView"
+            android:layout_toRightOf="@+id/categoryColorView"
             android:text="@string/node_countdownTitleError404" />
+
         <TextView
             android:id="@+id/countdownDescription"
             style="@style/text"
-            android:textSize="15sp"
-            android:text="@string/node_countdownDescriptionError404"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/countdownTitle"
+            android:layout_marginBottom="5dp"
             android:layout_marginLeft="15dp"
             android:layout_marginStart="15dp"
-            android:layout_marginBottom="5dp"
-            android:layout_below="@id/countdownTitle"
             android:layout_toEndOf="@+id/categoryColorView"
             android:layout_toRightOf="@+id/categoryColorView"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"/>
+            android:text="@string/node_countdownDescriptionError404"
+            android:textSize="15sp" />
 
         <!-- IMPORTANT: If you change IDs of those buttons you need to adapt MainActivity.java:onCountdownModifyButtons() method! -->
         <!-- @null as background for transparency -->
-        <TextView
-            android:id="@+id/countdownEventMsg"
-            android:text=""
-            style="@style/text"
+
+        <LinearLayout
+            android:id="@+id/countdownEventMsg_ll"
+            android:layout_marginBottom="-5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_below="@id/countdownDescription"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_margin="5dp"
-            android:textSize="15sp"/>
+            android:orientation="horizontal">
 
+            <ImageView
+                android:id="@+id/countdownEventMsgIcon"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_height="15dp"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/nodeTemplate_eventMsg_icon_error"
+                android:scaleType="fitCenter"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:src="@drawable/warning" />
 
-        <!-- TODO -->
-        <TextView
-            android:id="@+id/startAndUntilDateTime"
-            style="@style/text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/countdownDescription"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_margin="5dp"
-            android:text="@string/node_countdownEventMsg_nothingFound"
-            android:textSize="15sp" />
+            <TextView
+                android:id="@+id/countdownEventMsg"
+                style="@style/text"
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:text="@string/node_countdownEventMsg_nothingFound"
+                android:textSize="15sp" />
+        </LinearLayout>
     </RelativeLayout>
     <!-- Surface View End -->
 </com.daimajia.swipe.SwipeLayout>

@@ -16,21 +16,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <!-- IMPORTANT: Do NOT set orientation (portrait or similar) because Android 8.0 crashes because activity not fullscreen!  -->
 
-        <!-- Declare interstitial ad (admob) explicitely fullscreen [because Admob for Android 8.0 not uptodate enough] -->
+
+        <!-- Still necessary: Declare interstitial ad (admob) explicitely fullscreen [because Admob for Android 8.0 not uptodate enough] -->
         <activity
             android:name="com.google.android.gms.ads.AdActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            tools:replace="android:theme"/>
+            tools:replace="android:theme" />
 
-
-        <!-- screenOrientation and configChanges so only portrait mode [For Android 8.0 NEEDS TO BE FULLSCREEN!!] -->
         <activity
-            android:name=".LoadingScreenActivity"
-            android:configChanges="orientation"
-            android:noHistory="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/SplashTheme">
+            android:name=".MainActivity"
+            android:theme="@style/SplashThemeWithActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -38,6 +35,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
         <!-- Also splash theme here, so we can show appIcon while opening app from notification (BUT WITH ACTIONBAR) -->
         <activity
             android:name=".CountdownActivity"
@@ -56,12 +55,6 @@
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
-        <!--
-            <activity
-            android:name=".util.InAppPurchaseActivity"
-            android:label="In App Purchase"
-            android:theme="@style/AppTheme.NoActionBar" />
-        -->
         <activity
             android:name=".ModifyCountdownActivity"
             android:label="@string/title_activity_modify_countdown">
@@ -69,19 +62,18 @@
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".AppSettingsActivity"
+            android:label="@string/title_activity_settings">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".AppSettingsActivity"
-            android:label="@string/title_activity_settings" />
-        <activity
             android:name=".RewardedVideoAdActivity"
             android:noHistory="true"
             android:theme="@style/SplashTheme" />
-        <activity android:name=".InAppPurchaseActivity"/>
+        <activity android:name=".InAppPurchaseActivity" />
 
         <!-- BROADCAST RECEIVERS FOR REGULAR NOTIFICATIONS (maybe replacing background service in future) -->
         <receiver

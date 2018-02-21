@@ -1,15 +1,11 @@
 package kevkevin.wsdt.tagueberstehen.classes.services;
 
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import kevkevin.wsdt.tagueberstehen.LoadingScreenActivity;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
-import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
