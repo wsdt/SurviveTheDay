@@ -184,14 +184,9 @@
 
     <!-- QUOTE VIEW (will be shown for a specific period of time when opening this activity from a notification) -->
     <RelativeLayout
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginEnd="5dp"
         android:id="@+id/notificationContent"
         android:layout_centerHorizontal="true"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:alpha="0.95"
         android:background="@drawable/shape_inappnotification_template">
@@ -212,9 +207,11 @@
             android:contentDescription="Notification Icon"
             android:src="@drawable/warning" />
 
+        <!-- Mit absicht heading heller als fulltext -->
         <TextView
             android:id="@+id/notificationHeading"
             style="@style/CountdownSmall"
+            android:textColor="@color/colorWhite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
@@ -225,6 +222,7 @@
         <TextView
             android:id="@+id/notificationFullText"
             style="@style/CountdownSmall"
+            android:textColor="@color/colorLight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/notificationHeading"

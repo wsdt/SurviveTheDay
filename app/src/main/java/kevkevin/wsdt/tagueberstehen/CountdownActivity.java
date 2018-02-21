@@ -34,6 +34,8 @@ public class CountdownActivity extends AppCompatActivity {
     private Intent shareIntent; //used for refreshing extras
     private CountdownCounter countdownCounter;
 
+    //TODO: With swipeLayout or/and automatically random quotes (only quotes)
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -154,7 +156,7 @@ public class CountdownActivity extends AppCompatActivity {
                 Log.d(TAG, "showInAppNotificationIfAvailable: Tried to positionate inapp-notification outside screen: " + hiddenPosition);
 
                 //TODO: multiple properties (alpha also so it hides or comes): https://stackoverflow.com/questions/28352352/change-multiple-properties-with-single-objectanimator
-                final ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(notificationContent, "y", 15); //get it back to positive animated (+5 because we want a small space above shape)
+                final ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(notificationContent, "y", 0); //get it back to positive animated (0 because we want no small space above shape)
                 objectAnimator.setDuration(Constants.COUNTDOWN_ACTIVITY.INAPP_NOTIFICATION_ANIMATION_DURATION_IN_MS); //1,5 seconds
             /*objectAnimator.setRepeatCount(1); //show it and hide it after duration expired [making this with count var and restarting animation in onAnimationEnd()]
             objectAnimator.setRepeatMode(ValueAnimator.REVERSE);*/

@@ -10,7 +10,7 @@ import kevkevin.wsdt.tagueberstehen.R;
 public class HelperClass {
     private static final String TAG = "HelperClass";
 
-    public static Spinner setIntervalSpinnerConfigurations(Spinner spinner, int arrayIntervalSpinnerLabels) {
+    public static Spinner setIntervalSpinnerConfigurations(Spinner spinner, int arrayIntervalSpinnerLabels, int defaultPos) {
         //Spinner spinner = (Spinner) findViewById(R.id.notificationIntervalSpinner);
         //Create an arrayadapter using string array from strings.xml and default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(spinner.getContext(),
@@ -19,6 +19,11 @@ public class HelperClass {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         //apply adapter to spinner
         spinner.setAdapter(adapter);
+        try {
+            spinner.setSelection(defaultPos);
+        } catch (IndexOutOfBoundsException e) {
+            Log.e(TAG, "setIntervalSpinnerConfigurations: Did not find entry for Spinner: "+defaultPos);
+        }
         Log.d(TAG, "setIntervalSpinnerConfigurations: Tried to set spinner properties.");
         return spinner;
     }

@@ -62,7 +62,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         this.setDialogManager(new DialogManager(this));
 
         //Set List for intervalsetter (spinner)
-        HelperClass.setIntervalSpinnerConfigurations((Spinner) findViewById(R.id.notificationIntervalSpinner), R.array.countdownIntervalSpinner_LABELS);
+        HelperClass.setIntervalSpinnerConfigurations((Spinner) findViewById(R.id.notificationIntervalSpinner), R.array.countdownIntervalSpinner_LABELS, 8);
         //setIntervalSpinnerConfigurations();
 
         try {

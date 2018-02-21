@@ -3,7 +3,6 @@ package kevkevin.wsdt.tagueberstehen.classes.services;
 
 import android.app.NotificationManager;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.Looper;
@@ -14,7 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import kevkevin.wsdt.tagueberstehen.LoadingScreenActivity;
+import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
@@ -56,7 +55,7 @@ public class CountdownCounterService extends Service {
 
 
         //Notification Manager and Internal Storage Mgr in shouldThisServiceBeKilled() NEEDED! (NullPointerException)
-        this.setCustomNotificationMgr(new CustomNotification(this, LoadingScreenActivity.class, (NotificationManager) getSystemService(NOTIFICATION_SERVICE)));
+        this.setCustomNotificationMgr(new CustomNotification(this, CountdownActivity.class, (NotificationManager) getSystemService(NOTIFICATION_SERVICE)));
         this.setInternalCountdownStorageMgr(new InternalCountdownStorageMgr(this));
 
         //normally inapp purchase mgr context should be an activity, but as long as we do not try to launch purchases we will not get an error!

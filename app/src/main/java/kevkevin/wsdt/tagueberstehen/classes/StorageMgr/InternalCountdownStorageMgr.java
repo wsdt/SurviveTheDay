@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import kevkevin.wsdt.tagueberstehen.LoadingScreenActivity;
+import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
@@ -232,7 +232,7 @@ public class InternalCountdownStorageMgr {
 
         if (new GlobalAppSettingsMgr(this.getContext()).useForwardCompatibility()) {
             //TODO: only do this when not already active (otherwise intervals will get restarted)
-            (new CustomNotification(this.getContext(), LoadingScreenActivity.class, (NotificationManager) this.getContext().getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications(this.getContext());
+            (new CustomNotification(this.getContext(), CountdownActivity.class, (NotificationManager) this.getContext().getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications(this.getContext());
             Log.d(TAG, "restartNotificationService: Rescheduled all broadcast receivers.");
         } else {
             Intent serviceIntent = new Intent(this.getContext(), NotificationService.class);

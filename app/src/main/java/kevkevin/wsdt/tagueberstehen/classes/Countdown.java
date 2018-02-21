@@ -1,11 +1,19 @@
 package kevkevin.wsdt.tagueberstehen.classes;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.os.Handler;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -77,16 +85,55 @@ public class Countdown {
         this.setShowLiveCountdown(showLiveCountdown);
     }
 
-    public String getEventMsg() { //TODO: Only one msg (most relevant one) e.g. Expired, Starts on x, Expires on ..
-        //Craft event messages for countdown nodes (e.g.)
-        String eventMsg = "";
 
-        return eventMsg; //TODO: custom colors evtl. mini icons for special messages
+    /**
+     * getEventMsg:
+     *
+     * @param eventMessageLinearLayout: If linearlayout is null, then method returns eventMsg as string, otherwise it sets the text of the view etc.
+     */
+    public String getEventMsgOrAndSetView(@Nullable LinearLayout eventMessageLinearLayout) { //Only one msg (most relevant one) e.g. Expired, Starts on x, Expires on ..
+        //Craft event messages for countdown nodes (e.g.)
+        String eventMsgStr;
+        int textColor; //is only used when textView is not null
+        int eventIcon; //only used when textView not null
+
+        if (!this.isStartDateInThePast()) {
+            //startdate in future (starts on x)
+            eventMsgStr = String.format(this.getContext().getResources().getString(R.string.node_countdownEventMsg_countdownNotStartedYet), this.getStartDateTime());
+            textColor = R.color.colorBlue;
+            eventIcon = R.drawable.colorblue_eventmsg_startdateinfuture;
+        } else if (this.isUntilDateInTheFuture()) {
+            //because of else if startdate in past and untildateinfuture (= running)
+            eventMsgStr = String.format(this.getContext().getResources().getString(R.string.node_countdownEventMsg_countdownRunning),
+                    (this.isActive() || this.isShowLiveCountdown()) ? this.getContext().getResources().getString(R.string.node_countdownEventMsg_countdownRunning_MotivationStatus_active) : this.getContext().getResources().getString(R.string.node_countdownEventMsg_countdownRunning_MotivationStatus_inactive));
+            textColor = R.color.colorPrimaryDark;
+            eventIcon = R.drawable.primarygreen_eventmsg_motivationon;
+        } else {
+            //because of else if startdate in past, untildate in past --> expired
+            eventMsgStr = String.format(this.getContext().getResources().getString(R.string.node_countdownEventMsg_countdownExpired), this.getUntilDateTime());
+            textColor = R.color.colorRed;
+            eventIcon = R.drawable.colorred_eventmsg_countdownexpired;
+        }
+
+        if (eventMessageLinearLayout != null) {
+            TextView eventMsgTextView = (TextView) eventMessageLinearLayout.findViewById(R.id.countdownEventMsg);
+            ImageView eventMsgImageView = (ImageView) eventMessageLinearLayout.findViewById(R.id.countdownEventMsgIcon);
+            if (eventMsgTextView != null) {
+                eventMsgTextView.setText(eventMsgStr);
+                eventMsgTextView.setTextColor(this.getContext().getResources().getColor(textColor));
+            } //not else if!
+            if (eventMsgImageView != null) {
+                eventMsgImageView.setImageBitmap(BitmapFactory.decodeResource(this.getContext().getResources(), eventIcon)); // when textview found there must be also imageview
+            }
+            Log.d(TAG, "getEventMsg: Tried to set message and color etc. to view. Color: " + textColor);
+        }
+
+        return eventMsgStr;
     }
 
     public void savePersistently() {
         InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(this.getContext());
-        storageMgr.setSaveCountdown(this,true);
+        storageMgr.setSaveCountdown(this, true);
     }
 
     public float getRemainingPercentage(int anzahlNachkomma, boolean getRemainingOtherwisePassedPercentage) { //min is 1, if 0 then it will be still min 1 nachkommastelle (but always 0!) because of double format itself
@@ -101,11 +148,11 @@ public class Countdown {
             DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Constants.GLOBAL.LOCALE);
             df.setMaximumFractionDigits(Constants.COUNTDOWN.MAXIMUM_FRACTION_DIGITS); //min might be 0 (nachkommastellen)
 
-            double percentageValueUnformatted ;
+            double percentageValueUnformatted;
             if (getRemainingOtherwisePassedPercentage) {
                 percentageValueUnformatted = (leftXpercentSeconds / all100percentSeconds) * 100;
             } else {
-                percentageValueUnformatted = 100-((leftXpercentSeconds / all100percentSeconds) * 100); //get passed percentage if false
+                percentageValueUnformatted = 100 - ((leftXpercentSeconds / all100percentSeconds) * 100); //get passed percentage if false
             }
             //TODO: now again with more than only two nachkommastellen (formatting not working) --> as string formatted, but then back to float with multiple digits
             float result = df.parse(df.format(percentageValueUnformatted)).floatValue(); //formatting percentage to 2 nachkommastellen
@@ -129,6 +176,7 @@ public class Countdown {
     public boolean isStartDateInThePast() {
         return (getDateTime(getStartDateTime()).compareTo(getCurrentDateTime()) <= 0); //only if in the past or NOW
     }
+
     public boolean isUntilDateInTheFuture() {
         return (getDateTime(getUntilDateTime()).compareTo(getCurrentDateTime()) > 0); //only if in the future
     }
@@ -139,18 +187,18 @@ public class Countdown {
         try {
             if (getDateTime(getStartDateTime()).compareTo(getCurrentDateTime()) > 0) {
                 //date is in the future
-                Toast.makeText(this.getContext(),String.format(res.getString(R.string.countdown_info_startDateInFuture),this.getStartDateTime()),Toast.LENGTH_SHORT).show();
+                Toast.makeText(this.getContext(), String.format(res.getString(R.string.countdown_info_startDateInFuture), this.getStartDateTime()), Toast.LENGTH_SHORT).show();
                 totalSeconds = 0D; //prevent from counting to infinity (because negative)
             } else {
                 //date is in the past and countdown started already
                 totalSeconds = Long.valueOf((getDateTime(getUntilDateTime()).getTimeInMillis() - getCurrentDateTime().getTimeInMillis()) / 1000).doubleValue();
             }
         } catch (NullPointerException e) {
-            Log.e("getTotalSeconds","totalSeconds could not be calculated. Nullpointerexception!");
+            Log.e("getTotalSeconds", "totalSeconds could not be calculated. Nullpointerexception!");
             e.printStackTrace();
         }
         if (totalSeconds < 0) {
-            Toast.makeText(this.getContext(),String.format(res.getString(R.string.countdown_info_untilDateInPast),this.getUntilDateTime()),Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.getContext(), String.format(res.getString(R.string.countdown_info_untilDateInPast), this.getUntilDateTime()), Toast.LENGTH_SHORT).show();
             totalSeconds = 0D; //prevent from counting to infinity (because negative)
         }
 
@@ -161,19 +209,25 @@ public class Countdown {
     public String getBigCountdownCurrentValues_String() {
         //IMPORTANT: Lieber so extra nochmal rechnen (zwar mehr code, aber weniger abarbeitung, da nicht zusätzlich noch HashMap.put und get
         Long seconds = this.getTotalSeconds().longValue();
-        Log.d("calculateParams","Total seconds: "+seconds);
-        Long years = seconds / (365*24*60*60); seconds -= (years > 0) ? (365*24*60*60)*years : 0; //only subtract if years occurs at least 1 time
-        Log.d("calculateParams","Years: "+years+" // Left seconds: "+seconds);
-        Long months = seconds / (30*24*60*60); seconds -= (months > 0) ? (30*24*60*60)*months : 0;  // * with months e.g. because there might be more than one month to substract
-        Log.d("calculateParams","Months: "+months+" // Left seconds: "+seconds);
-        Long weeks = seconds / (7*24*60*60); seconds -= (weeks > 0) ? (7*24*60*60)*weeks : 0;
-        Log.d("calculateParams","Weeks: "+weeks+" // Left seconds: "+seconds);
-        Long days = seconds / (24*60*60); seconds -= (days > 0) ? (24*60*60)*days : 0;
-        Log.d("calculateParams","Days: "+days+" // Left seconds: "+seconds);
-        Long hours = seconds / (60*60); seconds -= (hours > 0) ? (60*60)*hours : 0;
-        Log.d("calculateParams","Hours: "+hours+" // Left seconds: "+seconds);
-        Long minutes = seconds / 60; seconds -= (minutes > 0) ? (60)*minutes : 0;
-        Log.d("calculateParams","Minutes: "+minutes+" // Left seconds: "+seconds);
+        Log.d("calculateParams", "Total seconds: " + seconds);
+        Long years = seconds / (365 * 24 * 60 * 60);
+        seconds -= (years > 0) ? (365 * 24 * 60 * 60) * years : 0; //only subtract if years occurs at least 1 time
+        Log.d("calculateParams", "Years: " + years + " // Left seconds: " + seconds);
+        Long months = seconds / (30 * 24 * 60 * 60);
+        seconds -= (months > 0) ? (30 * 24 * 60 * 60) * months : 0;  // * with months e.g. because there might be more than one month to substract
+        Log.d("calculateParams", "Months: " + months + " // Left seconds: " + seconds);
+        Long weeks = seconds / (7 * 24 * 60 * 60);
+        seconds -= (weeks > 0) ? (7 * 24 * 60 * 60) * weeks : 0;
+        Log.d("calculateParams", "Weeks: " + weeks + " // Left seconds: " + seconds);
+        Long days = seconds / (24 * 60 * 60);
+        seconds -= (days > 0) ? (24 * 60 * 60) * days : 0;
+        Log.d("calculateParams", "Days: " + days + " // Left seconds: " + seconds);
+        Long hours = seconds / (60 * 60);
+        seconds -= (hours > 0) ? (60 * 60) * hours : 0;
+        Log.d("calculateParams", "Hours: " + hours + " // Left seconds: " + seconds);
+        Long minutes = seconds / 60;
+        seconds -= (minutes > 0) ? (60) * minutes : 0;
+        Log.d("calculateParams", "Minutes: " + minutes + " // Left seconds: " + seconds);
         //Seconds has the rest!
 
         Character separator = ':';
@@ -192,10 +246,13 @@ public class Countdown {
     private String getCurrentDateTimeStr() {
         return getDateTime(new GregorianCalendar());
     }
-    private GregorianCalendar getCurrentDateTime() { return new GregorianCalendar(); }
+
+    private GregorianCalendar getCurrentDateTime() {
+        return new GregorianCalendar();
+    }
 
     private String getDateTime(int day, int month, int year, int hour, int minute, int second) {
-        return getDateTime(new GregorianCalendar(year,month,day,hour,minute,second));
+        return getDateTime(new GregorianCalendar(year, month, day, hour, minute, second));
     }
 
     //also needed in ModifyCountdownActivity
@@ -207,7 +264,7 @@ public class Countdown {
             result = new GregorianCalendar();
             result.setTime(date);
         } catch (ParseException e) {
-            Log.e("getDateTime","Could not parse Stringdate to GregorianCalender Date.");
+            Log.e("getDateTime", "Could not parse Stringdate to GregorianCalender Date.");
             e.printStackTrace();
             return null; //abort further execution of method
         }
@@ -215,7 +272,7 @@ public class Countdown {
     }
 
     private String getDateTime(GregorianCalendar c) { //IMPORTANT: Separation of dot must be the same for all attributes
-        return c.get(Calendar.DAY_OF_MONTH)+"."+c.get(Calendar.MONTH)+"."+c.get(Calendar.YEAR)+" "+c.get(Calendar.HOUR)+":"+c.get(Calendar.MINUTE)+":"+c.get(Calendar.SECOND);
+        return c.get(Calendar.DAY_OF_MONTH) + "." + c.get(Calendar.MONTH) + "." + c.get(Calendar.YEAR) + " " + c.get(Calendar.HOUR) + ":" + c.get(Calendar.MINUTE) + ":" + c.get(Calendar.SECOND);
     }
 
 
@@ -223,10 +280,11 @@ public class Countdown {
     private String escapeForSharedPreferences(@NonNull String string) { //replaces ; to , e.g.
         Log.d(TAG, "escapeForSharedPreferences: Trying to escape string for shared preferences.");
         if (string.contains(Constants.COUNTDOWN.ESCAPE.escapeForSharedPreferences_illegalCharacter)) {
-            string = string.replace(Constants.COUNTDOWN.ESCAPE.escapeForSharedPreferences_illegalCharacter,Constants.COUNTDOWN.ESCAPE.escapeForSharedPreferences_legalCharacter);
+            string = string.replace(Constants.COUNTDOWN.ESCAPE.escapeForSharedPreferences_illegalCharacter, Constants.COUNTDOWN.ESCAPE.escapeForSharedPreferences_legalCharacter);
         }
         return string;
     }
+
     private String escapeEnter(@NonNull String string) {
         Log.d(TAG, "escapeEnter: Trying to escape string for enter!");
         /* Used for CustomEdittext e.g. where no enter is allowed (so do not call this function on all countdown values (because we do not know whether new errors occur)*/

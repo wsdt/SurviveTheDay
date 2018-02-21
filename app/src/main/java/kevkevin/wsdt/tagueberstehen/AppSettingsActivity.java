@@ -41,7 +41,7 @@ public class AppSettingsActivity extends AppCompatActivity {
         this.inappNotificationShowDuration = (Spinner) findViewById(R.id.inappNotificationHowLongToShowValue);
 
         //Set spinner properties (inappnotification duration show)
-        HelperClass.setIntervalSpinnerConfigurations(this.inappNotificationShowDuration, R.array.inAppNotificationShowSpinner_LABELS_VALUES);
+        HelperClass.setIntervalSpinnerConfigurations(this.inappNotificationShowDuration, R.array.inAppNotificationShowSpinner_LABELS_VALUES,0);
 
         //Load current settings before attaching listeners etc.
         loadCurrentSettings();
