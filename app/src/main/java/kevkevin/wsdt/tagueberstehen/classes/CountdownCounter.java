@@ -1,17 +1,17 @@
 package kevkevin.wsdt.tagueberstehen.classes;
 
-import android.app.Activity;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.R;
 
 public class CountdownCounter {
     //DO NOT USE ASYNCTASK (not ideal for long running operations and also stops when sth. comes) ++++++++++++++++++++++++++++++++++++++++++++++
-    private Activity activityContext;
+    private CountdownActivity activityContext;
     private Countdown countdown;
     private Thread countdownCounterThread;
     private static final String TAG = "CountdownCounter";
@@ -34,11 +34,22 @@ public class CountdownCounter {
     private Long months = 0L; // [0-11]
     private Long years = 0L; // [0 - /]
 
-    public CountdownCounter(@NonNull Activity activityContext, @NonNull Countdown countdown) {
+    public CountdownCounter(@NonNull CountdownActivity activityContext, @NonNull Countdown countdown) {
         this.setActivityContext(activityContext);
         this.setCountdown(countdown);
     }
 
+    // COUNTDOWN DATA (random quote, etc.) -> everything that needs regular refresh like random quotes
+    private int automaticRefreshBuffer = 0;
+    private void automaticRefreshRandomQuote() { //gets called in updateUI() so it's handled on the Mainthread!
+        if ((automaticRefreshBuffer++) > Constants.COUNTDOWN_COUNTER.REFRESH_RANDOM_QUOTE_MULTIPLIKATOR && CountdownActivity.runGeneratingRandomQuotes) { //with this procedure we can handle this action in the same additional thread
+            automaticRefreshBuffer = 0; //reset buffer
+            this.getActivityContext().setNewRandomQuote(null); //method gets only called acc. buffer AND if swipeLayout is showing surfaceview (=quote view)
+        }
+    }
+
+
+    // COUNTDOWN ITSELF -------------------------------------------------------------------------------------------------
     public void runOnUI() { //######## IMPORTANT: Ensure that thread gets interrupted in onDestroy() of an activity ###################
         this.setCountdownCounterThread(new Thread(new Runnable() {
             @Override
@@ -61,7 +72,7 @@ public class CountdownCounter {
                 return;
             }
         }));
-        this.getCountdownCounterThread().start(); //TODO: ensure that thread runs only on countdownActivity! (not multiple times in background)
+        this.getCountdownCounterThread().start();
     }
 
 
@@ -94,6 +105,8 @@ public class CountdownCounter {
                                 getHours() + ":" +
                                 getMinutes() + ":" +
                                 getSeconds());
+
+                automaticRefreshRandomQuote(); //refresh random quote after updating countdown
             }
         });
     }
@@ -137,11 +150,11 @@ public class CountdownCounter {
 
 
     //GETTER/SETTER ###########################################################
-    public Activity getActivityContext() {
+    public CountdownActivity getActivityContext() {
         return activityContext;
     }
 
-    public void setActivityContext(Activity activityContext) {
+    public void setActivityContext(CountdownActivity activityContext) {
         this.activityContext = activityContext;
     }
 

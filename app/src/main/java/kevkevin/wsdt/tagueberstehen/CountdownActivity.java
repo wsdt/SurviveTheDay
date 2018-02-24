@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -13,18 +14,24 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.support.v7.widget.ShareActionProvider;
+import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
+
+import com.daimajia.swipe.SwipeLayout;
+
+import java.util.Random;
 
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CountdownCounter;
-import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
@@ -36,6 +43,7 @@ public class CountdownActivity extends AppCompatActivity {
     private GlobalAppSettingsMgr globalAppSettingsMgr;
     private Intent shareIntent; //used for refreshing extras
     private CountdownCounter countdownCounter;
+    public static boolean runGeneratingRandomQuotes = true; //true by default, because surfaceView, when false then countdownCounter thread will NOT automatically refresh quotes (also used to pause etc.)
 
     //TODO: With swipeLayout or/and automatically random quotes (only quotes)
 
@@ -64,7 +72,10 @@ public class CountdownActivity extends AppCompatActivity {
         this.setLastIntent(getIntent());
         this.countdownId = this.getLastIntent().getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID, -1);
         //maybe by main menu or notification, but we get the same Extra: COUNTDOWN_ID with the ID
-        startCountdownOnUI((new InternalCountdownStorageMgr(this).getCountdown(this.countdownId))); //0 is default value
+        if (this.getCountdown() == null) {this.setCountdown((new InternalCountdownStorageMgr(this).getCountdown(this.countdownId)));} //load countdown if not already loaded by actionbar menu
+        initializeCountdownDataSwipeLayout(); //to restore current bottom view if surface view would get updated (preventing it)
+        startCountdownOnUI(); //0 is default value
+        loadCountdownDataToUI();
 
         //Wait until views are drawn (for size etc.)
         final RelativeLayout inAppNotification = ((RelativeLayout) findViewById(R.id.notificationContent));
@@ -92,14 +103,109 @@ public class CountdownActivity extends AppCompatActivity {
         } else {Log.e(TAG, "onStop: CountdownCounter itself is null. (Countdown might have been deleted before)");}
     }
 
-    public Double loadCountdownFromSharedPreferences(int countdownId) {
-        return new InternalCountdownStorageMgr(this).getCountdown(countdownId).getTotalSeconds();
+    public void pausePlayRandomQuote(@Nullable View v) { //if null, then called from other methods instead of onclick pause btn
+        if (runGeneratingRandomQuotes) { //toggle value
+            runGeneratingRandomQuotes = false;
+            Toast.makeText(this, R.string.countdownActivity_countdownDetails_randomQuotes_quoteGeneratorPause, Toast.LENGTH_SHORT).show();
+        } else {
+            runGeneratingRandomQuotes = true;
+            Toast.makeText(this, R.string.countdownActivity_countdownDetails_randomQuotes_quoteGeneratorPlay, Toast.LENGTH_SHORT).show();
+        }
     }
 
-    public void startCountdownOnUI(Countdown countdown) {
-        if (countdown != null) { //if (-1) was e.g. found as intent countdown id then it will be null
+    public void initializeCountdownDataSwipeLayout() { //by setting this value to false, we could also PAUSE automatic refresh!
+        SwipeLayout swipeLayout = ((SwipeLayout) findViewById(R.id.swipeLayout_countdownActivity));
+        swipeLayout.addDrag(SwipeLayout.DragEdge.Right, findViewById(R.id.swipeLayout_countdownActivity_countdownData));
+        swipeLayout.addDrag(SwipeLayout.DragEdge.Left, findViewById(R.id.swipeLayout_countdownActivity_shareQuote));
+        swipeLayout.addSwipeListener(new SwipeLayout.SwipeListener() {
+            @Override
+            public void onStartOpen(SwipeLayout layout) { //set here false, to prevent skipping animation (because quote gets updated)
+                runGeneratingRandomQuotes = false; //going to other bottom view! so no need to update random quotes
+                Log.d(TAG, "initializeCountdownDataSwipeLayout:onStartOpen: Set runGeneratingRandomQuotes to false.");
+            }
+
+            @Override
+            public void onOpen(SwipeLayout layout) {
+
+            }
+
+            @Override
+            public void onStartClose(SwipeLayout layout) {
+
+            }
+
+            @Override
+            public void onClose(SwipeLayout layout) {
+                runGeneratingRandomQuotes = true; //set here true and not onStartClose to prevent quitting animation
+            }
+
+            @Override
+            public void onUpdate(SwipeLayout layout, int leftOffset, int topOffset) {
+
+            }
+
+            @Override
+            public void onHandRelease(SwipeLayout layout, float xvel, float yvel) {
+
+            }
+        });
+
+        //Set animation to randomQuote View of Swipelayout (onTextChange fadein/out)
+        try {
+            TextSwitcher randomQuoteView = ((TextSwitcher) findViewById(R.id.swipeLayout_countdownActivity_randomQuotes_quote));
+            randomQuoteView.setFactory(new ViewSwitcher.ViewFactory() {
+                @Override
+                public View makeView() { //for switcher to draw textview in it
+                    TextView quoteText = new TextView(CountdownActivity.this);
+                    quoteText.setTextSize(14);
+                    quoteText.setTextColor(getResources().getColor(R.color.colorLight));
+                    return quoteText;
+                }
+            });
+
+            Animation animationFadein = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
+            animationFadein.setDuration(200);
+            randomQuoteView.setInAnimation(animationFadein);
+            Animation animationFadeout = AnimationUtils.loadAnimation(this, android.R.anim.fade_out);
+            animationFadeout.setDuration(200);
+            randomQuoteView.setOutAnimation(animationFadeout);
+        } catch (Exception e) {
+            Log.e(TAG, "initializeCountdownDataSwipeLayout: Could not set TextSwitcher animation for random quotes!");
+            e.printStackTrace();
+        }
+    }
+
+    public void setNewRandomQuote(@Nullable View v) { //is called when clicking onRefreshButton, onActivity start and regularly (automatic refresh)
+        //When used outside of onClick, then v might/will be NULL!
+        //TODO: also use here user selected quote language packages!
+        String[] quotes = this.getResources().getStringArray(R.array.customNotification_random_generic_texts_en);
+        ((TextSwitcher) findViewById(R.id.swipeLayout_countdownActivity_randomQuotes_quote)).setText(
+                quotes[(new Random()).nextInt(quotes.length-1)] //use random quote
+        );
+    }
+
+    public void onSwipeLayoutClick_UserInstruction(View v) { //only use on mainView of SwipeLayout, after swiping they will know that they can do it!
+        Log.d(TAG, "onSwipeLayoutClick: Clicked on swipeLayout. Informed user. ");
+        Toast.makeText(this, R.string.mainActivity_swipeLayout_onClickInstruction,Toast.LENGTH_SHORT).show();
+    }
+
+    public void loadCountdownDataToUI() { //only on start
+        setNewRandomQuote(null);
+        Log.d(TAG, "loadCountdownDataToUI: Trying to load countdown details to UI.");
+        if (this.getCountdown() != null) {
+            ((TextView) findViewById(R.id.swipeLayout_countdownActivity_countdownData_title)).setText(this.getCountdown().getCountdownTitle());
+            ((TextView) findViewById(R.id.swipeLayout_countdownActivity_countdownData_description)).setText(this.getCountdown().getCountdownDescription());
+            ((TextView) findViewById(R.id.swipeLayout_countdownActivity_countdownData_fromDateTime)).setText(this.getCountdown().getStartDateTime());
+            ((TextView) findViewById(R.id.swipeLayout_countdownActivity_countdownData_untilDateTime)).setText(this.getCountdown().getUntilDateTime());
+        } else { //do not show toast or similar (because already showing in startCountdownOnUI())
+            Log.e(TAG, "loadCountdownDataToUI: Countdown not found. Could not load countdown data.");
+        }
+    }
+
+    public void startCountdownOnUI() {
+        if (this.getCountdown() != null) { //if (-1) was e.g. found as intent countdown id then it will be null
             //search in storage and get total seconds then start countdown (if not found because smaller 0 or deleted and notification referenced it
-            this.setCountdownCounter(new CountdownCounter(this, countdown));
+            this.setCountdownCounter(new CountdownCounter(this, this.getCountdown()));
             this.getCountdownCounter().runOnUI();
         } else {
             Toast.makeText(this, R.string.countdownActivity_countdownNotFound, Toast.LENGTH_LONG).show();
@@ -275,6 +381,7 @@ public class CountdownActivity extends AppCompatActivity {
         Extra method, so we can setShareIntent dynamically not only on activity creation [countdown values share etc.]*/
         if (this.getCountdown() != null && this.getShareIntent() != null) {
             Log.d(TAG, "refreshShareIntent: Trying to refresh message (reset extras).");
+            this.getShareIntent().putExtra(Intent.EXTRA_SUBJECT, R.string.app_name);
             this.getShareIntent().putExtra(Intent.EXTRA_TEXT, String.format(getResources().getString(R.string.actionBar_countdownActivity_menu_shareCountdown_shareContent_text), this.getCountdown().getTotalSecondsNoScientificNotation(), this.getCountdown().getCountdownTitle(), this.getCountdown().getCountdownDescription()));
         } else {
             Log.e(TAG, "refreshShareIntent: ShareIntent or/and Countdown is NULL! Cannot set/refresh share content.");

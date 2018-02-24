@@ -59,12 +59,17 @@
 
     <style name="Countdown">
         <item name="android:textSize">45sp</item>
-        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
     </style>
 
     <style name="CountdownSmall">
         <item name="android:textColor">@color/colorDark</item>
         <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="CountdownDetails">
+        <item name="android:textColor">@color/colorLight</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <!-- Modify Countdown Styles -->

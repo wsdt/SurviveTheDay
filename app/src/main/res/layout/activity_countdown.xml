@@ -11,6 +11,7 @@
     tools:context="kevkevin.wsdt.tagueberstehen.CountdownActivity">
 
     <ScrollView
+        android:layout_marginBottom="50dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -195,6 +196,166 @@
                 android:layout_marginBottom="35dp"
                 android:layout_below="@+id/countdownCounterMinutes"
                 android:text="@string/countdownActivity_countdownSubCounter_zero" />
+
+            <com.daimajia.swipe.SwipeLayout
+                android:id="@+id/swipeLayout_countdownActivity"
+                android:layout_marginTop="15dp"
+                android:background="@color/colorPrimaryDark"
+                android:layout_below="@id/countdownCounterSecondsLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"><!-- Padding needs to be set in lower views and NOT on SwipeLayout itself! -->
+
+                <!-- First bottom View - START -->
+                <!-- TODO: countdownData, quotes (shareable both) etc. -->
+                <RelativeLayout
+                    android:id="@+id/swipeLayout_countdownActivity_countdownData"
+                    android:padding="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <!-- Reusing strings.xml -->
+                    <TextView
+                        android:text="@string/modifyCountdownActivity_countdown_title_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/CountdownDetails"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"/>
+                    <TextView
+                        android:id="@+id/swipeLayout_countdownActivity_countdownData_title"
+                        android:text="@string/error_notFound_short"
+                        style="@style/CountdownDetails"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:text="@string/modifyCountdownActivity_countdown_description_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/CountdownDetails"
+                        android:layout_below="@id/swipeLayout_countdownActivity_countdownData_title"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"/>
+                    <TextView
+                        android:id="@+id/swipeLayout_countdownActivity_countdownData_description"
+                        android:text="@string/error_notFound_short"
+                        android:layout_below="@id/swipeLayout_countdownActivity_countdownData_title"
+                        style="@style/CountdownDetails"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:text="@string/modifyCountdownActivity_countdown_fromDateTime_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/CountdownDetails"
+                        android:layout_below="@+id/swipeLayout_countdownActivity_countdownData_description"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"/>
+                    <TextView
+                        android:id="@+id/swipeLayout_countdownActivity_countdownData_fromDateTime"
+                        android:text="@string/error_notFound_short"
+                        android:layout_below="@id/swipeLayout_countdownActivity_countdownData_description"
+                        style="@style/CountdownDetails"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:text="@string/modifyCountdownActivity_countdown_untilDateTime_label"
+                        style="@style/CountdownDetails"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/swipeLayout_countdownActivity_countdownData_fromDateTime"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"/>
+                    <TextView
+                        android:id="@+id/swipeLayout_countdownActivity_countdownData_untilDateTime"
+                        android:text="@string/error_notFound_short"
+                        style="@style/CountdownDetails"
+                        android:layout_below="@id/swipeLayout_countdownActivity_countdownData_fromDateTime"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RelativeLayout>
+                <!-- First Bottom View - END  -->
+
+                <!-- TODO: Second Bottom View - START -->
+                <RelativeLayout
+                    android:id="@+id/swipeLayout_countdownActivity_shareQuote"
+                    android:padding="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/underConstruction_countdownActivity_countdownData_shareQuotes_titleLbl"
+                        android:text="@string/underConstruction_countdownActivity_countdownData_shareQuotes_titleLbl"
+                        style="@style/CountdownDetails"
+                        android:textSize="16sp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                    <TextView
+                        android:text="@string/underConstruction_countdownActivity_countdownData_shareQuotes_descriptionLbl"
+                        android:layout_below="@+id/underConstruction_countdownActivity_countdownData_shareQuotes_titleLbl"
+                        style="@style/CountdownDetails"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </RelativeLayout>
+                <!-- Second Bottom View - END -->
+
+                <!-- Surface (last) View: Random Quotes >>>> onClickUserInstruction ONLY on Surface View (too annoying if swiping)  -->
+                <RelativeLayout
+                    android:id="@+id/swipeLayout_countdownActivity_randomQuotes"
+                    android:onClick="onSwipeLayoutClick_UserInstruction"
+                    android:padding="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/swipeLayout_countdownActivity_randomQuotes_titleLbl"
+                        android:text="@string/countdownActivity_countdownDetails_randomQuotes_titleLbl"
+                        style="@style/CountdownDetails"
+                        android:textSize="16sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <!-- TODO: Share quote with countdown values maybe? MAKE separate class for sharing! -->
+                    <ImageView
+                        android:contentDescription="pauseRandomQuote"
+                        android:onClick="pausePlayRandomQuote"
+                        android:src="@drawable/light_togglemotivation"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter"
+                        android:layout_toLeftOf="@+id/swipeLayout_countdownActivity_randomQuotes_refreshBtn"
+                        android:layout_toStartOf="@+id/swipeLayout_countdownActivity_randomQuotes_refreshBtn"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_width="20dp"
+                        android:layout_height="wrap_content" />
+                    <ImageView
+                        android:id="@+id/swipeLayout_countdownActivity_randomQuotes_refreshBtn"
+                        android:contentDescription="refreshRandomQuote"
+                        android:onClick="setNewRandomQuote"
+                        android:src="@drawable/light_refresh"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_width="20dp"
+                        android:layout_height="wrap_content" />
+                    <!-- Text switcher for smooth animation on change! -->
+                    <TextSwitcher
+                        android:id="@+id/swipeLayout_countdownActivity_randomQuotes_quote"
+                        android:text="@string/countdownActivity_countdownDetails_randomQuotes_quoteNotFound"
+                        android:layout_below="@id/swipeLayout_countdownActivity_randomQuotes_titleLbl"
+                        style="@style/CountdownDetails"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </RelativeLayout>
+                <!-- Surface (last) View - END -->
+            </com.daimajia.swipe.SwipeLayout>
         </RelativeLayout>
     </ScrollView>
 
