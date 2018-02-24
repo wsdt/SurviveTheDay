@@ -103,12 +103,12 @@ public class AdManager {
 
             @Override
             public void onRewardedVideoAdFailedToLoad(int errorcode) {
-                Toast.makeText(getContext(), R.string.error_noInternetConnection, Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "onAdFailedToLoad: Could not load interstitial ad. Errorcode: " + errorcode);
                 if (errorcode == ERROR_CODE_NETWORK_ERROR) {
                     //only error code where user might be the reason so increment counter
                     getGlobalAppSettingsMgr().incrementNoInternetConnectionCounter();
                     Log.d(TAG, "onAdFailedToLoad: Tried to increment noInternetConnectionCounter.");
+                    Toast.makeText(getContext(), R.string.error_noInternetConnection, Toast.LENGTH_SHORT).show();
                 }
 
                 if (goToActivityAfterShown != null) {
@@ -185,12 +185,12 @@ public class AdManager {
 
                     @Override
                     public void onAdFailedToLoad(int errorcode) {
-                        Toast.makeText(getContext(), R.string.error_noInternetConnection, Toast.LENGTH_SHORT).show();
                         Log.e(TAG, "onAdFailedToLoad: Could not load interstitial ad. Errorcode: " + errorcode);
                         if (errorcode == ERROR_CODE_NETWORK_ERROR) {
                             //only error code where user might be the reason so increment counter
                             getGlobalAppSettingsMgr().incrementNoInternetConnectionCounter();
                             Log.d(TAG, "onAdFailedToLoad: Tried to increment noInternetConnectionCounter.");
+                            Toast.makeText(getContext(), R.string.error_noInternetConnection, Toast.LENGTH_SHORT).show(); //here and not outside because of frequency capping (e.g.) errorcode = 3
                         }
 
                         if (goToActivityAfterShown != null) {
@@ -248,11 +248,11 @@ public class AdManager {
                 adView.setAdListener(new AdListener() {
                     @Override
                     public void onAdFailedToLoad(int errorcode) {
-                        Toast.makeText(getContext(), R.string.error_noInternetConnection, Toast.LENGTH_SHORT).show();
                         if (errorcode == ERROR_CODE_NETWORK_ERROR) {
                             //only error code where user might be the reason so increment counter
                             getGlobalAppSettingsMgr().incrementNoInternetConnectionCounter();
                             Log.d(TAG, "onAdFailedToLoad: Tried to increment noInternetConnectionCounter.");
+                            Toast.makeText(getContext(), R.string.error_noInternetConnection, Toast.LENGTH_SHORT).show();
                         }
                         Log.e(TAG, "onAdFailedToLoad (loadBannerAd): Banner could not be loaded.");
                     }

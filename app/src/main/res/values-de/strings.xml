@@ -20,10 +20,16 @@
     <string name="button_save">Speichern</string>
     <string name="button_abort">Abbrechen</string>
 
+    <!-- Under construction msgs -->
+    <string name="underConstruction_countdownActivity_countdownData_shareQuotes_titleLbl">Baustelle</string>
+    <string name="underConstruction_countdownActivity_countdownData_shareQuotes_descriptionLbl">In Zukunft kannst du hier deine Zitate teilen. :)</string>
+
+
     <!-- GENERIC ERROR MESSAGES -->
     <string name="error_title_systemError">Systemfehler</string>
     <string name="error_contactAdministrator">Operation fehlgeschlagen. Bitte Systemadministrator kontaktieren!</string>
     <string name="error_noInternetConnection">Bitte überprüfe deine Internetverbindung!</string>
+    <string name="error_notFound_short">Unbekannt</string>
 
     <!-- Content Descriptions -->
     <string name="nodeTemplate_motivateMeBtn_contentDescription">MotivateMeToggle wird verwendet, um motivierende Benachrichtigungen zu aktivieren/deaktivieren.</string>
@@ -73,13 +79,13 @@
     <!-- CountdownActivity -->
     <string name="countdownActivity_countdownNotFound">Countdown nicht gefunden.</string>
     <string name="countdownActivity_countdownSubCounter_zero">00,00</string>
-    <string name="countdownActivity_countdownSubCounter_totalYears_label">Jahre: </string>
-    <string name="countdownActivity_countdownSubCounter_totalMonths_label">Monate: </string>
-    <string name="countdownActivity_countdownSubCounter_totalWeeks_label">Wochen: </string>
-    <string name="countdownActivity_countdownSubCounter_totalDays_label">Tage: </string>
-    <string name="countdownActivity_countdownSubCounter_totalHours_label">Stunden: </string>
-    <string name="countdownActivity_countdownSubCounter_totalMinutes_label">Minuten: </string>
-    <string name="countdownActivity_countdownSubCounter_totalSeconds_label">Sekunden: </string>
+    <string name="countdownActivity_countdownSubCounter_totalYears_label">Jahre</string>
+    <string name="countdownActivity_countdownSubCounter_totalMonths_label">Monate</string>
+    <string name="countdownActivity_countdownSubCounter_totalWeeks_label">Wochen</string>
+    <string name="countdownActivity_countdownSubCounter_totalDays_label">Tage</string>
+    <string name="countdownActivity_countdownSubCounter_totalHours_label">Stunden</string>
+    <string name="countdownActivity_countdownSubCounter_totalMinutes_label">Minuten</string>
+    <string name="countdownActivity_countdownSubCounter_totalSeconds_label">Sekunden</string>
     <string name="countdownActivity_inAppNotification_error404_title">Systemfehler</string>
     <string name="countdownActivity_inAppNotification_error404_description">Bitte melde diesen Fehler dem Systemadministrator.</string>
     <string-array name="inAppNotificationShowSpinner_LABELS_VALUES">
@@ -98,6 +104,8 @@
         <item>45</item>
         <item>60</item>
     </string-array>
+    <string name="countdownActivity_countdownDetails_randomQuotes_titleLbl">Zufälliges Zitat</string>
+    <string name="countdownActivity_countdownDetails_randomQuotes_quoteNotFound">Kein passendes Zitat gefunden. :(</string>
 
     <!-- ModifyCountdownActivity -->
     <string name="modifyCountdownActivity_countdown_title_label">Titel</string>

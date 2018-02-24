@@ -1,7 +1,6 @@
 package kevkevin.wsdt.tagueberstehen;
 
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -33,6 +32,7 @@ import kevkevin.wsdt.tagueberstehen.classes.services.CountdownCounterService;
 
 public class MainActivity extends AppCompatActivity {
     private LinearLayout nodeList;
+    private int anzahlShowingNodes = 0;
     private static final String TAG = "MainActivity";
     private InAppPurchaseManager inAppPurchaseManager;
     private AdManager adManager; //used e.g. for banner ad (so we can dynamically remove it etc.)
@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void reloadEverything() { //TODO: use if possible for small changes (like motivation toggle not this method (only change text --> better user experience)
+        this.anzahlShowingNodes = 0;
         //reload all nodes from sharedpreferences (remove them beforehand)
         removeAllNodesFromLayout();
         loadAddNodes();
@@ -108,16 +109,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadAddNodes() {
         InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(this);
-        int anzahlCountdowns = 0;
+        //int anzahlCountdowns = 0;
         for (final Map.Entry<Integer, Countdown> countdown : storageMgr.getAllCountdowns(false, false).entrySet()) {
-            if (anzahlCountdowns > 0) {
+            if (this.anzahlShowingNodes > 0) {
                 //Already at least one node shown! Not showing more without purchasing product
                 this.getInAppPurchaseManager().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
                     public void success_is_true() {
                         Log.d(TAG, "createAddNodeToLayout:isProductBought:is_true: Product is bought. Showing more than one node (if there are any).");
                         createAddNodeToLayout(countdown.getValue());
-                        //incrementation of anzahlCountdowns not necessary because only used for == 0 (No Countdowns found) or > 0 (is inapp product bought) because already incremented always 1 and so bigger than 0
+                        anzahlShowingNodes++;
                     }
 
                     @Override
@@ -128,12 +129,12 @@ public class MainActivity extends AppCompatActivity {
                 });
             } else { //first node
                 createAddNodeToLayout(countdown.getValue());
-                anzahlCountdowns++;
+                this.anzahlShowingNodes++;
             }
         }
 
         TextView noCountdownsFound = (TextView) findViewById(R.id.MainActivity_TextView_NoCountdownsFound);
-        if (anzahlCountdowns <= 0) {
+        if (this.anzahlShowingNodes <= 0) {
             //add plus icon or similar to add new countdown
             noCountdownsFound.setVisibility(View.VISIBLE);
         } else {
@@ -188,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onClick_node_sl_bottomview_rightMenu_deleteNode(View v) {
+    public void onClick_node_sl_bottomview_rightMenu_deleteNode(final View v) {
         //Get countdownId of corresponding node to perform actions
         final Countdown countdown = getCountdownFromNode(v);
         if (countdown == null) {Log.e(TAG, "onClick_node_sl_bottomview_rightMenu_deleteNode: Countdown obj is null!");return;}
@@ -205,7 +206,18 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(TAG, "onClick_node_sl_bottomview_rightMenu_deleteNode:success_is_true: User clicked on delete. Trying to erase countdown.");
                         getInternalCountdownStorageMgr().deleteCountdown(countdown.getCountdownId());
                         Toast.makeText(MainActivity.this, R.string.mainActivity_deletedCountdown, Toast.LENGTH_SHORT).show();
-                        reloadEverything(); //reload everything to remove countdown from nodelist
+                        try { //for better performance try removing node from view without reloading other nodes
+                            ((SwipeLayout) v.getParent().getParent()).setVisibility(View.GONE);
+                            if ((--anzahlShowingNodes) <= 0) {
+                                Log.d(TAG, "onClick_node_sl_bottomview_rightMenu_deleteNode: After deleting node, no countdowns to show, showing nothing found msg.");
+                                findViewById(R.id.MainActivity_TextView_NoCountdownsFound).setVisibility(View.VISIBLE); //show that no countdowns active
+                            }
+                            Log.d(TAG, "onClick_node_sl_bottomview_rightMenu_deleteNode: Tried to remove view without reloading other nodes (better performance).");
+                        } catch (ClassCastException | NullPointerException e) {
+                            e.printStackTrace();
+                            Log.e(TAG, "onClick_node_sl_bottomview_rightMenu_deleteNode: Could not remove deleted node from activity. Reloaded instead everything.");
+                            reloadEverything(); //reload everything to remove countdown from nodelist in case try failed
+                        }
                     }
 
                     @Override
@@ -238,9 +250,16 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "onCountdownModifyButtons: Countdown " + countdown.getCountdownId() + " does motivate now.");
         }
         countdown.savePersistently();
-        Resources res = getResources();
-        reloadEverything(); //reloadEverything because we have now eventMessages on node which might be different now!
-        Toast.makeText(this, String.format(res.getString(R.string.mainActivity_countdownMotivationToggleOnOff), ((countdown.isActive()) ? res.getString(R.string.mainActivity_countdownMotivationToggleOnOff_activated) : res.getString(R.string.mainActivity_countdownMotivationToggleOnOff_deactivated))), Toast.LENGTH_SHORT).show();
+        try {
+            //try to refresh msg without reloading all nodes (better performance), otherwise if error reloadeverything in catch
+            countdown.getEventMsgOrAndSetView((LinearLayout) ((SwipeLayout) v.getParent().getParent()).findViewById(R.id.node_countdown).findViewById(R.id.countdownEventMsg_ll));
+            Log.d(TAG, "onClick_node_sl_bottomview_rightMenu_toggleMotivationNode: Tried to change eventMsg without reloading all nodes (better performance).");
+        } catch (ClassCastException | NullPointerException e) {
+            e.printStackTrace();
+            Log.e(TAG, "onClick_node_sl_bottomview_rightMenu_toggleMotivationNode: Could not change eventMsg. Reloading all nodes.");
+            reloadEverything(); //reloadEverything because we have now eventMessages on node which might be different now!
+        }
+        Toast.makeText(this, String.format(getResources().getString(R.string.mainActivity_countdownMotivationToggleOnOff), ((countdown.isActive()) ? getResources().getString(R.string.mainActivity_countdownMotivationToggleOnOff_activated) : getResources().getString(R.string.mainActivity_countdownMotivationToggleOnOff_deactivated))), Toast.LENGTH_SHORT).show();
     }
 
     private Countdown getCountdownFromNode(View v) { //needs to be Swipelayout!
