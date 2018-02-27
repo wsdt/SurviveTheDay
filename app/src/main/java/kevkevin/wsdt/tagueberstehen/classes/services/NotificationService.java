@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.util.SparseArray;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimerTask;
@@ -17,17 +19,16 @@ import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
 
 public class NotificationService extends Service {
     private static final String TAG = "NotificationService";
     private CustomNotification customNotificationManager;
     //private static ArrayList<String[]> activeServices; //every String[]: [0]:COUNTDOWNID / [1]:STARTID (every countdown id should only occur once!)
-    private InternalCountdownStorageMgr storageMgr;
     private int startId;
-    private HashMap<Integer, Countdown> allCountdowns;
+    private SparseArray<Countdown> allCountdowns;
     private InAppPurchaseManager inAppPurchaseManager;
 
 
@@ -44,8 +45,7 @@ public class NotificationService extends Service {
         Log.d(TAG, "Executed onStartCommand(). StartId: " + startId);
         super.onStartCommand(intent, flags, startId);
 
-        storageMgr = new InternalCountdownStorageMgr(this);
-        this.allCountdowns = this.storageMgr.getAllCountdowns(true, false); //call this line AFTER assignment of internal storage mgr (otherwise nullpointerexc!)
+        this.allCountdowns = DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this,true, false); //call this line AFTER assignment of internal storage mgr (otherwise nullpointerexc!)
 
         //Warning context is NOT an activity, so do NOT launch purchase workflows or similar! (class cast exception)
         this.inAppPurchaseManager = new InAppPurchaseManager(this);
@@ -91,16 +91,18 @@ public class NotificationService extends Service {
         //iterate through all countdown data sets
         int count = 0;
         // only start more than one if more nodes package is bought
-        for (final Map.Entry<Integer, Countdown> countdown : this.allCountdowns.entrySet()) {
-            Log.d(TAG, "Countdown-Id: " + countdown.getValue().getCountdownId());
+        for (int i = 0;i<allCountdowns.size();i++) {
+            final Countdown currCountdown = allCountdowns.valueAt(i); //because i cannot be final
+
+            Log.d(TAG, "Countdown-Id: " + currCountdown.getCountdownId());
             if ((count++) > 0) { //increment because at least one countdown is there
                 this.inAppPurchaseManager.executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
                     public void success_is_true() {
                         Log.d(TAG, "startTimer: UseMoreCountdownNodes-Package bought. Adding more to service.");
-                        initializeTimer(countdown.getValue());
+                        initializeTimer(currCountdown);
                         //delay, time after interval starts (random e.g. 0-4 seconds, so multiple countdown timer does not show notification at the same seconds)
-                        countdown.getValue().getTimer().schedule(countdown.getValue().getTimerTask(),0, countdown.getValue().getNotificationInterval() * 1000); //*1000 so every second * interval
+                        currCountdown.getTimer().schedule(currCountdown.getTimerTask(),0, currCountdown.getNotificationInterval() * 1000); //*1000 so every second * interval
                     }
 
                     @Override
@@ -121,11 +123,11 @@ public class NotificationService extends Service {
     public void stopTimer() {
         Log.d(TAG, "Executed stopTimer().");
         //stop timer, if it's not already null for all countdowns!
-        for (Map.Entry<Integer, Countdown> countdown : this.allCountdowns.entrySet()) {
+        for (int i = 0; i<allCountdowns.size();i++) {
             Log.d(TAG, "stopTimer: Tried to stop timerinstance. ");
-            if (countdown.getValue().getTimer() != null) {
-                countdown.getValue().getTimer().cancel();
-                countdown.getValue().setTimer(null);
+            if (allCountdowns.valueAt(i).getTimer() != null) {
+                allCountdowns.valueAt(i).getTimer().cancel();
+                allCountdowns.valueAt(i).setTimer(null);
                 Log.d(TAG, "stopTimer: Stopped timerinstance.");
             }
         }

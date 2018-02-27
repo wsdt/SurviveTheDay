@@ -18,6 +18,7 @@ import kevkevin.wsdt.tagueberstehen.classes.services.NotificationService_Alarmma
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
+/** GLOBALAPPSETTINGS SHOULD BE REALIZED WITH SHAREDPREFS! (faster and makes more sense, otherwise settingstable would have only one line!)*/
 public class GlobalAppSettingsMgr {
     private SharedPreferences globalSettings_SharedPref;
     private static final String TAG = "GlobalAppSettingsMgr";

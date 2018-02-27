@@ -1,10 +1,8 @@
 package kevkevin.wsdt.tagueberstehen.classes;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -20,16 +18,17 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import kevkevin.wsdt.tagueberstehen.R;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
 
 
 public class Countdown {
@@ -45,6 +44,7 @@ public class Countdown {
     private boolean isActive;
     private int notificationInterval; //in seconds!
     private boolean showLiveCountdown; //show Foreground service live countdown if countdown until start date constraints true
+    private String[] quotesLanguagePacks; //by default local language will be chosen
     private static final String TAG = "Countdown";
 
     //Members for service (do not save them explicitely [unneccesary])
@@ -54,9 +54,9 @@ public class Countdown {
 
 
     //Constructor for lastEdit/createdDateTime automatically
-    public Countdown(Context context, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String category, boolean isActive, int notificationInterval, boolean showLiveCountdown) {
+    public Countdown(Context context, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String category, boolean isActive, int notificationInterval, boolean showLiveCountdown, String[] quotesLanguagePacks) {
         this.setContext(context);
-        this.setCountdownId((new InternalCountdownStorageMgr(context)).getNextCountdownId()); //get next countdown id (fill gap from deleted countdown or just increment)
+        this.setCountdownId(DatabaseMgr.getSingletonInstance(context).getNextCountdownId(context)); //get next countdown id (fill gap from deleted countdown or just increment)
         this.setCountdownTitle(countdownTitle);
         this.setCountdownDescription(countdownDescription);
         this.setStartDateTime(startDateTime);
@@ -67,10 +67,11 @@ public class Countdown {
         this.setActive(isActive);
         this.setNotificationInterval(notificationInterval);
         this.setShowLiveCountdown(showLiveCountdown);
+        this.setQuotesLanguagePacks(quotesLanguagePacks);
     }
 
     //Constructor for all fields
-    public Countdown(Context context, int countdownId, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String createdDateTime, String lastEditDateTime, String category, boolean isActive, int notificationInterval, boolean showLiveCountdown) {
+    public Countdown(Context context, int countdownId, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String createdDateTime, String lastEditDateTime, String category, boolean isActive, int notificationInterval, boolean showLiveCountdown, String[] quotesLanguagePacks) {
         this.setContext(context);
         this.setCountdownId(countdownId);
         this.setCountdownTitle(countdownTitle);
@@ -83,6 +84,7 @@ public class Countdown {
         this.setActive(isActive);
         this.setNotificationInterval(notificationInterval);
         this.setShowLiveCountdown(showLiveCountdown);
+        this.setQuotesLanguagePacks(quotesLanguagePacks);
     }
 
 
@@ -132,8 +134,7 @@ public class Countdown {
     }
 
     public void savePersistently() {
-        InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(this.getContext());
-        storageMgr.setSaveCountdown(this, true);
+        DatabaseMgr.getSingletonInstance(this.getContext()).setSaveCountdown(this.getContext(),this);
     }
 
     public float getRemainingPercentage(int anzahlNachkomma, boolean getRemainingOtherwisePassedPercentage) { //min is 1, if 0 then it will be still min 1 nachkommastelle (but always 0!) because of double format itself
@@ -285,7 +286,7 @@ public class Countdown {
         return string;
     }
 
-    private String escapeEnter(@NonNull String string) {
+    private String escapeEnter(@NonNull String string) { //so nicer for UI (node showing)
         Log.d(TAG, "escapeEnter: Trying to escape string for enter!");
         /* Used for CustomEdittext e.g. where no enter is allowed (so do not call this function on all countdown values (because we do not know whether new errors occur)*/
         for (String illegalCharacter : Constants.COUNTDOWN.ESCAPE.escapeEnter_illegalCharacters) {
@@ -428,6 +429,45 @@ public class Countdown {
                 .append(getCategory()).append(separator)
                 .append(isActive()).append(separator)
                 .append(getNotificationInterval()).append(separator)
-                .append(isShowLiveCountdown()).toString();
+                .append(isShowLiveCountdown()).append(separator)
+                .append(getQuotesLanguagePacks_Str()).toString();
+    }
+
+    public ArrayList<String> getQuotesLanguagePacks_Quotes() {
+        ArrayList<String> allQuotes = new ArrayList<>();
+        for (String langPack : this.getQuotesLanguagePacks()) {
+            Log.d(TAG, "getQuotesLanguagePacks_Quotes: Trying to evaluate language pack->"+langPack);
+            int langPackResId = this.getContext().getResources().getIdentifier("customNotification_random_generic_texts_" +langPack, "array", this.getContext().getPackageName());
+            if (langPackResId != 0) {
+                allQuotes.addAll(Arrays.asList(this.getContext().getResources().getStringArray(langPackResId)));
+            }
+        }
+
+        //If NO valid language found then just report fallback language (english)
+        if (allQuotes.size() <= 0) {
+            Log.d(TAG, "getQuotesLanguagePacks_Quotes: Languages not found. Used fallback language.");
+            allQuotes.addAll(Arrays.asList(this.getContext().getResources().getStringArray(R.array.customNotification_random_generic_texts_en)));
+        }
+        return allQuotes;
+    }
+
+    private String getQuotesLanguagePacks_Str() {
+        StringBuilder languagePackStringified = new StringBuilder();
+        int i = 0;
+        for (String languagePack : getQuotesLanguagePacks()) {
+            if ((i++) != 0) {
+                languagePackStringified.append("-"); //append before language pack append
+            }
+            languagePackStringified.append(languagePack);
+        }
+        return languagePackStringified.toString();
+    }
+
+    public String[] getQuotesLanguagePacks() {
+        return quotesLanguagePacks;
+    }
+
+    public void setQuotesLanguagePacks(String[] quotesLanguagePacks) {
+        this.quotesLanguagePacks = quotesLanguagePacks;
     }
 }

@@ -12,6 +12,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
@@ -24,7 +25,9 @@ import kevkevin.wsdt.tagueberstehen.classes.services.NotificationService;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
-
+/** Old StorageMgr - Will be replaced by DatabaseMgr.
+ * @deprecated use {@link DatabaseMgr} instead. */
+@Deprecated
 public class InternalCountdownStorageMgr {
     private SharedPreferences allCountdowns_SharedPref;
     private static final String TAG = "InternCountdownStorMgr";
@@ -104,16 +107,17 @@ public class InternalCountdownStorageMgr {
                 lineArrList.addAll(Arrays.asList((entry.getValue()).toString().split(";"))); //split entryvalue "1;title;descr;etc..." into array
 
                 //[Line might get unnecessary in future versions, because nobody has old app version]: UPDATE ERROR AVOIDANCE (If index does not exist because of older sharedPrefs) ------------------------------
-                if (lineArrList.size() == 10) {
-                    Log.w(TAG, "getAllCountdowns: Index 11 did NOT exist! Added it manually (but tried to save it persistently)");
-                    //10 indizes saved, but 11th [onlyShowLiveCountdowns] is saved into SP because of older app version
-                    lineArrList.add(Boolean.toString(false)); //by default false if this error should happen
+                if (lineArrList.size() == 11) {
+                    Log.w(TAG, "getAllCountdowns: Index 12 did NOT exist! Added it manually (but tried to save it persistently)");
+                    //11 indizes saved, but 12th [quoteLanguagePacks] is saved into SP because of older app version
+                    //TODO:by default current language (en, de, --> if NOT existing then use English) [separation with -)
+                    lineArrList.add((Locale.getDefault().getLanguage())); //by default false if this error should happen
                     fallbackResaveCountdown = true;
                 }
                 //UPDATE ERROR AVOIDANCE - END
 
                 //Countdown Id determines indexposition of that element in arraylist!
-                Countdown tmp = new Countdown(this.getContext(), Integer.parseInt(lineArrList.get(0)), lineArrList.get(1), lineArrList.get(2), lineArrList.get(3), lineArrList.get(4), lineArrList.get(5), lineArrList.get(6), lineArrList.get(7), Boolean.parseBoolean(lineArrList.get(8)), Integer.parseInt(lineArrList.get(9)), Boolean.parseBoolean(lineArrList.get(10)));
+                Countdown tmp = new Countdown(this.getContext(), Integer.parseInt(lineArrList.get(0)), lineArrList.get(1), lineArrList.get(2), lineArrList.get(3), lineArrList.get(4), lineArrList.get(5), lineArrList.get(6), lineArrList.get(7), Boolean.parseBoolean(lineArrList.get(8)), Integer.parseInt(lineArrList.get(9)), Boolean.parseBoolean(lineArrList.get(10)), lineArrList.get(11).split(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.ATTRIBUTE_ADDITIONALS.LANGUAGE_ID_LIST_SEPARATOR));
                 //Log.d(TAG, "getAllCountdowns: PARSED-STRING: "+Integer.parseInt(lineArrList.get(0))+";"+lineArrList.get(1)+";"+lineArrList.get(2)+";"+lineArrList.get(3)+";"+ lineArrList.get(4)+";"+lineArrList.get(5)+";"+lineArrList.get(6)+";"+lineArrList.get(7)+";"+Boolean.parseBoolean(lineArrList.get(8))+";"+Integer.parseInt(lineArrList.get(9))+";"+Boolean.parseBoolean(lineArrList.get(10)));
                 //Log.d(TAG, "getAllCountdowns: Directly EXTRACTED-STRING: "+tmp.getCountdownId()+";"+tmp.getCountdownTitle()+";"+tmp.getCountdownDescription()+";"+tmp.getStartDateTime()+";"+tmp.getUntilDateTime()+";"+tmp.getCreatedDateTime()+";"+tmp.getLastEditDateTime()+";"+ tmp.getCategory()+";"+Boolean.toString(tmp.isActive())+";"+tmp.getNotificationInterval()+";"+Boolean.toString(tmp.isShowLiveCountdown()));
                 Log.d(TAG, "getAllCountdowns: Countdown-String --> "+tmp.toString());

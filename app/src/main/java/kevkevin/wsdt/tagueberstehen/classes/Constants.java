@@ -159,6 +159,84 @@ public class Constants {
     }
 
     public interface STORAGE_MANAGERS {
+        interface DATABASE_STR_MGR {
+            int DATABASE_VERSION = 1; //MUST NOT be smaller than 1, and if we change db schema we should increment this so onUpgrade gets called!
+            interface TABLES {
+                interface COUNTDOWN { //Sql names etc.
+                    String TABLE_NAME = "Countdown";
+                    String TABLE_PREFIX = "cou_"; //table prefixes should be unique (added before every attributname)
+                    interface ATTRIBUTES {
+                        String ID = TABLE_PREFIX+"id";
+                        String TITLE = TABLE_PREFIX+"title";
+                        String DESCRIPTION = TABLE_PREFIX+"description";
+                        String STARTDATETIME = TABLE_PREFIX+"startdatetime";
+                        String UNTILDATETIME = TABLE_PREFIX+"untildatetime";
+                        String CREATEDDATETIME = TABLE_PREFIX+"createddatetime";
+                        String LASTEDITDATETIME = TABLE_PREFIX+"lasteditdatetime";
+                        String CATEGORYCOLOR = TABLE_PREFIX+"categorycolor";
+                        String NOTIFICATIONINTERVAL = TABLE_PREFIX+"notificationinterval";
+                        String RANDOMNOTIFICATIONMOTIVATION = TABLE_PREFIX+"randomnotificationmotivation";
+                        String LIVECOUNTDOWN = TABLE_PREFIX+"livecountdown";
+                    }
+                }
+                interface QUOTELANGUAGEPACKAGES {
+                    String TABLE_NAME = "Quote_languagepackages";
+                    String TABLE_PREFIX = "qlp_";
+                    interface ATTRIBUTES {
+                        String ID = TABLE_PREFIX+"id";
+                        String LANGUAGE_ID_LIST = TABLE_PREFIX+"idList"; //not a real member of any table, but gets created during some sql queries where n:m relationship gets merged/joined to list
+                    }
+                }
+                interface ZWISCHENTABELLE_COU_QLP {
+                    String TABLE_NAME = "Zwischentabelle_COU_QLP";
+                    String TABLE_PREFIX = "zcq_";
+                    //no own attributes (only foreign keys until now)
+                    interface ATTRIBUTE_ADDITIONALS { //additional values for attributes
+                        String LANGUAGE_ID_LIST_SEPARATOR = ","; //von sqlite vorgegeben so müssen wir diesen nutzen! (einheitlich)
+                    }
+                }
+            }
+
+            interface DATABASE_HELPER {
+                String DATABASE_NAME = "SURVIVE_THE_DAY";
+
+                //IMPORTANT: Booleans are saved as integers! (0=FALSE | 1=TRUE)
+                String[] DATABASE_CREATE_SQL = new String[] { //MUST be a string array for each statement! (because we cannot execute multiple statements at once!
+                        "PRAGMA foreign_keys = ON;",
+                        "CREATE TABLE "+TABLES.QUOTELANGUAGEPACKAGES.TABLE_NAME+" (\n" +
+                        TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID+" TEXT PRIMARY KEY );",
+                        "CREATE TABLE "+TABLES.COUNTDOWN.TABLE_NAME+" (\n" +
+                        TABLES.COUNTDOWN.ATTRIBUTES.ID+" INTEGER PRIMARY KEY,\n" +
+                        TABLES.COUNTDOWN.ATTRIBUTES.TITLE+" TEXT,\n" +
+                        TABLES.COUNTDOWN.ATTRIBUTES.DESCRIPTION+" TEXT,\n" +
+                        TABLES.COUNTDOWN.ATTRIBUTES.STARTDATETIME+" TEXT,\n" +
+                        TABLES.COUNTDOWN.ATTRIBUTES.UNTILDATETIME+" TEXT,\n" +
+                        TABLES.COUNTDOWN.ATTRIBUTES.CREATEDDATETIME+" TEXT,\n" +
+                        TABLES.COUNTDOWN.ATTRIBUTES.LASTEDITDATETIME+" TEXT,\n" +
+                        TABLES.COUNTDOWN.ATTRIBUTES.CATEGORYCOLOR+" TEXT,\n" +
+                        TABLES.COUNTDOWN.ATTRIBUTES.NOTIFICATIONINTERVAL+" INTEGER,\n" +
+                        TABLES.COUNTDOWN.ATTRIBUTES.RANDOMNOTIFICATIONMOTIVATION+" BOOLEAN,\n" +
+                        TABLES.COUNTDOWN.ATTRIBUTES.LIVECOUNTDOWN+" BOOLEAN);",
+
+                        "CREATE TABLE "+TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME+" (\n" +
+                        TABLES.COUNTDOWN.ATTRIBUTES.ID+" INTEGER,\n" +
+                        TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID+" TEXT,\n" +
+                        "PRIMARY KEY("+ TABLES.COUNTDOWN.ATTRIBUTES.ID+","+TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID+"),\n" +
+                        " FOREIGN KEY ("+TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID+") REFERENCES "+TABLES.QUOTELANGUAGEPACKAGES.TABLE_NAME+"("+TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID+")\n" +
+                        " ON UPDATE CASCADE\n" +
+                        " ON DELETE CASCADE,\n" +
+                        " FOREIGN KEY ("+ TABLES.COUNTDOWN.ATTRIBUTES.ID+") REFERENCES "+TABLES.COUNTDOWN.TABLE_NAME+"("+ TABLES.COUNTDOWN.ATTRIBUTES.ID+")\n" +
+                        " ON UPDATE CASCADE\n" +
+                        " ON DELETE CASCADE);",
+
+                        //Default data for foreign keys etc. [Zwischentabelle muss in setSave geupdatet/inserted werden]
+                        "INSERT INTO "+TABLES.QUOTELANGUAGEPACKAGES.TABLE_NAME+" VALUES ('en'),('de');"}; //create table etc.
+                String[] DATABASE_UPGRADE_RESETTABLES = new String[] {"DROP TABLE IF EXISTS "+TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME+";",
+                        "DROP TABLE IF EXISTS "+TABLES.COUNTDOWN.TABLE_NAME+";",
+                        "DROP TABLE IF EXISTS "+TABLES.QUOTELANGUAGEPACKAGES.TABLE_NAME+";"}; //drop table if exists name;
+            }
+        }
+
         interface INTERNAL_COUNTDOWN_STR_MGR {
             String SHAREDPREFERENCES_DBNAME = "COUNTDOWNS";
         }

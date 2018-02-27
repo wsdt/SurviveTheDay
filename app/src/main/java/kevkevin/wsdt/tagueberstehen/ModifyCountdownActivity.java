@@ -1,12 +1,16 @@
 package kevkevin.wsdt.tagueberstehen;
 
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -14,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -22,27 +27,23 @@ import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.ColorPicker;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.customviews.DateTimePicker.DateTimePicker;
 import kevkevin.wsdt.tagueberstehen.classes.DialogManager;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
 public class ModifyCountdownActivity extends AppCompatActivity {
     private Countdown newEditedCountdown;
     private static final String TAG = "ModifyCountdownActivity";
     private int existingCountdownId = (-1); //if edit then this value will be updated and used to overwrite existing countdown
     private InAppPurchaseManager inAppPurchaseManager;
-    private InternalCountdownStorageMgr internalCountdownStorageMgr;
     private DialogManager dialogManager; //important that kevkevin dialogManager gets imported and not the one of android!
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modify_countdown);
-
-        //Must be before inapppurchase mgr!
-        this.setInternalCountdownStorageMgr(new InternalCountdownStorageMgr(this));
 
         //InAppPurchaseMgr if validation is too low countdown can be saved, but it will not be displayed
         this.setInAppPurchaseManager(new InAppPurchaseManager(this));
@@ -72,9 +73,11 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             Log.e(TAG, "onCreate: Could not load existing countdown.");
         }
 
+        loadLanguagePacksCheckboxes((GridLayout) findViewById(R.id.modifyCountdownActivity_motivation_languagePacks)); //needs to be done before setFormValues()!
+
         if (this.existingCountdownId >= 0) {
             Log.d(TAG, "onCreate: Being in EditMode, because countdown already exists.");
-            setFormValues((this.getInternalCountdownStorageMgr().getCountdown(this.existingCountdownId)));
+            setFormValues((DatabaseMgr.getSingletonInstance(this).getCountdown(this, this.existingCountdownId)));
         }
 
         onMotivateMeToggleClick(findViewById(R.id.isActive)); //simulate click so it is always at its correct state (enabled/disabled)
@@ -93,7 +96,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             @Override
             public void failure_is_false() {
                 Log.d(TAG, "onCreate:executeIfProductIsBought: UseMoreCountdownNodes is NOT bought. Blocking save-Button IF already one node saved AND NOT in editing mode.");
-                if (getInternalCountdownStorageMgr().getAllCountdowns(false, false).size() > 0 && (existingCountdownId < 0)) {
+                if (DatabaseMgr.getSingletonInstance(ModifyCountdownActivity.this).getAllCountdowns(ModifyCountdownActivity.this).size() > 0 && (existingCountdownId < 0)) {
                     Log.d(TAG, "onCreate:executeIfProductIsBought:OnClick: Did not save countdown, because inapp product not bought and more than one node already saved. EditMode disabled, Countdown-Id: " + existingCountdownId);
                     getDialogManager().showDialog_InAppProductPromotion(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString());
                     //also show toast for additional clarification
@@ -110,7 +113,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         //Helper method because needed twice (in onSaveClick())
         loadFormValues();
         if (areFormValuesValid()) {
-            new InternalCountdownStorageMgr(ModifyCountdownActivity.this).setSaveCountdown(ModifyCountdownActivity.this.getNewEditedCountdown(), true);
+            DatabaseMgr.getSingletonInstance(this).setSaveCountdown(this,this.getNewEditedCountdown());
             Log.d(TAG, "onSaveClick: Tried to save new countdown.");
             ModifyCountdownActivity.this.finish(); //go back to main
         } else {
@@ -172,6 +175,17 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         //set associated entry of interval seconds to spinner
         ((Spinner) findViewById(R.id.notificationIntervalSpinner)).setSelection(Arrays.asList(getResources().getStringArray(R.array.countdownIntervalSpinner_VALUES)).indexOf("" + countdown.getNotificationInterval())); //reduce about 5 otherwise we would add 5 every time we edited it!
         ((ToggleButton) findViewById(R.id.showLiveCountdown)).setChecked(countdown.isShowLiveCountdown());
+
+        GridLayout languagePackList = (GridLayout) findViewById(R.id.modifyCountdownActivity_motivation_languagePacks);
+        for (String languagePack : countdown.getQuotesLanguagePacks()) {
+               for (int i = 0; i < languagePackList.getChildCount();i++) {
+                   if (languagePackList.getChildAt(i).getTag() != null) {
+                       if (languagePackList.getChildAt(i).getTag().toString().equals(languagePack)) {
+                           ((CheckBox) languagePackList.getChildAt(i)).setChecked(true);
+                       }
+                   }
+               }
+        }
     }
 
     private void loadFormValues() {
@@ -183,7 +197,8 @@ public class ModifyCountdownActivity extends AppCompatActivity {
                 ColorPicker.getBackgroundColorHexString(findViewById(R.id.categoryValue)),
                 ((ToggleButton) findViewById(R.id.isActive)).isChecked(),
                 Integer.parseInt(getResources().getStringArray(R.array.countdownIntervalSpinner_VALUES)[((Spinner) findViewById(R.id.notificationIntervalSpinner)).getSelectedItemPosition()]),
-                ((ToggleButton) findViewById(R.id.showLiveCountdown)).isChecked()));
+                ((ToggleButton) findViewById(R.id.showLiveCountdown)).isChecked(),
+                loadSelectedLanguagePacksFromCheckboxes()/*--> TMP --> TODO: Checkboxen für languagePacks*/));
         // .getProgress()+5 for old seekbar slider +5 seconds by default (because if 0) app crashes
         //line above: gets selected spinner items position and uses this to get the associated array entry with the correct value in seconds.
 
@@ -222,16 +237,62 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         //disable/enable fields (if toggle button is checked = active then buttons should be enabled. otherwise it is false
         TextView notificationIntervalTextView = (TextView) findViewById(R.id.notificationIntervalTextView);
         LinearLayout notificationIntervalDescriptionAndSpinner = (LinearLayout) findViewById(R.id.notificationIntervalRightCol);
-        //notificationIntervalTextView.setEnabled(tbIsChecked);
-        //notificationIntervalSpinner.setEnabled(tbIsChecked);
+        TextView languagePackListTextView = (TextView) findViewById(R.id.customNotification_random_generic_texts_allArrays_headingLbl);
+        GridLayout languagePackList = (GridLayout) findViewById(R.id.modifyCountdownActivity_motivation_languagePacks);
 
         if (!tbIsChecked) {
             notificationIntervalTextView.setVisibility(View.GONE);
             notificationIntervalDescriptionAndSpinner.setVisibility(View.GONE);
+            languagePackList.setVisibility(View.GONE);
+            languagePackListTextView.setVisibility(View.GONE);
         } else {
             notificationIntervalTextView.setVisibility(View.VISIBLE);
             notificationIntervalDescriptionAndSpinner.setVisibility(View.VISIBLE);
+            languagePackList.setVisibility(View.VISIBLE);
+            languagePackListTextView.setVisibility(View.VISIBLE);
         }
+    }
+
+    private String[] loadSelectedLanguagePacksFromCheckboxes() {
+        StringBuilder selectedLanguagePacks = new StringBuilder();
+        int countLanguagePacks = 0;
+        for (CheckBox languagePackCheckbox : this.languagePackCheckboxes) {
+            if (languagePackCheckbox.isChecked()) {
+                if ((countLanguagePacks++) > 0) {selectedLanguagePacks.append(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.ATTRIBUTE_ADDITIONALS.LANGUAGE_ID_LIST_SEPARATOR);} //before languagepack and only if already one added
+                selectedLanguagePacks.append(languagePackCheckbox.getTag().toString());
+            }
+        }
+        if (countLanguagePacks <= 0) {
+            //no pack selected, choosing default one (english)
+            Log.d(TAG, "loadSelectedLanguagePacksFromCheckboxes: User did not select language pack. Used default one.");
+            selectedLanguagePacks.append("en");
+        }
+        return selectedLanguagePacks.toString().split(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.ATTRIBUTE_ADDITIONALS.LANGUAGE_ID_LIST_SEPARATOR); //string to array
+    }
+
+    private ArrayList<CheckBox> languagePackCheckboxes = new ArrayList<>();
+    private void loadLanguagePacksCheckboxes(@NonNull GridLayout superiorLayoutView) {
+        TypedArray allQuotes = getResources().obtainTypedArray(R.array.customNotification_random_generic_texts_allArrays);
+        int countLanguagePacks = allQuotes.length();
+        String[][] allQuotesResultArr = new String[countLanguagePacks][];
+        String[] languagePacksLbls = getResources().getStringArray(R.array.customNotification_random_generic_texts_allArrays_Lbls);
+        for (int i = 0; i<countLanguagePacks; ++i) { //pre imkrement!
+            int resId = allQuotes.getResourceId(i, 0);
+            if (resId > 0) {
+                allQuotesResultArr[i] = getResources().getStringArray(resId); //load languagepack
+
+                //Print Checkboxes etc.
+                CheckBox languagePackCheckbox = new CheckBox(this);
+                languagePackCheckbox.setTag(getResources().getStringArray(R.array.customNotification_random_generic_texts_allArrays_identifier)[i]);
+                this.languagePackCheckboxes.add(languagePackCheckbox);
+                superiorLayoutView.addView(languagePackCheckbox); //before text of checkbox
+                TextView languagePackLbl = new TextView(this);
+                languagePackLbl.setText(String.format(languagePacksLbls[i],allQuotesResultArr[i].length));
+                superiorLayoutView.addView(languagePackLbl);
+            } else {Log.e(TAG, "loadLanguagePacksCheckboxes: Something wrong with xml array!");}
+        }
+        allQuotes.recycle(); //important
+        Log.d(TAG, "loadLanguagePacksCheckboxes: Tried to load all language packs.");
     }
 
     //GETTER/SETTER -----------------------------------------------------
@@ -267,14 +328,6 @@ public class ModifyCountdownActivity extends AppCompatActivity {
                 DATETIMEPICKER.showDateTimePicker();
             }
         });
-    }
-
-    public InternalCountdownStorageMgr getInternalCountdownStorageMgr() {
-        return internalCountdownStorageMgr;
-    }
-
-    public void setInternalCountdownStorageMgr(InternalCountdownStorageMgr internalCountdownStorageMgr) {
-        this.internalCountdownStorageMgr = internalCountdownStorageMgr;
     }
 
     public DialogManager getDialogManager() {

@@ -8,14 +8,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-
-import java.util.Map;
+import android.util.SparseArray;
 
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -32,7 +31,7 @@ public class NotificationService_AlarmmanagerBroadcastReceiver extends Broadcast
         int alarmId = (-1);
         try {
             alarmId = intent.getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID,-1);
-            currCountdown = (new InternalCountdownStorageMgr(context)).getCountdown(alarmId);
+            currCountdown = DatabaseMgr.getSingletonInstance(context).getCountdown(context,alarmId);
         } catch (Exception e) {
             Log.e(TAG, "onReceive: Could not load countdown from countdown id.");
             e.printStackTrace();
@@ -72,12 +71,13 @@ public class NotificationService_AlarmmanagerBroadcastReceiver extends Broadcast
     }
 
     public static void deleteAllAlarmServices(Context context) {
-        for (Map.Entry<Integer, Countdown> entry : (new InternalCountdownStorageMgr(context)).getAllCountdowns(true, false).entrySet()) {
+        SparseArray<Countdown> allCountdowns = DatabaseMgr.getSingletonInstance(context).getAllCountdowns(context,true,false);
+        for (int i=0;i<allCountdowns.size();i++) {
             try {
-                ((AlarmManager) context.getSystemService(Context.ALARM_SERVICE)).cancel(PendingIntent.getBroadcast(context, entry.getValue().getCountdownId(), new Intent(context, NotificationService_AlarmmanagerBroadcastReceiver.class), 0));
-                Log.d(TAG, "deleteAllAlarmServices: Deleted broadcast for countdown: "+entry.getValue().getCountdownId());
+                ((AlarmManager) context.getSystemService(Context.ALARM_SERVICE)).cancel(PendingIntent.getBroadcast(context, allCountdowns.valueAt(i).getCountdownId(), new Intent(context, NotificationService_AlarmmanagerBroadcastReceiver.class), 0));
+                Log.d(TAG, "deleteAllAlarmServices: Deleted broadcast for countdown: "+allCountdowns.valueAt(i).getCountdownId());
             } catch (NullPointerException e) {
-                Log.e(TAG, "deleteAllAlarmServices: Could not delete alarmservice of countdown: "+entry.getValue().getCountdownId());
+                Log.e(TAG, "deleteAllAlarmServices: Could not delete alarmservice of countdown: "+allCountdowns.valueAt(i).getCountdownId());
                 e.printStackTrace();
             }
         }

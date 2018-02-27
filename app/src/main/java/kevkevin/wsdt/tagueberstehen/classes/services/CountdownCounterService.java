@@ -8,6 +8,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.util.SparseArray;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +20,7 @@ import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
 
 public class CountdownCounterService extends Service {
     /**
@@ -28,9 +29,8 @@ public class CountdownCounterService extends Service {
      * BUT THE FIRST COUNTDOWN NOTIFICATION HAS TO BE SENT INTO THE STARTFOREGROUND() CALL
      */
     private static final String TAG = "CountdownCounterService";
-    private HashMap<Integer, Countdown> loadedCountdownsForLiveCountdown;
+    private SparseArray<Countdown> loadedCountdownsForLiveCountdown;
     private CustomNotification customNotificationMgr;
-    private InternalCountdownStorageMgr internalCountdownStorageMgr;
     private InAppPurchaseManager inAppPurchaseManager;
     public static Thread refreshAllNotificationCounters_Interval_Thread;
 
@@ -50,13 +50,11 @@ public class CountdownCounterService extends Service {
         //set everything null
         this.setLoadedCountdownsForLiveCountdown(null);
         this.setCustomNotificationMgr(null);
-        this.setInternalCountdownStorageMgr(null);
         this.setInAppPurchaseManager(null);
 
 
-        //Notification Manager and Internal Storage Mgr in shouldThisServiceBeKilled() NEEDED! (NullPointerException)
+        //Notification Manager in shouldThisServiceBeKilled() NEEDED! (NullPointerException)
         this.setCustomNotificationMgr(new CustomNotification(this, CountdownActivity.class, (NotificationManager) getSystemService(NOTIFICATION_SERVICE)));
-        this.setInternalCountdownStorageMgr(new InternalCountdownStorageMgr(this));
 
         //normally inapp purchase mgr context should be an activity, but as long as we do not try to launch purchases we will not get an error!
         this.setInAppPurchaseManager(new InAppPurchaseManager(this));
@@ -64,7 +62,7 @@ public class CountdownCounterService extends Service {
         shouldThisServiceBeKilled(intent); //third function call should be this!! (because service gets killed with startService = goodPractice
 
         //Only do when null at first, because notifications would not be removed when expired! (so we will have to restart whole service for new countdowns)
-        this.setLoadedCountdownsForLiveCountdown(getInternalCountdownStorageMgr().getAllCountdowns(false, true)); //false because this service should be also possible when motivateMe is off
+        this.setLoadedCountdownsForLiveCountdown(DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this, false, true)); //false because this service should be also possible when motivateMe is off
 
         refreshAllNotificationCounters_Interval();
 
@@ -97,16 +95,17 @@ public class CountdownCounterService extends Service {
     private void startRefreshAllNotificationCounters() {
         int foregroundNotificationCount = 0;
 
-        for (final Map.Entry<Integer, Countdown> countdown : this.getLoadedCountdownsForLiveCountdown().entrySet()) {
-            Log.d(TAG, "startRefreshAllNotificationCounters: Found entry: " + countdown.getKey());
+        for (int i = 0; i<this.getLoadedCountdownsForLiveCountdown().size(); i++) {
+            final Countdown currCountdown = this.getLoadedCountdownsForLiveCountdown().valueAt(i); //because i cannot be final!
+            Log.d(TAG, "startRefreshAllNotificationCounters: Found entry: " + this.getLoadedCountdownsForLiveCountdown().keyAt(i));
             //IMPORTANT: 999999950 - 999999999 reserved for FOREGROUNDCOUNTERSERVICE [999999950+countdownId = foregroundNotificationID, etc.]
             //only show if setting set for that countdown
             //NO FURTHER VALIDATION NECESSARY [untilStartDateTime Value constraints AND onlyLiveCountdowns are all validated in getAllCountdowns]
-            int foregroundServiceNotificationId = Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID + countdown.getValue().getCountdownId();
+            int foregroundServiceNotificationId = Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID + currCountdown.getCountdownId();
             Log.d(TAG, "startRefreshAllNotificationCounters: foregroundServiceNotification-Id: " + foregroundServiceNotificationId + " (foregroundCount: " + foregroundNotificationCount + ")");
             if ((foregroundNotificationCount++) <= 0) {
                 //only make foreground notification for first countdown, others just get a non-removable notification
-                startForeground(foregroundServiceNotificationId, customNotificationMgr.createCounterServiceNotification(countdown.getValue()));//customNotificationMgr.getNotifications().get((long) foregroundServiceNotificationId).build());
+                startForeground(foregroundServiceNotificationId, customNotificationMgr.createCounterServiceNotification(currCountdown));//customNotificationMgr.getNotifications().get((long) foregroundServiceNotificationId).build());
             } else {
                 //only do this if more than one node-package bought! (better realize in getLoadedCountdowns() --> harder to implement so maybe better here in service)
                 //non-removable notifications
@@ -114,7 +113,7 @@ public class CountdownCounterService extends Service {
                     @Override
                     public void success_is_true() {
                         Log.d(TAG, "startRefreshAllNotificationCounters: UseMoreCountdownNodes-Package bought. Loaded more live countdowns.");
-                        customNotificationMgr.getmNotifyMgr().notify(Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID + countdown.getValue().getCountdownId(), customNotificationMgr.createCounterServiceNotification(countdown.getValue()));
+                        customNotificationMgr.getmNotifyMgr().notify(Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID + currCountdown.getCountdownId(), customNotificationMgr.createCounterServiceNotification(currCountdown));
                     }
 
                     @Override
@@ -132,7 +131,7 @@ public class CountdownCounterService extends Service {
         }
 
         //Do after above lines, because so expired countdowns can be modified/removed in createCounterServiceNotification()
-        this.setLoadedCountdownsForLiveCountdown(getInternalCountdownStorageMgr().getAllCountdowns(false, true)); //false because this service should be also possible when motivateMe is off
+        this.setLoadedCountdownsForLiveCountdown(DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this, false, true)); //false because this service should be also possible when motivateMe is off
     }
 
     private void shouldThisServiceBeKilled(Intent intent) {
@@ -166,25 +165,21 @@ public class CountdownCounterService extends Service {
 
     private void removeAllServiceLiveCountdownNotifications() {
         ArrayList<Integer> allLiveCountdownNotificationIds = new ArrayList<>();
-        for (Map.Entry<Integer, Countdown> countdownEntry : getInternalCountdownStorageMgr().getAllCountdowns(false, true).entrySet()) {
+
+        for (int i=0, nsize=this.getLoadedCountdownsForLiveCountdown().size();i<nsize;i++) {
             //false because this service should be also possible when motivateMe is off
-            allLiveCountdownNotificationIds.add(Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID + countdownEntry.getValue().getCountdownId());
+            allLiveCountdownNotificationIds.add(Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID + this.getLoadedCountdownsForLiveCountdown().valueAt(i).getCountdownId());
         }
 
         this.getCustomNotificationMgr().removeNotifications(allLiveCountdownNotificationIds);
     }
 
 
-    public HashMap<Integer, Countdown> getLoadedCountdownsForLiveCountdown() {
-        //Should be null so we can evaluate it
-        /*if (this.loadedCountdownsForLiveCountdown == null) {
-            this.loadedCountdownsForLiveCountdown = new HashMap<Integer, Countdown>();
-            Log.d(TAG, "getLoadedCountdownsForLiveCountdown: Created empty HashMap, because Getter called before value assigned! (Preventing Nullpointers!)");
-        }*/
+    public SparseArray<Countdown> getLoadedCountdownsForLiveCountdown() {
         return loadedCountdownsForLiveCountdown;
     }
 
-    public void setLoadedCountdownsForLiveCountdown(HashMap<Integer, Countdown> loadedCountdownsForLiveCountdown) {
+    public void setLoadedCountdownsForLiveCountdown(SparseArray<Countdown> loadedCountdownsForLiveCountdown) {
         this.loadedCountdownsForLiveCountdown = loadedCountdownsForLiveCountdown;
     }
 
@@ -194,14 +189,6 @@ public class CountdownCounterService extends Service {
 
     public void setCustomNotificationMgr(CustomNotification customNotificationMgr) {
         this.customNotificationMgr = customNotificationMgr;
-    }
-
-    public InternalCountdownStorageMgr getInternalCountdownStorageMgr() {
-        return internalCountdownStorageMgr;
-    }
-
-    public void setInternalCountdownStorageMgr(InternalCountdownStorageMgr internalCountdownStorageMgr) {
-        this.internalCountdownStorageMgr = internalCountdownStorageMgr;
     }
 
     public InAppPurchaseManager getInAppPurchaseManager() {

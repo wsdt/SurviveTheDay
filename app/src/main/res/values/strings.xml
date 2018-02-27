@@ -211,6 +211,22 @@
 
     <!-- DEFAULT (EN) QUOTES [do not make an superior array with them, because they would need the same row count!]
     TODO: ALL LANGUAGE QUOTES HERE IN ENGLISH STRINGS.XML (also german etc.) and then let USER select which languages to use (show also count in parenthesis) -->
+    <string name="customNotification_random_generic_texts_allArrays_headingLbl">Available languages for quotes</string>
+    <string-array name="customNotification_random_generic_texts_allArrays_Lbls"><!-- IMPORTANT: Needs to have the same amount and order of elements as array below-->
+        <item>English (%1$d quotes)</item>
+        <item>German (%1$d quotes)</item>
+    </string-array>
+
+    <!-- Following arrays etc. should be ONLY in fallback string.xml! -->
+    <string-array name="customNotification_random_generic_texts_allArrays_identifier"><!-- IMPORTANT: Needs to have the same amount and order of elements as array below-->
+        <item>en</item>
+        <item>de</item>
+    </string-array>
+    <array name="customNotification_random_generic_texts_allArrays"><!-- used e.g. to display language independent language packs-->
+        <!-- Add here new language packs! -->
+        <item>@array/customNotification_random_generic_texts_en</item>
+        <item>@array/customNotification_random_generic_texts_de</item>
+    </array>
     <string-array name="customNotification_random_generic_texts_en">
         <item>The way get started is to quit talking and begin doing. (Walt Disney)</item>
         <item>The pessimist sees difficulty in every opportunity. The optimist sees opportunity in every difficulty. (Winston Churchill)</item>
@@ -369,8 +385,10 @@
         <item>A champion is someone who gets up when he can\'t. (Jack Dempsey)</item>
         <!-- IMPORTANT einfaches Apostroph in XML innerhalb Attribut verboten! -->
     </string-array>
+
     <!-- German generic quotes array (here in english strings.xml because user of all languages should be able to choose which packages they want to use -->
-<!--todo: make selectable which languages to show    <string-array name="customNotification_random_generic_texts_de">
+    <!--TODO: aber es soll die Möglichkeit geben, sich per checkbox zu entscheiden, ob man nur englische, deutsche zitate möchte usw.-->
+    <string-array name="customNotification_random_generic_texts_de"><!-- TODO: Just temporary [for supporting german quotes] (but REMOVE and use array (de and en) from callback strings.xml with decision which packages to take (at least one, but all also possible)-->
         <item>Aller Anfang ist schwer.</item>
         <item>Des Teufels liebstes Möbelstück ist die lange Bank.</item>
         <item>Wer rastet, der rostet.</item>
@@ -423,7 +441,7 @@
         <item>Freundschaft ist nicht nur ein köstliches Geschenk, sondern auch eine dauernde Aufgabe. (Ernst Zacharias)</item>
         <item>Wenn wir alt werden, so beginnen wir zu disputieren, wollen klug sein und doch sind wir die größten Narren. (Martin Luther)</item>
         <item>Der große Sport fängt da an, wo er längst aufgehört hat, gesund zu sein. (Bertolt Brecht)</item>
-        <item>Der Sport ist ein sehr vernünftiger Versucht des modernen Zivilisationsmenschen, sich die Strapaze künstlich zu verschaffen. (Peter Bamm)</item>
+        <item>Der Sport ist ein sehr vernünftiger Versuch des modernen Zivilisationsmenschen, sich die Strapaze künstlich zu verschaffen. (Peter Bamm)</item>
         <item>Sport: Opium für das Volk. (Percy Clummings)</item>
         <item>Es gibt tausend Krankheiten, aber nur eine Gesundheit. (Ludwig Börne)</item>
         <item>Seien Sie vorsichtig mit Gesundheitsbüchern - Sie könnten an einem Druckfehler sterben. (Mark Twain)</item>
@@ -434,7 +452,7 @@
         <item>Ein ungeübtes Gehirn ist schädlicher für die Gesundheit als ein ungeübter Körper. (George Bernard Shaw)</item>
         <item>Die Ehefrau ist das beste Trainingslager. (Otto Rehhagel)</item>
         <item>Ich messe den Erfolg nicht an meinen Siegen, sondern daran, ob ich jedes Jahr besser werde. (Tiger Woods)</item>
-    </string-array>-->
+    </string-array>
 
     <!-- TIMEBASED ARRAY WITH PLACEHOLDER COULD NOt BE SET AS ARRAY, because STRING-ARRAYS DO NOT ALLOW PLACEHOLDERS! -->
     <string name="customNotification_random_timebased_text_0_secondsToGo">%1$s - Only %2$s seconds to go!</string>
@@ -457,9 +475,11 @@
     <string name="adManager_loadRewardedVideoInRewardActivity_reward_successMessage">You got rewarded with %1$d minutes free of ads!</string>
     <string name="adManager_loadRewardedVideoInRewardActivity_reward_introductionMessage">After watching this video, all ads will be hidden for a certain period of time! :)</string>
 
+    <!-- DatabaseMgr -->
+    <string name="databaseMgr_error_saveCountdown_unsuccessful">Countdown could not be saved.</string>
+
     <!-- InApp Purchase Manager -->
     <string name="inAppPurchaseManager_buyManagedInAppProduct_msg_ProductAlreadyBoughtORnotLoggedInOnGoogle">This item might have been already purchased by you or you need to login into your Google account.</string>
-
     <string name="inAppProductsNode_default_title">Product could not be loaded</string>
     <string name="inAppProductsNode_default_description">Maybe you have no active internet connection or this is an internal error. </string>
     <string name="inAppProductsNode_default_price">0.00 €</string>
