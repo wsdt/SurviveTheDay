@@ -6,9 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
-
-import static android.content.Context.NOTIFICATION_SERVICE;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
 
 
 /** This broadcast receiver gets called when smartphone is turned on AND when created countdown's startdate is not longer in the future (so
@@ -26,7 +24,7 @@ public class Kickstarter_BootAndGeneralReceiver extends BroadcastReceiver {
                     //second action gets invoked when a newly saved or edited countdown has a startdate in future. If startdate expires then this broadcast receiver will be called
 
                     //that method restarts all countdowns (so their broadcast receiver event gets restarted).
-                    new InternalCountdownStorageMgr(context).restartNotificationService();
+                    DatabaseMgr.getSingletonInstance(context).restartNotificationService(context);
                     Log.d(TAG, "onReceive: Tried to restart backgroundservice/broadcast receivers or/and live countdowns!");
                 } else {
                     Log.w(TAG, "onReceive: Unknown broadcast receiver action. Did nothing: "+action);

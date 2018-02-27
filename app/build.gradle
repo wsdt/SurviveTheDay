@@ -6,8 +6,8 @@ android {
         applicationId "kevkevin.wsdt.tagueberstehen"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 12
-        versionName "0.90"
+        versionCode 13
+        versionName "0.91"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -20,6 +20,10 @@ android {
 
             /*productFlavors.free.signingConfig signingConfigs.freeRelease
             productFlavors.paid.signingConfig signingConfigs.paidRelease*/
+            lintOptions {
+                //Do not abort when errors occur, but tell me (CAUTION!) --> used for e.g. untranslated string arrays
+                abortOnError false
+            }
         }
     }
     //this creates resource string while compiling with current versionName! (e.g. Loading screen)

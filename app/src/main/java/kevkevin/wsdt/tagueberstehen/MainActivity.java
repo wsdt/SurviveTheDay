@@ -7,6 +7,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,8 +27,8 @@ import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.DialogManager;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 import kevkevin.wsdt.tagueberstehen.classes.services.CountdownCounterService;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private AdManager adManager; //used e.g. for banner ad (so we can dynamically remove it etc.)
     private RelativeLayout mainActivityPage;
     private DialogManager dialogManager;
-    private InternalCountdownStorageMgr internalCountdownStorageMgr;
+    //private InternalCountdownStorageMgr internalCountdownStorageMgr;
     private SwipeRefreshLayout swipeRefreshLayout;
 
 
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         //Manager setting up
         this.setInAppPurchaseManager(new InAppPurchaseManager(this));
         this.setDialogManager(new DialogManager(this));
-        this.setInternalCountdownStorageMgr(new InternalCountdownStorageMgr(this));
+        //this.setInternalCountdownStorageMgr(new InternalCountdownStorageMgr(this));
 
         //Initiliaze AdMob
         this.setAdManager(new AdManager(this));
@@ -100,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
             if (this.getSwipeRefreshLayout().isRefreshing()) {
                 //Only restart services etc. when user really wants to refresh
                 Log.d(TAG, "reloadEverything:isRefreshing: User wants to refresh. So we are also refreshing the services.");
-                this.getInternalCountdownStorageMgr().restartNotificationService();
+                DatabaseMgr.getSingletonInstance(this).restartNotificationService(this);
                 Toast.makeText(this, R.string.mainActivity_swipeRefreshLayout_pulledDown_refreshDone, Toast.LENGTH_SHORT).show();
                 this.getSwipeRefreshLayout().setRefreshing(false); //done with loading
             }
@@ -108,16 +109,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadAddNodes() {
-        InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(this);
-        //int anzahlCountdowns = 0;
-        for (final Map.Entry<Integer, Countdown> countdown : storageMgr.getAllCountdowns(false, false).entrySet()) {
+        final SparseArray<Countdown> allCountdowns = DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this);
+        for (int i = 0, nsize = allCountdowns.size(); i<nsize;i++) {
+            final Countdown currCountdown = allCountdowns.valueAt(i); //necessary because i cannot be final (i++)
             if (this.anzahlShowingNodes > 0) {
                 //Already at least one node shown! Not showing more without purchasing product
                 this.getInAppPurchaseManager().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
                     public void success_is_true() {
                         Log.d(TAG, "createAddNodeToLayout:isProductBought:is_true: Product is bought. Showing more than one node (if there are any).");
-                        createAddNodeToLayout(countdown.getValue());
+                        createAddNodeToLayout(currCountdown);
                         anzahlShowingNodes++;
                     }
 
@@ -128,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
             } else { //first node
-                createAddNodeToLayout(countdown.getValue());
+                createAddNodeToLayout(currCountdown);
                 this.anzahlShowingNodes++;
             }
         }
@@ -204,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void success_is_true() {
                         Log.d(TAG, "onClick_node_sl_bottomview_rightMenu_deleteNode:success_is_true: User clicked on delete. Trying to erase countdown.");
-                        getInternalCountdownStorageMgr().deleteCountdown(countdown.getCountdownId());
+                        DatabaseMgr.getSingletonInstance(MainActivity.this).deleteCountdown(MainActivity.this, countdown.getCountdownId());
                         Toast.makeText(MainActivity.this, R.string.mainActivity_deletedCountdown, Toast.LENGTH_SHORT).show();
                         try { //for better performance try removing node from view without reloading other nodes
                             ((SwipeLayout) v.getParent().getParent()).setVisibility(View.GONE);
@@ -265,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
     private Countdown getCountdownFromNode(View v) { //needs to be Swipelayout!
         Countdown countdown;
         try {
-            countdown = this.getInternalCountdownStorageMgr().getCountdown(getCountdownIdFromNodeTag((SwipeLayout) v.getParent().getParent())); //2 getparent() because right Menu consists of more buttons
+            countdown = DatabaseMgr.getSingletonInstance(this).getCountdown(this, getCountdownIdFromNodeTag((SwipeLayout) v.getParent().getParent())); //2 getparent() because right Menu consists of more buttons
         } catch (ClassCastException e) {
             Log.e(TAG, "onClick_node_sl_bottomview_rightMenu_editNode: Could not cast parent view to SwipeLayout. Maybe it is not a node.");
             return null;
@@ -424,8 +425,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void success_is_true() {
                                 Log.d(TAG, "onOptionsItemSelected:removeAllCountdowns:success_is_true: User clicked on delete. Trying to erase all countdowns.");
-                                InternalCountdownStorageMgr storageMgr = new InternalCountdownStorageMgr(MainActivity.this);
-                                storageMgr.deleteAllCountdowns();
+                                DatabaseMgr.getSingletonInstance(MainActivity.this).deleteAllCountdowns(MainActivity.this);
                                 reloadEverything(); //because onResume gets not called
                                 Toast.makeText(MainActivity.this, R.string.mainActivity_deletedAllCountdowns, Toast.LENGTH_LONG).show();
                             }
@@ -488,14 +488,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void setDialogManager(DialogManager dialogManager) {
         this.dialogManager = dialogManager;
-    }
-
-    public InternalCountdownStorageMgr getInternalCountdownStorageMgr() {
-        return internalCountdownStorageMgr;
-    }
-
-    public void setInternalCountdownStorageMgr(InternalCountdownStorageMgr internalCountdownStorageMgr) {
-        this.internalCountdownStorageMgr = internalCountdownStorageMgr;
     }
 
     public SwipeRefreshLayout getSwipeRefreshLayout() {

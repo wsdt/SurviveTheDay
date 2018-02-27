@@ -26,14 +26,15 @@ import android.widget.ViewSwitcher;
 
 import com.daimajia.swipe.SwipeLayout;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CountdownCounter;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 
 public class CountdownActivity extends AppCompatActivity {
     private int countdownId = (-1);
@@ -72,7 +73,7 @@ public class CountdownActivity extends AppCompatActivity {
         this.setLastIntent(getIntent());
         this.countdownId = this.getLastIntent().getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID, -1);
         //maybe by main menu or notification, but we get the same Extra: COUNTDOWN_ID with the ID
-        if (this.getCountdown() == null) {this.setCountdown((new InternalCountdownStorageMgr(this).getCountdown(this.countdownId)));} //load countdown if not already loaded by actionbar menu
+        if (this.getCountdown() == null) {this.setCountdown(DatabaseMgr.getSingletonInstance(this).getCountdown(this,this.countdownId));} //load countdown if not already loaded by actionbar menu
         initializeCountdownDataSwipeLayout(); //to restore current bottom view if surface view would get updated (preventing it)
         startCountdownOnUI(); //0 is default value
         loadCountdownDataToUI();
@@ -176,11 +177,10 @@ public class CountdownActivity extends AppCompatActivity {
     }
 
     public void setNewRandomQuote(@Nullable View v) { //is called when clicking onRefreshButton, onActivity start and regularly (automatic refresh)
-        //When used outside of onClick, then v might/will be NULL!
-        //TODO: also use here user selected quote language packages!
-        String[] quotes = this.getResources().getStringArray(R.array.customNotification_random_generic_texts_en);
+        //When used outside of onClick, then v might/will be NULL!, also use here user selected quote language packages!
+        ArrayList<String> quotes = this.getCountdown().getQuotesLanguagePacks_Quotes();
         ((TextSwitcher) findViewById(R.id.swipeLayout_countdownActivity_randomQuotes_quote)).setText(
-                quotes[(new Random()).nextInt(quotes.length-1)] //use random quote
+                quotes.get((new Random()).nextInt(quotes.size()-1)) //use random quote
         );
     }
 
@@ -351,7 +351,7 @@ public class CountdownActivity extends AppCompatActivity {
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND); //implicit intent for sharing
                 shareIntent.setType("text/plain"); //currently only text (todo: later picture of countdown? etc.)
-                this.setCountdown(new InternalCountdownStorageMgr(this).getCountdown(this.countdownId));
+                this.setCountdown(DatabaseMgr.getSingletonInstance(this).getCountdown(this,this.countdownId));
                 this.setShareIntent(shareIntent); //important, so we can modify extras afterwards
                 refreshShareIntent(); //refreshes set Intent (setShareIntent must be called before!)
                 shareActionProvider.setShareIntent(shareIntent);

@@ -173,6 +173,25 @@
                     android:textSize="12sp" />
             </LinearLayout>
 
+            <!-- TODO Checkboxes, also hide when motivate off-->
+            <TextView
+                android:id="@+id/customNotification_random_generic_texts_allArrays_headingLbl"
+                android:text="@string/customNotification_random_generic_texts_allArrays_headingLbl"
+                style="@style/textForForm"
+                android:layout_width="120dp"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="start|top"
+                android:textColor="@color/colorDark"/>
+            <GridLayout
+                android:id="@+id/modifyCountdownActivity_motivation_languagePacks"
+                android:orientation="horizontal"
+                android:columnCount="2"
+                android:layout_marginTop="5dp"
+                android:layout_gravity="start|top"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+                <!-- Checkboxes will created in gl above -->
+
             <TextView
                 style="@style/textForForm"
                 android:layout_width="120dp"

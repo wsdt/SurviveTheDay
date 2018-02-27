@@ -9,7 +9,6 @@ import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
-import android.widget.TableRow;
 
 import java.util.Arrays;
 

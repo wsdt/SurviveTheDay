@@ -12,15 +12,16 @@ import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.util.SparseArray;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 import kevkevin.wsdt.tagueberstehen.R;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.InternalCountdownStorageMgr;
 import kevkevin.wsdt.tagueberstehen.classes.services.NotificationService_AlarmmanagerBroadcastReceiver;
 
 public class CustomNotification { //one instance for every countdown or similar
@@ -47,18 +48,19 @@ public class CustomNotification { //one instance for every countdown or similar
 
     public void scheduleAllActiveCountdownNotifications(Context context) {
         Log.d(TAG, "scheduleAllActiveCountdownNotifications: Started method.");
-        HashMap<Integer, Countdown> allCountdowns = (new InternalCountdownStorageMgr(context)).getAllCountdowns(true, false);
+        SparseArray<Countdown> allCountdowns = DatabaseMgr.getSingletonInstance(this.getActivityThisTarget()).getAllCountdowns(this.getActivityThisTarget(),true, false);
 
         int count = 0;
         //do not call purchaseWorkflow or similar when only providing context [altough we mostly give an activity to this class we should not risk it]
         InAppPurchaseManager inAppPurchaseManager = new InAppPurchaseManager(this.getActivityThisTarget());
-        for (final Map.Entry<Integer, Countdown> countdown : allCountdowns.entrySet()) {
+        for (int i = 0;i<allCountdowns.size();i++) {
+            final Countdown currCountdown = allCountdowns.valueAt(i); //necessary because i cannot be final (i++)
             if ((count++) > 0) {
                 inAppPurchaseManager.executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
                     public void success_is_true() {
                         Log.d(TAG, "scheduleAllActiveCountdownNotifications:success_is_true: Product is bought. Scheduling countdown.");
-                        scheduleNotification(countdown.getValue().getCountdownId(), (long) countdown.getValue().getNotificationInterval());
+                        scheduleNotification(currCountdown.getCountdownId(), (long) currCountdown.getNotificationInterval());
                     }
 
                     @Override
@@ -68,7 +70,7 @@ public class CustomNotification { //one instance for every countdown or similar
                 });
             } else {
                 Log.d(TAG, "scheduleAllActiveCountdownNotifications: Scheduling first countdown (always free).");
-                scheduleNotification(countdown.getValue().getCountdownId(), (long) countdown.getValue().getNotificationInterval());
+                scheduleNotification(currCountdown.getCountdownId(), (long) currCountdown.getNotificationInterval());
             }
         }
         Log.d(TAG, "scheduleAllActiveCountdownNotifications: Ended method.");
@@ -278,7 +280,7 @@ public class CustomNotification { //one instance for every countdown or similar
     private NotificationContent createRandomNotification_GENERIC(Countdown countdown) {
         NotificationContent randomNotification = new NotificationContent(); //create custom instance (important not to use same instance for each cateogry)
         randomNotification.titleList.addAll(Arrays.asList(this.getRes().getStringArray(R.array.customNotification_random_generic_titles))); //converts array to list and adds all of them
-        randomNotification.textList.addAll(Arrays.asList(this.getRes().getStringArray(R.array.customNotification_random_generic_texts_en))); //TODO: add here all countdown selected languages for quotes
+        randomNotification.textList.addAll(countdown.getQuotesLanguagePacks_Quotes()); //add here all countdown selected languages for quotes
         randomNotification.iconList.addAll(Arrays.asList(R.drawable.notification_generic_blue,R.drawable.notification_generic_green,R.drawable.notification_generic_purple,R.drawable.notification_generic_red));
 
         //Choose one for each arraylist by random index (max is size-1!)
