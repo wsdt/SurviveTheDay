@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Main colours -->
     <color name="colorPrimary">#3FB551</color>
     <color name="colorPrimaryDark">#006c0c</color>
     <color name="colorAccent">#FF8140</color>
-    <color name="colorDark">#111</color>
-    <color name="colorLightdark">#555</color>
-    <color name="colorGrey">#666</color>
-    <color name="colorLightGrey">#888</color>
-    <color name="colorSlightlygrey">#aaa</color>
-    <color name="colorLight">#ddd</color>
-    <color name="colorWhite">#fff</color>
 
+    <!-- Black to White -->
+    <color name="colorDark_111">#111</color>
+    <color name="colorGrey_555">#555</color>
+    <color name="colorGrey_666">#666</color>
+    <color name="colorGrey_aaa">#aaa</color>
+    <color name="colorLight_ddd">#ddd</color>
+    <color name="colorWhite_fff">#fff</color>
+
+    <!-- Extra colours -->
     <color name="colorRed">#bf0000</color>
     <color name="colorBlue">#000c9f</color>
 </resources>

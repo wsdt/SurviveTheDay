@@ -136,7 +136,7 @@
                 android:layout_gravity="start|top"
                 android:layout_marginTop="5dp"
                 android:onClick="onMotivateMeToggleClick"
-                android:textColor="@color/colorDark"
+                android:textColor="@color/colorDark_111"
                 android:textSize="15sp" />
 
             <!-- Service settings (Interval for notifications: by default disabled) -->
@@ -181,7 +181,7 @@
                 android:layout_width="120dp"
                 android:layout_marginTop="10dp"
                 android:layout_gravity="start|top"
-                android:textColor="@color/colorDark"/>
+                android:textColor="@color/colorDark_111"/>
             <GridLayout
                 android:id="@+id/modifyCountdownActivity_motivation_languagePacks"
                 android:orientation="horizontal"
@@ -206,7 +206,7 @@
                 android:layout_height="40dp"
                 android:layout_gravity="start|top"
                 android:layout_marginTop="5dp"
-                android:textColor="@color/colorDark"
+                android:textColor="@color/colorDark_111"
                 android:textSize="15sp" />
 
 

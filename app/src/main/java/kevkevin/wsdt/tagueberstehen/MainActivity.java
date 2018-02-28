@@ -19,8 +19,6 @@ import android.widget.Toast;
 
 import com.daimajia.swipe.SwipeLayout;
 
-import java.util.Map;
-
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
@@ -29,7 +27,7 @@ import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
-import kevkevin.wsdt.tagueberstehen.classes.services.CountdownCounterService;
+import kevkevin.wsdt.tagueberstehen.classes.services.LiveCountdown_ForegroundService;
 
 public class MainActivity extends AppCompatActivity {
     private LinearLayout nodeList;
@@ -62,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         this.getAdManager().loadFullPageAd(null, null); //now frequency capping (so real interstitial ad is only 2x every 10 minutes shown when calling main activity)
 
         //Nodelist
-        nodeList = (LinearLayout) findViewById(R.id.nodeList);
+        nodeList = findViewById(R.id.nodeList);
 
         //Create for each saved countdown one node
         loadAddNodes();
@@ -70,10 +68,9 @@ public class MainActivity extends AppCompatActivity {
 
         //IMPORTANT: IF ELSE so NOT BOTH get started !!
         //Start background service is forward compatibility off/false OR startBroadcast Receivers if ON
-        GlobalAppSettingsMgr globalAppSettingsMgr = new GlobalAppSettingsMgr(this);
-        globalAppSettingsMgr.startBroadcastORBackgroundService();
+        new GlobalAppSettingsMgr(this).startBroadcastReceiver();
         //Start foreground service
-        startService(new Intent(this, CountdownCounterService.class));
+        startService(new Intent(this, LiveCountdown_ForegroundService.class));
 
         //Set up onRefresh for pulling down
         initializePullForRefresh();
@@ -134,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        TextView noCountdownsFound = (TextView) findViewById(R.id.MainActivity_TextView_NoCountdownsFound);
+        TextView noCountdownsFound = findViewById(R.id.MainActivity_TextView_NoCountdownsFound);
         if (this.anzahlShowingNodes <= 0) {
             //add plus icon or similar to add new countdown
             noCountdownsFound.setVisibility(View.VISIBLE);
@@ -373,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void removeAllNodesFromLayout() {
         if (nodeList == null) {
-            this.nodeList = (LinearLayout) findViewById(R.id.nodeList);
+            this.nodeList = findViewById(R.id.nodeList);
         }
         nodeList.removeAllViews();
     }

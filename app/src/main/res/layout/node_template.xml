@@ -13,7 +13,7 @@
         android:id="@+id/node_sl_bottomview_leftMenu"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorDark"
+        android:background="@color/colorDark_111"
         android:onClick="onClick_node_sl_bottomview_leftMenu_openCountdown"
         android:orientation="horizontal"
         android:weightSum="1">
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text="@string/mainActivity_swipeLayout_topMenu_openCountdown_text"
-            android:textColor="@color/colorWhite"
+            android:textColor="@color/colorWhite_fff"
             android:textSize="20sp" />
     </LinearLayout>
     <!-- TOP MENU: Bottom View End -->
@@ -86,7 +86,7 @@
         style="@style/node"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorWhite"
+        android:background="@color/colorWhite_fff"
         android:onClick="onClick_node_sl_instruction"><!-- android:background="@android:drawable/dialog_holo_light_frame" -->
         <!-- Only add this programmatically: android:tag="COUNTDOWN_0"-->
 
@@ -147,11 +147,11 @@
                 android:layout_gravity="center_vertical"
                 android:layout_height="15dp"
                 android:adjustViewBounds="true"
-                android:contentDescription="@string/nodeTemplate_eventMsg_icon_error"
+                android:contentDescription="@string/nodeTemplate_eventMsg_icon_error_contentDescription"
                 android:scaleType="fitCenter"
                 android:layout_marginRight="5dp"
                 android:layout_marginEnd="5dp"
-                android:src="@drawable/warning" />
+                android:src="@drawable/light_notification_warning" />
 
             <TextView
                 android:id="@+id/countdownEventMsg"

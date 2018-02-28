@@ -99,6 +99,7 @@ public class Constants {
     public interface CUSTOMNOTIFICATION {
         //MUST BE LOWER than NOTIFICATION_ID of COUNTDOWNCOUNTERSERVICE! Below this no. a motivational notification gets its random notification id
         int NOTIFICATION_ID = (COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID-1); //currently 999999949
+        String DEFAULT_NOTIFICATION_CHANNEL = "SURVIVE_THE_DAY"; //now obligatory for android o etc.
 
         //LED light of notification (how long to blink on/off)
         int NOTIFICATION_BLINK_OFF_TIME_IN_MS = 1000;
@@ -112,9 +113,6 @@ public class Constants {
     }
 
     public interface COUNTDOWN {
-        //Maximum nachkommastellen (e.g. rounding percentage)
-        int MAXIMUM_FRACTION_DIGITS = 2;
-
         //COUNTDOWN Properties (for validation e.g.)
         int COUNTDOWN_TITLE_LENGTH_MIN = 0; //(including this nr. and below all values will be rejected!)
         int COUNTDOWN_TITLE_LENGTH_MAX = 15; //including this nr. and above all values will be rejected

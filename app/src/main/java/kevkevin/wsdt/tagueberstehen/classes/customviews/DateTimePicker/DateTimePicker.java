@@ -13,7 +13,6 @@ public class DateTimePicker {
     private TimePickerFragment mainTimePicker;
     private TextView mainResultView;
     private static final String TAG = "DateTimePicker";
-    private static DateTimePicker thisInstance; //for inner classes so they can reference outer methods
 
     public DateTimePicker (Context context, FragmentManager fragmentManager, @NonNull TextView mainResultView, int hourOfDay, int minute, int seconds, boolean is24hourView) {
         Log.d(TAG, "Created instance.");

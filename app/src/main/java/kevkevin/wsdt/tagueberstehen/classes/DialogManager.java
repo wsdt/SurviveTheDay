@@ -3,7 +3,6 @@ package kevkevin.wsdt.tagueberstehen.classes;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Build;
@@ -39,14 +38,14 @@ public class DialogManager {
                 Inventory inventory = InAppPurchaseManager.getAllInAppProducts();
                 if (inventory == null) {
                     Log.e(TAG, "showDialog_InAppProductPromotion: Inventory is null. (Unknown error).");
-                    Toast.makeText(getContext(), R.string.inAppPurchaseManager_error_queryAllProductsFailure+" (1)", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.inAppPurchaseManager_error_queryAllProductsFailure + " (1)", Toast.LENGTH_SHORT).show();
                 } else {
                     SkuDetails skuDetails = InAppPurchaseManager.getAllInAppProducts().getSkuDetails(skuProductId);
                     if (skuDetails == null) {
-                        Log.e(TAG, "showDialog_InAppProductPromotion: Queried inventory does not contain product (maybe online deleted or wrong id?): "+skuProductId);
+                        Log.e(TAG, "showDialog_InAppProductPromotion: Queried inventory does not contain product (maybe online deleted or wrong id?): " + skuProductId);
                         Toast.makeText(getContext(), R.string.inAppPurchaseManager_error_queriedInventoryDoesNotContainProduct, Toast.LENGTH_SHORT).show();
                     } else {
-                        showDialog_Generic(skuDetails.getTitle(), skuDetails.getDescription(),  getRes().getString(R.string.dialog_inAppProduct_button_positive_buy), getRes().getString(R.string.dialog_inAppProduct_button_negative_buy), R.drawable.app_icon, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                        showDialog_Generic(skuDetails.getTitle(), skuDetails.getDescription(), getRes().getString(R.string.dialog_inAppProduct_button_positive_buy), getRes().getString(R.string.dialog_inAppProduct_button_negative_buy), R.drawable.app_icon, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                             @Override
                             public void success_is_true() {
                                 //resultcode 0 for inapppurchaseactivity and 1 for dialogs
@@ -67,14 +66,16 @@ public class DialogManager {
             public void failure_is_false() {
                 //if failure downloading all products (not showing dialog for usability)
                 Log.e(TAG, "showDialog_InAppProductPromotion: Could not download inventory. Not showing product dialog.");
-                Toast.makeText(getContext(), R.string.inAppPurchaseManager_error_queryAllProductsFailure+" (2)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.inAppPurchaseManager_error_queryAllProductsFailure + " (2)", Toast.LENGTH_SHORT).show();
             }
         });
 
 
-
     }
 
+    /**
+     * @param lblNegativeBtn: By providing an empty string ("") [not null!] there will only the OK button added
+     */
     public void showDialog_Generic(@Nullable String title, @Nullable String msg, @Nullable String lblPositiveBtn, @Nullable String lblNegativeBtn, int icon, @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) { //to nullable icon just put a negative value in it
         AlertDialog.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -91,19 +92,28 @@ public class DialogManager {
                     public void onClick(DialogInterface dialog, int which) {
                         Log.d(TAG, "showDialog_InAppProductPromotion: Closing dialog (Positive Button).");
                         dialog.dismiss();
-                        if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true();}
+                        if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
+                            executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true();
+                        }
                     }
-                })
-                //use provided listener if not null otherwise use default one below
-                .setNegativeButton((lblNegativeBtn == null) ? this.getRes().getString(R.string.dialog_generic_button_negative) : lblNegativeBtn, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.d(TAG, "showDialog_InAppProductPromotion: Closing dialog (Negative Button).");
-                        dialog.dismiss();
-                        if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();}
-                    }
-                })
-                .show();
+                });
+        //use provided listener if not null otherwise use default one below, but if empty string then use no negative btn
+        if (lblNegativeBtn != null) {
+            if (lblNegativeBtn.equals("")) {
+                builder.show();
+                return; //show dialog now and exit method (we dont want a negative button because NOT null and only empty string provided.
+            }
+        } //not else!!
+        builder.setNegativeButton((lblNegativeBtn == null) ? this.getRes().getString(R.string.dialog_generic_button_negative) : lblNegativeBtn, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.d(TAG, "showDialog_InAppProductPromotion: Closing dialog (Negative Button).");
+                dialog.dismiss();
+                if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
+                    executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
+                }
+            }
+        }).show(); //if btnLabelNegative was not an empty string, but null OR another string then we add a negativeButton
     }
 
 

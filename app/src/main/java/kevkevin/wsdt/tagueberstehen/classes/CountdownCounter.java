@@ -62,7 +62,7 @@ public class CountdownCounter {
                 }
                 while (getTotalSeconds_SYNCED() > 0); //would be an endless loop (because getTotalSeconds cannot go below 0, but we call interrupt in updateUI())
                 updateUI(true); //set all values to zero [because last statement no need to verify isInterrupted() on thread]
-                return;
+                //no further statements!!
             }
         }));
         this.getCountdownCounterThread().start();
@@ -78,7 +78,7 @@ public class CountdownCounter {
                     //TODO: Maybe dialog with share us or similar
                 }
                 //Set value for progressbar
-                ((ProgressBar) getActivityContext().findViewById(R.id.countdownProgressBar)).setProgress((setZero) ? Constants.COUNTDOWN_COUNTER.PROGRESS_ZERO_VALUE : (int) countdown.getRemainingPercentage(2, false));
+                ((ProgressBar) getActivityContext().findViewById(R.id.countdownProgressBar)).setProgress((setZero) ? Constants.COUNTDOWN_COUNTER.PROGRESS_ZERO_VALUE : (int) countdown.getRemainingPercentage( false));
 
                 //values[0] set Progress
                 //Change CountdownActivity values
@@ -138,15 +138,14 @@ public class CountdownCounter {
         Log.d("craftBigCountdownString", "Minutes: " + minutes + " // Left seconds: " + totalSeconds);
         //Seconds has the rest!
 
-        Character separator = ':';
-        return new StringBuilder() //only add non-zero values (so vorangestellte nullen entfernt)
-                .append((years == 0) ? "" : years).append((years == 0) ? "" : separator)
-                .append((months == 0) ? "" : months).append((months == 0) ? "" : separator)
-                .append((weeks == 0) ? "" : weeks).append((weeks == 0) ? "" : separator)
-                .append((days == 0) ? "" : days).append((days == 0) ? "" : separator)
-                .append((hours == 0) ? "" : hours).append((hours == 0) ? "" : separator)
-                .append((minutes == 0) ? "" : minutes).append((minutes == 0) ? "" : separator)
-                .append(totalSeconds).toString(); //if seconds zero, then return zero
+        String separator = ":"; //must not be a char (=number) or generally a number, because we use +! (polymorphism)
+        return ((years == 0) ? "" : years+separator) +
+                ((months == 0) ? "" : months+separator) +
+                ((weeks == 0) ? "" : weeks+separator) +
+                ((days == 0) ? "" : days+separator) +
+                ((hours == 0) ? "" : hours+separator) +
+                ((minutes == 0) ? "" : minutes+separator) +
+                (totalSeconds); //if seconds zero, then return zero //if seconds zero, then return zero
     }
 
 

@@ -19,7 +19,6 @@ import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
 public class AppSettingsActivity extends AppCompatActivity {
     private GlobalAppSettingsMgr globalAppSettingsMgr;
     private static final String TAG = "AppSettingsActivity";
-    private Switch useForwardCompatibility;
     private Switch saveBattery;
     private Spinner inappNotificationShowDuration;
 
@@ -35,9 +34,8 @@ public class AppSettingsActivity extends AppCompatActivity {
 
         //declare storagemgr
         this.globalAppSettingsMgr = new GlobalAppSettingsMgr(this);
-        this.useForwardCompatibility = (Switch) findViewById(R.id.useForwardCompatibility);
-        this.saveBattery = (Switch) findViewById(R.id.saveBattery);
-        this.inappNotificationShowDuration = (Spinner) findViewById(R.id.inappNotificationHowLongToShowValue);
+        this.saveBattery = findViewById(R.id.saveBattery);
+        this.inappNotificationShowDuration = findViewById(R.id.inappNotificationHowLongToShowValue);
 
         //Set spinner properties (inappnotification duration show)
         HelperClass.setIntervalSpinnerConfigurations(this.inappNotificationShowDuration, R.array.inAppNotificationShowSpinner_LABELS_VALUES,0);
@@ -57,16 +55,6 @@ public class AppSettingsActivity extends AppCompatActivity {
     }
 
     private void setCustomListeners() {
-        this.useForwardCompatibility.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                globalAppSettingsMgr.setUseForwardCompatibility(b);
-                Log.d(TAG, "setCustomListeners: Set useForwardcompatibility.");
-
-                enableDisableBatteryFields(b); //if enabled, then enable battery fields
-            }
-        });
-
         this.saveBattery.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -87,19 +75,10 @@ public class AppSettingsActivity extends AppCompatActivity {
                 Log.d(TAG, "onNothingSelected: inAppNotificationShowDuration nothing selected.");
             }
         });
-        /*this.inappNotificationShowDuration.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker numberPicker, int oldVal, int newVal) {
-                globalAppSettingsMgr.setInAppNotificationShowDuration(newVal);
-            }
-        });*/
     }
 
     private void loadCurrentSettings() {
-        this.useForwardCompatibility.setChecked(this.globalAppSettingsMgr.useForwardCompatibility());
         this.saveBattery.setChecked(this.globalAppSettingsMgr.saveBattery());
-        enableDisableBatteryFields(this.useForwardCompatibility.isChecked());
-
         this.inappNotificationShowDuration.setSelection(Arrays.asList(getResources().getStringArray(R.array.inAppNotificationShowSpinner_LABELS_VALUES)).indexOf(""+(this.globalAppSettingsMgr.getInAppNotificationShowDurationInMs()/1000)));
 
         Log.d(TAG, "loadCurrentSettings: Loaded current settings.");

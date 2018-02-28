@@ -3,10 +3,10 @@ package kevkevin.wsdt.tagueberstehen.classes;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.os.Handler;
 import android.util.SparseArray;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,8 +19,6 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -121,8 +119,8 @@ public class Countdown {
         }
 
         if (eventMessageLinearLayout != null) {
-            TextView eventMsgTextView = (TextView) eventMessageLinearLayout.findViewById(R.id.countdownEventMsg);
-            ImageView eventMsgImageView = (ImageView) eventMessageLinearLayout.findViewById(R.id.countdownEventMsgIcon);
+            TextView eventMsgTextView = eventMessageLinearLayout.findViewById(R.id.countdownEventMsg);
+            ImageView eventMsgImageView = eventMessageLinearLayout.findViewById(R.id.countdownEventMsgIcon);
             if (eventMsgTextView != null) {
                 eventMsgTextView.setText(eventMsgStr);
                 eventMsgTextView.setTextColor(this.getContext().getResources().getColor(textColor));
@@ -140,17 +138,13 @@ public class Countdown {
         DatabaseMgr.getSingletonInstance(this.getContext()).setSaveCountdown(this.getContext(),this);
     }
 
-    public float getRemainingPercentage(int anzahlNachkomma, boolean getRemainingOtherwisePassedPercentage) { //min is 1, if 0 then it will be still min 1 nachkommastelle (but always 0!) because of double format itself
-        try {
-            Double all100percentSeconds = Long.valueOf((getDateTime(getUntilDateTime()).getTimeInMillis() - getDateTime(getStartDateTime()).getTimeInMillis()) / 1000).doubleValue();
-            Double leftXpercentSeconds = Long.valueOf((getDateTime(getUntilDateTime()).getTimeInMillis() - getCurrentDateTime().getTimeInMillis()) / 1000).doubleValue();
 
-            StringBuilder nachkommaStellen = new StringBuilder();
-            for (int i = 0; i < anzahlNachkomma; i++) {
-                nachkommaStellen.append("0");
-            }
-            DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Constants.GLOBAL.LOCALE);
-            df.setMaximumFractionDigits(Constants.COUNTDOWN.MAXIMUM_FRACTION_DIGITS); //min might be 0 (nachkommastellen)
+    /** Method calculates Remaining or passedPercentage (this method does not format percentage --> use helper method */
+    public double getRemainingPercentage(boolean getRemainingOtherwisePassedPercentage) { //min is 1, if 0 then it will be still min 1 nachkommastelle (but always 0!) because of double format itself
+        try {
+            double all100percentSeconds = Long.valueOf((getDateTime(getUntilDateTime()).getTimeInMillis() - getDateTime(getStartDateTime()).getTimeInMillis()) / 1000).doubleValue();
+            double leftXpercentSeconds = Long.valueOf((getDateTime(getUntilDateTime()).getTimeInMillis() - getCurrentDateTime().getTimeInMillis()) / 1000).doubleValue();
+
 
             double percentageValueUnformatted;
             if (getRemainingOtherwisePassedPercentage) {
@@ -158,11 +152,10 @@ public class Countdown {
             } else {
                 percentageValueUnformatted = 100 - ((leftXpercentSeconds / all100percentSeconds) * 100); //get passed percentage if false
             }
-            //TODO: now again with more than only two nachkommastellen (formatting not working) --> as string formatted, but then back to float with multiple digits
-            float result = df.parse(df.format(percentageValueUnformatted)).floatValue(); //formatting percentage to 2 nachkommastellen
+
             //Double result = Double.parseDouble((new DecimalFormat("##,"+nachkommaStellen)).format((leftXpercentSeconds / all100percentSeconds) * 100)); //formatting percentage to 2 nachkommastellen
-            return (result >= 0) ? ((result <= 100) ? result : 100) : 0; //always return 0-100
-        } catch (NullPointerException | NumberFormatException | ParseException e) {
+            return (percentageValueUnformatted >= 0) ? ((percentageValueUnformatted <= 100) ? percentageValueUnformatted : 100) : 0; //always return 0-100
+        } catch (NullPointerException | NumberFormatException e) {
             Log.e(TAG, "getRemainingPercentage: Could not calculate remaining percentage.");
             e.printStackTrace();
         }
@@ -208,43 +201,6 @@ public class Countdown {
 
         return totalSeconds;
     }
-
-    // COUNTDOWN COUNTER METHOD ----------------------------------------------------------
-    public String getBigCountdownCurrentValues_String() {
-        //IMPORTANT: Lieber so extra nochmal rechnen (zwar mehr code, aber weniger abarbeitung, da nicht zusätzlich noch HashMap.put und get
-        Long seconds = this.getTotalSeconds().longValue();
-        Log.d("calculateParams", "Total seconds: " + seconds);
-        Long years = seconds / (365 * 24 * 60 * 60);
-        seconds -= (years > 0) ? (365 * 24 * 60 * 60) * years : 0; //only subtract if years occurs at least 1 time
-        Log.d("calculateParams", "Years: " + years + " // Left seconds: " + seconds);
-        Long months = seconds / (30 * 24 * 60 * 60);
-        seconds -= (months > 0) ? (30 * 24 * 60 * 60) * months : 0;  // * with months e.g. because there might be more than one month to substract
-        Log.d("calculateParams", "Months: " + months + " // Left seconds: " + seconds);
-        Long weeks = seconds / (7 * 24 * 60 * 60);
-        seconds -= (weeks > 0) ? (7 * 24 * 60 * 60) * weeks : 0;
-        Log.d("calculateParams", "Weeks: " + weeks + " // Left seconds: " + seconds);
-        Long days = seconds / (24 * 60 * 60);
-        seconds -= (days > 0) ? (24 * 60 * 60) * days : 0;
-        Log.d("calculateParams", "Days: " + days + " // Left seconds: " + seconds);
-        Long hours = seconds / (60 * 60);
-        seconds -= (hours > 0) ? (60 * 60) * hours : 0;
-        Log.d("calculateParams", "Hours: " + hours + " // Left seconds: " + seconds);
-        Long minutes = seconds / 60;
-        seconds -= (minutes > 0) ? (60) * minutes : 0;
-        Log.d("calculateParams", "Minutes: " + minutes + " // Left seconds: " + seconds);
-        //Seconds has the rest!
-
-        Character separator = ':';
-        return new StringBuilder()
-                .append((years == 0) ? "" : years).append((years == 0) ? "" : separator)
-                .append((months == 0) ? "" : months).append((months == 0) ? "" : separator)
-                .append((weeks == 0) ? "" : weeks).append((weeks == 0) ? "" : separator)
-                .append((days == 0) ? "" : days).append((days == 0) ? "" : separator)
-                .append((hours == 0) ? "" : hours).append((hours == 0) ? "" : separator)
-                .append((minutes == 0) ? "" : minutes).append((minutes == 0) ? "" : separator)
-                .append(seconds).toString(); //if seconds zero, then return zero
-    }
-
 
     // DATE FUNCTIONS --------------------------------------------------------------------
     private String getCurrentDateTimeStr() {
@@ -413,20 +369,19 @@ public class Countdown {
     @Override
     public String toString() {
         // untilDateTime, String category, boolean isActive, int notificationInterval, boolean showLiveCountdown) {
-        Character separator = ';'; //IMPORTANT: Needs to be the correct format for shared preferences (also the reihenfolge of parameters)
-        return new StringBuilder()
-                .append(getCountdownId()).append(separator)
-                .append(getCountdownTitle()).append(separator)
-                .append(getCountdownDescription()).append(separator)
-                .append(getStartDateTime()).append(separator)
-                .append(getUntilDateTime()).append(separator)
-                .append(getCreatedDateTime()).append(separator)
-                .append(getLastEditDateTime()).append(separator)
-                .append(getCategory()).append(separator)
-                .append(isActive()).append(separator)
-                .append(getNotificationInterval()).append(separator)
-                .append(isShowLiveCountdown()).append(separator)
-                .append(getQuotesLanguagePacksObj()).toString();
+        String separator = ";"; //do not use character or number for separator (because of + polymorphism)
+        return getCountdownId()+separator+
+                getCountdownTitle()+separator +
+                getCountdownDescription()+separator +
+                getStartDateTime()+separator +
+                getUntilDateTime()+separator +
+                getCreatedDateTime()+separator +
+                getLastEditDateTime()+separator +
+                getCategory()+separator +
+                isActive()+separator +
+                getNotificationInterval()+separator +
+                isShowLiveCountdown()+separator +
+                getQuotesLanguagePacksObj();
     }
 
     /** Necessary to determine which languagepacks are used for this countdown. (MIGHT RETURN NULL!)*/
@@ -434,17 +389,22 @@ public class Countdown {
         Quote fallbackQuoteErrorCase = new Quote(this.getContext(),-1,this.getContext().getResources().getString(R.string.error_contactAdministrator),Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0]); //no matter which language pack we return
         HashMap<String, Languagepack> languagepacks = this.getQuotesLanguagePacksObj();
 
-        if (languagepacks.size() <= 0) {
+        if (languagepacks.size() <= 0) { //no languagepacks defined!
             Log.w(TAG, "getRandomQuoteSuitableForCountdown: No languagepack for countdown defined! Returned fallbackNotification.");
             return fallbackQuoteErrorCase;
-        } //no languagepacks defined!
+        } else if (languagepacks.size() != this.getQuotesLanguagePacksStr().length) {
+            Log.w(TAG, "getRandomQuoteSuitableForCountdown: Hashmap and string array of language packs does not have the same size. Might cause arrayoutofbounds!");
+            return fallbackQuoteErrorCase;
+        }
 
         //this way every language is shown the same probability (only drawback: languagepacks with less quotes might show more probably the same quotes again)
+        //IMPORTANT: String array of language packs and hashmap need the same size so keep them uptodate! (we are doing above a if to prevent such error cases, but user gets notified about it)
         SparseArray<Quote> languageQuotes = languagepacks.get(this.getQuotesLanguagePacksStr()[RandomFactory.getRandNo_int(0,languagepacks.size()-1)]).getLanguagePackQuotes(this.getContext());
         if (languageQuotes.size() <= 0) {
             Log.w(TAG, "getRandomQuoteSuitableForCountdown: No quote for languagepack for countdown defined! Returned fallbackNotification.");
             return fallbackQuoteErrorCase;
         }
+        //IMPORTANT: Hier ausnahmsweise valueAt(), WEIL wir hier den index selbst suchen und nicht den Key!
         return languageQuotes.valueAt(RandomFactory.getRandNo_int(0,languageQuotes.size()-1));
     }
 

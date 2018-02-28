@@ -3,6 +3,7 @@ package kevkevin.wsdt.tagueberstehen.classes;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -20,6 +21,12 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
@@ -43,6 +50,41 @@ public class AdManager {
     public void initializeAdmob() {
         MobileAds.initialize(this.getContext(), Constants.ADMANAGER.ADMOB_USER_ID);
         Log.d(TAG, "initializeAdMob: Tried to initialize Admob. Maybe regardless of temporarily ad-free, because we always want to display rewarded ads!");
+    }
+
+    /** This method searches the smartphone's host file for admob entries. Because many adblocker put there redirecting to localhost or other ips */
+    public boolean isAdBlockerActivated() {
+        boolean isAdBlockerActivated = false;
+        BufferedReader in = null;
+
+        try {
+            in = new BufferedReader(new InputStreamReader(new FileInputStream("/etc/hosts")));
+            String line;
+            while ((line = in.readLine()) != null) {
+                //also check if line is commented (starts with # and at least 1 or more occurrences
+                if (line.contains("admob") && !line.matches("^#+")) { //admob ad urls contain always admob
+                    isAdBlockerActivated = true;
+                    break;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return isAdBlockerActivated;
+    }
+
+    /** Method shows anti adblocker dialog (this method is called when fullpage ad [only here to avoid annoying]
+     * failed to load and inapp product is not bought and app is also not temp. ad free*/
+    private void showAntiAdBlockerDialog(){
+        Resources res = this.getContext().getResources();
+        new DialogManager(this.getContext()).showDialog_Generic(
+            res.getString(R.string.adManager_adBlocker_detected_antiAdblockerDialog_title),
+            res.getString(R.string.adManager_adBlocker_detected_antiAdblockerDialog_description),
+                null,"",R.drawable.light_notification_warning,null);
+        //lblPositive = null, so default one gets used (=OK) / lblNegative = "" empty string, so NO negative btn gets added
     }
 
 
@@ -193,6 +235,12 @@ public class AdManager {
                             Toast.makeText(getContext(), R.string.error_noInternetConnection, Toast.LENGTH_SHORT).show(); //here and not outside because of frequency capping (e.g.) errorcode = 3
                         }
 
+                        //If product not bought, and also not temp. ad free and ad failed to load then show dialog instead of fullpage ad when ads are BLOCKED
+                        if (isAdBlockerActivated()) {
+                            Log.d(TAG, "loadFullPageAd:onAdFailedToLoad: AD-BLOCKER DETECTED! Showing dialog.");
+                            showAntiAdBlockerDialog();
+                        }
+
                         if (goToActivityAfterShown != null) {
                             Log.d(TAG, "onAdClosed: gotoActivity is not null.");
                             getContext().startActivity(goToActivityAfterShown); //does app not prevent from being executed without internet
@@ -205,7 +253,7 @@ public class AdManager {
 
     //Helper method for loadBannerAd() (e.g. when watched RewardedVideoAd then to refresh activity)
     private void removeBannerAd(RelativeLayout viewGroup) {
-        AdView adView = (AdView) viewGroup.findViewById(R.id.RL_BannerAd_ID);
+        AdView adView = viewGroup.findViewById(R.id.RL_BannerAd_ID);
         if (adView != null) {
             Log.d(TAG, "loadBannerAd: Removed ad (im Nachhinein), because ad was displayed but now should be removed.");
             adView.destroy();

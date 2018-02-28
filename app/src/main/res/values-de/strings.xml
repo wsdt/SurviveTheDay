@@ -36,7 +36,11 @@
     <string name="nodeTemplate_editBtn_contentDescription">Der Bearbeiten-Button wird verwendet, um einen bestehenden Countdown zu modifizieren.</string>
     <string name="nodeTemplate_deleteBtn_contentDescription">Der Löschen-Button wird verwendet, um einen bestehenden Countdown zu löschen.</string>
     <string name="nodeTemplate_openCountdownBtn_contentDescription">Der Öffnen-Button wird verwendet, um den bestehenden Countdown zu öffnen.</string>
-    <string name="nodeTemplate_eventMsg_icon_error">Error-Icon wenn Event-Nachricht nicht gesetzt wurde.</string>
+    <string name="nodeTemplate_eventMsg_icon_error_contentDescription">Error-Icon wenn Event-Nachricht nicht gesetzt wurde.</string>
+    <string name="countdownActivity_countdownData_pauseRandomQuoteToggle_contentDescription">Dieser Button (de)aktiviert den automatischen Zitatgenerator.</string>
+    <string name="countdownActivity_countdownData_refreshRandomQuote_contentDescription">Dieser Button erzeugt ein neues zufälliges Zitat.</string>
+    <string name="countdownActivity_inAppNotification_notificationIcon_contentDescription">Dieses Bild zeigt das gleiche Icon, als das, was in der Benachrichtigungsleiste angezeigt wurde.</string>
+    <string name="countdownActivity_inAppNotification_close_contentDescription">Dieser Button schliesst die gezeigte Inapp-Benachrichtigung, noch bevor sie automatisch geschlossen wird.</string>
 
     <!-- #################################### ACTIVITIES ################################################## -->
     <!-- MainActivity -->
@@ -50,7 +54,6 @@
     <string name="mainActivity_countdownMotivationToggleOnOff_activated">aktiviert</string>
     <string name="mainActivity_countdownMotivationToggleOnOff_deactivated">deaktiviert</string>
     <string name="mainActivity_countdownNode_error_nodeTagWrongBuild">Aktion nicht verfügbar. Node wahrscheinlich fehlerhaft erstellt.</string>
-    <string name="mainActivity_countdownNode_error_categoryColorWrongRetained">Kategorie-Farbe ungültig. Verwende Standardfarbe.</string>
     <string name="mainActivity_countdownNode_delete_warningDialog_title">Countdown löschen?</string>
     <string name="mainActivity_countdownNode_delete_warningDialog_description">Mit Klicken auf \'Löschen\' wird dein Countdown gelöscht. Dies kann nicht rückgängig gemacht werden!</string>
     <string name="mainActivity_countdownNode_deleteAll_warningDialog_title">Alle Countdowns löschen?</string>
@@ -69,10 +72,8 @@
     <string name="node_countdownEventMsg_countdownExpired">Abgelaufen am %1$s</string>
 
     <!-- SettingsActivity -->
-    <string name="setting_forwardCompatibility_title">Vorwärtskompatibilität</string>
-    <string name="setting_forwardCompatibility_description">Da neuere Smartphones restriktiver sind, werden, wenn du diese Option aktiviert hast, Broadcast-Receiver anstatt eines Hintergrundservices zur Anzeige von Benachrichtigungen verwendet. Diese Funktion sollte nur deaktiviert werden, wenn Benachrichtigungen nicht wie geplant angezeigt werden (z.B. kurze Intervalle funktionieren meist besser, wenn diese Funktion deaktiviert ist). Bitte beachte aber, dass die App grundsätzlich stabiler läuft, wenn diese Einstellung aktiviert ist.</string>
     <string name="setting_saveBattery_title">Batterie sparen</string>
-    <string name="setting_saveBattery_description">Wenn aktiviert, dann erscheinen Benachrichtigungen möglicherweise in unregelmäßigeren Abständen. Funktioniert nur mit aktiver Vorwärtskompatibilität.</string>
+    <string name="setting_saveBattery_description">Wenn aktiviert, dann erscheinen Benachrichtigungen möglicherweise in unregelmäßigeren Abständen.</string>
     <string name="setting_durationOfInAppNotifications_title">In-App-Benachrichtigungen</string>
     <string name="setting_durationOfInAppNotifications_description">Je höher die Nr. (in Sekunden angegeben), deso länger wird eine In-App-Benachrichtigung am Bildschirm angezeigt. Diese erscheinen nur, wenn du auf eine motivierende Benachrichtigung klickst.</string>
 
@@ -210,9 +211,9 @@
 
     <!-- TIMEBASED ARRAY WITH PLACEHOLDER COULD NOt BE SET AS ARRAY, because STRING-ARRAYS DO NOT ALLOW PLACEHOLDERS! -->
     <string name="customNotification_random_timebased_text_0_secondsToGo">%1$s - Nur noch %2$s Sekunden!</string>
-    <string name="customNotification_random_timebased_text_1_percentageLeft">%1$s - Nur %2$f %% übrig.</string> <!-- double % because escaping so it is not a var -->
+    <string name="customNotification_random_timebased_text_1_percentageLeft">%1$s - Nur %2$s %% übrig.</string> <!-- double % because escaping so it is not a var -->
     <string name="customNotification_random_timebased_text_2_countdownEndsOn">%1$s - Countdown endet am %2$s</string>
-    <string name="customNotification_random_timebased_text_3_percentageAchieved">%1$s - Schon %2$f %% geschafft!</string> <!-- % twice to escape -->
+    <string name="customNotification_random_timebased_text_3_percentageAchieved">%1$s - Schon %2$s %% geschafft!</string> <!-- % twice to escape -->
     <string name="customNotification_random_timebased_text_4_notificationInterval">%1$s - Wir schicken dir alle %2$s eine motivierende Benachrichtigung auf deinen Bildschirm. :)</string>
 
     <!-- Countdown -->
@@ -228,6 +229,9 @@
     <string name="adManager_noInternetConnectionMaxExceeded_notification_normalAndBigText">SurviveTheDay wird mit Werbeanzeigen finanziert. Bitte benutze diese App wenn du eine Verbindung zum Internet hast. Vielen Dank :).</string>
     <string name="adManager_loadRewardedVideoInRewardActivity_reward_successMessage">Du wirst von uns %1$d Minuten mit Werbung verschont.</string>
     <string name="adManager_loadRewardedVideoInRewardActivity_reward_introductionMessage">Nach dem Anschauen dieser Anzeige werden alle Werbeanzeigen für eine bestimmte Zeit deaktiviert! :)</string>
+    <string name="adManager_adBlocker_detected_antiAdblockerDialog_title">Ad-Blocker entdeckt!</string>
+    <string name="adManager_adBlocker_detected_antiAdblockerDialog_description">Diese App war viel Arbeit. Ich hindere dich nicht daran, diese App kostenlos zu nutzen. Aber bitte sei so aufrichtig und kauf das Werbefrei-InApp Produkt oder deaktiviere deinen Adblocker, wenn dir die App gefällt. Danke :)</string>
+
 
     <!-- DatabaseMgr -->
     <string name="databaseMgr_error_saveCountdown_unsuccessful">Countdown konnte nicht gespeichert werden.</string>

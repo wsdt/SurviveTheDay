@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
 
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.ColorPicker;
@@ -178,7 +176,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         ((Spinner) findViewById(R.id.notificationIntervalSpinner)).setSelection(Arrays.asList(getResources().getStringArray(R.array.countdownIntervalSpinner_VALUES)).indexOf("" + countdown.getNotificationInterval())); //reduce about 5 otherwise we would add 5 every time we edited it!
         ((ToggleButton) findViewById(R.id.showLiveCountdown)).setChecked(countdown.isShowLiveCountdown());
 
-        GridLayout languagePackList = (GridLayout) findViewById(R.id.modifyCountdownActivity_motivation_languagePacks);
+        GridLayout languagePackList = findViewById(R.id.modifyCountdownActivity_motivation_languagePacks);
         for (Languagepack languagePack : countdown.getQuotesLanguagePacksObj().values()) {
             for (int i = 0; i < languagePackList.getChildCount(); i++) {
                 if (languagePackList.getChildAt(i).getTag() != null) {
@@ -237,10 +235,10 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         boolean tbIsChecked = ((ToggleButton) view).isChecked();
 
         //disable/enable fields (if toggle button is checked = active then buttons should be enabled. otherwise it is false
-        TextView notificationIntervalTextView = (TextView) findViewById(R.id.notificationIntervalTextView);
-        LinearLayout notificationIntervalDescriptionAndSpinner = (LinearLayout) findViewById(R.id.notificationIntervalRightCol);
-        TextView languagePackListTextView = (TextView) findViewById(R.id.customNotification_random_generic_texts_allArrays_headingLbl);
-        GridLayout languagePackList = (GridLayout) findViewById(R.id.modifyCountdownActivity_motivation_languagePacks);
+        TextView notificationIntervalTextView = findViewById(R.id.notificationIntervalTextView);
+        LinearLayout notificationIntervalDescriptionAndSpinner = findViewById(R.id.notificationIntervalRightCol);
+        TextView languagePackListTextView = findViewById(R.id.customNotification_random_generic_texts_allArrays_headingLbl);
+        GridLayout languagePackList = findViewById(R.id.modifyCountdownActivity_motivation_languagePacks);
 
         if (!tbIsChecked) {
             notificationIntervalTextView.setVisibility(View.GONE);

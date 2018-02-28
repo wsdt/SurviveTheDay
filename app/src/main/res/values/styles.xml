@@ -13,30 +13,14 @@
         <item name="android:background">@color/colorPrimary</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
     <!-- MainPage - CountdownList MainActivity -->
     <style name="page">
-        <item name="android:textColor">@color/colorDark</item>
-        <item name="android:background">@color/colorLight</item>
+        <item name="android:textColor">@color/colorDark_111</item>
+        <item name="android:background">@color/colorLight_ddd</item>
     </style>
-    <style name="heading" parent="page">
-        <item name="android:textSize">40sp</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center_horizontal</item>
-        <item name="android:layout_marginTop">15dp</item>
-        <item name="android:layout_marginBottom">5dp</item>
-    </style>
+
     <style name="text">
-        <item name="android:textColor">@color/colorDark</item>
+        <item name="android:textColor">@color/colorDark_111</item>
         <item name="android:textSize">20sp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
@@ -46,7 +30,7 @@
 
     <style name="node" parent="page">
         <item name="android:padding">5dp</item>
-        <item name="android:background">@color/colorSlightlygrey</item>
+        <item name="android:background">@color/colorGrey_aaa</item>
         <item name="android:layout_marginTop">5dp</item>
         <item name="android:gravity">center_horizontal</item>
         <item name="android:layout_width">match_parent</item>
@@ -54,7 +38,7 @@
 
     <!-- COUNTDOWN VIEW -->
     <style name="ContentMain">
-        <item name="android:background">@color/colorLight</item>
+        <item name="android:background">@color/colorLight_ddd</item>
     </style>
 
     <style name="Countdown">
@@ -63,18 +47,18 @@
     </style>
 
     <style name="CountdownSmall">
-        <item name="android:textColor">@color/colorDark</item>
+        <item name="android:textColor">@color/colorDark_111</item>
         <item name="android:textSize">20sp</item>
     </style>
 
     <style name="CountdownDetails">
-        <item name="android:textColor">@color/colorLight</item>
+        <item name="android:textColor">@color/colorLight_ddd</item>
         <item name="android:textSize">14sp</item>
     </style>
 
     <!-- Modify Countdown Styles -->
     <style name="textForForm"><!-- If you place here a textcolor the disabled spinner and corr. textview will be always that way colored!! -->
-        <item name="android:textColor">@color/colorDark</item>
+        <item name="android:textColor">@color/colorDark_111</item>
         <item name="android:textSize">18sp</item>
     </style>
 
@@ -97,10 +81,6 @@
     </style>
 
     <!-- Loading screen -->
-    <style name="loadingText">
-        <item name="android:layout_centerHorizontal">true</item>
-        <item name="android:textColor">@color/colorSlightlygrey</item>
-    </style>
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/loadingscreen</item>
         <!-- Following params are to make it to a fullscreen activity [because this theme is
@@ -117,7 +97,7 @@
 
     <!-- Setting activity -->
     <style name="settingText">
-        <item name="android:textColor">@color/colorDark</item>
+        <item name="android:textColor">@color/colorDark_111</item>
         <item name="android:textSize">16sp</item>
     </style>
 

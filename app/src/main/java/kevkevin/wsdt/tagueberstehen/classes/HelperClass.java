@@ -1,18 +1,30 @@
 package kevkevin.wsdt.tagueberstehen.classes;
 
 
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ArrayAdapter;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
+
+import java.text.DecimalFormat;
 
 import kevkevin.wsdt.tagueberstehen.R;
 
 public class HelperClass {
     private static final String TAG = "HelperClass";
+
+    /** @param nonFormattedNumber: Only numbers are allowed (int, double, etc.)
+     * @param nachkommaStellen: only int from 0-n */
+    public static <N extends Number> String formatCommaNumber(@NonNull N nonFormattedNumber, int nachkommaStellen) {
+        if (nachkommaStellen < 0) { //prevent arrayindex errors
+            Log.w(TAG, "formatCommaNumber: Did not format number, because nachkommastellen were negative!");
+            return nonFormattedNumber.toString();
+        }
+
+        String formatStr = "#0"+((nachkommaStellen>0)?".":""); //standard formatting now [only adds comma separator if nachkommastelle > 0]
+        formatStr += new String(new char[nachkommaStellen]).replace("\0","0");  //makes array acc. to nachkommastellen and replaces empty chars with 0s
+        return (new DecimalFormat(formatStr)).format(nonFormattedNumber);
+    }
 
     public static void setIntervalSpinnerConfigurations(Spinner spinner, int arrayIntervalSpinnerLabels, int defaultPos) {
         //Spinner spinner = (Spinner) findViewById(R.id.notificationIntervalSpinner);

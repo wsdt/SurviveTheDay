@@ -3,7 +3,6 @@ package kevkevin.wsdt.tagueberstehen.classes;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -168,7 +167,7 @@ public class InAppPurchaseManager {
             //now assign values to views
             ((TextView) inappProductNode.findViewById(R.id.inappProductTitle)).setText(entryStrSkuDetails.getValue().getTitle());
             ((TextView) inappProductNode.findViewById(R.id.inappProductDescription)).setText(entryStrSkuDetails.getValue().getDescription());
-            Button inAppProductPrice = (Button) inappProductNode.findViewById(R.id.inAppProductPrice);
+            Button inAppProductPrice = inappProductNode.findViewById(R.id.inAppProductPrice);
             inAppProductPrice.setText(entryStrSkuDetails.getValue().getPrice());
 
             //Buy when clicking on it
