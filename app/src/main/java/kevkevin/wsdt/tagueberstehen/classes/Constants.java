@@ -117,23 +117,14 @@ public class Constants {
 
         //COUNTDOWN Properties (for validation e.g.)
         int COUNTDOWN_TITLE_LENGTH_MIN = 0; //(including this nr. and below all values will be rejected!)
-        int COUNTDOWN_TITLE_LENGTH_MAX = 14; //including this nr. and above all values will be rejected
+        int COUNTDOWN_TITLE_LENGTH_MAX = 15; //including this nr. and above all values will be rejected
         int COUNTDOWN_DESCRIPTION_LENGTH_MIN = 0; //same constraint as above
-        int COUNTDOWN_DESCRIPTION_LENGTH_MAX = 80; //(old before multiline: 29) same constraint as above
-
-        //Countdown UNITS (e.g. for HashMap identification)
-        Integer COUNTDOWN_SECOND_IDENTIFIER = 0;
-        Integer COUNTDOWN_MINUTE_IDENTIFIER = 1;
-        Integer COUNTDOWN_HOUR_IDENTIFIER = 2;
-        Integer COUNTDOWN_DAY_IDENTIFIER = 3;
-        Integer COUNTDOWN_WEEK_IDENTIFIER = 4;
-        Integer COUNTDOWN_MONTH_IDENTIFIER = 5;
-        Integer COUNTDOWN_YEAR_IDENTIFIER = 6;
+        int COUNTDOWN_DESCRIPTION_LENGTH_MAX = 18; //(old before multiline: 29) same constraint as above
 
         //Escape methods
         interface ESCAPE {
-            String escapeForSharedPreferences_illegalCharacter = ";";
-            String escapeForSharedPreferences_legalCharacter = ","; //legalCharacter gets on places where illegalCharacter occurs. (when calling escapeForSharedPreferecnes)
+            String escapeSQL_illegalCharacter = "'";
+            String escapeSQL_legalCharacter = "\'";
             String[] escapeEnter_illegalCharacters = new String[]{"\n", "\r", System.getProperty("line.separator")}; //illegalCharacters (enter) get replaced with legalCharacter below (only called for title and description because they use CustomEdittext)
             String escapeEnter_legalCharacter = " "; //when enter found, place space
         }
@@ -237,9 +228,6 @@ public class Constants {
             }
         }
 
-        interface INTERNAL_COUNTDOWN_STR_MGR {
-            String SHAREDPREFERENCES_DBNAME = "COUNTDOWNS";
-        }
         interface GLOBAL_APPSETTINGS_STR_MGR {
             String SHAREDPREFERENCES_DBNAME = "APP_SETTINGS";
             String SPIDENTIFIER_BG_SERVICE_PID = "BG_SERVICE_PID";

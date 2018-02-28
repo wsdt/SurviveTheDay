@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadAddNodes() {
-        final SparseArray<Countdown> allCountdowns = DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this);
+        final SparseArray<Countdown> allCountdowns = DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this, false);
         for (int i = 0, nsize = allCountdowns.size(); i<nsize;i++) {
             final Countdown currCountdown = allCountdowns.valueAt(i); //necessary because i cannot be final (i++)
             if (this.anzahlShowingNodes > 0) {
@@ -266,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
     private Countdown getCountdownFromNode(View v) { //needs to be Swipelayout!
         Countdown countdown;
         try {
-            countdown = DatabaseMgr.getSingletonInstance(this).getCountdown(this, getCountdownIdFromNodeTag((SwipeLayout) v.getParent().getParent())); //2 getparent() because right Menu consists of more buttons
+            countdown = DatabaseMgr.getSingletonInstance(this).getCountdown(this, false, getCountdownIdFromNodeTag((SwipeLayout) v.getParent().getParent())); //2 getparent() because right Menu consists of more buttons
         } catch (ClassCastException e) {
             Log.e(TAG, "onClick_node_sl_bottomview_rightMenu_editNode: Could not cast parent view to SwipeLayout. Maybe it is not a node.");
             return null;

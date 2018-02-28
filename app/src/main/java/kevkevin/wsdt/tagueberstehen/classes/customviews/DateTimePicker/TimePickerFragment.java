@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,15 +31,20 @@ public class TimePickerFragment extends MyTimePickerDialog implements MyTimePick
         setButton2(context.getText(com.ikovac.timepickerwithseconds.R.string.cancel), new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                //if cancelled set current time
-                GregorianCalendar now = new GregorianCalendar();
-                getResultView().setText(String.format(getRes().getString(R.string.dateTimePicker_format_DateTime),getResultView().getText(),String.format(Constants.GLOBAL.LOCALE,"%02d", now.get(Calendar.HOUR_OF_DAY)),String.format(Constants.GLOBAL.LOCALE,"%02d", now.get(Calendar.MINUTE)),String.format(Constants.GLOBAL.LOCALE,"%02d", now.get(Calendar.SECOND))));
+                setCurrentTime();
                 Log.d(TAG, "onCancelListener: Time cancelled, set current time with previously selected date.");
-                Toast.makeText(getContext(), "Set current date.",Toast.LENGTH_SHORT).show();
             }
         });
 
         this.res = context.getResources(); //important, must not be null!
+    }
+
+    /** Fallback method, if user clicks on cancel button or outside of dialog field, so we just set current time.*/
+    private void setCurrentTime() {
+        //if cancelled set current time
+        GregorianCalendar now = new GregorianCalendar();
+        getResultView().setText(String.format(getRes().getString(R.string.dateTimePicker_format_DateTime),getResultView().getText(),String.format(Constants.GLOBAL.LOCALE,"%02d", now.get(Calendar.HOUR_OF_DAY)),String.format(Constants.GLOBAL.LOCALE,"%02d", now.get(Calendar.MINUTE)),String.format(Constants.GLOBAL.LOCALE,"%02d", now.get(Calendar.SECOND))));
+        Toast.makeText(getContext(), "Set current date.",Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -48,6 +54,17 @@ public class TimePickerFragment extends MyTimePickerDialog implements MyTimePick
         Log.d(TAG, "onTimeSet: Assigned new time.");
     }
 
+    //This procedure could be also possible for datepicker, but there it isnt necessary, bc. there should remain the prev. datetime
+    @Override
+    public boolean onTouchEvent(@NonNull MotionEvent event) {
+        //If users clicks outside dialog (we close it, BUT we return current time first to prevent wrong datetime format)
+        Log.d(TAG, "onTouchEvent: User touched timepicker: "+event.getAction());
+        if (MotionEvent.ACTION_DOWN == event.getAction()) { //normally it should be ACTION_DOWN, but we get action_down and addit. only here so I guess this should also work
+            Log.d(TAG, "onTouchEvent: User clicked outside of timepicker. Closing dialog, but setting current time before.");
+            setCurrentTime();
+        }
+        return super.onTouchEvent(event);
+    }
 
     public TextView getResultView() {
         return this.resultView;

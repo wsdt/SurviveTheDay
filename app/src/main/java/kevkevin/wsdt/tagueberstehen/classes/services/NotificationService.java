@@ -45,7 +45,7 @@ public class NotificationService extends Service {
         Log.d(TAG, "Executed onStartCommand(). StartId: " + startId);
         super.onStartCommand(intent, flags, startId);
 
-        this.allCountdowns = DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this,true, false); //call this line AFTER assignment of internal storage mgr (otherwise nullpointerexc!)
+        this.allCountdowns = DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this,false,true, false); //call this line AFTER assignment of internal storage mgr (otherwise nullpointerexc!)
 
         //Warning context is NOT an activity, so do NOT launch purchase workflows or similar! (class cast exception)
         this.inAppPurchaseManager = new InAppPurchaseManager(this);
@@ -133,7 +133,7 @@ public class NotificationService extends Service {
         }
     }
 
-
+    //############### WARNING: Countdowns might be outdated! (external process, we would need getAllCountdowns(forcereload=true)) #########################
     public void initializeTimer(final Countdown countdown) {
         Log.d(TAG, "Executed initializeTimer().");
         countdown.setTimerTask(new TimerTask() {

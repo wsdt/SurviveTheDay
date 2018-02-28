@@ -233,13 +233,13 @@ public class Countdown {
 
         Character separator = ':';
         return new StringBuilder()
-                .append(years).append(separator)
-                .append(months).append(separator)
-                .append(weeks).append(separator)
-                .append(days).append(separator)
-                .append(hours).append(separator)
-                .append(minutes).append(separator)
-                .append(seconds).toString();
+                .append((years == 0) ? "" : years).append((years == 0) ? "" : separator)
+                .append((months == 0) ? "" : months).append((months == 0) ? "" : separator)
+                .append((weeks == 0) ? "" : weeks).append((weeks == 0) ? "" : separator)
+                .append((days == 0) ? "" : days).append((days == 0) ? "" : separator)
+                .append((hours == 0) ? "" : hours).append((hours == 0) ? "" : separator)
+                .append((minutes == 0) ? "" : minutes).append((minutes == 0) ? "" : separator)
+                .append(seconds).toString(); //if seconds zero, then return zero
     }
 
 
@@ -278,13 +278,6 @@ public class Countdown {
 
 
     // ESCAPE METHODS FOR SHARED PREFERENCES ------------------------------------
-    private String escapeForSharedPreferences(@NonNull String string) { //replaces ; to , e.g.
-        Log.d(TAG, "escapeForSharedPreferences: Trying to escape string for shared preferences.");
-        if (string.contains(Constants.COUNTDOWN.ESCAPE.escapeForSharedPreferences_illegalCharacter)) {
-            string = string.replace(Constants.COUNTDOWN.ESCAPE.escapeForSharedPreferences_illegalCharacter, Constants.COUNTDOWN.ESCAPE.escapeForSharedPreferences_legalCharacter);
-        }
-        return string;
-    }
 
     private String escapeEnter(@NonNull String string) { //so nicer for UI (node showing)
         Log.d(TAG, "escapeEnter: Trying to escape string for enter!");
@@ -318,7 +311,7 @@ public class Countdown {
     }
 
     public void setCountdownTitle(String countdownTitle) { //also escape enter here, because we have a customedittext, which blocks enter (do not call this escapeEnter-method on other values [error preventing])
-        this.countdownTitle = escapeEnter(escapeForSharedPreferences(countdownTitle));
+        this.countdownTitle = escapeEnter(DatabaseMgr.escapeString(countdownTitle));
     }
 
     public String getCountdownDescription() {
@@ -326,7 +319,7 @@ public class Countdown {
     }
 
     public void setCountdownDescription(String countdownDescription) { //also escape enter here, because we have a customedittext, which blocks enter
-        this.countdownDescription = escapeEnter(escapeForSharedPreferences(countdownDescription));
+        this.countdownDescription = escapeEnter(DatabaseMgr.escapeString(countdownDescription));
     }
 
     public String getUntilDateTime() {
@@ -334,7 +327,7 @@ public class Countdown {
     }
 
     public void setUntilDateTime(String untilDateTime) {
-        this.untilDateTime = escapeForSharedPreferences(untilDateTime);
+        this.untilDateTime = DatabaseMgr.escapeString(untilDateTime);
     }
 
     public String getCreatedDateTime() {
@@ -342,7 +335,7 @@ public class Countdown {
     }
 
     public void setCreatedDateTime(String createdDateTime) {
-        this.createdDateTime = escapeForSharedPreferences(createdDateTime);
+        this.createdDateTime = DatabaseMgr.escapeString(createdDateTime);
     }
 
     public String getLastEditDateTime() {
@@ -350,7 +343,7 @@ public class Countdown {
     }
 
     public void setLastEditDateTime(String lastEditDateTime) {
-        this.lastEditDateTime = escapeForSharedPreferences(lastEditDateTime);
+        this.lastEditDateTime = DatabaseMgr.escapeString(lastEditDateTime);
     }
 
     public String getCategory() {
@@ -358,7 +351,7 @@ public class Countdown {
     }
 
     public void setCategory(String category) { //#000000
-        this.category = escapeForSharedPreferences(category);
+        this.category = DatabaseMgr.escapeString(category);
     }
 
     public boolean isActive() {
@@ -374,7 +367,7 @@ public class Countdown {
     }
 
     public void setStartDateTime(String startDateTime) {
-        this.startDateTime = escapeForSharedPreferences(startDateTime);
+        this.startDateTime = DatabaseMgr.escapeString(startDateTime);
     }
 
     public int getNotificationInterval() {
