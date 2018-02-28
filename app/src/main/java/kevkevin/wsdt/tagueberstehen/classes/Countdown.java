@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.os.Handler;
+import android.util.SparseArray;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -23,6 +24,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -44,7 +46,8 @@ public class Countdown {
     private boolean isActive;
     private int notificationInterval; //in seconds!
     private boolean showLiveCountdown; //show Foreground service live countdown if countdown until start date constraints true
-    private String[] quotesLanguagePacks; //by default local language will be chosen
+    private HashMap<String, Languagepack> quotesLanguagePacksObj; //by default local language will be chosen
+    private String[] quotesLanguagePacksStr; //for random e.g.
     private static final String TAG = "Countdown";
 
     //Members for service (do not save them explicitely [unneccesary])
@@ -67,7 +70,7 @@ public class Countdown {
         this.setActive(isActive);
         this.setNotificationInterval(notificationInterval);
         this.setShowLiveCountdown(showLiveCountdown);
-        this.setQuotesLanguagePacks(quotesLanguagePacks);
+        this.setQuotesLanguagePacksStr(quotesLanguagePacks);
     }
 
     //Constructor for all fields
@@ -84,7 +87,7 @@ public class Countdown {
         this.setActive(isActive);
         this.setNotificationInterval(notificationInterval);
         this.setShowLiveCountdown(showLiveCountdown);
-        this.setQuotesLanguagePacks(quotesLanguagePacks);
+        this.setQuotesLanguagePacksStr(quotesLanguagePacks);
     }
 
 
@@ -423,44 +426,59 @@ public class Countdown {
                 .append(isActive()).append(separator)
                 .append(getNotificationInterval()).append(separator)
                 .append(isShowLiveCountdown()).append(separator)
-                .append(getQuotesLanguagePacks_Str()).toString();
+                .append(getQuotesLanguagePacksObj()).toString();
     }
 
-    public ArrayList<String> getQuotesLanguagePacks_Quotes() {
-        ArrayList<String> allQuotes = new ArrayList<>();
-        for (String langPack : this.getQuotesLanguagePacks()) {
+    /** Necessary to determine which languagepacks are used for this countdown. (MIGHT RETURN NULL!)*/
+    public Quote getRandomQuoteSuitableForCountdown() {
+        Quote fallbackQuoteErrorCase = new Quote(this.getContext(),-1,this.getContext().getResources().getString(R.string.error_contactAdministrator),Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0]); //no matter which language pack we return
+        HashMap<String, Languagepack> languagepacks = this.getQuotesLanguagePacksObj();
+
+        if (languagepacks.size() <= 0) {
+            Log.w(TAG, "getRandomQuoteSuitableForCountdown: No languagepack for countdown defined! Returned fallbackNotification.");
+            return fallbackQuoteErrorCase;
+        } //no languagepacks defined!
+
+        //this way every language is shown the same probability (only drawback: languagepacks with less quotes might show more probably the same quotes again)
+        SparseArray<Quote> languageQuotes = languagepacks.get(this.getQuotesLanguagePacksStr()[RandomFactory.getRandNo_int(0,languagepacks.size()-1)]).getLanguagePackQuotes(this.getContext());
+        if (languageQuotes.size() <= 0) {
+            Log.w(TAG, "getRandomQuoteSuitableForCountdown: No quote for languagepack for countdown defined! Returned fallbackNotification.");
+            return fallbackQuoteErrorCase;
+        }
+        return languageQuotes.valueAt(RandomFactory.getRandNo_int(0,languageQuotes.size()-1));
+    }
+
+    public HashMap<String, Languagepack> getQuotesLanguagePacksObj() {
+        return quotesLanguagePacksObj;
+    }
+
+    private void setQuotesLanguagePacksObj(HashMap<String, Languagepack> quotesLanguagePacksObj) {
+        //should only be called by setQuotesLStr(), because this method does not update hashmap
+        this.quotesLanguagePacksObj = quotesLanguagePacksObj;
+    }
+
+    public void setQuotesLanguagePacksStr(String[] quotesLanguagePacks) { //additional setter (easier for constructor etc.) because no extra object creation necessary
+        this.quotesLanguagePacksStr = quotesLanguagePacks; //IMPORTANT: That string array and hashmap are uptodate otherwise we will get errors!
+        //now also refresh hashmap
+        HashMap<String,Languagepack> usedLanguagePacks = new HashMap<>();
+        for (String langPack : quotesLanguagePacks) {
             Log.d(TAG, "getQuotesLanguagePacks_Quotes: Trying to evaluate language pack->"+langPack);
-            int langPackResId = this.getContext().getResources().getIdentifier("customNotification_random_generic_texts_" +langPack, "array", this.getContext().getPackageName());
-            if (langPackResId != 0) {
-                allQuotes.addAll(Arrays.asList(this.getContext().getResources().getStringArray(langPackResId)));
+            Languagepack languagepack = Languagepack.getAllLanguagePacks(this.getContext()).get(langPack);
+            if (languagepack != null) {
+                usedLanguagePacks.put(languagepack.getLangPackId(),languagepack);
             }
         }
 
         //If NO valid language found then just report fallback language (english)
-        if (allQuotes.size() <= 0) {
+        if (usedLanguagePacks.size() <= 0) {
             Log.d(TAG, "getQuotesLanguagePacks_Quotes: Languages not found. Used fallback language.");
-            allQuotes.addAll(Arrays.asList(this.getContext().getResources().getStringArray(R.array.customNotification_random_generic_texts_en)));
+            String fallBackLanguagePack = Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0];
+            usedLanguagePacks.put(fallBackLanguagePack,Languagepack.getAllLanguagePacks(this.getContext()).get(fallBackLanguagePack));
         }
-        return allQuotes;
+        this.setQuotesLanguagePacksObj(usedLanguagePacks); //now use other setter
     }
 
-    private String getQuotesLanguagePacks_Str() {
-        StringBuilder languagePackStringified = new StringBuilder();
-        int i = 0;
-        for (String languagePack : getQuotesLanguagePacks()) {
-            if ((i++) != 0) {
-                languagePackStringified.append("-"); //append before language pack append
-            }
-            languagePackStringified.append(languagePack);
-        }
-        return languagePackStringified.toString();
-    }
-
-    public String[] getQuotesLanguagePacks() {
-        return quotesLanguagePacks;
-    }
-
-    public void setQuotesLanguagePacks(String[] quotesLanguagePacks) {
-        this.quotesLanguagePacks = quotesLanguagePacks;
+    public String[] getQuotesLanguagePacksStr() {
+        return quotesLanguagePacksStr;
     }
 }

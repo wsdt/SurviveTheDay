@@ -205,10 +205,8 @@
 
     <!-- IMPORTANT: Zitate selbst sind alle in default Strings.xml und haben ihre ORIGINALSPRACHE. Für jede unterstützte Sprache gibt es eigensprachige Zitate.-->
     <string name="customNotification_random_generic_texts_allArrays_headingLbl">Verfügbare Sprachen für Zitate</string>
-    <string-array name="customNotification_random_generic_texts_allArrays_Lbls"><!-- IMPORTANT: Needs to have the same amount and order of elements as array below-->
-        <item>Englisch (%1$d Zitate)</item>
-        <item>Deutsch (%1$d Zitate)</item>
-    </string-array>
+    <string name="customNotification_random_generic_texts_allArrays_Lbls_en">Englisch (%1$d Zitate)</string>
+    <string name="customNotification_random_generic_texts_allArrays_Lbls_de">Deutsch (%1$d Zitate)</string>
 
     <!-- TIMEBASED ARRAY WITH PLACEHOLDER COULD NOt BE SET AS ARRAY, because STRING-ARRAYS DO NOT ALLOW PLACEHOLDERS! -->
     <string name="customNotification_random_timebased_text_0_secondsToGo">%1$s - Nur noch %2$s Sekunden!</string>
