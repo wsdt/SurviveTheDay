@@ -7,7 +7,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
@@ -15,11 +14,17 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
 
+import java.util.HashMap;
+
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.R;
-import kevkevin.wsdt.tagueberstehen.classes.Constants;
+import kevkevin.wsdt.tagueberstehen.classes.Constants.COUNTDOWN;
+import kevkevin.wsdt.tagueberstehen.classes.Constants.KICKSTARTER_BOOTANDGENERALRECEIVER;
+import kevkevin.wsdt.tagueberstehen.classes.Constants.STORAGE_MANAGERS.DATABASE_STR_MGR;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
+import kevkevin.wsdt.tagueberstehen.classes.Languagepack;
+import kevkevin.wsdt.tagueberstehen.classes.Quote;
 import kevkevin.wsdt.tagueberstehen.classes.services.CountdownCounterService;
 import kevkevin.wsdt.tagueberstehen.classes.services.Kickstarter_BootAndGeneralReceiver;
 import kevkevin.wsdt.tagueberstehen.classes.services.NotificationService;
@@ -38,16 +43,29 @@ public class DatabaseMgr {
         //private constructor for singleton, but nested class no singleton because helper outside is static and the whole nested class is private!
         private DatabaseHelper(Context context) {
             //use applicationcontext so longer in memory
-            super(context.getApplicationContext(), Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.DATABASE_HELPER.DATABASE_NAME, null, Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.DATABASE_VERSION); //seemingly there should be always 0
+            super(context.getApplicationContext(), DATABASE_STR_MGR.DATABASE_HELPER.DATABASE_NAME, null, DATABASE_STR_MGR.DATABASE_VERSION); //seemingly there should be always 0
             Log.d(TAG, "DatabaseHelper: Tried to create helper instance.");
         }
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            for (String sqlStatement : Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.DATABASE_HELPER.DATABASE_CREATE_SQL) {
+            for (String sqlStatement : DATABASE_STR_MGR.DATABASE_HELPER.DATABASE_CREATE_SQL) {
                 Log.d(TAG, "onCreate: Executed statement-> " + sqlStatement);
                 db.execSQL(sqlStatement); //ONLY one statement per method!
             }
+
+            //INSERT ALL Quotes (maybe there might a more nice solution)
+            ContentValues contentValues = new ContentValues();
+            int countRow = 0;
+            for (String[] quoteRow : DATABASE_STR_MGR.TABLES.QUOTES.ALL_QUOTES) {
+                contentValues.put(DATABASE_STR_MGR.TABLES.QUOTES.ATTRIBUTES.ID,countRow++);
+                contentValues.put(DATABASE_STR_MGR.TABLES.QUOTES.ATTRIBUTES.QUOTE_TEXT,quoteRow[0]);
+                contentValues.put(DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID,quoteRow[1]);
+
+                db.insert(DATABASE_STR_MGR.TABLES.QUOTES.TABLE_NAME,null,contentValues);
+            }
+
+
             Log.d(TAG, "onCreate: Tried to create sql tables. ");
         }
 
@@ -55,7 +73,7 @@ public class DatabaseMgr {
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             //TODO: IMPORTANT: If new version, then do this procedure NOT on mainthread (needs longer!)
             Log.w(TAG, "onUpgrade: Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data.");
-            for (String sqlStatement : Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.DATABASE_HELPER.DATABASE_UPGRADE_RESETTABLES) {
+            for (String sqlStatement : DATABASE_STR_MGR.DATABASE_HELPER.DATABASE_UPGRADE_RESETTABLES) {
                 db.execSQL(sqlStatement); //for each statement a separate method call (necessary)
             }
             onCreate(db); //recreate database!
@@ -69,7 +87,10 @@ public class DatabaseMgr {
     private static DatabaseMgr singletonInstance;
     private static DatabaseHelper dbHelper; //SHOULD be static, because the same instance (to make singleton of it without a real singleton of helper class!)
     private static SQLiteDatabase db; //MUST be a member var
+    //do not put cursor as member (because simultaneous operations would maybe destroy object allocations)
     private static SparseArray<Countdown> allCountdowns;
+    private static SparseArray<Quote> allQuotes;
+    private static HashMap<String, Languagepack> allLanguagePacks;
 
     //Also singleton, so only one database instance at a time open
     private DatabaseMgr(@NonNull Context context) { //do not set context as class member, otherwise we could not make a singleton! (give context via methods!)
@@ -88,20 +109,130 @@ public class DatabaseMgr {
         /*Since getWritableDatabase() and getReadableDatabase() are expensive to call when the database is closed, you should leave your database connection open for as long as you possibly need to access it. Typically, it is optimal to close the database in the onDestroy() of the calling Activity.*/
     }
 
-    //COUNTDOWN RELATED METHODS +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    //LANGUAGEPACK RELATED METHODS ++++++++++++++++++++++++++++++++++++++++++++++++++++
+    /**
+     * This method will map a queried row to a quoteObj.
+     * ATTENTION: @param cursorRow should be closed() in parent-method in a finally block!
+     */
+    private Languagepack mapCursorRowToLanguagePack(@NonNull Context context, Cursor cursorRow) {
+        return new Languagepack(
+                context,
+                cursorRow.getString(cursorRow.getColumnIndex(DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID)));
+    }
 
+    //todo: Fürs Erste nur queryMethod für Languagepacks, (delete/replace, etc. erst später WENN eigene Quotes hinzufügbar bzw. generell Quotes verwaltbar
+    public HashMap<String,Languagepack> getAllLanguagePacks(@NonNull Context context, boolean forceReload) {
+        //SparseArray for setting the same rows/ids as in db, but string[] for setting row values (quote text, etc.)
+        Log.d(TAG, "getAllLanguagePacks: Trying to load all quotes.");
+        if (allQuotes == null || forceReload) { //only do this if not already extracted in this session! (performance enhancement :)) --> so also not extra sql query necessary when getting single countdown
+            if (forceReload) {
+                Log.d(TAG, "getAllLanguagePacks: Forcefully reloaded two-dimensional array.");
+            } else {
+                Log.d(TAG, "getAllLanguagePacks: Found no already extracted two-dimensional array for quotes. Doing it now.");
+            }
+            Cursor dbCursor = null;
+            HashMap<String,Languagepack> queriedLanguagePacks = new HashMap<>(); //sparse array instead of hashmap because better performance for pimitives
+
+            try {
+                /** Following query gets executed: ---------------
+                 * SELECT * FROM Quote_languagepackages;*/
+
+                dbCursor = getDb(context).rawQuery("SELECT * FROM "+ DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.TABLE_NAME+";",null); //query all
+
+                if (dbCursor != null) {
+                    Log.d(TAG, "getAllLanguagePacks: Cursor is not null :)");
+
+                    while (dbCursor.moveToNext()) {
+                        Languagepack tmp = mapCursorRowToLanguagePack(context, dbCursor); //temporary cache-saving, to get countdownId for Index!
+                        Log.d(TAG, "getAllLanguagePacks: Found languagepack-> " + tmp.toString());
+                        queriedLanguagePacks.put(tmp.getLangPackId(), tmp);
+                    }
+                    setAllLanguagePacks(queriedLanguagePacks); //save all queried countdowns so we do not have to do this procedure again for runtime :)
+                } else {
+                    Log.w(TAG, "getAllLanguagePacks: Cursor is null!");
+                }
+            } finally { //always finally for closing cursor! (also in error case)
+                Log.d(TAG, "getAllLanguagePacks: Trying to close cursor (finally).");
+                if (dbCursor != null) {
+                    Log.d(TAG, "getAllLanguagePacks: Trying to close cursor now! It's not null.");
+                    dbCursor.close();
+                }
+            }
+        } //no else necessary, because allCountdowns already set
+        Log.d(TAG, "getAllLanguagePacks: Length of returned two-dimensional array: " + allLanguagePacks.size());
+        return allLanguagePacks;
+    }
+
+
+    //QUOTE RELATED METHODS +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    /**
+     * This method will map a queried row to a quoteObj.
+     * ATTENTION: @param cursorRow should be closed() in parent-method in a finally block!
+     */
+    private Quote mapCursorRowToQuote(@NonNull Context context, Cursor cursorRow) {
+        return new Quote(
+                context,
+                cursorRow.getInt(cursorRow.getColumnIndex(DATABASE_STR_MGR.TABLES.QUOTES.ATTRIBUTES.ID)),
+                cursorRow.getString(cursorRow.getColumnIndex(DATABASE_STR_MGR.TABLES.QUOTES.ATTRIBUTES.QUOTE_TEXT)),
+                cursorRow.getString(cursorRow.getColumnIndex(DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID)));
+    }
+
+    //todo: Fürs Erste nur queryMethod für Quotes, (delete/replace, etc. erst später WENN eigene Quotes hinzufügbar bzw. generell Quotes verwaltbar
+    public SparseArray<Quote> getAllQuotes(@NonNull Context context, boolean forceReload) {
+        //SparseArray for setting the same rows/ids as in db, but string[] for setting row values (quote text, etc.)
+        Log.d(TAG, "getAllQuotes: Trying to load all quotes.");
+        if (allQuotes == null || forceReload) { //only do this if not already extracted in this session! (performance enhancement :)) --> so also not extra sql query necessary when getting single countdown
+            if (forceReload) {
+                Log.d(TAG, "getAllQuotes: Forcefully reloaded two-dimensional array.");
+            } else {
+                Log.d(TAG, "getAllQuotes: Found no already extracted two-dimensional array for quotes. Doing it now.");
+            }
+            Cursor dbCursor = null;
+            SparseArray<Quote> queriedQuotes = new SparseArray<>(); //sparse array instead of hashmap because better performance for pimitives
+
+            try {
+                /** Following query gets executed: ---------------
+                 * SELECT * FROM Quotes;*/
+
+                dbCursor = getDb(context).rawQuery("SELECT * FROM "+ DATABASE_STR_MGR.TABLES.QUOTES.TABLE_NAME+";",null); //query all
+
+                if (dbCursor != null) {
+                    Log.d(TAG, "getAllQuotes: Cursor is not null :)");
+
+                    while (dbCursor.moveToNext()) {
+                        Quote tmp = mapCursorRowToQuote(context, dbCursor); //temporary cache-saving, to get countdownId for Index!
+                        Log.d(TAG, "getAllQuotes: Found quote-> " + tmp.toString());
+                        queriedQuotes.put(tmp.getQuoteId(), tmp);
+                    }
+                    setAllQuotes(queriedQuotes); //save all queried countdowns so we do not have to do this procedure again for runtime :)
+                } else {
+                    Log.w(TAG, "getAllQuotes: Cursor is null!");
+                }
+            } finally { //always finally for closing cursor! (also in error case)
+                if (dbCursor != null) {
+                    dbCursor.close();
+                }
+            }
+        } //no else necessary, because allCountdowns already set
+        Log.d(TAG, "getAllQuotes: Length of returned two-dimensional array: " + allQuotes.size());
+        return allQuotes;
+    }
+
+
+
+    //COUNTDOWN RELATED METHODS +++++++++++++++++++++++++++++++++++++++++++++++++++++++
     /**
      * deleteCountdown: Deletes countdown with id and returns whether it was successful or not!
      */
     public boolean deleteCountdown(@NonNull Context context, int countdownId) {
         Log.d(TAG, "deleteCountdown: Trying to delete countdown with id: " + countdownId);
-        boolean deletionSuccessful = getDb(context).delete(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_NAME,
-                Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", //do this for preventing sql injections!
+        boolean deletionSuccessful = getDb(context).delete(DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_NAME,
+                DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", //do this for preventing sql injections!
                 new String[]{String.valueOf(countdownId)}) > 0;
 
         //No foreach languagePack necessary, because we just delete all rows simultaneously where countdownId is
-        deletionSuccessful &= getDb(context).delete(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME,
-                Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", new String[] {String.valueOf(countdownId)}) > 0;
+        deletionSuccessful &= getDb(context).delete(DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME,
+                DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", new String[] {String.valueOf(countdownId)}) > 0;
 
         if (deletionSuccessful) {
             getAllCountdowns(context, false).delete(countdownId);
@@ -120,8 +251,8 @@ public class DatabaseMgr {
         Log.d(TAG, "deleteAllCountdowns: Trying to delete all countdowns.");
 
         //Deletes all countdowns
-        int amountRowsDeleted = getDb(context).delete(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_NAME, "1", null); //no. 1 says, that we want to return not whether deletion was successful, but how many rows we deleted
-        amountRowsDeleted += getDb(context).delete(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME, "1", null); //also delete auflösungstabelle (but not languagepacks itself)
+        int amountRowsDeleted = getDb(context).delete(DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_NAME, "1", null); //no. 1 says, that we want to return not whether deletion was successful, but how many rows we deleted
+        amountRowsDeleted += getDb(context).delete(DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME, "1", null); //also delete auflösungstabelle (but not languagepacks itself)
         setAllCountdowns(null); //also delete saved object!
 
         //Restart service (because new/less services etc. / changed settings) [must be AFTER DELETION and BEFORE return (logically)!]
@@ -137,18 +268,18 @@ public class DatabaseMgr {
     private Countdown mapCursorRowToCountdown(@NonNull Context context, Cursor cursorRow) {
         //TRUE = 1 | FALSE = 0 --> if == 1 then just give true otherwise false
         return new Countdown(context,
-                cursorRow.getInt(cursorRow.getColumnIndex(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID)),
-                cursorRow.getString(cursorRow.getColumnIndex(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.TITLE)),
-                cursorRow.getString(cursorRow.getColumnIndex(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.DESCRIPTION)),
-                cursorRow.getString(cursorRow.getColumnIndex(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.STARTDATETIME)),
-                cursorRow.getString(cursorRow.getColumnIndex(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.UNTILDATETIME)),
-                cursorRow.getString(cursorRow.getColumnIndex(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.CREATEDDATETIME)),
-                cursorRow.getString(cursorRow.getColumnIndex(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.LASTEDITDATETIME)),
-                cursorRow.getString(cursorRow.getColumnIndex(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.CATEGORYCOLOR)),
-                (cursorRow.getInt(cursorRow.getColumnIndex(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.RANDOMNOTIFICATIONMOTIVATION)) == 1),
-                cursorRow.getInt(cursorRow.getColumnIndex(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.NOTIFICATIONINTERVAL)),
-                (cursorRow.getInt(cursorRow.getColumnIndex(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.LIVECOUNTDOWN)) == 1),
-                cursorRow.getString(cursorRow.getColumnIndex(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.LANGUAGE_ID_LIST)).split(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.ATTRIBUTE_ADDITIONALS.LANGUAGE_ID_LIST_SEPARATOR)); //, as concat is determined by Sqlite !!
+                cursorRow.getInt(cursorRow.getColumnIndex(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID)),
+                cursorRow.getString(cursorRow.getColumnIndex(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.TITLE)),
+                cursorRow.getString(cursorRow.getColumnIndex(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.DESCRIPTION)),
+                cursorRow.getString(cursorRow.getColumnIndex(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.STARTDATETIME)),
+                cursorRow.getString(cursorRow.getColumnIndex(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.UNTILDATETIME)),
+                cursorRow.getString(cursorRow.getColumnIndex(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.CREATEDDATETIME)),
+                cursorRow.getString(cursorRow.getColumnIndex(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.LASTEDITDATETIME)),
+                cursorRow.getString(cursorRow.getColumnIndex(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.CATEGORYCOLOR)),
+                (cursorRow.getInt(cursorRow.getColumnIndex(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.RANDOMNOTIFICATIONMOTIVATION)) == 1),
+                cursorRow.getInt(cursorRow.getColumnIndex(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.NOTIFICATIONINTERVAL)),
+                (cursorRow.getInt(cursorRow.getColumnIndex(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.LIVECOUNTDOWN)) == 1),
+                cursorRow.getString(cursorRow.getColumnIndex(DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.LANGUAGE_ID_LIST)).split(DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.ATTRIBUTE_ADDITIONALS.LANGUAGE_ID_LIST_SEPARATOR)); //, as concat is determined by Sqlite !!
     }
 
     /**
@@ -184,11 +315,11 @@ public class DatabaseMgr {
                  GROUP BY cou_id
                  ) as zcq ON zcq.cou_id=cou.cou_id;*/
 
-                dbCursor = getDb(context).rawQuery("SELECT " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_PREFIX + ".*," + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_PREFIX + "." + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.TABLE_PREFIX + "idList FROM " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_NAME + " as " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_PREFIX +
+                dbCursor = getDb(context).rawQuery("SELECT " + DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_PREFIX + ".*," + DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_PREFIX + "." + DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.TABLE_PREFIX + "idList FROM " + DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_NAME + " as " + DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_PREFIX +
                                 " INNER JOIN (" +
-                                " SELECT " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + ", GROUP_CONCAT(" + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID + ") as " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.TABLE_PREFIX + "idList FROM " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME +
-                                " GROUP BY " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID +
-                                " ) as " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_PREFIX + " ON " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_PREFIX + "." + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + "=" + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_PREFIX + "." + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + ";"
+                                " SELECT " + DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + ", GROUP_CONCAT(" + DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID + ") as " + DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.TABLE_PREFIX + "idList FROM " + DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME +
+                                " GROUP BY " + DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID +
+                                " ) as " + DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_PREFIX + " ON " + DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_PREFIX + "." + DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + "=" + DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_PREFIX + "." + DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + ";"
                         , null);
 
                 if (dbCursor != null) {
@@ -272,36 +403,36 @@ public class DatabaseMgr {
 
         //Countdown to contentvalues to be inserted!
         ContentValues insertCountdownValues = new ContentValues();
-        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID, countdown.getCountdownId()); //escaping makes only sense for strings!
-        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.TITLE, escapeString(countdown.getCountdownTitle()));
-        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.DESCRIPTION, escapeString(countdown.getCountdownDescription()));
-        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.STARTDATETIME, escapeString(countdown.getStartDateTime()));
-        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.UNTILDATETIME, escapeString(countdown.getUntilDateTime()));
-        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.CREATEDDATETIME, escapeString(countdown.getCreatedDateTime()));
-        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.LASTEDITDATETIME, escapeString(countdown.getLastEditDateTime()));
-        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.CATEGORYCOLOR, escapeString(countdown.getCategory()));
-        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.RANDOMNOTIFICATIONMOTIVATION, countdown.isActive());
-        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.NOTIFICATIONINTERVAL, countdown.getNotificationInterval());
-        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.LIVECOUNTDOWN, countdown.isShowLiveCountdown());
+        insertCountdownValues.put(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID, countdown.getCountdownId()); //escaping makes only sense for strings!
+        insertCountdownValues.put(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.TITLE, escapeString(countdown.getCountdownTitle()));
+        insertCountdownValues.put(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.DESCRIPTION, escapeString(countdown.getCountdownDescription()));
+        insertCountdownValues.put(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.STARTDATETIME, escapeString(countdown.getStartDateTime()));
+        insertCountdownValues.put(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.UNTILDATETIME, escapeString(countdown.getUntilDateTime()));
+        insertCountdownValues.put(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.CREATEDDATETIME, escapeString(countdown.getCreatedDateTime()));
+        insertCountdownValues.put(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.LASTEDITDATETIME, escapeString(countdown.getLastEditDateTime()));
+        insertCountdownValues.put(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.CATEGORYCOLOR, escapeString(countdown.getCategory()));
+        insertCountdownValues.put(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.RANDOMNOTIFICATIONMOTIVATION, countdown.isActive());
+        insertCountdownValues.put(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.NOTIFICATIONINTERVAL, countdown.getNotificationInterval());
+        insertCountdownValues.put(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.LIVECOUNTDOWN, countdown.isShowLiveCountdown());
 
         //If countdown with id exists already, it gets overwritten!
-        long rowIdCountdown = getDb(context).replace(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_NAME, null, insertCountdownValues);
+        long rowIdCountdown = getDb(context).replace(DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_NAME, null, insertCountdownValues);
 
         //Delete auflösungstabelle für countdown, because what is when countdown has now less languagepacks (it would remain in zwischentabelle)
-        if (getDb(context).delete(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME,
-                Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", new String[] {String.valueOf(countdown.getCountdownId())}) > 0) {
+        if (getDb(context).delete(DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME,
+                DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", new String[] {String.valueOf(countdown.getCountdownId())}) > 0) {
             Log.d(TAG, "setSaveCountdown: Deletion of entries of updated/new countdown in zwischentabelle successful.");
         }
 
         //Now also insertValues for zwischentabelle (AFTER countdown is inserted)
-        long[] rowIdsZwischentabelle = new long[countdown.getQuotesLanguagePacks().length];
+        long[] rowIdsZwischentabelle = new long[countdown.getQuotesLanguagePacksObj().size()];
         int iteration = 0;
-        for (String languagePack : countdown.getQuotesLanguagePacks()) {
+        for (Languagepack languagePack : countdown.getQuotesLanguagePacksObj().values()) {
             ContentValues insertZwischentabelleValues = new ContentValues();
             //for every row a separate insert!! (ergo for every languagepack of countdown a separate insert)
-            insertZwischentabelleValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID, countdown.getCountdownId());
-            insertZwischentabelleValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID, languagePack);
-            rowIdsZwischentabelle[iteration++] = getDb(context).replace(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME, null, insertZwischentabelleValues);
+            insertZwischentabelleValues.put(DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID, countdown.getCountdownId());
+            insertZwischentabelleValues.put(DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID, languagePack.getLangPackId());
+            rowIdsZwischentabelle[iteration++] = getDb(context).replace(DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME, null, insertZwischentabelleValues);
         }
 
         //at least evaluate one row id of the zwischentablle (if those succeeded we assume others did also)
@@ -326,7 +457,7 @@ public class DatabaseMgr {
             AlarmManager alarmManager = ((AlarmManager) context.getSystemService(Context.ALARM_SERVICE));
             if (alarmManager != null) {
                 Intent intent = new Intent(context, Kickstarter_BootAndGeneralReceiver.class);
-                intent.setAction(Constants.KICKSTARTER_BOOTANDGENERALRECEIVER.BROADCASTRECEIVER_ACTION_RESTART_ALL_SERVICES);
+                intent.setAction(KICKSTARTER_BOOTANDGENERALRECEIVER.BROADCASTRECEIVER_ACTION_RESTART_ALL_SERVICES);
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, intent, 0);
                 alarmManager.set(AlarmManager.RTC_WAKEUP, countdown.getDateTime(countdown.getStartDateTime()).getTimeInMillis(), pendingIntent);
                 Log.d(TAG, "setSaveCountdown: Tried setting alarm for restarting all services when startdate gets into past.");
@@ -416,7 +547,7 @@ public class DatabaseMgr {
     /** Used for sqlite escaping (used in countdown obj itself (setter/getter) and here in DatabaseMgr when inserting e.g.*/
     public static String escapeString(@NonNull String string) {
         //return DatabaseUtils.sqlEscapeString(string); --> surrounds string with ' (destroys queries etc.) use following below:
-        return string.replaceAll(Constants.COUNTDOWN.ESCAPE.escapeSQL_illegalCharacter,Constants.COUNTDOWN.ESCAPE.escapeSQL_legalCharacter);
+        return string.replaceAll(COUNTDOWN.ESCAPE.escapeSQL_illegalCharacter,COUNTDOWN.ESCAPE.escapeSQL_legalCharacter);
     }
 
     //GETTER/SETTER +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -436,7 +567,7 @@ public class DatabaseMgr {
 
     public static SQLiteDatabase getDb(@NonNull Context context) {
         if (db == null) {
-            if (context.getDatabasePath(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.DATABASE_HELPER.DATABASE_NAME).exists()) {
+            if (context.getDatabasePath(DATABASE_STR_MGR.DATABASE_HELPER.DATABASE_NAME).exists()) {
                 Log.d(TAG, "getDb: Database exists already. ");
             } else {
                 Log.w(TAG, "getDb: Database does not exist!");
@@ -450,5 +581,11 @@ public class DatabaseMgr {
         DatabaseMgr.db = db;
     }
 
+    public static void setAllQuotes(SparseArray<Quote> allQuotes) {
+        DatabaseMgr.allQuotes = allQuotes;
+    }
 
+    public static void setAllLanguagePacks(HashMap<String, Languagepack> allLanguagePacks) {
+        DatabaseMgr.allLanguagePacks = allLanguagePacks;
+    }
 }

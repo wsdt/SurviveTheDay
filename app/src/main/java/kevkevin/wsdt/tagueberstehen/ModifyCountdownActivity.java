@@ -1,11 +1,10 @@
 package kevkevin.wsdt.tagueberstehen;
 
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
@@ -22,16 +21,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.ColorPicker;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
-import kevkevin.wsdt.tagueberstehen.classes.customviews.DateTimePicker.DateTimePicker;
 import kevkevin.wsdt.tagueberstehen.classes.DialogManager;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
+import kevkevin.wsdt.tagueberstehen.classes.Languagepack;
+import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
+import kevkevin.wsdt.tagueberstehen.classes.customviews.DateTimePicker.DateTimePicker;
 
 public class ModifyCountdownActivity extends AppCompatActivity {
     private Countdown newEditedCountdown;
@@ -113,7 +115,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         //Helper method because needed twice (in onSaveClick())
         loadFormValues();
         if (areFormValuesValid()) {
-            DatabaseMgr.getSingletonInstance(this).setSaveCountdown(this,this.getNewEditedCountdown());
+            DatabaseMgr.getSingletonInstance(this).setSaveCountdown(this, this.getNewEditedCountdown());
             Log.d(TAG, "onSaveClick: Tried to save new countdown.");
             ModifyCountdownActivity.this.finish(); //go back to main
         } else {
@@ -177,14 +179,14 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         ((ToggleButton) findViewById(R.id.showLiveCountdown)).setChecked(countdown.isShowLiveCountdown());
 
         GridLayout languagePackList = (GridLayout) findViewById(R.id.modifyCountdownActivity_motivation_languagePacks);
-        for (String languagePack : countdown.getQuotesLanguagePacks()) {
-               for (int i = 0; i < languagePackList.getChildCount();i++) {
-                   if (languagePackList.getChildAt(i).getTag() != null) {
-                       if (languagePackList.getChildAt(i).getTag().toString().equals(languagePack)) {
-                           ((CheckBox) languagePackList.getChildAt(i)).setChecked(true);
-                       }
-                   }
-               }
+        for (Languagepack languagePack : countdown.getQuotesLanguagePacksObj().values()) {
+            for (int i = 0; i < languagePackList.getChildCount(); i++) {
+                if (languagePackList.getChildAt(i).getTag() != null) {
+                    if (languagePackList.getChildAt(i).getTag().toString().equals(languagePack.getLangPackId())) {
+                        ((CheckBox) languagePackList.getChildAt(i)).setChecked(true);
+                    }
+                }
+            }
         }
     }
 
@@ -258,7 +260,9 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         int countLanguagePacks = 0;
         for (CheckBox languagePackCheckbox : this.languagePackCheckboxes) {
             if (languagePackCheckbox.isChecked()) {
-                if ((countLanguagePacks++) > 0) {selectedLanguagePacks.append(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.ATTRIBUTE_ADDITIONALS.LANGUAGE_ID_LIST_SEPARATOR);} //before languagepack and only if already one added
+                if ((countLanguagePacks++) > 0) {
+                    selectedLanguagePacks.append(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.ATTRIBUTE_ADDITIONALS.LANGUAGE_ID_LIST_SEPARATOR);
+                } //before languagepack and only if already one added
                 selectedLanguagePacks.append(languagePackCheckbox.getTag().toString());
             }
         }
@@ -271,27 +275,18 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     }
 
     private ArrayList<CheckBox> languagePackCheckboxes = new ArrayList<>();
-    private void loadLanguagePacksCheckboxes(@NonNull GridLayout superiorLayoutView) {
-        TypedArray allQuotes = getResources().obtainTypedArray(R.array.customNotification_random_generic_texts_allArrays);
-        int countLanguagePacks = allQuotes.length();
-        String[][] allQuotesResultArr = new String[countLanguagePacks][];
-        String[] languagePacksLbls = getResources().getStringArray(R.array.customNotification_random_generic_texts_allArrays_Lbls);
-        for (int i = 0; i<countLanguagePacks; ++i) { //pre imkrement!
-            int resId = allQuotes.getResourceId(i, 0);
-            if (resId > 0) {
-                allQuotesResultArr[i] = getResources().getStringArray(resId); //load languagepack
 
-                //Print Checkboxes etc.
-                CheckBox languagePackCheckbox = new CheckBox(this);
-                languagePackCheckbox.setTag(getResources().getStringArray(R.array.customNotification_random_generic_texts_allArrays_identifier)[i]);
-                this.languagePackCheckboxes.add(languagePackCheckbox);
-                superiorLayoutView.addView(languagePackCheckbox); //before text of checkbox
-                TextView languagePackLbl = new TextView(this);
-                languagePackLbl.setText(String.format(languagePacksLbls[i],allQuotesResultArr[i].length));
-                superiorLayoutView.addView(languagePackLbl);
-            } else {Log.e(TAG, "loadLanguagePacksCheckboxes: Something wrong with xml array!");}
+    private void loadLanguagePacksCheckboxes(@NonNull GridLayout superiorLayoutView) {
+        for (Languagepack languagepack : Languagepack.getAllLanguagePacks(this).values()) { //pre imkrement!
+            //Print Checkboxes etc.
+            CheckBox languagePackCheckbox = new CheckBox(this);
+            languagePackCheckbox.setTag(languagepack.getLangPackId()); //en, de etc.
+            this.languagePackCheckboxes.add(languagePackCheckbox);
+            superiorLayoutView.addView(languagePackCheckbox); //before text of checkbox
+            TextView languagePackLbl = new TextView(this);
+            languagePackLbl.setText(languagepack.getLabelString(this));
+            superiorLayoutView.addView(languagePackLbl);
         }
-        allQuotes.recycle(); //important
         Log.d(TAG, "loadLanguagePacksCheckboxes: Tried to load all language packs.");
     }
 

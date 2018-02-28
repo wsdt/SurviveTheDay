@@ -16,8 +16,7 @@ public class CountdownCounter {
     private Thread countdownCounterThread;
     private static final String TAG = "CountdownCounter";
 
-    //Small countdowns
-    private Double totalSeconds = 0D;
+    //Small countdowns (totalSeconds not necessary [synced])
     private Double totalMinutes = 0D;
     private Double totalHours = 0D;
     private Double totalDays = 0D;
@@ -171,7 +170,6 @@ public class CountdownCounter {
     public Double getTotalSeconds_SYNCED() {
         return this.getCountdown().getTotalSeconds(); //always return correct time
     }
-
 
     public Double getTotalMinutes() {
         return totalMinutes;
