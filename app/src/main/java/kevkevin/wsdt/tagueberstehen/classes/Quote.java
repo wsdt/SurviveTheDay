@@ -34,7 +34,7 @@ public class Quote {
     }
 
     public static Quote getRandomQuoteFromAll(@NonNull Context context) { //might return null if no quotes!
-        return Quote.getAllQuotes(context).get(RandomFactory.getRandNo_int(0,Quote.getAllQuotes(context).size()-1));
+        return Quote.getAllQuotes(context).get(HelperClass.getRandomInt(0,Quote.getAllQuotes(context).size()-1));
     }
 
     @Override

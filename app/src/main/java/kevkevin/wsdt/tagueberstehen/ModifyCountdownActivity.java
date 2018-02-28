@@ -180,8 +180,9 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         for (Languagepack languagePack : countdown.getQuotesLanguagePacksObj().values()) {
             for (int i = 0; i < languagePackList.getChildCount(); i++) {
                 if (languagePackList.getChildAt(i).getTag() != null) {
+                    CheckBox tmpCheckbox = ((CheckBox) languagePackList.getChildAt(i));
                     if (languagePackList.getChildAt(i).getTag().toString().equals(languagePack.getLangPackId())) {
-                        ((CheckBox) languagePackList.getChildAt(i)).setChecked(true);
+                        tmpCheckbox.setChecked(true);
                     }
                 }
             }
@@ -264,7 +265,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
                 selectedLanguagePacks.append(languagePackCheckbox.getTag().toString());
             }
         }
-        if (countLanguagePacks <= 0) {
+        if (countLanguagePacks <= 0) { //keep this validation, because user might uncheck all boxes
             //no pack selected, choosing default one (english)
             Log.d(TAG, "loadSelectedLanguagePacksFromCheckboxes: User did not select language pack. Used default one.");
             selectedLanguagePacks.append("en");
