@@ -27,13 +27,6 @@ public class CountdownCounter {
 
     //Big countdown parameters
     private String bigCountdownStr = Constants.COUNTDOWN_COUNTER.BIG_COUNTDOWN_ZERO_VALUE;
-    /*private Long seconds = 0L; // [0-59]
-    private Long minutes = 0L; // [0-59]
-    private Long hours = 0L; // [0-23]
-    private Long days = 0L; // [0-6]
-    private Long weeks = 0L; // [0-51/52]
-    private Long months = 0L; // [0-11]
-    private Long years = 0L; // [0 - /]*/
 
     public CountdownCounter(@NonNull CountdownActivity activityContext, @NonNull Countdown countdown) {
         this.setActivityContext(activityContext);
