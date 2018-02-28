@@ -77,7 +77,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
         if (this.existingCountdownId >= 0) {
             Log.d(TAG, "onCreate: Being in EditMode, because countdown already exists.");
-            setFormValues((DatabaseMgr.getSingletonInstance(this).getCountdown(this, this.existingCountdownId)));
+            setFormValues((DatabaseMgr.getSingletonInstance(this).getCountdown(this, false, this.existingCountdownId)));
         }
 
         onMotivateMeToggleClick(findViewById(R.id.isActive)); //simulate click so it is always at its correct state (enabled/disabled)
@@ -96,7 +96,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             @Override
             public void failure_is_false() {
                 Log.d(TAG, "onCreate:executeIfProductIsBought: UseMoreCountdownNodes is NOT bought. Blocking save-Button IF already one node saved AND NOT in editing mode.");
-                if (DatabaseMgr.getSingletonInstance(ModifyCountdownActivity.this).getAllCountdowns(ModifyCountdownActivity.this).size() > 0 && (existingCountdownId < 0)) {
+                if (DatabaseMgr.getSingletonInstance(ModifyCountdownActivity.this).getAllCountdowns(ModifyCountdownActivity.this, false).size() > 0 && (existingCountdownId < 0)) {
                     Log.d(TAG, "onCreate:executeIfProductIsBought:OnClick: Did not save countdown, because inapp product not bought and more than one node already saved. EditMode disabled, Countdown-Id: " + existingCountdownId);
                     getDialogManager().showDialog_InAppProductPromotion(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString());
                     //also show toast for additional clarification

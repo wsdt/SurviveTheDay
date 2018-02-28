@@ -48,7 +48,7 @@ public class CustomNotification { //one instance for every countdown or similar
 
     public void scheduleAllActiveCountdownNotifications(Context context) {
         Log.d(TAG, "scheduleAllActiveCountdownNotifications: Started method.");
-        SparseArray<Countdown> allCountdowns = DatabaseMgr.getSingletonInstance(this.getActivityThisTarget()).getAllCountdowns(this.getActivityThisTarget(),true, false);
+        SparseArray<Countdown> allCountdowns = DatabaseMgr.getSingletonInstance(this.getActivityThisTarget()).getAllCountdowns(this.getActivityThisTarget(), false,true, false);
 
         int count = 0;
         //do not call purchaseWorkflow or similar when only providing context [altough we mostly give an activity to this class we should not risk it]
@@ -147,7 +147,7 @@ public class CustomNotification { //one instance for every countdown or similar
                     .setContentIntent(pendingIntent)
                     .setOngoing(true) //notification is NOT REMOVEABLE
                     //maybe no big text here because maybe hard to make notification small again (refresh etc.): .setStyle(new NotificationCompat.BigTextStyle().bigText("Remaining: "+countdown.getBigCountdownCurrentValues_String()+"\nTotal Years: 0\nTotal Months: 0\nTotal Weeks: 0\nTotal Days: 0\nTotal Hours: 0\nTotal Minutes: 0\nTotal Seconds: 0")) //make notification extendable
-                    .setContentText("Remaining: "+countdown.getBigCountdownCurrentValues_String())
+                    .setContentText("Remaining: "+CountdownCounter.craftBigCountdownString(countdown.getTotalSeconds().longValue()))
                     .build();
         }
 

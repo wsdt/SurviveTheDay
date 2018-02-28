@@ -31,7 +31,7 @@ public class NotificationService_AlarmmanagerBroadcastReceiver extends Broadcast
         int alarmId = (-1);
         try {
             alarmId = intent.getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID,-1);
-            currCountdown = DatabaseMgr.getSingletonInstance(context).getCountdown(context,alarmId);
+            currCountdown = DatabaseMgr.getSingletonInstance(context).getCountdown(context,false,alarmId);
         } catch (Exception e) {
             Log.e(TAG, "onReceive: Could not load countdown from countdown id.");
             e.printStackTrace();
@@ -71,7 +71,7 @@ public class NotificationService_AlarmmanagerBroadcastReceiver extends Broadcast
     }
 
     public static void deleteAllAlarmServices(Context context) {
-        SparseArray<Countdown> allCountdowns = DatabaseMgr.getSingletonInstance(context).getAllCountdowns(context,true,false);
+        SparseArray<Countdown> allCountdowns = DatabaseMgr.getSingletonInstance(context).getAllCountdowns(context,false,true,false);
         for (int i=0;i<allCountdowns.size();i++) {
             try {
                 ((AlarmManager) context.getSystemService(Context.ALARM_SERVICE)).cancel(PendingIntent.getBroadcast(context, allCountdowns.valueAt(i).getCountdownId(), new Intent(context, NotificationService_AlarmmanagerBroadcastReceiver.class), 0));

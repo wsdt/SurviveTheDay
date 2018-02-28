@@ -73,7 +73,7 @@ public class CountdownActivity extends AppCompatActivity {
         this.setLastIntent(getIntent());
         this.countdownId = this.getLastIntent().getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID, -1);
         //maybe by main menu or notification, but we get the same Extra: COUNTDOWN_ID with the ID
-        if (this.getCountdown() == null) {this.setCountdown(DatabaseMgr.getSingletonInstance(this).getCountdown(this,this.countdownId));} //load countdown if not already loaded by actionbar menu
+        if (this.getCountdown() == null) {this.setCountdown(DatabaseMgr.getSingletonInstance(this).getCountdown(this,false, this.countdownId));} //load countdown if not already loaded by actionbar menu
         initializeCountdownDataSwipeLayout(); //to restore current bottom view if surface view would get updated (preventing it)
         startCountdownOnUI(); //0 is default value
         loadCountdownDataToUI();
@@ -351,7 +351,7 @@ public class CountdownActivity extends AppCompatActivity {
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND); //implicit intent for sharing
                 shareIntent.setType("text/plain"); //currently only text (todo: later picture of countdown? etc.)
-                this.setCountdown(DatabaseMgr.getSingletonInstance(this).getCountdown(this,this.countdownId));
+                this.setCountdown(DatabaseMgr.getSingletonInstance(this).getCountdown(this,false, this.countdownId));
                 this.setShareIntent(shareIntent); //important, so we can modify extras afterwards
                 refreshShareIntent(); //refreshes set Intent (setShareIntent must be called before!)
                 shareActionProvider.setShareIntent(shareIntent);

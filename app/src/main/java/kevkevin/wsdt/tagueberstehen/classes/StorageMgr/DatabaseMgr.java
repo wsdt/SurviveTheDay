@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
@@ -44,7 +45,7 @@ public class DatabaseMgr {
         @Override
         public void onCreate(SQLiteDatabase db) {
             for (String sqlStatement : Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.DATABASE_HELPER.DATABASE_CREATE_SQL) {
-                Log.d(TAG, "onCreate: Executed statement-> "+sqlStatement);
+                Log.d(TAG, "onCreate: Executed statement-> " + sqlStatement);
                 db.execSQL(sqlStatement); //ONLY one statement per method!
             }
             Log.d(TAG, "onCreate: Tried to create sql tables. ");
@@ -54,7 +55,7 @@ public class DatabaseMgr {
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             //TODO: IMPORTANT: If new version, then do this procedure NOT on mainthread (needs longer!)
             Log.w(TAG, "onUpgrade: Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data.");
-            for (String sqlStatement: Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.DATABASE_HELPER.DATABASE_UPGRADE_RESETTABLES) {
+            for (String sqlStatement : Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.DATABASE_HELPER.DATABASE_UPGRADE_RESETTABLES) {
                 db.execSQL(sqlStatement); //for each statement a separate method call (necessary)
             }
             onCreate(db); //recreate database!
@@ -98,7 +99,13 @@ public class DatabaseMgr {
                 Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", //do this for preventing sql injections!
                 new String[]{String.valueOf(countdownId)}) > 0;
 
-        if (deletionSuccessful) {getAllCountdowns(context).delete(countdownId);} //also delete from object to keep it uptodate
+        //No foreach languagePack necessary, because we just delete all rows simultaneously where countdownId is
+        deletionSuccessful &= getDb(context).delete(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME,
+                Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", new String[] {String.valueOf(countdownId)}) > 0;
+
+        if (deletionSuccessful) {
+            getAllCountdowns(context, false).delete(countdownId);
+        } //also delete from object to keep it uptodate
 
         //Restart service because countown got removed
         restartNotificationService(context); //TODO: not here in storage mgr (own service mgr for all of them maybe merge them or similar i do not know)
@@ -114,6 +121,7 @@ public class DatabaseMgr {
 
         //Deletes all countdowns
         int amountRowsDeleted = getDb(context).delete(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_NAME, "1", null); //no. 1 says, that we want to return not whether deletion was successful, but how many rows we deleted
+        amountRowsDeleted += getDb(context).delete(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME, "1", null); //also delete auflösungstabelle (but not languagepacks itself)
         setAllCountdowns(null); //also delete saved object!
 
         //Restart service (because new/less services etc. / changed settings) [must be AFTER DELETION and BEFORE return (logically)!]
@@ -146,18 +154,25 @@ public class DatabaseMgr {
     /**
      * Get current countdown from database and map it onto countdownObj
      */
-    public Countdown getCountdown(@NonNull Context context, int countdownId) { //do not use in loops! (use getAllCountdowns, because there is only ONE sql statement executed)
+    public Countdown getCountdown(@NonNull Context context, boolean forceReload, int countdownId) { //do not use in loops! (use getAllCountdowns, because there is only ONE sql statement executed)
         //If allCountdowns not already downloaded they will, if they are then we just get returned the sparseArray
-        return getAllCountdowns(context).valueAt(countdownId); //IMPORTANT: always use ValueAt() better performance than get()!!!!
+        return getAllCountdowns(context, forceReload).valueAt(countdownId); //IMPORTANT: always use ValueAt() better performance than get()!!!!
     }
 
     /**
      * Get all countdowns from database and map them onto countdownObj
+     *
+     * @param forceReload: We are keeping the sparseArray uptodate, BUT if we modify our db and have a service running (external process in our case)
+     *                     then we have a separate object! This means we would have outdated countdown objects!
      */
-    public SparseArray<Countdown> getAllCountdowns(@NonNull Context context) { //do not use in loops! (use getAllCountdowns, because there is only ONE sql statement executed)
+    public SparseArray<Countdown> getAllCountdowns(@NonNull Context context, boolean forceReload) { //do not use in loops! (use getAllCountdowns, because there is only ONE sql statement executed)
         Log.d(TAG, "getAllCountdowns: Trying to get all countdowns.");
-        if (allCountdowns == null) { //only do this if not already extracted in this session! (performance enhancement :)) --> so also not extra sql query necessary when getting single countdown
-            Log.d(TAG, "getAllCountdowns: Found no already extracted sparseArray for countdowns. Doing it now.");
+        if (allCountdowns == null || forceReload) { //only do this if not already extracted in this session! (performance enhancement :)) --> so also not extra sql query necessary when getting single countdown
+            if (forceReload) {
+                Log.d(TAG, "getAllCountdowns: Forcefully reloaded sparseArray.");
+            } else {
+                Log.d(TAG, "getAllCountdowns: Found no already extracted sparseArray for countdowns. Doing it now.");
+            }
             Cursor dbCursor = null;
             SparseArray<Countdown> queriedCountdowns = new SparseArray<>(); //sparse array instead of hashmap because better performance for pimitives
 
@@ -169,9 +184,9 @@ public class DatabaseMgr {
                  GROUP BY cou_id
                  ) as zcq ON zcq.cou_id=cou.cou_id;*/
 
-                dbCursor = getDb(context).rawQuery("SELECT " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_PREFIX + ".*," + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_PREFIX + "."+Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.TABLE_PREFIX+"idList FROM " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_NAME + " as " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_PREFIX +
+                dbCursor = getDb(context).rawQuery("SELECT " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_PREFIX + ".*," + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_PREFIX + "." + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.TABLE_PREFIX + "idList FROM " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_NAME + " as " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_PREFIX +
                                 " INNER JOIN (" +
-                                " SELECT " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + ", GROUP_CONCAT(" + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID + ") as "+Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.TABLE_PREFIX+"idList FROM " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME +
+                                " SELECT " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + ", GROUP_CONCAT(" + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID + ") as " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.TABLE_PREFIX + "idList FROM " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME +
                                 " GROUP BY " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID +
                                 " ) as " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_PREFIX + " ON " + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_PREFIX + "." + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + "=" + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_PREFIX + "." + Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + ";"
                         , null);
@@ -181,7 +196,7 @@ public class DatabaseMgr {
 
                     while (dbCursor.moveToNext()) {
                         Countdown tmp = mapCursorRowToCountdown(context, dbCursor); //temporary cache-saving, to get countdownId for Index!
-                        Log.d(TAG, "getAllCountdowns: Found countdown-> "+tmp.toString());
+                        Log.d(TAG, "getAllCountdowns: Found countdown-> " + tmp.toString());
                         queriedCountdowns.put(tmp.getCountdownId(), tmp);
                     }
                     setAllCountdowns(queriedCountdowns); //save all queried countdowns so we do not have to do this procedure again for runtime :)
@@ -194,13 +209,15 @@ public class DatabaseMgr {
                 }
             }
         } //no else necessary, because allCountdowns already set
-        Log.d(TAG, "getAllCountdowns: Length of returned sparseArray: "+allCountdowns.size());
+        Log.d(TAG, "getAllCountdowns: Length of returned sparseArray: " + allCountdowns.size());
         return allCountdowns;
     }
 
-    public SparseArray<Countdown> getAllCountdowns(@NonNull Context context, boolean onlyActiveCountdowns, boolean onlyShowLiveCountdowns) {
-        if (!onlyActiveCountdowns && !onlyShowLiveCountdowns) {Log.w(TAG, "getAllCountdowns[filtered]: Both parameters are false. You won't get any results! Use getAllCountdowns(Context context)");}
-        SparseArray<Countdown> queriedCountdowns = getAllCountdowns(context); //only context parameter (otherwise recursive!!) --> so we get all countdowns
+    public SparseArray<Countdown> getAllCountdowns(@NonNull Context context, boolean forceReload, boolean onlyActiveCountdowns, boolean onlyShowLiveCountdowns) {
+        if (!onlyActiveCountdowns && !onlyShowLiveCountdowns) {
+            Log.w(TAG, "getAllCountdowns[filtered]: Both parameters are false. You won't get any results! Use getAllCountdowns(Context context)");
+        }
+        SparseArray<Countdown> queriedCountdowns = getAllCountdowns(context, forceReload); //only context parameter (otherwise recursive!!) --> so we get all countdowns
         SparseArray<Countdown> filteredCountdowns = new SparseArray<>(); //temporary (outside if so we can return empty list)
         int amountAllCountdowns = queriedCountdowns.size();
 
@@ -255,20 +272,26 @@ public class DatabaseMgr {
 
         //Countdown to contentvalues to be inserted!
         ContentValues insertCountdownValues = new ContentValues();
-        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID, countdown.getCountdownId());
-        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.TITLE, countdown.getCountdownTitle());
-        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.DESCRIPTION, countdown.getCountdownDescription());
-        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.STARTDATETIME, countdown.getStartDateTime());
-        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.UNTILDATETIME, countdown.getUntilDateTime());
-        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.CREATEDDATETIME, countdown.getCreatedDateTime());
-        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.LASTEDITDATETIME, countdown.getLastEditDateTime());
-        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.CATEGORYCOLOR, countdown.getCategory());
+        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID, countdown.getCountdownId()); //escaping makes only sense for strings!
+        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.TITLE, escapeString(countdown.getCountdownTitle()));
+        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.DESCRIPTION, escapeString(countdown.getCountdownDescription()));
+        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.STARTDATETIME, escapeString(countdown.getStartDateTime()));
+        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.UNTILDATETIME, escapeString(countdown.getUntilDateTime()));
+        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.CREATEDDATETIME, escapeString(countdown.getCreatedDateTime()));
+        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.LASTEDITDATETIME, escapeString(countdown.getLastEditDateTime()));
+        insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.CATEGORYCOLOR, escapeString(countdown.getCategory()));
         insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.RANDOMNOTIFICATIONMOTIVATION, countdown.isActive());
         insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.NOTIFICATIONINTERVAL, countdown.getNotificationInterval());
         insertCountdownValues.put(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.LIVECOUNTDOWN, countdown.isShowLiveCountdown());
 
         //If countdown with id exists already, it gets overwritten!
         long rowIdCountdown = getDb(context).replace(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.TABLE_NAME, null, insertCountdownValues);
+
+        //Delete auflösungstabelle für countdown, because what is when countdown has now less languagepacks (it would remain in zwischentabelle)
+        if (getDb(context).delete(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME,
+                Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", new String[] {String.valueOf(countdown.getCountdownId())}) > 0) {
+            Log.d(TAG, "setSaveCountdown: Deletion of entries of updated/new countdown in zwischentabelle successful.");
+        }
 
         //Now also insertValues for zwischentabelle (AFTER countdown is inserted)
         long[] rowIdsZwischentabelle = new long[countdown.getQuotesLanguagePacks().length];
@@ -293,7 +316,7 @@ public class DatabaseMgr {
                 Log.w(TAG, "setSaveCountdown: AllCountdowns SparseArray is NULL! Not updating sparseArray."); //if we call getAllCountdowns() next time there should be also the current countdown :)
             }
 
-            Log.d(TAG, "setSaveCountdown: Tried to save countdown not only to sparseArray, but also to Database [RowId: "+rowIdCountdown+"]: " + countdown.toString());
+            Log.d(TAG, "setSaveCountdown: Tried to save countdown not only to sparseArray, but also to Database [RowId: " + rowIdCountdown + "]: " + countdown.toString());
         }
 
         //TODO: Maybe this block should be in future sth else (separation of concerns), so we might be able to ensure that this is also checked on device start etc.
@@ -323,20 +346,23 @@ public class DatabaseMgr {
         //would not be necessary because on broadcastreceiver the current countdown gets automatically loaded!
         //except if countdown was created, then we have to reload it! (only changes/deletes do not require a reload) [but for bgservice mode it is necessary]
 
-        if (new GlobalAppSettingsMgr(context).useForwardCompatibility()) {
-            //TODO: only do this when not already active (otherwise intervals will get restarted)
-            (new CustomNotification(context, CountdownActivity.class, (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications(context);
-            Log.d(TAG, "restartNotificationService: Rescheduled all broadcast receivers.");
-        } else {
-            Intent serviceIntent = new Intent(context, NotificationService.class);
-            try {
-                context.stopService(serviceIntent);
-                Log.d(TAG, "restartNotificationService: Tried to stop and restart service.");
-                context.startService(serviceIntent);
-            } catch (NullPointerException e) {
-                Log.e(TAG, "restartNotificationService: ServiceIntent equals null! Could not restart service.");
+        if (getAllCountdowns(context, false, true,false).size() > 0) {
+            //Only start broadcast receivers or service when at least one countdown acc. to criteria found
+            if (new GlobalAppSettingsMgr(context).useForwardCompatibility()) {
+                //TODO: only do this when not already active (otherwise intervals will get restarted)
+                (new CustomNotification(context, CountdownActivity.class, (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications(context);
+                Log.d(TAG, "restartNotificationService: Rescheduled all broadcast receivers.");
+            } else {
+                Intent serviceIntent = new Intent(context, NotificationService.class);
+                try {
+                    context.stopService(serviceIntent);
+                    Log.d(TAG, "restartNotificationService: Tried to stop and restart service.");
+                    context.startService(serviceIntent);
+                } catch (NullPointerException e) {
+                    Log.e(TAG, "restartNotificationService: ServiceIntent equals null! Could not restart service.");
+                }
+                Log.d(TAG, "restartNotificationService: Tried to restart service.");
             }
-            Log.d(TAG, "restartNotificationService: Tried to restart service.");
         }
 
         //ALSO RESTART FOREGROUND SERVICE
@@ -351,7 +377,10 @@ public class DatabaseMgr {
                 CountdownCounterService.refreshAllNotificationCounters_Interval_Thread.interrupt();
             } //interrupt running thread
             context.stopService(foregroundServiceIntent);
-            context.startService(foregroundServiceIntent);
+            if (this.getAllCountdowns(context,false, false, true).size() > 0) {
+                //only start service, if at least one countdown acc. to criteria found (performance enhancement)
+                context.startService(foregroundServiceIntent);
+            }
         } catch (NullPointerException e) {
             Log.e(TAG, "restartNotificationService: foregroundServiceIntent equals null! Could not restart foregroundService.");
         }
@@ -366,7 +395,7 @@ public class DatabaseMgr {
         * */
         int newCountdownId = (-1);
         //Load saved countdowns
-        SparseArray<Countdown> countdowns = this.getAllCountdowns(context);
+        SparseArray<Countdown> countdowns = this.getAllCountdowns(context, false);
         //int i = 0; //counter
         for (int i = 0; i < countdowns.size(); i++) {
             if (countdowns.valueAt(i) == null) { //if nothing at index
@@ -382,6 +411,12 @@ public class DatabaseMgr {
             Log.d(TAG, "getNextCountdownId: Found next countdown id within loop (filled gap): " + newCountdownId);
         }
         return newCountdownId;
+    }
+
+    /** Used for sqlite escaping (used in countdown obj itself (setter/getter) and here in DatabaseMgr when inserting e.g.*/
+    public static String escapeString(@NonNull String string) {
+        //return DatabaseUtils.sqlEscapeString(string); --> surrounds string with ' (destroys queries etc.) use following below:
+        return string.replaceAll(Constants.COUNTDOWN.ESCAPE.escapeSQL_illegalCharacter,Constants.COUNTDOWN.ESCAPE.escapeSQL_legalCharacter);
     }
 
     //GETTER/SETTER +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -403,7 +438,9 @@ public class DatabaseMgr {
         if (db == null) {
             if (context.getDatabasePath(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.DATABASE_HELPER.DATABASE_NAME).exists()) {
                 Log.d(TAG, "getDb: Database exists already. ");
-            } else {Log.w(TAG, "getDb: Database does not exist!");}
+            } else {
+                Log.w(TAG, "getDb: Database does not exist!");
+            }
             setDb(dbHelper.getWritableDatabase());
         }
         return db;

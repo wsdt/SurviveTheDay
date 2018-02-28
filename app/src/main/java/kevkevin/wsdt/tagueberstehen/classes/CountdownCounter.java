@@ -26,13 +26,14 @@ public class CountdownCounter {
     private Double totalYears = 0D;
 
     //Big countdown parameters
-    private Long seconds = 0L; // [0-59]
+    private String bigCountdownStr = Constants.COUNTDOWN_COUNTER.BIG_COUNTDOWN_ZERO_VALUE;
+    /*private Long seconds = 0L; // [0-59]
     private Long minutes = 0L; // [0-59]
     private Long hours = 0L; // [0-23]
     private Long days = 0L; // [0-6]
     private Long weeks = 0L; // [0-51/52]
     private Long months = 0L; // [0-11]
-    private Long years = 0L; // [0 - /]
+    private Long years = 0L; // [0 - /]*/
 
     public CountdownCounter(@NonNull CountdownActivity activityContext, @NonNull Countdown countdown) {
         this.setActivityContext(activityContext);
@@ -97,14 +98,7 @@ public class CountdownCounter {
                 ((TextView) getActivityContext().findViewById(R.id.countdownCounterMonths)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format(Constants.GLOBAL.LOCALE,"%.12f", getTotalMonths()));
                 ((TextView) getActivityContext().findViewById(R.id.countdownCounterYears)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format(Constants.GLOBAL.LOCALE,"%.15f", getTotalYears()));
 
-                ((TextView) getActivityContext().findViewById(R.id.countdownCounter)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.BIG_COUNTDOWN_ZERO_VALUE :
-                        getYears() + ":" +
-                                getMonths() + ":" +
-                                getWeeks() + ":" +
-                                getDays() + ":" +
-                                getHours() + ":" +
-                                getMinutes() + ":" +
-                                getSeconds());
+                ((TextView) getActivityContext().findViewById(R.id.countdownCounter)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.BIG_COUNTDOWN_ZERO_VALUE : getBigCountdownStr()); //show previous no only, if not zero!
 
                 automaticRefreshRandomQuote(); //refresh random quote after updating countdown
             }
@@ -124,28 +118,43 @@ public class CountdownCounter {
             this.setTotalYears((this.getTotalMonths()) / 12);
 
             //Calculation for big countdown
-            this.setSeconds(this.getTotalSeconds_SYNCED().longValue());
-            Log.d(TAG, "calculateParams: Total seconds: " + this.getSeconds());
-            this.setYears(this.getSeconds() / (365 * 24 * 60 * 60));
-            this.setSeconds(this.getSeconds() - ((this.getYears() > 0) ? (365 * 24 * 60 * 60) * this.getYears() : 0)); //only subtract if years occurs at least 1 time
-            Log.d(TAG, "calculateParams: Years: " + this.getYears() + " // Left seconds: " + this.getSeconds());
-            this.setMonths(this.getSeconds() / (30 * 24 * 60 * 60));
-            this.setSeconds(this.getSeconds() - ((this.getMonths() > 0) ? (30 * 24 * 60 * 60) * this.getMonths() : 0));  // * with months e.g. because there might be more than one month to substract
-            Log.d(TAG, "calculateParams: Months: " + this.getMonths() + " // Left seconds: " + this.getSeconds());
-            this.setWeeks(this.getSeconds() / (7 * 24 * 60 * 60));
-            this.setSeconds(this.getSeconds() - ((this.getWeeks() > 0) ? (7 * 24 * 60 * 60) * this.getWeeks() : 0));
-            Log.d(TAG, "calculateParams: Weeks: " + this.getWeeks() + " // Left seconds: " + this.getSeconds());
-            this.setDays(this.getSeconds() / (24 * 60 * 60));
-            this.setSeconds(this.getSeconds() - ((this.getDays() > 0) ? (24 * 60 * 60) * this.getDays() : 0));
-            Log.d(TAG, "calculateParams: Days: " + this.getDays() + " // Left seconds: " + this.getSeconds());
-            this.setHours(this.getSeconds() / (60 * 60));
-            this.setSeconds(this.getSeconds() - ((this.getHours() > 0) ? (60 * 60) * this.getHours() : 0));
-            Log.d(TAG, "calculateParams: Hours: " + this.getHours() + " // Left seconds: " + this.getSeconds());
-            this.setMinutes(this.getSeconds() / 60);
-            this.setSeconds(this.getSeconds() - ((this.getMinutes() > 0) ? (60) * this.getMinutes() : 0));
-            Log.d(TAG, "calculateParams: Minutes: " + this.getMinutes() + " // Left seconds: " + this.getSeconds());
-            //Seconds has the rest!
+            this.setBigCountdownStr(craftBigCountdownString(this.getTotalSeconds_SYNCED().longValue()));
         }
+    }
+
+    //Also used by liveCountdown in notification!
+    public static String craftBigCountdownString(long totalSeconds) {
+        //IMPORTANT: Lieber so extra nochmal rechnen (zwar mehr code, aber weniger abarbeitung
+        Log.d("craftBigCountdownString", "Total seconds: " + totalSeconds);
+        Long years = totalSeconds / (365 * 24 * 60 * 60);
+        totalSeconds -= (years > 0) ? (365 * 24 * 60 * 60) * years : 0; //only subtract if years occurs at least 1 time
+        Log.d("craftBigCountdownString", "Years: " + years + " // Left seconds: " + totalSeconds);
+        Long months = totalSeconds / (30 * 24 * 60 * 60);
+        totalSeconds -= (months > 0) ? (30 * 24 * 60 * 60) * months : 0;  // * with months e.g. because there might be more than one month to substract
+        Log.d("craftBigCountdownString", "Months: " + months + " // Left seconds: " + totalSeconds);
+        Long weeks = totalSeconds / (7 * 24 * 60 * 60);
+        totalSeconds -= (weeks > 0) ? (7 * 24 * 60 * 60) * weeks : 0;
+        Log.d("craftBigCountdownString", "Weeks: " + weeks + " // Left seconds: " + totalSeconds);
+        Long days = totalSeconds / (24 * 60 * 60);
+        totalSeconds -= (days > 0) ? (24 * 60 * 60) * days : 0;
+        Log.d("craftBigCountdownString", "Days: " + days + " // Left seconds: " + totalSeconds);
+        Long hours = totalSeconds / (60 * 60);
+        totalSeconds -= (hours > 0) ? (60 * 60) * hours : 0;
+        Log.d("craftBigCountdownString", "Hours: " + hours + " // Left seconds: " + totalSeconds);
+        Long minutes = totalSeconds / 60;
+        totalSeconds -= (minutes > 0) ? (60) * minutes : 0;
+        Log.d("craftBigCountdownString", "Minutes: " + minutes + " // Left seconds: " + totalSeconds);
+        //Seconds has the rest!
+
+        Character separator = ':';
+        return new StringBuilder() //only add non-zero values (so vorangestellte nullen entfernt)
+                .append((years == 0) ? "" : years).append((years == 0) ? "" : separator)
+                .append((months == 0) ? "" : months).append((months == 0) ? "" : separator)
+                .append((weeks == 0) ? "" : weeks).append((weeks == 0) ? "" : separator)
+                .append((days == 0) ? "" : days).append((days == 0) ? "" : separator)
+                .append((hours == 0) ? "" : hours).append((hours == 0) ? "" : separator)
+                .append((minutes == 0) ? "" : minutes).append((minutes == 0) ? "" : separator)
+                .append(totalSeconds).toString(); //if seconds zero, then return zero
     }
 
 
@@ -219,7 +228,7 @@ public class CountdownCounter {
         this.totalYears = totalYears;
     }
 
-    public Long getSeconds() {
+    /*public Long getSeconds() {
         return seconds;
     }
 
@@ -241,14 +250,6 @@ public class CountdownCounter {
 
     public void setHours(Long hours) {
         this.hours = hours;
-    }
-
-    public Thread getCountdownCounterThread() {
-        return countdownCounterThread;
-    }
-
-    public void setCountdownCounterThread(Thread countdownCounterThread) {
-        this.countdownCounterThread = countdownCounterThread;
     }
 
     public Long getDays() {
@@ -281,5 +282,21 @@ public class CountdownCounter {
 
     public void setYears(Long years) {
         this.years = years;
+    }*/
+
+    public Thread getCountdownCounterThread() {
+        return countdownCounterThread;
+    }
+
+    public void setCountdownCounterThread(Thread countdownCounterThread) {
+        this.countdownCounterThread = countdownCounterThread;
+    }
+
+    public String getBigCountdownStr() {
+        return bigCountdownStr;
+    }
+
+    public void setBigCountdownStr(String bigCountdownStr) {
+        this.bigCountdownStr = bigCountdownStr;
     }
 }

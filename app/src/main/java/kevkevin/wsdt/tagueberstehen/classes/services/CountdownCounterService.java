@@ -62,7 +62,7 @@ public class CountdownCounterService extends Service {
         shouldThisServiceBeKilled(intent); //third function call should be this!! (because service gets killed with startService = goodPractice
 
         //Only do when null at first, because notifications would not be removed when expired! (so we will have to restart whole service for new countdowns)
-        this.setLoadedCountdownsForLiveCountdown(DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this, false, true)); //false because this service should be also possible when motivateMe is off
+        this.setLoadedCountdownsForLiveCountdown(DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this, false, false, true)); //false because this service should be also possible when motivateMe is off
 
         refreshAllNotificationCounters_Interval();
 
@@ -131,7 +131,9 @@ public class CountdownCounterService extends Service {
         }
 
         //Do after above lines, because so expired countdowns can be modified/removed in createCounterServiceNotification()
-        this.setLoadedCountdownsForLiveCountdown(DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this, false, true)); //false because this service should be also possible when motivateMe is off
+        // --> forceReload, because object cannot be updated by mainThread (because service has it's OWN process and so it's own addressspace!)
+        //TODO: maybe forceReload only every 10th loop or so (acc. to battery saving etc.)
+        this.setLoadedCountdownsForLiveCountdown(DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this, true,false, true)); //false because this service should be also possible when motivateMe is off
     }
 
     private void shouldThisServiceBeKilled(Intent intent) {
