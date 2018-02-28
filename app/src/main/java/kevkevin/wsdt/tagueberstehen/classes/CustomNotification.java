@@ -17,7 +17,6 @@ import android.util.SparseArray;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
-import java.util.Random;
 import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
@@ -29,14 +28,12 @@ public class CustomNotification { //one instance for every countdown or similar
     private SparseArray<NotificationCompat.Builder> notifications = new SparseArray<>(); //NOT static, because every instance should have own Arraylist!
     private NotificationManager mNotifyMgr;
     private static final String TAG = "CustomNotification";
-    private Random random;
     private Class targetActivityClass;
     private Resources res;
 
     public CustomNotification(@NonNull Context activityThisTarget, Class targetActivityClass, NotificationManager mNotifyMgr) { //(NotifyManager) getSystemService(Notification_Service);
         this.setActivityThisTarget(activityThisTarget);
         this.setmNotifyMgr(mNotifyMgr);
-        this.random =  new Random();
         this.setTargetActivityClass(targetActivityClass);
         this.setRes(activityThisTarget.getResources());
 
@@ -242,7 +239,7 @@ public class CustomNotification { //one instance for every countdown or similar
         *       CATEGORYBASED (2) */
 
         //Decide which type of random notification (generic, time-based, ...)
-        switch (this.random.nextInt(2)) { //random.nextInt(2-0)+0
+        switch (HelperClass.getRandomInt(0,1)) { //random.nextInt(2-0)+0
             case 0: //GENERIC
                 Log.d(TAG, "createRandomNotification: Chose random notification from GENERIC.");
                 randomNotification = createRandomNotification_GENERIC(countdown);
@@ -251,10 +248,6 @@ public class CustomNotification { //one instance for every countdown or similar
                 Log.d(TAG, "createRandomNotification: Chose random notification from TIMEBASED.");
                 randomNotification = createRandomNotification_TIMEBASED(countdown);
                 break;
-            /*case 2: //CATEGORYBASED --> IMPORTANT: nextInt(1) means that case 2 can never happen, this is because the category-based one has currently no use!
-                Log.d(TAG, "createRandomNotification: Chose random notification from CATEGORYBASED.");
-                randomNotification = createRandomNotification_CATEGORYBASED(countdown);
-                break;*/
             default:
                 Log.e(TAG, "createRandomNotification: Could not determine random notification type!");
                 return createNotification(countdown,this.getRes().getString(R.string.error_title_systemError), this.getRes().getString(R.string.error_contactAdministrator), R.drawable.light_notification_warning);
@@ -284,9 +277,9 @@ public class CustomNotification { //one instance for every countdown or similar
         randomNotification.iconList.addAll(Arrays.asList(R.drawable.light_notification_generic_saying,R.drawable.light_notification_generic_sayingloud));
 
         //Choose one for each arraylist by random index (max is size-1!)
-        randomNotification.title = randomNotification.titleList.get(this.random.nextInt(randomNotification.titleList.size())); //size() index does exist!
+        randomNotification.title = randomNotification.titleList.get(HelperClass.getRandomInt(0,randomNotification.titleList.size()-1)); //size() index does exist!
         randomNotification.text = countdown.getRandomQuoteSuitableForCountdown().getQuoteText();//randomNotification.textList.get(this.random.nextInt(randomNotification.textList.size()));
-        randomNotification.icon = randomNotification.iconList.get(this.random.nextInt(randomNotification.iconList.size()));
+        randomNotification.icon = randomNotification.iconList.get(HelperClass.getRandomInt(0,randomNotification.iconList.size()-1));
 
         return randomNotification;
     }
@@ -303,9 +296,9 @@ public class CustomNotification { //one instance for every countdown or similar
         randomNotification.iconList.addAll(Arrays.asList(R.drawable.light_notification_timebased_clock,R.drawable.light_notification_timebased_clockalert));
 
         //Choose one for each arraylist by random index (max is size-1!)
-        randomNotification.title = randomNotification.titleList.get(this.random.nextInt(randomNotification.titleList.size())); // size() index does  exist!
-        randomNotification.text = randomNotification.textList.get(this.random.nextInt(randomNotification.textList.size()));
-        randomNotification.icon = randomNotification.iconList.get(this.random.nextInt(randomNotification.iconList.size()));
+        randomNotification.title = randomNotification.titleList.get(HelperClass.getRandomInt(0,randomNotification.titleList.size()-1)); // size() index does  exist!
+        randomNotification.text = randomNotification.textList.get(HelperClass.getRandomInt(0,randomNotification.textList.size()-1));
+        randomNotification.icon = randomNotification.iconList.get(HelperClass.getRandomInt(0,randomNotification.iconList.size()-1));
 
         return randomNotification;
     }
@@ -343,7 +336,7 @@ public class CustomNotification { //one instance for every countdown or similar
      * Randomness necessary so many customnotification-instances can create notifications without overwriting each other's notifications.*/
     public void incrementmNotificationId() {
         int tmpId = (this.getmNotificationId()+1); //IMPORTANT: 999999950 - 999999999 reserved for FOREGROUNDCOUNTERSERVICE [999999950+countdownId = foregroundNotificationID, etc.]
-        tmpId += RandomFactory.getRandNo_int(0,Constants.CUSTOMNOTIFICATION.NOTIFICATION_ID-tmpId); //-tmpId, so we cannot get over the bound of the constant!
+        tmpId += HelperClass.getRandomInt(0,Constants.CUSTOMNOTIFICATION.NOTIFICATION_ID-tmpId); //-tmpId, so we cannot get over the bound of the constant!
         Log.d(TAG,"incrementNoficiationId: Old: "+this.getmNotificationId()+"/ New: "+tmpId);
         this.mNotificationId = tmpId; //small probability that notification has the same id! So multiple instances of this class usable without overwriten old notifications
     }

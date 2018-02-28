@@ -68,7 +68,7 @@ public class Constants {
     }
 
     public interface ADMANAGER {
-        boolean USE_TEST_ADS = true;
+        boolean USE_TEST_ADS = false;
         String ADMOB_USER_ID = "ca-app-pub-8160960481527784~1956004763";
         int NO_INTERNET_CONNECTION_MAX = 5; //after 5 ads which cannot be displayed notify user that this app gets financed by ads
         //Reward for rewarded video must be changed on Admob Console AND the following constant has to be the same Value!!!!
@@ -147,6 +147,10 @@ public class Constants {
         String COUNTDOWN_VIEW_TAG_PREFIX = "COUNTDOWN_";
     }
 
+    public interface LANGUAGE_PACK {
+        String DEFAULT_LANGUAGE_PACK = STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0];
+    }
+
     public interface STORAGE_MANAGERS {
         interface DATABASE_STR_MGR {
             int DATABASE_VERSION = 1; //MUST NOT be smaller than 1, and if we change db schema we should increment this so onUpgrade gets called!
@@ -175,7 +179,7 @@ public class Constants {
                         String ID = TABLE_PREFIX+"id";
                         String LANGUAGE_ID_LIST = TABLE_PREFIX+"idList"; //not a real member of any table, but gets created during some sql queries where n:m relationship gets merged/joined to list
                     }
-                    String[] LANGUAGE_PACKS = {"en", "de"};
+                    String[] LANGUAGE_PACKS = {"en", "de"}; //first index 0 is DEFAULT ENTRY!! (see interface default langaugepack)
                 }
                 interface ZWISCHENTABELLE_COU_QLP {
                     String TABLE_NAME = "Zwischentabelle_COU_QLP";

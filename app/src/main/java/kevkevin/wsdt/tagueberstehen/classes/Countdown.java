@@ -399,13 +399,13 @@ public class Countdown {
 
         //this way every language is shown the same probability (only drawback: languagepacks with less quotes might show more probably the same quotes again)
         //IMPORTANT: String array of language packs and hashmap need the same size so keep them uptodate! (we are doing above a if to prevent such error cases, but user gets notified about it)
-        SparseArray<Quote> languageQuotes = languagepacks.get(this.getQuotesLanguagePacksStr()[RandomFactory.getRandNo_int(0,languagepacks.size()-1)]).getLanguagePackQuotes(this.getContext());
+        SparseArray<Quote> languageQuotes = languagepacks.get(this.getQuotesLanguagePacksStr()[HelperClass.getRandomInt(0,languagepacks.size()-1)]).getLanguagePackQuotes(this.getContext());
         if (languageQuotes.size() <= 0) {
             Log.w(TAG, "getRandomQuoteSuitableForCountdown: No quote for languagepack for countdown defined! Returned fallbackNotification.");
             return fallbackQuoteErrorCase;
         }
         //IMPORTANT: Hier ausnahmsweise valueAt(), WEIL wir hier den index selbst suchen und nicht den Key!
-        return languageQuotes.valueAt(RandomFactory.getRandNo_int(0,languageQuotes.size()-1));
+        return languageQuotes.valueAt(HelperClass.getRandomInt(0,languageQuotes.size()-1));
     }
 
     public HashMap<String, Languagepack> getQuotesLanguagePacksObj() {
