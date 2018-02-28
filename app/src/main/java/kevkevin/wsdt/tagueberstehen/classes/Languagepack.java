@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -75,7 +74,7 @@ public class Languagepack {
             SparseArray<Quote> quoteSparseArray = Quote.getAllQuotes(context);
             SparseArray<Quote> filteredQuoteList = new SparseArray<>();
             for (int i = 0; i < quoteSparseArray.size(); i++) {
-                Quote tmpQuote = quoteSparseArray.valueAt(i);
+                Quote tmpQuote = quoteSparseArray.get(i);
                 if (tmpQuote.getLanguagePack().equals(this.getLangPackId())) {
                     filteredQuoteList.put(tmpQuote.getQuoteId(), tmpQuote); //gaps might occur!!
                 }

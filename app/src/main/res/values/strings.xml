@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">Survive The Day</string>
-    <string name="app_owner" translatable="false">© Kevin Riedl, 2018</string>
+    <string name="app_owner" translatable="false">Kevin Riedl</string>
     <string name="app_owner_mail" translatable="false">kevin.riedl.privat@gmail.com</string>
     <string name="app_version_label">App-Version: </string>
 
@@ -38,7 +38,11 @@
     <string name="nodeTemplate_editBtn_contentDescription">Edit-Button is used to modify an existing countdown.</string>
     <string name="nodeTemplate_deleteBtn_contentDescription">Delete-Button is used to delete an existing countdown.</string>
     <string name="nodeTemplate_openCountdownBtn_contentDescription">Open-Button is used to calculate/open the current countdown.</string>
-    <string name="nodeTemplate_eventMsg_icon_error">Error-Icon when message was not set.</string>
+    <string name="nodeTemplate_eventMsg_icon_error_contentDescription">Error-Icon when message was not set.</string>
+    <string name="countdownActivity_countdownData_pauseRandomQuoteToggle_contentDescription">This button is used to pause/play the random quote generator.</string>
+    <string name="countdownActivity_countdownData_refreshRandomQuote_contentDescription">This button is used to show a new random quote, before it is automatically refreshed.</string>
+    <string name="countdownActivity_inAppNotification_notificationIcon_contentDescription">This image shows the same icon, as it has been shown in the notification bar.</string>
+    <string name="countdownActivity_inAppNotification_close_contentDescription">This button is used to close the showed inappnotification, before it is removed automatically.</string>
 
     <!-- #################################### ACTIVITIES ################################################## -->
     <!-- MainActivity -->
@@ -52,8 +56,6 @@
     <string name="mainActivity_countdownMotivationToggleOnOff_activated">activated</string>
     <string name="mainActivity_countdownMotivationToggleOnOff_deactivated">deactivated</string>
     <string name="mainActivity_countdownNode_error_nodeTagWrongBuild">Could not perform action. Node maybe wrong build.</string>
-    <string name="mainActivity_countdownNode_error_categoryColorWrongRetained">Category color could not be applied. We chose one for you.</string>
-    <string name="mainActivity_countdownNode_DateTimeValues" translatable="false">%1$s - %2$s</string>
     <string name="mainActivity_countdownNode_delete_warningDialog_title">Delete countdown?</string>
     <string name="mainActivity_countdownNode_delete_warningDialog_description">By clicking \'Delete\' your countdown will be deleted. This action can\'t be undone!</string>
     <string name="mainActivity_countdownNode_deleteAll_warningDialog_title">Delete all countdowns?</string>
@@ -72,10 +74,8 @@
     <string name="node_countdownEventMsg_countdownExpired">Expired on %1$s</string>
 
     <!-- SettingsActivity -->
-    <string name="setting_forwardCompatibility_title">Forward compatibility</string>
-    <string name="setting_forwardCompatibility_description">If activated this app will use broadcast receivers to show notifications, because newer phones limit background services. You should only disable this function, if notifications do not show up as expected (e.g. shorter intervals on newer phones tend to work better when you deactivate this setting). Keep in mind that the forward compatibility mode gets tested more often, has more functions and is more reliable.</string>
     <string name="setting_saveBattery_title">Save battery</string>
-    <string name="setting_saveBattery_description">If activated notifications might not show up on-time. Works only with forward compatibility.</string>
+    <string name="setting_saveBattery_description">If activated notifications might not show up on-time.</string>
     <string name="setting_durationOfInAppNotifications_title">Duration of In-App-Notifications</string>
     <string name="setting_durationOfInAppNotifications_description">The higher the no. (labelled in seconds) the longer an in-app-notification will be displayed on screen. In-app-notifications are only displayed when you click on a motivational notification.</string>
 
@@ -216,248 +216,11 @@
     <string name="customNotification_random_generic_texts_allArrays_Lbls_en">English (%1$d quotes)</string>
     <string name="customNotification_random_generic_texts_allArrays_Lbls_de">German (%1$d quotes)</string>
 
-    <!-- Following arrays etc. should be ONLY in fallback string.xml! -
-    <string-array name="customNotification_random_generic_texts_allArrays_identifier"><- IMPORTANT: Needs to have the same amount and order of elements as array below-
-        <item>en</item>
-        <item>de</item>
-    </string-array>
-    <!-<array name="customNotification_random_generic_texts_allArrays"><!- used e.g. to display language independent language packs-->
-    <!-- Add here new language packs!
-    <item>@array/customNotification_random_generic_texts_en</item>
-    <item>@array/customNotification_random_generic_texts_de</item>
-</array>
-<string-array name="customNotification_random_generic_texts_en">
-    <item>The way get started is to quit talking and begin doing. (Walt Disney)</item>
-    <item>The pessimist sees difficulty in every opportunity. The optimist sees opportunity in every difficulty. (Winston Churchill)</item>
-    <item>Don\'t let yesterday take up too much of today. (Will Rogers)</item>
-    <item>You learn more from failure than from success. Don\'t let it stop you. Failure build character.</item>
-    <item>It\'s not whether you get knocked down, it\'s whether you get up. (Vince Lombardi)</item>
-    <item>If you are working on something that you really care about, you don\'t have to be pushed. The vision pulls you. (Steve Jobs)</item>
-    <item>People who are crazy enough to think they can change the world, are the ones who do. (Rob Siltanen)</item>
-    <item>Failure will never overtake me if my determination to succeed is strong enough. (Og Mandino)</item>
-    <item>Entrepreneurs are great at dealing with uncertainty and also very good at minimizing risk. That\'s the classic entrepreneur. (Mohnish Pabrai)</item>
-    <item>We may encounter many defeats but we must not be defeated. (Maya Angelou)</item>
-    <item>Knowing is not enough; We must apply. Wishing is not enough; We must do. (Johann Wolfgang von Goethe)</item>
-    <item>Imagine your life is perfect in every respect; What would it look like? (Brian Tracy)</item>
-    <item>We generate fears while we sit. We overcome them by action. (Dr. Henry Link)</item>
-    <item>Whether you think you can or think you can\'t, you\'re right. (Henry Ford)</item>
-    <item>Security is mostly a superstition. Life is either a daring adventure or nothing. (Helen Keller)</item>
-    <item>The man who has confidence in himself gains the confidence of others. (Hasidic Proverb)</item>
-    <item>The only limit to our realization of tomorrow will be our doubts of today. (Franklin D. Roosevelt)</item>
-    <item>Creativity is intelligence having fun. (Albert Einstein)</item>
-    <item>What you lack in talent can be made up with desire, hustle and giving 110 % all the time. (Don Zimmer)</item>
-    <item>Do what you can with all you have, wherever you are. (Theodore Roosevelt)</item>
-    <item>Develop an attitude of gratitude. Say thank you to everyone you meet for everything they do for you. (Brian Tracy)</item>
-    <item>You are never too old to set another goal or to dream a new dream. (C.S. Lewis)</item>
-    <item>To see what is right and not do it is a lack of courage. (Confucious)</item>
-    <item>Reading is to the mind, as exercise to the body. (Brian Tracy)</item>
-    <item>Fake it until you make it! Act as if you had all the confidence you require until it becomes your reality. (Brian Tracy)</item>
-    <item>The future belong to the competent. Get good, get better, be the best! (Brian Tracy)</item>
-    <item>For every reason it\'s not possible, there are hundreds of people who have faced the same circumstances and succeeded. (Jack Canfield)</item>
-    <item>Things work out best for those who make the best of how things work out. (John Wooden)</item>
-    <item>A room without books is like a body without a soul. (Marcus Tullius Cicero)</item>
-    <item>I think goals should never be easy, they should force you to work, even if they are uncomfortable at the time. (Michael Phelps)</item>
-    <item>One of the lessons that I grew up with was to always stay true to yourself and never let what somebody else days distracts you from your goals. (Michelle Obama)</item>
-    <item>Today\'s accomplishments were yesterday\'s impossibilities. (Robert H. Schuller)</item>
-    <item>The only way to do great work is to love what you do. If you haven\'t found it yet, keep looking. Don\'t settle. (Steve Jobs)</item>
-    <item>You Don’t Have To Be Great To Start, But You Have To Start To Be Great. (Zig Ziglar)</item>
-    <item>A Clear Vision, Backed By Definite Plans, Gives You A Tremendous Feeling Of Confidence And Personal Power. (Brian Tracy)</item>
-    <item>There Are No Limits To What You Can Accomplish, Except The Limits You Place On Your Own Thinking. (Brian Tracy)</item>
-    <item>Integrity is the most valuable and respected quality of leadership. Always keep your word.</item>
-    <item>Leadership is the ability to get extraordinary achievement from ordinary people.</item>
-    <item>Leaders set high standards. Refuse to tolerate mediocrity or poor performance.</item>
-    <item>Clarity is the key to effective leadership. What are your goals?</item>
-    <item>The best leaders have a high Consideration Factor. They really care about their people.</item>
-    <item>Leaders think and talk about the solutions. Followers think and talk about the problems.</item>
-    <item>The key responsibility of leadership is to think about the future. No one else can do it for you.</item>
-    <item>The effective leader recognizes that they are more dependent on their people than they are on them. Walk softly.</item>
-    <item>Leaders never use the word failure. They look upon setbacks as learning experiences.</item>
-    <item>Practice Golden Rule Management in everything you do. Manage others the way you would like to be managed.</item>
-    <item>Superior leaders are willing to admit a mistake and cut their losses. Be willing to admit that you’ve changed your mind. Don’t persist when the original decision turns out to be a poor one.</item>
-    <item>Leaders are anticipatory thinkers. They consider all consequences of their behaviors before they act.</item>
-    <item>The true test of leadership is how well you function in a crisis.</item>
-    <item>Leaders concentrate single-mindedly on one thing– the most important thing, and they stay at it until it’s complete.</item>
-    <item>The three ‘C’s’ of leadership are Consideration, Caring, and Courtesy. Be polite to everyone.</item>
-    <item>Respect is the key determinant of high-performance leadership. How much people respect you determines how well they perform.</item>
-    <item>Leadership is more who you are than what you do.</item>
-    <item>Entrepreneurial leadership requires the ability to move quickly when opportunity presents itself.</item>
-    <item>Leaders are innovative, entrepreneurial, and future oriented. They focus on getting the job done.</item>
-    <item>Leaders are never satisfied; they continually strive to be better.</item>
-    <item>The best and most beautiful things in the world cannot be seen or even touched - they must be felt with the heart. (Helen Keller)</item>
-    <item>The best preparation for tomorrow is doing your best today. (H. Jackson Brown, Jr.)</item>
-    <item>I can\'t change the direction of the wind, but I can adjust my sails to always reach my destination. (Jimmy Dean)</item>
-    <item>We must let go of the life we have planned, so as to accept the one that is waiting for us. (Joseph Campbell)</item>
-    <item>You must do the things you think you cannot do. (Eleanor Roosevelt)</item>
-    <item>Put your heart, mind, and soul into even your smallest acts. This is the secret of success. (Swami Sivananda)</item>
-    <item>Start by doing what\'s necessary; then do what\'s possible; and suddenly you are doing the impossible. (Francis of Assisi)</item>
-    <item>The limits of the possible can only be defined by going beyond them into the impossible. (Arthur C. Clarke)</item>
-    <item>Happiness is not something you postpone for the future; it is something you design for the present. (Jim Rohn)</item>
-    <item>Try to be a rainbow in someone\'s cloud. (Maya Angelou)</item>
-    <item>It is during our darkest moments that we must focus to see the light. (Aristotle)</item>
-    <item>Health is the greatest gift, contentment the greatest wealth, faithfulness the best relationship. (Buddha)</item>
-    <item>Change your thoughts and you change the world. (Norman Vincent Peale)</item>
-    <item>Nothing is impossible, the word itself says \'I\'m possible\'. (Audrey Hepburn)</item>
-    <item>My mission in life is not merely to survive, but to thrive; and to do so with some passion, some compassion, some humor, and some style. (Maya Angelou)</item>
-    <item>Today I choose life. Every morning when I wake up I can choose joy, happiness, negativity, pain&#8230; To feel the freedom that comes from being able to continue to make mistakes and choices - today I choose to feel life, not to deny my humanity but embrace it. (Kevyn Aucoin)</item>
-    <item>Your work is going to fill a large part of your life, and the only way to be truly satisfied is to do what you believe is great work. And the only way to do great work is to love what you do. If you haven\'t found it yet keep looking. Don\'t settle. As with all matters of the heart, you\'ll know when you find it. (Steve Jobs)</item>
-    <item>Believe you can and you\'re halfway there. (Theodore Roosevelt)</item>
-    <item>Keep your face always toward the sunshine - and shadows will fall behind you. (Walt Whitman)</item>
-    <item>Perfection is not attainable, but if we chase perfection we can catch excellence. (Vince Lombardi)</item>
-    <item>If opportunity doesn\'t knock, build a door. (Milton Berle)</item>
-    <item>What we think, we become. (Buddha)</item>
-    <item>Clouds come floating into my life, no longer to carry rain or usher storm, but to add color to my sunset sky. (Rabindranath Tagore)</item>
-    <item>What lies behind you and what lies in front of you, pales in comparison to what lies inside of you. (Ralph Waldo Emerson)</item>
-    <item>Someone is sitting in the shade today because someone planted a tree a long time ago. (Warren Buffett)</item>
-    <item>No act of kindness, no matter how small, is ever wasted. (Aesop)</item>
-    <item>I believe that if one always looked at the skies, one would end up with wings. (Gustave Flaubert)</item>
-    <item>We know what we are, but know not what we may be. (William Shakespeare)</item>
-    <item>Let us sacrifice our today so that our children can have a better tomorrow. (A. P. J. Abdul Kalam)</item>
-    <item>There are two ways of spreading light: to be the candle or the mirror that reflects it. (Edith Wharton)</item>
-    <item>Let us remember: One book, one pen, one child, and one teacher can change the world. (Malala Yousafzai)</item>
-    <item>All you need is the plan, the road map, and the courage to press on to your destination. (Earl Nightingale)</item>
-    <item>Your personal life, your professional life, and your creative life are all intertwined. I went through a few very difficult years where I felt like a failure. But it was actually really important for me to go through that. Struggle, for me, is the most inspirational thing in the world at the end of the day - as long as you treat it that way. (Skylar Grey)</item>
-    <item>Your present circumstances don\'t determine where you can go; they merely determine where you start. (Nido Qubein)</item>
-    <item>I will love the light for it shows me that way, yet I will endure the darkness because it shows me the stars. (Og Mandino)</item>
-    <item>It is in your moments of decision that your destiny is shaped. (Tony Robbins)</item>
-    <item>Thousands of candles can be lighted from a single candle, and the life of the candle will not be shortened. Happiness never decreases by being shared. (Buddha)</item>
-    <item>The only journey is the one within. (Rainer Maria Rilke)</item>
-    <item>As we express our gratitude, we must never forget that the highest appreciation is not to utter words, but to live by them. (John F. Kennedy)</item>
-    <item>The bird is powered by its own life and by its motivation. (A. P. J. Abdul Kalam)</item>
-    <item>No matter what people tell you, words and ideas can change the world. (Robin Williams)</item>
-    <item>Don\'t judge each day by the harvest you reap but by the seeds you plant. (Robert Louis Stevenson)</item>
-    <item>I believe in pink. I believe that laughing is the best calorie burner. I believe in kissing, kissing a lot. I believe in being strong when everything seems to be going wrong. I believe that happy girls are the prettiest girls. I believe that tomorrow is another day and I believe in miracles. (Audrey Hepburn)</item>
-    <item>Shoot for the moon and if you miss you will still be among the stars. (Les Brown)</item>
-    <item>Let your life lightly dance on the edges of Time like dew on the tip of a leaf. (Rabindranath Tagore)</item>
-    <item>I hated every minute of training, but I said, \'Don\'t quit. Suffer now and live the rest of your life as a champion.\' (Muhammad Ali)</item>
-    <item>We can\'t help everyone, but everyone can help someone. (Ronald Reagan)</item>
-    <item>God always gives His best to those who leave the choice with him. (Jim Elliot)</item>
-    <item>When you have a dream, you\'ve got to grab it and never let go. (Carol Burnett)</item>
-    <item>If you believe in yourself and have dedication and pride - and never quit, you\'ll be a winner. The price of victory is high but so are the rewards. (Paul Bryant)</item>
-    <item>Let us make our future now, and let us make our dreams tomorrow\'s reality. (Malala Yousafzai)</item>
-    <item>A hero is someone who has given his or her life to something bigger than oneself. (Joseph Campbell)</item>
-    <item>When the sun is shining I can do anything; no mountain is too high, no trouble too difficult to overcome. (Wilma Rudolph)</item>
-    <item>Throw your dreams into space like a kite, and you do not know what it will bring back, a new life, a new friend, a new love, a new country. (Anais Nin)</item>
-    <item>If you always put limit on everything you do, physical or anything else. It will spread into your work and into your life. There are no limits. There are only plateaus, and you must not stay there, you must go beyond them. (Bruce Lee)</item>
-    <item>To love means loving the unloveable. To forgive means pardoning the unpardonable. Faith means believing the unbelievable. Hope means hoping when everything seems hopeless. (Gilbert K. Chesterton)</item>
-    <item>The measure of who we are is what we do with what we have. (Vince Lombardi)</item>
-    <item>It is never too late to be what you might have been. (George Eliot)</item>
-    <item>There is nothing impossible to him who will try. (Alexander the Great)</item>
-    <item>Two roads diverged in a wood and I - took the one less traveled by, and that has made all the difference. (Robert Frost)</item>
-    <item>From a small seed a mighty trunk may grow. (Aeschylus)</item>
-    <item>Give light, and the darkess will disappear of itself. (Desiderius Erasmus)</item>
-    <item>Love is a fruit in season at all times, and within reach of every hand. (Mother Teresa)</item>
-    <item>Be brave enough to live life creatively. The creative place where no one else has ever been. (Alan Alda)</item>
-    <item>If I have seen further than others, it is by standing upon the shoulders of giants. (Isaac Newton)</item>
-    <item>Follow your bliss and the universe will open doors where there were only walls. (Joseph Campbell)</item>
-    <item>Thinking: the talking of the soul with itself. (Plato)</item>
-    <item>Happiness resides not in possessions, and not in gold, happiness dwells in the soul. (Democritus)</item>
-    <item>How wonderful it is that nobody need wait a single moment before starting to improve the world. (Anne Frank)</item>
-    <item>When we seek to discover the best in others, we somehow bring out the best in ourselves. (William Arthur Ward)</item>
-    <item>With self-discipline most anything is possible. (Theodore Roosevelt)</item>
-    <item>To the mind that is still, the whole universe surrenders. (Lao Tzu)</item>
-    <item>Today is the only day. Yesterday is gone. (John Wooden)</item>
-    <item>Your big opportunity may be right where you are now. (Napoleon Hill)</item>
-    <item>The power of imagination makes us infinite. (John Muir)</item>
-    <item>Out of difficulties grow miracles. (Jean de la Bruyere)</item>
-    <item>What makes the desert beautiful is that somewhere it hides a well. (Antoine de Saint-Exupery)</item>
-    <item>Tomorrow is the most important thing in life. Comes into us at midnight very clean. It\'s perfect when it arrives and it puts itself in our hands. It hopes we\'ve learning something from yesterday. (John Wayne)</item>
-    <item>If the world seems cold to you, kindle fires to warm it. (Lucy Larcom)</item>
-    <item>How glorious a greeting the sun gives the mountains. (John Muir)</item>
-    <item>When you get into a tight place and everything goes against you, till it seems as though you could not hang on a minute longer, never give up then, for that is just the place and time that the tide will turn. (Harriet Beecher Stowe)</item>
-    <item>Happiness is a butterfly, which when pursued, is always beyond your grasp, but which, if you will sit down quietly, may alight upon you. (Nathaniel Hawthorne)</item>
-    <item>Whoever is happy will make others happy too. (Anne Frank)</item>
-    <item>In a gentle way, you can shake the world. (Mahatma Gandhi)</item>
-    <item>Don\'t limit yourself. Many people limit themselves to what they think they can do. You can go as far as your mind lets you. What you believe, remember, you can achieve. (Mary Kay Ash)</item>
-    <item>We can change our lives. We can do, have, and be exactly what we wish. (Tony Robbings)</item>
-    <item>Even if I knew that tomorrow the \'would\' would go to pieces, I would still plant my apple tree. (Martin Luther)</item>
-    <item>Memories of our lives, of our works and our deeds will continue in others. (Rosa Parks)</item>
-    <item>The things that we love tell us what we are. (Thomas Aquinas)</item>
-    <item>Somewhere, something incredible is waiting to be known. (Sharon Begley)</item>
-    <item>The glow of one warm thought is to me worth more than money. (Thomas Jefferson)</item>
-    <item>If a man does not keep pace with his companions, perhaps it is because he hears a different drummer. Let him step to the music which he hears, however measured or far away. (Henry David Thoreau)</item>
-    <item>Accept the things to which fate binds you, and love the people whom fate brings you together, but do so with all your heart. (Marcus Aurelius)</item>
-    <item>If we did all the things we are capable of, we would literally astound ourselves. (Thomas A. Edison)</item>
-    <item>Each day provides its own gifts. (Marcus Aurelius)</item>
-    <item>Keep your feet on the ground, but let your heart soar as high as it will. Refuse to be average or to surrender to the chill of your spiritual environment. (Arthur Helps)</item>
-    <item>Let us dream of tomorrow where we can truly love from the soul, and know love as the ultimate truth at the heart of all creation. (Michael Jackson)</item>
-    <item>You change your life by changing your heart. (Max Lucado)</item>
-    <item>A champion is someone who gets up when he can\'t. (Jack Dempsey)</item>
-    <!- IMPORTANT einfaches Apostroph in XML innerhalb Attribut verboten! -
-</string-array>-->
-
-    <!-- German generic quotes array (here in english strings.xml because user of all languages should be able to choose which packages they want to use -->
-    <!--TODO: aber es soll die Möglichkeit geben, sich per checkbox zu entscheiden, ob man nur englische, deutsche zitate möchte usw.-
-    <string-array name="customNotification_random_generic_texts_de"><- TODO: Just temporary [for supporting german quotes] (but REMOVE and use array (de and en) from callback strings.xml with decision which packages to take (at least one, but all also possible)-
-        <item>Aller Anfang ist schwer.</item>
-        <item>Des Teufels liebstes Möbelstück ist die lange Bank.</item>
-        <item>Wer rastet, der rostet.</item>
-        <item>Anfangen ist leicht, Beharren eine Kunst.</item>
-        <item>Erst denken, dann handeln.</item>
-        <item>Eile mit Weile.</item>
-        <item>Kümmere dich nicht um ungelegte Eier.</item>
-        <item>Krummes Holz gibt auch gerades Feuer.</item>
-        <item>Man muss die Dinge nehmen, wie sie kommen.</item>
-        <item>Morgenstund hat Gold im Mund.</item>
-        <item>Selbst ist der Mann/die Frau.</item>
-        <item>Taten sagen mehr als Worte.</item>
-        <item>Übung macht den Meister.</item>
-        <item>Wer zwei Hasen auf einmal jagt bekommt keinen.</item>
-        <item>Wer A sagt, muss auch B sagen.</item>
-        <item>Wenn der Reiter nichts taugt, ist das Pferd schuld.</item>
-        <item>Dienst ist Dienst und Schnaps ist Schnaps.</item>
-        <item>Aufklärung ist der Ausgang des Menschen aus seiner selbst verschuldeten Unmündigkeit. (Immanuel Kant)</item>
-        <item>Eine Wahrheit kann erst wirken, wenn der Empfänger für sie reif ist. (Christian Morgenstern)</item>
-        <item>Die beste und sicherste Tarnung ist immer noch die blanke und nackte Wahrheit. Die glaubt niemand! (Max Frisch)</item>
-        <item>Die Strafe des Lügners ist nicht, dass ihm niemand mehr glaubt, sondern dass er selbst Niemandem mehr glauben kann. (George Bernard Shaw)</item>
-        <item>Mancher Mensch hat ein großes Feuer in seiner Seele, und niemand kommt, um sich daran zu wärmen. (Vincent van Gogh)</item>
-        <item>Wer sich den Gesetzen nicht fügen will, muss die Gegen verlassen, wo sie gelten. (Johann Wolfgang von Goethe)</item>
-        <item>Jeder kann wütend werden, das ist einfach. Aber wütend auf den Richtigen zu sein, im richtigen Maß, zur richtigen Zeit, zum richtigen Zweck und auf die richtige Art, das ist schwer. (Aristoteles)</item>
-        <item>Der Tod eines Mannes ist eine Tragödie, aber der Tod von Millionen nur eine Statistik. (Josef Stalin)</item>
-        <item>Der Gescheitere gibt nach! Eine traurige Wahrheit, sie begründet die Weltherrschaft der Dummheit. (Marie von Ebner-Eschenbach)</item>
-        <item>Fallen ist weder gefährlich noch eine Schande. Liegenbleiben ist beides. (Konrad Adenauer)</item>
-        <item>Alle Revolutionen haben bisher nur eines bewiesen, nämlich, dass sich vieles ändern lässt, bloß nicht die Menschen. (Karl Marx)</item>
-        <item>Der große Jammer mit den Menschen ist, dass sie so genau wissen, was man ihnen schuldet, und so wenig Empfindungen dafür haben, was sie anderen schulden. (Franz von Sales)</item>
-        <item>Dem Kapitalismus wohnt ein Laster inne: Die ungleiche Verteilung der Güter. Dem Sozialismus hingegen wohnt eine Tugend inne: Die gleichmäßige Verteilung des Elends. (Winston Churchill)</item>
-        <item>Unser größter Ruhm ist nicht, niemals zu fallen, sondern jedes Mal wieder aufzustehen. (Nelson Mandela)</item>
-        <item>Die Freiheit des Menschen liegt nicht darin, dass er tun kann, was er will, sondern, dass er nicht tun muss, was er nicht will. (Jean-Jacques Rousseau)</item>
-        <item>Wahlen allein machen noch keine Demokratie. (Barack Obama)</item>
-        <item>Die Lüge ist wie ein Schneeball: Je länger man ihn wälzt, desto größer wird er. (Martin Luther)</item>
-        <item>Nachrichtensprecher fangen stets mit \'Guten Abend\' an und brauchen dann 15 Minuten, um zu erklären, dass es kein guter Abend ist. (Rudi Carrell)</item>
-        <item>Anmut ist ein Ausströmen der inneren Harmonie. (Marie von Ebner-Eschenbach)</item>
-        <item>Das Ärgerliche am Ärger ist, dass man sich schadet, ohne anderen zu nützen. (Kurt Tucholsky)</item>
-        <item>Vermutlich hat Gott die Frau erschaffen, um den Mann kleinzukriegen. (Voltaire)</item>
-        <item>Keinem vernünftigen Menschen wird es einfallen, Tintenflecken mit Tinte, Ölflecken mit Öl wegwaschen zu wollen. Nur Blut soll immer wieder mit Blut abgewaschen werden. (Bertha von Suttner)</item>
-        <item>Bescheiden können nur die Menschen sein, die genug Selbstbewusstsein haben. (Gabriel Laub)</item>
-        <item>Die Öffentlich-Rechtlichen machen sich in jede Hose, die man ihnen hinhält, und die Privaten senden das, was darin ist. (Dieter Hildebrandt)</item>
-        <item>Wer nicht kann, was er will, muss wollen, was er kann. Denn das zu wollen, was er nicht kann, wäre töricht. (Leonardo da Vinci)</item>
-        <item>Suche nicht nach Fehlern, suche nach Lösungen. (Henry Ford)</item>
-        <item>Gott würfelt nicht. (Albert Einstein)</item>
-        <item>Die größten Enttäuschungen haben ihren Ursprung in zu großen Erwartungen. (Ernst Ferstl)</item>
-        <item>Niemand wird mit dem Hass auf andere Menschen wegen ihrer Hautfarbe, ethnischen Herkunft oder Religion geboren. Hass wird gelernt. Und wenn man Hass lernen kann, kann man auch lernen zu lieben. Denn Liebe ist ein viel natürlicheres Empfinden im Herzen eines Menschen als ihr Gegenteil. (Nelson Mandela)</item>
-        <item>Die Leute hatten die Gewohnheit, mich anzuschauen, als sei ich eine Art Spiegel und keine Person. Sie sahen nicht mich, sondern ihre eigenen lüsternen Gedanken und dann spielten sie selbst die Unschuldigen, indem sie mich als lüstern bezeichneten. (Marilyn Monroe)</item>
-        <item>Man löst keine Probleme, indem man sie auf Eis legt. (Winston Churchill)</item>
-        <item>Die ganze Mannigfaltigkeit, der ganze Reiz und die ganze Schönheit des Lebens setzten sich aus Licht und Schatten zusammen. (Leo Tolstoi)</item>
-        <item>Freundschaft ist nicht nur ein köstliches Geschenk, sondern auch eine dauernde Aufgabe. (Ernst Zacharias)</item>
-        <item>Wenn wir alt werden, so beginnen wir zu disputieren, wollen klug sein und doch sind wir die größten Narren. (Martin Luther)</item>
-        <item>Der große Sport fängt da an, wo er längst aufgehört hat, gesund zu sein. (Bertolt Brecht)</item>
-        <item>Der Sport ist ein sehr vernünftiger Versuch des modernen Zivilisationsmenschen, sich die Strapaze künstlich zu verschaffen. (Peter Bamm)</item>
-        <item>Sport: Opium für das Volk. (Percy Clummings)</item>
-        <item>Es gibt tausend Krankheiten, aber nur eine Gesundheit. (Ludwig Börne)</item>
-        <item>Seien Sie vorsichtig mit Gesundheitsbüchern - Sie könnten an einem Druckfehler sterben. (Mark Twain)</item>
-        <item>Wer nicht jeden Tag etwas für seine Gesundheit aufbringt, muss eines Tages sehr viel Zeit für die Krankheit opfern. (Sebastian Kneipp)</item>
-        <item>Ein leidenschaftlicher Raucher, der immer von der Gefahr des Rauchens für die Gesundheit liest, hört in den meisten Fällen auf zu lesen. (Winston Churchill)</item>
-        <item>Glück, das ist einfach eine gute Gesundheit und ein schlechtes Gedächtnis. (Ernest Hemmingway)</item>
-        <item>Ich bin körperlich und physisch topfit. (Thomas Häßler)</item>
-        <item>Ein ungeübtes Gehirn ist schädlicher für die Gesundheit als ein ungeübter Körper. (George Bernard Shaw)</item>
-        <item>Die Ehefrau ist das beste Trainingslager. (Otto Rehhagel)</item>
-        <item>Ich messe den Erfolg nicht an meinen Siegen, sondern daran, ob ich jedes Jahr besser werde. (Tiger Woods)</item>
-    </string-array>-->
-
     <!-- TIMEBASED ARRAY WITH PLACEHOLDER COULD NOt BE SET AS ARRAY, because STRING-ARRAYS DO NOT ALLOW PLACEHOLDERS! -->
     <string name="customNotification_random_timebased_text_0_secondsToGo">%1$s - Only %2$s seconds to go!</string>
-    <string name="customNotification_random_timebased_text_1_percentageLeft">%1$s - Just %2$f %% left.</string> <!-- double % because escaping so it is not a var -->
+    <string name="customNotification_random_timebased_text_1_percentageLeft">%1$s - Just %2$s %% left.</string> <!-- double % because escaping so it is not a var -->
     <string name="customNotification_random_timebased_text_2_countdownEndsOn">%1$s - Countdown ends on %2$s</string>
-    <string name="customNotification_random_timebased_text_3_percentageAchieved">%1$s - Already %2$f %% passed!</string> <!-- % twice to escape -->
+    <string name="customNotification_random_timebased_text_3_percentageAchieved">%1$s - Already %2$s %% passed!</string> <!-- % twice to escape -->
     <string name="customNotification_random_timebased_text_4_notificationInterval">%1$s - A motivating notification will be sent every %2$s. :)</string>
 
     <!-- Countdown -->
@@ -473,6 +236,8 @@
     <string name="adManager_noInternetConnectionMaxExceeded_notification_normalAndBigText">SurviveTheDay gets financed by ads. Please use this app when you have a working internet connection. Thank you very much :).</string>
     <string name="adManager_loadRewardedVideoInRewardActivity_reward_successMessage">You got rewarded with %1$d minutes free of ads!</string>
     <string name="adManager_loadRewardedVideoInRewardActivity_reward_introductionMessage">After watching this video, all ads will be hidden for a certain period of time! :)</string>
+    <string name="adManager_adBlocker_detected_antiAdblockerDialog_title">Ad-Blocker detected!</string>
+    <string name="adManager_adBlocker_detected_antiAdblockerDialog_description">It took long to program this app. I am not stopping you from using this app for free, but please be sincere and buy the AdFree-InApp Product or deactivate your adblocker. Thanks :)</string>
 
     <!-- DatabaseMgr -->
     <string name="databaseMgr_error_saveCountdown_unsuccessful">Countdown could not be saved.</string>

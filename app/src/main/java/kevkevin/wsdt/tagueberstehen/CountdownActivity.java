@@ -26,9 +26,6 @@ import android.widget.ViewSwitcher;
 
 import com.daimajia.swipe.SwipeLayout;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
@@ -80,7 +77,7 @@ public class CountdownActivity extends AppCompatActivity {
         loadCountdownDataToUI();
 
         //Wait until views are drawn (for size etc.)
-        final RelativeLayout inAppNotification = ((RelativeLayout) findViewById(R.id.notificationContent));
+        final RelativeLayout inAppNotification = (findViewById(R.id.notificationContent));
         final ViewTreeObserver observer = inAppNotification.getViewTreeObserver();
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -116,7 +113,7 @@ public class CountdownActivity extends AppCompatActivity {
     }
 
     public void initializeCountdownDataSwipeLayout() { //by setting this value to false, we could also PAUSE automatic refresh!
-        SwipeLayout swipeLayout = ((SwipeLayout) findViewById(R.id.swipeLayout_countdownActivity));
+        SwipeLayout swipeLayout = (findViewById(R.id.swipeLayout_countdownActivity));
         swipeLayout.addDrag(SwipeLayout.DragEdge.Right, findViewById(R.id.swipeLayout_countdownActivity_countdownData));
         swipeLayout.addDrag(SwipeLayout.DragEdge.Left, findViewById(R.id.swipeLayout_countdownActivity_shareQuote));
         swipeLayout.addSwipeListener(new SwipeLayout.SwipeListener() {
@@ -154,13 +151,13 @@ public class CountdownActivity extends AppCompatActivity {
 
         //Set animation to randomQuote View of Swipelayout (onTextChange fadein/out)
         try {
-            TextSwitcher randomQuoteView = ((TextSwitcher) findViewById(R.id.swipeLayout_countdownActivity_randomQuotes_quote));
+            TextSwitcher randomQuoteView = (findViewById(R.id.swipeLayout_countdownActivity_randomQuotes_quote));
             randomQuoteView.setFactory(new ViewSwitcher.ViewFactory() {
                 @Override
                 public View makeView() { //for switcher to draw textview in it
                     TextView quoteText = new TextView(CountdownActivity.this);
                     quoteText.setTextSize(14);
-                    quoteText.setTextColor(getResources().getColor(R.color.colorLight));
+                    quoteText.setTextColor(getResources().getColor(R.color.colorLight_ddd));
                     return quoteText;
                 }
             });
@@ -249,7 +246,7 @@ public class CountdownActivity extends AppCompatActivity {
             int notificationImage = this.getLastIntent().getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_SMALL_ICON, -1);
             String notificationHeading = this.getLastIntent().getStringExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_CONTENT_TITLE);
             String notificationFullText = this.getLastIntent().getStringExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_CONTENT_TEXT);
-            final RelativeLayout notificationContent = (RelativeLayout) findViewById(R.id.notificationContent); //call after values assigned so correct height
+            final RelativeLayout notificationContent = findViewById(R.id.notificationContent); //call after values assigned so correct height
 
             if (notificationImage != (-1) && !notificationHeading.equals("") && !notificationFullText.equals("")) {
                 //Set notification contents

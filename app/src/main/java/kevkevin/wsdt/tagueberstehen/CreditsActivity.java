@@ -32,7 +32,7 @@ public class CreditsActivity extends AppCompatActivity {
         //Ads - END
 
         final Resources res = getResources();
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.contactMe);
+        FloatingActionButton fab = findViewById(R.id.contactMe);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -46,7 +46,7 @@ public class CreditsActivity extends AppCompatActivity {
         });
 
         //So the html gets interpretet
-        TextView introduction = ((TextView) findViewById(R.id.creditsText));
+        TextView introduction = (findViewById(R.id.creditsText));
         //Makes links etc. clickable
         if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             introduction.setText(Html.fromHtml(getString(R.string.creditsActivity_creditsIntroductionText), Html.FROM_HTML_MODE_LEGACY)); //deprecated for newer versions
@@ -60,12 +60,10 @@ public class CreditsActivity extends AppCompatActivity {
     }
 
     private void addAllIconCreditsToView() {
-        GridLayout content = (GridLayout) findViewById(R.id.creditList);
+        GridLayout content = findViewById(R.id.creditList);
         Resources res = getResources();
         String drawableCreditTemplate = getResources().getString(R.string.creditsActivity_drawableCreditTemplate);
         addIconCreditToView(content, String.format(drawableCreditTemplate, res.getString(R.string.creditsActivity_drawableCreditTemplate_app), "http://www.freepik.com", "Freepik", "https://www.flaticon.com/", "Flaticon"), R.drawable.app_icon);
-        addIconCreditToView(content, String.format(drawableCreditTemplate, res.getString(R.string.creditsActivity_drawableCreditTemplate_conversationMark), "http://www.freepik.com", "Freepik", "https://www.flaticon.com/", "Flaticon"), R.drawable.notification_generic_blue);
-        addIconCreditToView(content, String.format(drawableCreditTemplate, res.getString(R.string.creditsActivity_drawableCreditTemplate_stopTimer), "https://www.flaticon.com/authors/smashicons", "Smashicons", "https://www.flaticon.com/", "Flaticon"), R.drawable.notification_timebased_color);
     }
 
     private void addIconCreditToView(GridLayout creditList, String credits, int drawable) {
@@ -87,7 +85,7 @@ public class CreditsActivity extends AppCompatActivity {
         }
 
         newTextView.setMovementMethod(LinkMovementMethod.getInstance());
-        newTextView.setTextColor(getResources().getColor(R.color.colorDark));
+        newTextView.setTextColor(getResources().getColor(R.color.colorDark_111));
 
         creditList.addView(newImageButton);
         creditList.addView(newTextView);

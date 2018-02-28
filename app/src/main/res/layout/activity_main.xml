@@ -15,7 +15,7 @@
         android:layout_centerInParent="true"
         android:gravity="center"
         android:text="@string/mainActivity_noCountdownsFound"
-        android:textColor="@color/colorDark"
+        android:textColor="@color/colorDark_111"
         android:textSize="22sp" />
 
     <!-- MarginBottom so BannerAd does not hide anything -->

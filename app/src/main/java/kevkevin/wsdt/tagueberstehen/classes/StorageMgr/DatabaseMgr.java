@@ -25,9 +25,8 @@ import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
 import kevkevin.wsdt.tagueberstehen.classes.Languagepack;
 import kevkevin.wsdt.tagueberstehen.classes.Quote;
-import kevkevin.wsdt.tagueberstehen.classes.services.CountdownCounterService;
+import kevkevin.wsdt.tagueberstehen.classes.services.LiveCountdown_ForegroundService;
 import kevkevin.wsdt.tagueberstehen.classes.services.Kickstarter_BootAndGeneralReceiver;
-import kevkevin.wsdt.tagueberstehen.classes.services.NotificationService;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -58,11 +57,11 @@ public class DatabaseMgr {
             ContentValues contentValues = new ContentValues();
             int countRow = 0;
             for (String[] quoteRow : DATABASE_STR_MGR.TABLES.QUOTES.ALL_QUOTES) {
-                contentValues.put(DATABASE_STR_MGR.TABLES.QUOTES.ATTRIBUTES.ID,countRow++);
-                contentValues.put(DATABASE_STR_MGR.TABLES.QUOTES.ATTRIBUTES.QUOTE_TEXT,quoteRow[0]);
-                contentValues.put(DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID,quoteRow[1]);
+                contentValues.put(DATABASE_STR_MGR.TABLES.QUOTES.ATTRIBUTES.ID, countRow++);
+                contentValues.put(DATABASE_STR_MGR.TABLES.QUOTES.ATTRIBUTES.QUOTE_TEXT, quoteRow[0]);
+                contentValues.put(DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID, quoteRow[1]);
 
-                db.insert(DATABASE_STR_MGR.TABLES.QUOTES.TABLE_NAME,null,contentValues);
+                db.insert(DATABASE_STR_MGR.TABLES.QUOTES.TABLE_NAME, null, contentValues);
             }
 
 
@@ -110,6 +109,7 @@ public class DatabaseMgr {
     }
 
     //LANGUAGEPACK RELATED METHODS ++++++++++++++++++++++++++++++++++++++++++++++++++++
+
     /**
      * This method will map a queried row to a quoteObj.
      * ATTENTION: @param cursorRow should be closed() in parent-method in a finally block!
@@ -121,7 +121,7 @@ public class DatabaseMgr {
     }
 
     //todo: Fürs Erste nur queryMethod für Languagepacks, (delete/replace, etc. erst später WENN eigene Quotes hinzufügbar bzw. generell Quotes verwaltbar
-    public HashMap<String,Languagepack> getAllLanguagePacks(@NonNull Context context, boolean forceReload) {
+    public HashMap<String, Languagepack> getAllLanguagePacks(@NonNull Context context, boolean forceReload) {
         //SparseArray for setting the same rows/ids as in db, but string[] for setting row values (quote text, etc.)
         Log.d(TAG, "getAllLanguagePacks: Trying to load all quotes.");
         if (allQuotes == null || forceReload) { //only do this if not already extracted in this session! (performance enhancement :)) --> so also not extra sql query necessary when getting single countdown
@@ -131,13 +131,13 @@ public class DatabaseMgr {
                 Log.d(TAG, "getAllLanguagePacks: Found no already extracted two-dimensional array for quotes. Doing it now.");
             }
             Cursor dbCursor = null;
-            HashMap<String,Languagepack> queriedLanguagePacks = new HashMap<>(); //sparse array instead of hashmap because better performance for pimitives
+            HashMap<String, Languagepack> queriedLanguagePacks = new HashMap<>(); //sparse array instead of hashmap because better performance for pimitives
 
             try {
-                /** Following query gets executed: ---------------
+                /* Following query gets executed: ---------------
                  * SELECT * FROM Quote_languagepackages;*/
 
-                dbCursor = getDb(context).rawQuery("SELECT * FROM "+ DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.TABLE_NAME+";",null); //query all
+                dbCursor = getDb(context).rawQuery("SELECT * FROM " + DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.TABLE_NAME + ";", null); //query all
 
                 if (dbCursor != null) {
                     Log.d(TAG, "getAllLanguagePacks: Cursor is not null :)");
@@ -165,6 +165,7 @@ public class DatabaseMgr {
 
 
     //QUOTE RELATED METHODS +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
     /**
      * This method will map a queried row to a quoteObj.
      * ATTENTION: @param cursorRow should be closed() in parent-method in a finally block!
@@ -191,10 +192,10 @@ public class DatabaseMgr {
             SparseArray<Quote> queriedQuotes = new SparseArray<>(); //sparse array instead of hashmap because better performance for pimitives
 
             try {
-                /** Following query gets executed: ---------------
+                /* Following query gets executed: ---------------
                  * SELECT * FROM Quotes;*/
 
-                dbCursor = getDb(context).rawQuery("SELECT * FROM "+ DATABASE_STR_MGR.TABLES.QUOTES.TABLE_NAME+";",null); //query all
+                dbCursor = getDb(context).rawQuery("SELECT * FROM " + DATABASE_STR_MGR.TABLES.QUOTES.TABLE_NAME + ";", null); //query all
 
                 if (dbCursor != null) {
                     Log.d(TAG, "getAllQuotes: Cursor is not null :)");
@@ -219,8 +220,8 @@ public class DatabaseMgr {
     }
 
 
-
     //COUNTDOWN RELATED METHODS +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
     /**
      * deleteCountdown: Deletes countdown with id and returns whether it was successful or not!
      */
@@ -232,7 +233,7 @@ public class DatabaseMgr {
 
         //No foreach languagePack necessary, because we just delete all rows simultaneously where countdownId is
         deletionSuccessful &= getDb(context).delete(DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME,
-                DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", new String[] {String.valueOf(countdownId)}) > 0;
+                DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", new String[]{String.valueOf(countdownId)}) > 0;
 
         if (deletionSuccessful) {
             getAllCountdowns(context, false).delete(countdownId);
@@ -308,7 +309,7 @@ public class DatabaseMgr {
             SparseArray<Countdown> queriedCountdowns = new SparseArray<>(); //sparse array instead of hashmap because better performance for pimitives
 
             try {
-                /** Following query gets executed: ---------------
+                /* Following query gets executed: ---------------
                  * SELECT cou.*,zcq.qlp_idList FROM Countdown as cou
                  INNER JOIN (
                  SELECT cou_id, GROUP_CONCAT(qlp_id) as qlp_idList FROM Zwischentabelle_COU_QLP
@@ -398,7 +399,7 @@ public class DatabaseMgr {
     public void setSaveCountdown(@NonNull Context context, Countdown countdown) {
         Log.d(TAG, "setSaveCountdown: Entry might be replaced if it exists already.");
 
-        /** Following query gets executed: (INSERT OR REPLACE INTO == REPLACE INTO [Abbr.]) ---------------
+        /* Following query gets executed: (INSERT OR REPLACE INTO == REPLACE INTO [Abbr.]) ---------------
          * REPLACE INTO Countdown VALUES ({countdownDataRow});*/
 
         //Countdown to contentvalues to be inserted!
@@ -420,7 +421,7 @@ public class DatabaseMgr {
 
         //Delete auflösungstabelle für countdown, because what is when countdown has now less languagepacks (it would remain in zwischentabelle)
         if (getDb(context).delete(DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME,
-                DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", new String[] {String.valueOf(countdown.getCountdownId())}) > 0) {
+                DATABASE_STR_MGR.TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", new String[]{String.valueOf(countdown.getCountdownId())}) > 0) {
             Log.d(TAG, "setSaveCountdown: Deletion of entries of updated/new countdown in zwischentabelle successful.");
         }
 
@@ -477,38 +478,26 @@ public class DatabaseMgr {
         //would not be necessary because on broadcastreceiver the current countdown gets automatically loaded!
         //except if countdown was created, then we have to reload it! (only changes/deletes do not require a reload) [but for bgservice mode it is necessary]
 
-        if (getAllCountdowns(context, false, true,false).size() > 0) {
+        if (getAllCountdowns(context, false, true, false).size() > 0) {
             //Only start broadcast receivers or service when at least one countdown acc. to criteria found
-            if (new GlobalAppSettingsMgr(context).useForwardCompatibility()) {
-                //TODO: only do this when not already active (otherwise intervals will get restarted)
-                (new CustomNotification(context, CountdownActivity.class, (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications(context);
-                Log.d(TAG, "restartNotificationService: Rescheduled all broadcast receivers.");
-            } else {
-                Intent serviceIntent = new Intent(context, NotificationService.class);
-                try {
-                    context.stopService(serviceIntent);
-                    Log.d(TAG, "restartNotificationService: Tried to stop and restart service.");
-                    context.startService(serviceIntent);
-                } catch (NullPointerException e) {
-                    Log.e(TAG, "restartNotificationService: ServiceIntent equals null! Could not restart service.");
-                }
-                Log.d(TAG, "restartNotificationService: Tried to restart service.");
-            }
+            //TODO: only do this when not already active (otherwise intervals will get restarted)
+            (new CustomNotification(context, CountdownActivity.class, (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications();
+            Log.d(TAG, "restartNotificationService: Rescheduled all broadcast receivers.");
         }
 
         //ALSO RESTART FOREGROUND SERVICE
-        Intent foregroundServiceIntent = new Intent(context, CountdownCounterService.class);
+        Intent foregroundServiceIntent = new Intent(context, LiveCountdown_ForegroundService.class);
         try {
             /* Like this we could simply stop the service by extra! BUT IMPORTANT: To restart service we just need to start it again, because onStart gets executed and only one instance is created!
             foregroundServiceIntent.putExtra(Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE_LABEL,Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE);
             this.getContext().startService(foregroundServiceIntent); //startService instead of stopService, react to extra and stopSelf()*/
             Log.d(TAG, "restartNotificationService: Trying to restart foregroundService.");
-            if (CountdownCounterService.refreshAllNotificationCounters_Interval_Thread != null) {
+            if (LiveCountdown_ForegroundService.refreshAllNotificationCounters_Interval_Thread != null) {
                 Log.d(TAG, "restartNotificationService: Trying to kill thread of countdownCounterService.");
-                CountdownCounterService.refreshAllNotificationCounters_Interval_Thread.interrupt();
+                LiveCountdown_ForegroundService.refreshAllNotificationCounters_Interval_Thread.interrupt();
             } //interrupt running thread
             context.stopService(foregroundServiceIntent);
-            if (this.getAllCountdowns(context,false, false, true).size() > 0) {
+            if (this.getAllCountdowns(context, false, false, true).size() > 0) {
                 //only start service, if at least one countdown acc. to criteria found (performance enhancement)
                 context.startService(foregroundServiceIntent);
             }
@@ -544,10 +533,12 @@ public class DatabaseMgr {
         return newCountdownId;
     }
 
-    /** Used for sqlite escaping (used in countdown obj itself (setter/getter) and here in DatabaseMgr when inserting e.g.*/
+    /**
+     * Used for sqlite escaping (used in countdown obj itself (setter/getter) and here in DatabaseMgr when inserting e.g.
+     */
     public static String escapeString(@NonNull String string) {
         //return DatabaseUtils.sqlEscapeString(string); --> surrounds string with ' (destroys queries etc.) use following below:
-        return string.replaceAll(COUNTDOWN.ESCAPE.escapeSQL_illegalCharacter,COUNTDOWN.ESCAPE.escapeSQL_legalCharacter);
+        return string.replaceAll(COUNTDOWN.ESCAPE.escapeSQL_illegalCharacter, COUNTDOWN.ESCAPE.escapeSQL_legalCharacter);
     }
 
     //GETTER/SETTER +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

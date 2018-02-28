@@ -323,7 +323,7 @@
                         android:layout_height="wrap_content" />
                     <!-- TODO: Share quote with countdown values maybe? MAKE separate class for sharing! -->
                     <ImageView
-                        android:contentDescription="pauseRandomQuote"
+                        android:contentDescription="@string/countdownActivity_countdownData_pauseRandomQuoteToggle_contentDescription"
                         android:onClick="pausePlayRandomQuote"
                         android:src="@drawable/light_togglemotivation"
                         android:adjustViewBounds="true"
@@ -336,7 +336,7 @@
                         android:layout_height="wrap_content" />
                     <ImageView
                         android:id="@+id/swipeLayout_countdownActivity_randomQuotes_refreshBtn"
-                        android:contentDescription="refreshRandomQuote"
+                        android:contentDescription="@string/countdownActivity_countdownData_refreshRandomQuote_contentDescription"
                         android:onClick="setNewRandomQuote"
                         android:src="@drawable/light_refresh"
                         android:adjustViewBounds="true"
@@ -381,14 +381,14 @@
             android:maxHeight="25dp"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true"
-            android:contentDescription="Notification Icon"
-            android:src="@drawable/warning" />
+            android:contentDescription="@string/countdownActivity_inAppNotification_notificationIcon_contentDescription"
+            android:src="@drawable/light_notification_warning" />
 
         <!-- Mit absicht heading heller als fulltext -->
         <TextView
             android:id="@+id/notificationHeading"
             style="@style/CountdownSmall"
-            android:textColor="@color/colorWhite"
+            android:textColor="@color/colorWhite_fff"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
@@ -399,7 +399,7 @@
         <TextView
             android:id="@+id/notificationFullText"
             style="@style/CountdownSmall"
-            android:textColor="@color/colorLight"
+            android:textColor="@color/colorLight_ddd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/notificationHeading"
@@ -415,7 +415,7 @@
         <ImageView
             android:id="@+id/notificationClose"
             android:src="@drawable/light_close"
-            android:contentDescription="inAppNotification_Close"
+            android:contentDescription="@string/countdownActivity_inAppNotification_close_contentDescription"
             android:layout_width="20dp"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"

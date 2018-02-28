@@ -41,38 +41,12 @@
         <RelativeLayout
             android:id="@+id/settingsList"
             android:layout_marginBottom="50dp"
-            android:layout_marginTop="15dp"
             android:layout_marginLeft="15dp"
             android:layout_marginStart="15dp"
             android:layout_marginRight="15dp"
             android:layout_marginEnd="15dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <!-- Use Forward compatiblity -->
-                <TextView
-                    android:id="@+id/useForwardCompatibilityLbl"
-                    android:text="@string/setting_forwardCompatibility_title"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    style="@style/settingText" />
-                <Switch
-                    android:id="@+id/useForwardCompatibility"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:checked="true" />
-                <!-- description for row above -->
-                <TextView
-                    android:id="@+id/useForwardCompatibilityDescription"
-                    android:text="@string/setting_forwardCompatibility_description"
-                    android:textColor="@color/colorLightdark"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:justificationMode="inter_word"
-                    android:layout_below="@+id/useForwardCompatibilityLbl"/>
-
 
             <!-- Save battery (works only if forwardCompatibility ON -> SO only show if activated) -->
                 <TextView
@@ -81,7 +55,6 @@
                     style="@style/settingText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/useForwardCompatibilityDescription"
                     android:layout_marginTop="15dp"/>
                 <Switch
                     android:id="@+id/saveBattery"
@@ -90,13 +63,12 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
-                    android:layout_below="@+id/useForwardCompatibilityDescription"
                     android:layout_marginTop="15dp"/>
                 <!-- description for row above -->
                 <TextView
                     android:id="@+id/saveBatteryDescription"
                     android:text="@string/setting_saveBattery_description"
-                    android:textColor="@color/colorLightdark"
+                    android:textColor="@color/colorGrey_555"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:justificationMode="inter_word"
@@ -113,7 +85,7 @@
                     android:layout_marginTop="15dp"/>
                 <Spinner
                     android:id="@+id/inappNotificationHowLongToShowValue"
-                    android:background="@color/colorSlightlygrey"
+                    android:background="@color/colorGrey_aaa"
                     android:spinnerMode="dropdown"
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
@@ -124,7 +96,7 @@
                 <!-- description for row above -->
                 <TextView
                     android:text="@string/setting_durationOfInAppNotifications_description"
-                    android:textColor="@color/colorLightdark"
+                    android:textColor="@color/colorGrey_555"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:justificationMode="inter_word"

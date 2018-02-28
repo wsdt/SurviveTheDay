@@ -11,7 +11,6 @@ import kevkevin.wsdt.tagueberstehen.classes.AdManager;
 import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
 
 public class InAppPurchaseActivity extends AppCompatActivity{
-    private InAppPurchaseManager inAppPurchaseManager;
     private static final String TAG = "InAppPurchaseActivity";
     private static int counterActivityResume = 0; //how often got activity into foreground (so no repeat in showing all products [print method]) --> because in onCreate/onStart UI Thread is blocked despite Thread and join
 
@@ -26,9 +25,8 @@ public class InAppPurchaseActivity extends AppCompatActivity{
         adManager.loadBannerAd((RelativeLayout) findViewById(R.id.inAppPurchaseAct_RL));
 
         //IMPORTANT: Purchase failed is only when we clicked on buttons before. But this code worked before!
-        this.inAppPurchaseManager = new InAppPurchaseManager(this);
         Log.d(TAG, "onStart: Now trying to load resources from Google play.");
-        this.inAppPurchaseManager.printAllInAppProductsAsNode((LinearLayout) findViewById(R.id.inappProductList));
+        new InAppPurchaseManager(this).printAllInAppProductsAsNode((LinearLayout) findViewById(R.id.inappProductList));
     }
 
 

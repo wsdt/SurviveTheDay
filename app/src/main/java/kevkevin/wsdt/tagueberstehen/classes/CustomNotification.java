@@ -17,17 +17,16 @@ import android.util.SparseArray;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Random;
 import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
-import kevkevin.wsdt.tagueberstehen.classes.services.NotificationService_AlarmmanagerBroadcastReceiver;
+import kevkevin.wsdt.tagueberstehen.classes.services.NotificationBroadcastMgr;
 
 public class CustomNotification { //one instance for every countdown or similar
     private Context activityThisTarget;
     private int mNotificationId = 0; //start with 0 should be first notification (index starts at 0)
-    private HashMap<Long, NotificationCompat.Builder> notifications = new HashMap<>(); //NOT static, because every instance should have own Arraylist!
+    private SparseArray<NotificationCompat.Builder> notifications = new SparseArray<>(); //NOT static, because every instance should have own Arraylist!
     private NotificationManager mNotifyMgr;
     private static final String TAG = "CustomNotification";
     private Random random;
@@ -46,7 +45,7 @@ public class CustomNotification { //one instance for every countdown or similar
         Log.d(TAG,"mNotificationId: "+getmNotificationId());
     }
 
-    public void scheduleAllActiveCountdownNotifications(Context context) {
+    public void scheduleAllActiveCountdownNotifications() {
         Log.d(TAG, "scheduleAllActiveCountdownNotifications: Started method.");
         SparseArray<Countdown> allCountdowns = DatabaseMgr.getSingletonInstance(this.getActivityThisTarget()).getAllCountdowns(this.getActivityThisTarget(), false,true, false);
 
@@ -54,7 +53,7 @@ public class CustomNotification { //one instance for every countdown or similar
         //do not call purchaseWorkflow or similar when only providing context [altough we mostly give an activity to this class we should not risk it]
         InAppPurchaseManager inAppPurchaseManager = new InAppPurchaseManager(this.getActivityThisTarget());
         for (int i = 0;i<allCountdowns.size();i++) {
-            final Countdown currCountdown = allCountdowns.valueAt(i); //necessary because i cannot be final (i++)
+            final Countdown currCountdown = allCountdowns.get(i); //necessary because i cannot be final (i++)
             if ((count++) > 0) {
                 inAppPurchaseManager.executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
@@ -80,7 +79,7 @@ public class CustomNotification { //one instance for every countdown or similar
     private void scheduleNotification(int countdownId, Long intervalInSeconds) {
         //Important: inexactRepeating to save battery!
         AlarmManager alarmManager = (AlarmManager) this.getActivityThisTarget().getSystemService(Context.ALARM_SERVICE);
-        Intent tmpIntent = new Intent(this.getActivityThisTarget(), NotificationService_AlarmmanagerBroadcastReceiver.class);
+        Intent tmpIntent = new Intent(this.getActivityThisTarget(), NotificationBroadcastMgr.class);
         tmpIntent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID,countdownId);
 
         //PendingIntent ID = Countdown ID (important so reload overwrites old one! AND we can show different notifications because different pendingIntent IDs!!
@@ -102,7 +101,7 @@ public class CustomNotification { //one instance for every countdown or similar
 
     public void issueNotification(int mNotificationId) {
         try {
-            this.getmNotifyMgr().notify(mNotificationId, this.getNotifications().get((long) mNotificationId).build());
+            this.getmNotifyMgr().notify(mNotificationId, this.getNotifications().get(mNotificationId).build());
         } catch(IndexOutOfBoundsException | NullPointerException e) {
             Log.e(TAG, "issueNotification: CustomNotification not defined! CustomNotification-No.: "+mNotificationId);
             e.printStackTrace();
@@ -127,7 +126,7 @@ public class CustomNotification { //one instance for every countdown or similar
         if (!countdown.isUntilDateInTheFuture()) {
             //Remove countdown if it has expired (this method will never be called again for that countdown!
             Log.d(TAG, "createCounterServiceNotification: Countdown has expired! Making notification removable and making small changes.");
-            counterServiceNotification = new NotificationCompat.Builder(this.getActivityThisTarget())
+            counterServiceNotification = new NotificationCompat.Builder(this.getActivityThisTarget(),Constants.CUSTOMNOTIFICATION.DEFAULT_NOTIFICATION_CHANNEL)
                     .setSmallIcon(R.drawable.app_icon)
                     //.setLargeIcon(BitmapFactory.decodeResource(this.getRes(),R.drawable.notification_timebased_color))
                     .setContentTitle(countdown.getCountdownTitle())
@@ -138,7 +137,7 @@ public class CustomNotification { //one instance for every countdown or similar
                     .setContentText("Countdown has expired on "+countdown.getUntilDateTime())
                     .build();
         } else { //Countdown has not expired
-            counterServiceNotification = new NotificationCompat.Builder(this.getActivityThisTarget())
+            counterServiceNotification = new NotificationCompat.Builder(this.getActivityThisTarget(),Constants.CUSTOMNOTIFICATION.DEFAULT_NOTIFICATION_CHANNEL)
                     .setSmallIcon(R.drawable.app_icon)
                     //Large icon is too small on new smartphones
                     //.setLargeIcon(BitmapFactory.decodeResource(this.getRes(),R.drawable.notification_timebased_color))
@@ -171,8 +170,8 @@ public class CustomNotification { //one instance for every countdown or similar
                 tmpIntent,PendingIntent.FLAG_UPDATE_CURRENT);
 
         //add notification
-        this.getNotifications().put((long) this.getmNotificationId(), //save with current id
-                new NotificationCompat.Builder(this.getActivityThisTarget())
+        this.getNotifications().put(this.getmNotificationId(), //save with current id
+                new NotificationCompat.Builder(this.getActivityThisTarget(),Constants.CUSTOMNOTIFICATION.DEFAULT_NOTIFICATION_CHANNEL)
                         .setSmallIcon(icon)
                         .setContentTitle(title)
                         //onMs = how long on / offMs = how long off (repeating, so blinking!)
@@ -213,8 +212,8 @@ public class CustomNotification { //one instance for every countdown or similar
 
         //TODO: https://material.io/icons/
         //add notification
-        this.getNotifications().put((long) this.getmNotificationId(), //save with current id
-                new NotificationCompat.Builder(this.getActivityThisTarget())
+        this.getNotifications().put(this.getmNotificationId(), //save with current id
+                new NotificationCompat.Builder(this.getActivityThisTarget(),Constants.CUSTOMNOTIFICATION.DEFAULT_NOTIFICATION_CHANNEL)
                 .setSmallIcon(icon)
                 .setContentTitle(title)
                 //onMs = how long on / offMs = how long off (repeating, so blinking!)
@@ -258,7 +257,7 @@ public class CustomNotification { //one instance for every countdown or similar
                 break;*/
             default:
                 Log.e(TAG, "createRandomNotification: Could not determine random notification type!");
-                return createNotification(countdown,this.getRes().getString(R.string.error_title_systemError), this.getRes().getString(R.string.error_contactAdministrator), R.drawable.warning);
+                return createNotification(countdown,this.getRes().getString(R.string.error_title_systemError), this.getRes().getString(R.string.error_contactAdministrator), R.drawable.light_notification_warning);
         }
         //Extract values from innerclass instance and create CustomNotification in next method
         return createNotification(countdown, randomNotification.title,randomNotification.text,randomNotification.icon);
@@ -277,11 +276,12 @@ public class CustomNotification { //one instance for every countdown or similar
         ArrayList<Integer> iconList = new ArrayList<>();
     }
 
+    //NotificationIcons should be white acc. to internet and android studio
     private NotificationContent createRandomNotification_GENERIC(Countdown countdown) {
         NotificationContent randomNotification = new NotificationContent(); //create custom instance (important not to use same instance for each cateogry)
         randomNotification.titleList.addAll(Arrays.asList(this.getRes().getStringArray(R.array.customNotification_random_generic_titles))); //converts array to list and adds all of them
         //NOT NECESSARY: we get random quote now directly -> randomNotification.textList = (countdown.getQuotesLanguagePacks_Quotes()); //add here all countdown selected languages for quotes
-        randomNotification.iconList.addAll(Arrays.asList(R.drawable.notification_generic_blue,R.drawable.notification_generic_green,R.drawable.notification_generic_purple,R.drawable.notification_generic_red));
+        randomNotification.iconList.addAll(Arrays.asList(R.drawable.light_notification_generic_saying,R.drawable.light_notification_generic_sayingloud));
 
         //Choose one for each arraylist by random index (max is size-1!)
         randomNotification.title = randomNotification.titleList.get(this.random.nextInt(randomNotification.titleList.size())); //size() index does exist!
@@ -296,32 +296,16 @@ public class CustomNotification { //one instance for every countdown or similar
 
         randomNotification.titleList.addAll(Arrays.asList(this.getRes().getStringArray(R.array.customNotification_random_timebased_titles))); //converts array to list and adds all of them
         randomNotification.textList.addAll(Arrays.asList(String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_0_secondsToGo),countdown.getCountdownTitle(),countdown.getTotalSecondsNoScientificNotation()),
-                String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_1_percentageLeft),countdown.getCountdownTitle(),countdown.getRemainingPercentage(2, true)),
+                String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_1_percentageLeft),countdown.getCountdownTitle(),HelperClass.formatCommaNumber(countdown.getRemainingPercentage(true),2)),
                 String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_2_countdownEndsOn),countdown.getCountdownTitle(),countdown.getUntilDateTime()),
-                String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_3_percentageAchieved),countdown.getCountdownTitle(),countdown.getRemainingPercentage(2, false)),
+                String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_3_percentageAchieved),countdown.getCountdownTitle(),HelperClass.formatCommaNumber(countdown.getRemainingPercentage(false),2)),
                 String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_4_notificationInterval),countdown.getCountdownTitle(),(this.getRes().getStringArray(R.array.countdownIntervalSpinner_LABELS)[(Arrays.asList(this.getRes().getStringArray(R.array.countdownIntervalSpinner_VALUES)).indexOf(""+countdown.getNotificationInterval()))])))); //get label of corresponding seconds of strings.xml
-        randomNotification.iconList.addAll(Arrays.asList(R.drawable.notification_timebased_color,R.drawable.notification_timebased_white));
+        randomNotification.iconList.addAll(Arrays.asList(R.drawable.light_notification_timebased_clock,R.drawable.light_notification_timebased_clockalert));
 
         //Choose one for each arraylist by random index (max is size-1!)
         randomNotification.title = randomNotification.titleList.get(this.random.nextInt(randomNotification.titleList.size())); // size() index does  exist!
         randomNotification.text = randomNotification.textList.get(this.random.nextInt(randomNotification.textList.size()));
         randomNotification.icon = randomNotification.iconList.get(this.random.nextInt(randomNotification.iconList.size()));
-
-        return randomNotification;
-    }
-
-    private NotificationContent createRandomNotification_CATEGORYBASED(Countdown countdown) {
-        //TODO: implemented, but currently no use for it
-        NotificationContent randomNotification = new NotificationContent(); //create custom instance (important not to use same instance for each cateogry)
-
-        randomNotification.titleList.addAll(Arrays.asList("")); //converts array to list and adds all of them
-        randomNotification.textList.addAll(Arrays.asList(countdown.getCountdownTitle()+" - Cat.: "+countdown.getCategory(),countdown.getCountdownTitle()+" - Until: "+countdown.getUntilDateTime(),countdown.getCountdownTitle()+" - Created: "+countdown.getCreatedDateTime()));
-        //randomNotification.iconList.addAll(Arrays.asList(R.drawable.campfire_black,R.drawable.campfire_red,R.drawable.campfire_white));
-
-        //Choose one for each arraylist by random index (max is size-1!)
-        randomNotification.title = randomNotification.titleList.get(this.random.nextInt(randomNotification.titleList.size()-1)); //-1 because size() index does not exist!
-        randomNotification.text = randomNotification.textList.get(this.random.nextInt(randomNotification.textList.size()-1));
-        randomNotification.icon = randomNotification.iconList.get(this.random.nextInt(randomNotification.iconList.size()-1));
 
         return randomNotification;
     }
@@ -355,8 +339,11 @@ public class CustomNotification { //one instance for every countdown or similar
         return this.mNotificationId;
     }
 
+    /** Creates random notification id (preserved ids for motivation / countdowncounter [live countdown] has other reserved ids)
+     * Randomness necessary so many customnotification-instances can create notifications without overwriting each other's notifications.*/
     public void incrementmNotificationId() {
-        int tmpId = (this.getmNotificationId()+1+this.random.nextInt(Constants.CUSTOMNOTIFICATION.NOTIFICATION_ID)); //IMPORTANT: 999999950 - 999999999 reserved for FOREGROUNDCOUNTERSERVICE [999999950+countdownId = foregroundNotificationID, etc.]
+        int tmpId = (this.getmNotificationId()+1); //IMPORTANT: 999999950 - 999999999 reserved for FOREGROUNDCOUNTERSERVICE [999999950+countdownId = foregroundNotificationID, etc.]
+        tmpId += RandomFactory.getRandNo_int(0,Constants.CUSTOMNOTIFICATION.NOTIFICATION_ID-tmpId); //-tmpId, so we cannot get over the bound of the constant!
         Log.d(TAG,"incrementNoficiationId: Old: "+this.getmNotificationId()+"/ New: "+tmpId);
         this.mNotificationId = tmpId; //small probability that notification has the same id! So multiple instances of this class usable without overwriten old notifications
     }
@@ -369,11 +356,11 @@ public class CustomNotification { //one instance for every countdown or similar
         this.mNotifyMgr = mNotifyMgr;
     }
 
-    public HashMap<Long, NotificationCompat.Builder> getNotifications() {
+    public SparseArray<NotificationCompat.Builder> getNotifications() {
         return this.notifications;
     }
 
-    public void setNotifications(HashMap<Long, NotificationCompat.Builder> notifications) {
+    public void setNotifications(SparseArray<NotificationCompat.Builder> notifications) {
         this.notifications = notifications;
     }
 

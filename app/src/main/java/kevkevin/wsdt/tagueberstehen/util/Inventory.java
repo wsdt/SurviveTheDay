@@ -25,8 +25,8 @@ package kevkevin.wsdt.tagueberstehen.util;
  * An Inventory is returned by such methods as {@link IabHelper#queryInventory}.
  */
 public class Inventory {
-    private Map<String,SkuDetails> mSkuMap = new HashMap<String,SkuDetails>();
-    private Map<String,Purchase> mPurchaseMap = new HashMap<String,Purchase>();
+    private Map<String,SkuDetails> mSkuMap = new HashMap<>();
+    private Map<String,Purchase> mPurchaseMap = new HashMap<>();
 
     Inventory() { }
 
@@ -64,12 +64,12 @@ public class Inventory {
 
     /** Returns a list of all owned product IDs. */
     List<String> getAllOwnedSkus() {
-        return new ArrayList<String>(getmPurchaseMap().keySet());
+        return new ArrayList<>(getmPurchaseMap().keySet());
     }
 
     /** Returns a list of all owned product IDs of a given type */
     List<String> getAllOwnedSkus(String itemType) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (Purchase p : getmPurchaseMap().values()) {
             if (p.getItemType().equals(itemType)) result.add(p.getSku());
         }
@@ -78,7 +78,7 @@ public class Inventory {
 
     /** Returns a list of all purchases. */
     List<Purchase> getAllPurchases() {
-        return new ArrayList<Purchase>(getmPurchaseMap().values());
+        return new ArrayList<>(getmPurchaseMap().values());
     }
 
     void addSkuDetails(SkuDetails d) {

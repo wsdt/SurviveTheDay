@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:background="@color/colorLight"
-    tools:context="kevkevin.wsdt.tagueberstehen.CreditsActivity">
+    tools:context="kevkevin.wsdt.tagueberstehen.CreditsActivity"
+    android:background="@color/colorWhite_fff">
 
 
     <RelativeLayout
@@ -30,7 +30,7 @@
                     android:id="@+id/creditsText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorDark"
+                    android:textColor="@color/colorDark_111"
                     android:layout_margin="@dimen/text_margin"
                     android:text="@string/creditsActivity_creditsIntroductionText" />
 

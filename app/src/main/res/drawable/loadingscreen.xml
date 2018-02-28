@@ -3,7 +3,7 @@
 
     <!-- Will be shown BEFORE loadingActivity is started -->
     <item
-        android:drawable="@color/colorDark"/>
+        android:drawable="@color/colorDark_111"/>
 
     <item>
         <bitmap
