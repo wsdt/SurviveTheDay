@@ -228,62 +228,6 @@ public class CountdownCounter {
         this.totalYears = totalYears;
     }
 
-    /*public Long getSeconds() {
-        return seconds;
-    }
-
-    public void setSeconds(Long seconds) {
-        this.seconds = seconds;
-    }
-
-    public Long getMinutes() {
-        return minutes;
-    }
-
-    public void setMinutes(Long minutes) {
-        this.minutes = minutes;
-    }
-
-    public Long getHours() {
-        return hours;
-    }
-
-    public void setHours(Long hours) {
-        this.hours = hours;
-    }
-
-    public Long getDays() {
-        return days;
-    }
-
-    public void setDays(Long days) {
-        this.days = days;
-    }
-
-    public Long getWeeks() {
-        return weeks;
-    }
-
-    public void setWeeks(Long weeks) {
-        this.weeks = weeks;
-    }
-
-    public Long getMonths() {
-        return months;
-    }
-
-    public void setMonths(Long months) {
-        this.months = months;
-    }
-
-    public Long getYears() {
-        return years;
-    }
-
-    public void setYears(Long years) {
-        this.years = years;
-    }*/
-
     public Thread getCountdownCounterThread() {
         return countdownCounterThread;
     }
