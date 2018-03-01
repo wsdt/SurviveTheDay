@@ -14,7 +14,7 @@ public class DateTimePicker {
     private TextView mainResultView;
     private static final String TAG = "DateTimePicker";
 
-    public DateTimePicker (Context context, FragmentManager fragmentManager, @NonNull TextView mainResultView, int hourOfDay, int minute, int seconds, boolean is24hourView) {
+    public DateTimePicker (FragmentManager fragmentManager, @NonNull TextView mainResultView) {
         Log.d(TAG, "Created instance.");
         //this.setMainResultView(mainResultView);
         this.setFragmentManager(fragmentManager);

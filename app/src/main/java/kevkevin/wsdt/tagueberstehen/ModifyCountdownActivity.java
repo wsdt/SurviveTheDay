@@ -324,7 +324,23 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     public void setCustomOnClickListener(@NonNull TextView v, @NonNull RelativeLayout parentView) {
         //GregorianCalendar now = new GregorianCalendar(); //now
         GregorianCalendar now = new GregorianCalendar(); //so current time gets automatically set
-        final DateTimePicker DATETIMEPICKER = new DateTimePicker(this, getSupportFragmentManager(), v, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND), true);
+        final DateTimePicker DATETIMEPICKER = new DateTimePicker(getSupportFragmentManager(), v);
+
+        String viewTag = (String) v.getTag();
+        int addToHourUntilDateTime = 0; //add two hours to be greater than startdatetime
+        if (viewTag != null) {
+            if (viewTag.equals("modifyCountdownActivity_countdown_untilDateTime_label")) {
+                addToHourUntilDateTime = 2;
+            }
+        }
+
+        String currentDateTime = String.format(getString(R.string.dateTimePicker_format_DateTime),
+                String.format(getString(R.string.dateTimePicker_format_date),now.get(Calendar.DAY_OF_MONTH),(now.get(Calendar.MONTH) + 1),now.get(Calendar.YEAR))
+                ,String.format(Constants.GLOBAL.LOCALE,"%02d",
+                        now.get(Calendar.HOUR_OF_DAY)+addToHourUntilDateTime),
+                String.format(Constants.GLOBAL.LOCALE,"%02d", now.get(Calendar.MINUTE)),String.format(Constants.GLOBAL.LOCALE,"%02d", now.get(Calendar.SECOND)));
+        Log.d(TAG, "setCustomOnClickListener: Current-Datetime->"+currentDateTime);
+        v.setText(currentDateTime);
 
         parentView.setOnClickListener(new View.OnClickListener() {
             @Override

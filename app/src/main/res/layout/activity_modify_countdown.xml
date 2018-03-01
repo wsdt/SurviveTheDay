@@ -104,9 +104,11 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginStart="5dp">
 
+                <!-- Tag of following field should be the same as aboves textfield (for adding a few time in untilfield) [DO NOT CHANGE TAG/ID] -->
                 <TextView
                     android:id="@+id/untilDateTimeValue"
                     style="@style/textForForm"
+                    android:tag="modifyCountdownActivity_countdown_untilDateTime_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/modifyCountdownActivity_countdown_untilDateTime_textview_exampleValue" />
