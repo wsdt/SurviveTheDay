@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?><!-- QUOTE VIEW (will be shown for a specific period of time when opening this activity from a notification) -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/notificationContent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:alpha="0.95"
+    android:background="@drawable/shape_inappnotification_template">
+
+    <ImageView
+        android:id="@+id/notificationImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="9dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="9dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="7dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/countdownActivity_inAppNotification_notificationIcon_contentDescription"
+        android:maxHeight="25dp"
+        android:maxWidth="25dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/light_notification_warning" />
+
+    <!-- Mit absicht heading heller als fulltext -->
+    <TextView
+        android:id="@+id/notificationHeading"
+        style="@style/CountdownSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/notificationImage"
+        android:layout_toRightOf="@+id/notificationImage"
+        android:text="@string/countdownActivity_inAppNotification_error404_title"
+        android:textColor="@color/colorWhite_fff"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/notificationFullText"
+        style="@style/CountdownSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/notificationHeading"
+        android:layout_marginBottom="5dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginLeft="44dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginStart="44dp"
+        android:justificationMode="inter_word"
+        android:text="@string/countdownActivity_inAppNotification_error404_description"
+        android:textColor="@color/colorLight_ddd"
+        android:textSize="13sp" /><!-- MarginRight/End to prevent operlapping with close button -->
+
+    <ImageView
+        android:id="@+id/notificationClose"
+        android:layout_width="20dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/countdownActivity_inAppNotification_close_contentDescription"
+        android:scaleType="fitCenter"
+        android:src="@drawable/light_close" />
+</RelativeLayout>

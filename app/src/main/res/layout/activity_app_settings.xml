@@ -1,106 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settingsRLforAd"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/settingsRLforAd"
     tools:context="kevkevin.wsdt.tagueberstehen.AppSettingsActivity">
     <!-- Relative Layout for Banner Ad -->
 
     <TextView
         android:id="@+id/versionNameLabel"
-        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:text="@string/app_version_label"
+        android:layout_alignParentRight="true"
         android:paddingEnd="60dp"
         android:paddingLeft="40dp"
         android:paddingRight="60dp"
         android:paddingStart="40dp"
-        android:textColor="@color/colorPrimary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:text="@string/app_version_label"
+        android:textColor="@color/colorPrimary" />
 
     <!-- Version name in gradle build defined, bc of that it is not detected by AS -->
     <TextView
         android:id="@+id/versionName"
-        android:textColor="@color/colorPrimary"
-        android:text="@string/versionName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/versionNameLabel"
         android:layout_alignRight="@+id/versionNameLabel"
         android:layout_marginEnd="15dp"
         android:layout_marginRight="15dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:text="@string/versionName"
+        android:textColor="@color/colorPrimary" />
 
     <!-- TODO: Add question mark for description text for every setting extra -->
     <ScrollView
-        android:layout_marginTop="15dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp">
+
         <RelativeLayout
             android:id="@+id/settingsList"
-            android:layout_marginBottom="50dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginStart="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginEnd="15dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginStart="15dp">
 
             <!-- Save battery (works only if forwardCompatibility ON -> SO only show if activated) -->
-                <TextView
-                    android:id="@+id/saveBatteryLbl"
-                    android:text="@string/setting_saveBattery_title"
-                    style="@style/settingText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"/>
-                <Switch
-                    android:id="@+id/saveBattery"
-                    android:checked="false"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginTop="15dp"/>
-                <!-- description for row above -->
-                <TextView
-                    android:id="@+id/saveBatteryDescription"
-                    android:text="@string/setting_saveBattery_description"
-                    android:textColor="@color/colorGrey_555"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:justificationMode="inter_word"
-                    android:layout_below="@+id/saveBatteryLbl"/>
+            <TextView
+                android:id="@+id/saveBatteryLbl"
+                style="@style/settingText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="@string/setting_saveBattery_title" />
+
+            <Switch
+                android:id="@+id/saveBattery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/saveBatteryHelpText"
+                android:layout_toStartOf="@+id/saveBatteryHelpText"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:checked="false" />
+
+            <ImageView
+                android:id="@+id/saveBatteryHelpText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:contentDescription="@string/generic_help_contentDescription"
+                android:onClick="onHelpClick"
+                android:src="@drawable/coloraccent_help_btn"
+                android:tag="settingsActivity_saveBattery_helptext" />
 
             <!-- In app notification - how long to show -->
-                <TextView
-                    android:id="@+id/inappNotificationHowLongToShowValueLbl"
-                    android:text="@string/setting_durationOfInAppNotifications_title"
-                    style="@style/settingText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/saveBatteryDescription"
-                    android:layout_marginTop="15dp"/>
-                <Spinner
-                    android:id="@+id/inappNotificationHowLongToShowValue"
-                    android:background="@color/colorGrey_aaa"
-                    android:spinnerMode="dropdown"
-                    android:layout_width="50dp"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/saveBatteryDescription"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginTop="15dp"/>
-                <!-- description for row above -->
-                <TextView
-                    android:text="@string/setting_durationOfInAppNotifications_description"
-                    android:textColor="@color/colorGrey_555"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:justificationMode="inter_word"
-                    android:layout_below="@id/inappNotificationHowLongToShowValueLbl"/>
+            <TextView
+                android:id="@+id/inappNotificationHowLongToShowValueLbl"
+                style="@style/settingText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/saveBatteryLbl"
+                android:layout_marginTop="15dp"
+                android:text="@string/setting_durationOfInAppNotifications_title" />
+
+            <Spinner
+                android:id="@+id/inappNotificationHowLongToShowValue"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@+id/inappNotificationHowLongToShowValueHelpText"
+                android:layout_toLeftOf="@id/inappNotificationHowLongToShowValueHelpText"
+                android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_below="@id/saveBatteryLbl"
+                android:layout_marginTop="15dp"
+                android:background="@color/colorGrey_aaa"
+                android:spinnerMode="dropdown" />
+
+            <ImageView
+                android:id="@+id/inappNotificationHowLongToShowValueHelpText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/saveBatteryLbl"
+                android:layout_marginTop="15dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:contentDescription="@string/generic_help_contentDescription"
+                android:onClick="onHelpClick"
+                android:src="@drawable/coloraccent_help_btn"
+                android:tag="settingsActivity_durationOfInAppNotifications_helptext" />
         </RelativeLayout>
     </ScrollView>
 

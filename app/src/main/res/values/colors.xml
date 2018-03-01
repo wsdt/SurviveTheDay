@@ -13,7 +13,7 @@
     <color name="colorLight_ddd">#ddd</color>
     <color name="colorWhite_fff">#fff</color>
 
-    <!-- Extra colours -->
+    <!-- Extra colours: Also used for drawables! (so do not change) -->
     <color name="colorRed">#bf0000</color>
     <color name="colorBlue">#000c9f</color>
 </resources>

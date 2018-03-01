@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
@@ -21,6 +22,7 @@ public class AppSettingsActivity extends AppCompatActivity {
     private static final String TAG = "AppSettingsActivity";
     private Switch saveBattery;
     private Spinner inappNotificationShowDuration;
+    private HelperClass helperClass = new HelperClass(); //must be a member! (to prevent influencing iapnotifications of other activities)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,21 +39,13 @@ public class AppSettingsActivity extends AppCompatActivity {
         this.saveBattery = findViewById(R.id.saveBattery);
         this.inappNotificationShowDuration = findViewById(R.id.inappNotificationHowLongToShowValue);
 
-        //Set spinner properties (inappnotification duration show)
+        //Set spinner properties (inappnotification_template duration show)
         HelperClass.setIntervalSpinnerConfigurations(this.inappNotificationShowDuration, R.array.inAppNotificationShowSpinner_LABELS_VALUES,0);
 
         //Load current settings before attaching listeners etc.
         loadCurrentSettings();
 
         setCustomListeners();
-    }
-
-    private void enableDisableBatteryFields(boolean enabled) {
-        //Hide battery field if forward compatibility off or reverse (because batterysaving does not do anything if deactivated)
-        int viewVisibility = (enabled) ? View.VISIBLE : View.GONE; //use gone to make space
-        findViewById(R.id.saveBattery).setVisibility(viewVisibility);
-        findViewById(R.id.saveBatteryDescription).setVisibility(viewVisibility);
-        findViewById(R.id.saveBatteryLbl).setVisibility(viewVisibility);
     }
 
     private void setCustomListeners() {
@@ -82,5 +76,9 @@ public class AppSettingsActivity extends AppCompatActivity {
         this.inappNotificationShowDuration.setSelection(Arrays.asList(getResources().getStringArray(R.array.inAppNotificationShowSpinner_LABELS_VALUES)).indexOf(""+(this.globalAppSettingsMgr.getInAppNotificationShowDurationInMs()/1000)));
 
         Log.d(TAG, "loadCurrentSettings: Loaded current settings.");
+    }
+
+    public void onHelpClick(View view) {
+        helperClass.showQuestionMarkHelpText(this, view, (ViewGroup) findViewById(R.id.settingsRLforAd));
     }
 }

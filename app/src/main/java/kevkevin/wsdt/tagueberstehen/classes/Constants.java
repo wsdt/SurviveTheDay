@@ -68,7 +68,7 @@ public class Constants {
     }
 
     public interface ADMANAGER {
-        boolean USE_TEST_ADS = false;
+        boolean USE_TEST_ADS = true;
         String ADMOB_USER_ID = "ca-app-pub-8160960481527784~1956004763";
         int NO_INTERNET_CONNECTION_MAX = 5; //after 5 ads which cannot be displayed notify user that this app gets financed by ads
         //Reward for rewarded video must be changed on Admob Console AND the following constant has to be the same Value!!!!
@@ -114,9 +114,9 @@ public class Constants {
 
     public interface COUNTDOWN {
         //COUNTDOWN Properties (for validation e.g.)
-        int COUNTDOWN_TITLE_LENGTH_MIN = 0; //(including this nr. and below all values will be rejected!)
+        int COUNTDOWN_TITLE_LENGTH_MIN = 1; //(including this nr. and below all values will be rejected!)
         int COUNTDOWN_TITLE_LENGTH_MAX = 15; //including this nr. and above all values will be rejected
-        int COUNTDOWN_DESCRIPTION_LENGTH_MIN = 0; //same constraint as above
+        int COUNTDOWN_DESCRIPTION_LENGTH_MIN = 1; //same constraint as above
         int COUNTDOWN_DESCRIPTION_LENGTH_MAX = 18; //(old before multiline: 29) same constraint as above
 
         //Escape methods

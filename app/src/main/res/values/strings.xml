@@ -43,6 +43,21 @@
     <string name="countdownActivity_countdownData_refreshRandomQuote_contentDescription">This button is used to show a new random quote, before it is automatically refreshed.</string>
     <string name="countdownActivity_inAppNotification_notificationIcon_contentDescription">This image shows the same icon, as it has been shown in the notification bar.</string>
     <string name="countdownActivity_inAppNotification_close_contentDescription">This button is used to close the showed inappnotification, before it is removed automatically.</string>
+    <string name="modifyCountdownActivity_datetime_calendar_contentDescription">This icon should increase usability by pointing out that we want to know a date and time.</string>
+    <string name="generic_help_contentDescription">This button usually shows a short help message.</string>
+
+    <!-- Question Mark - Help Messages -->
+    <string name="helptext_error_nohelptextfound">Sorry, I have no advice for you here. :(</string>
+    <string name="inappnotification_preventmultiple_closeothermsgorwait">It seems that I am showing already a helptext for you. Please be so kind and close it or wait until it\'s gone.</string>
+    <string name="generic_help_inappnotification_default_title">Help is here</string>
+    <string name="modifyCountdownActivity_countdown_category_helptext">Color will be used e.g. for notifications (led-color, &#8320;)</string>
+    <string name="modifyCountdownActivity_countdown_motivateMe_helptext">When activated this app will issue, in selected intervals, motivating notifications.</string>
+    <string name="modifyCountdownActivity_countdown_motivateMe_interval_helptext">Choose a interval for the notifications to show up. Short intervals (e.g. 5 seconds) might not execute on point (battery-saving).</string>
+    <string name="modifyCountdownActivity_countdown_motivateMe_languagepacks_helptext">Many users understand more than only language. Consequently, we allow you to select possible languages of our random quotes.</string>
+    <string name="modifyCountdownActivity_countdown_liveCountdown_helptext">By activating this, we will show you a steady notification with your countdown.</string>
+    <string name="settingsActivity_saveBattery_helptext">When activated notifications might not show up on-time. Your battery will hold longer.</string>
+    <string name="settingsActivity_durationOfInAppNotifications_helptext">The higher the no. (labelled in seconds) the longer an in-app-notification will be displayed on screen. This text is also displayed in an in-app-notification. Try it.</string>
+
 
     <!-- #################################### ACTIVITIES ################################################## -->
     <!-- MainActivity -->
@@ -75,9 +90,7 @@
 
     <!-- SettingsActivity -->
     <string name="setting_saveBattery_title">Save battery</string>
-    <string name="setting_saveBattery_description">If activated notifications might not show up on-time.</string>
     <string name="setting_durationOfInAppNotifications_title">Duration of In-App-Notifications</string>
-    <string name="setting_durationOfInAppNotifications_description">The higher the no. (labelled in seconds) the longer an in-app-notification will be displayed on screen. In-app-notifications are only displayed when you click on a motivational notification.</string>
 
     <!-- CountdownActivity -->
     <string name="countdownActivity_countdownNotFound">Countdown not found.</string>
@@ -115,6 +128,8 @@
 
     <!-- ModifyCountdownActivity -->
     <string name="modifyCountdownActivity_countdown_title_label">Title</string>
+    <string name="modifyCountdownActivity_countdown_validationerror_constraintMinLengthFailed">The field \'%1$s\' needs at least %2$d chars!</string>
+    <string name="modifyCountdownActivity_countdown_validationerror_constraintMinLengthFailed_generic">This field needs at least %1$1d chars!</string>
     <string name="modifyCountdownActivity_countdown_title_edittext_exampleValue">Work</string>
     <string name="modifyCountdownActivity_countdown_description_label">Description</string>
     <string name="modifyCountdownActivity_countdown_description_edittext_exampleValue">Being vendor in IKEA</string>
@@ -123,14 +138,11 @@
     <string name="modifyCountdownActivity_countdown_untilDateTime_label">Until</string>
     <string name="modifyCountdownActivity_countdown_untilDateTime_textview_exampleValue" translatable="false">15.12.2018 08:00:00</string>
     <string name="modifyCountdownActivity_countdown_category_label">Category</string>
-    <string name="modifyCountdownActivity_countdown_category_textview_fieldDescription">Color will be used e.g. for notifications (led-color, &#8320;)</string>
-    <string name="modifyCountdownActivity_countdown_interval_textview_fieldDescription">Short intervals (e.g. 5 seconds) might not execute on point (battery-saving). If you insist on it, you can turn the Forward-Compatibility setting off!</string>
     <string name="modifyCountdownActivity_countdown_motivateMe_label">Motivate me</string>
-    <string name="modifyCountdownActivity_countdown_motivateMeInterval_label">Interval</string>
+    <string name="modifyCountdownActivity_countdown_motivateMe_interval_label">Interval</string>
     <string name="modifyCountdownActivity_countdown_showLiveCountdown_label">Live countdown</string>
     <string name="modifyCountdownActivity_countdown_validation_UntilAfterStartDateTime">UntilDateTime needs to be AFTER StartDateTime!</string>
     <string name="modifyCountdownActivity_countdown_validation_DateTimeNotValid">DateTime is not valid! This might be an internal error.</string>
-    <string name="modifyCountdownActivity_countdown_validation_LengthConstraints">%1$s must have %2$d - %3$d chars!</string>
 
     <!-- CreditsActivity -->
     <string name="creditsActivity_floatingButton_contactAppOwnerMailIntent_mail_subject">SurviveTheDay: Review</string>
@@ -230,6 +242,7 @@
     <!-- DateTimePicker -->
     <string name="dateTimePicker_format_date">%1$d.%2$d.%3$d</string>
     <string name="dateTimePicker_format_DateTime">%1$s %2$s:%3$s:%4$s</string>
+    <string name="dateTimePicker_timePicker_notify_setCurrentTime">Have set current time.</string>
 
     <!-- AdManager/GlobalStorageMgr -->
     <string name="adManager_noInternetConnectionMaxExceeded_notification_title">Could not display ads. :(</string>
