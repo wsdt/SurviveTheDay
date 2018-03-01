@@ -40,7 +40,22 @@
     <string name="countdownActivity_countdownData_pauseRandomQuoteToggle_contentDescription">Dieser Button (de)aktiviert den automatischen Zitatgenerator.</string>
     <string name="countdownActivity_countdownData_refreshRandomQuote_contentDescription">Dieser Button erzeugt ein neues zufälliges Zitat.</string>
     <string name="countdownActivity_inAppNotification_notificationIcon_contentDescription">Dieses Bild zeigt das gleiche Icon, als das, was in der Benachrichtigungsleiste angezeigt wurde.</string>
-    <string name="countdownActivity_inAppNotification_close_contentDescription">Dieser Button schliesst die gezeigte Inapp-Benachrichtigung, noch bevor sie automatisch geschlossen wird.</string>
+    <string name="countdownActivity_inAppNotification_close_contentDescription">Dieser Button schließt die gezeigte Inapp-Benachrichtigung, noch bevor sie automatisch geschlossen wird.</string>
+    <string name="modifyCountdownActivity_datetime_calendar_contentDescription">Dieses Icon versucht, durch den bildlichen Hinweis, die Usability zu erhöhen.</string>
+    <string name="generic_help_contentDescription">Für gewöhnlich zeigt dieser Button kurze Hilfenachrichten an.</string>
+
+    <!-- Help -->
+    <string name="helptext_error_nohelptextfound">Habe gerade leider keinen Ratschlag dafür zur Hand. :(</string>
+    <string name="inappnotification_preventmultiple_closeothermsgorwait">Ich kann dir leider nur einen Hilfstext zugleich anzeigen. Bitte schließ die aktive In-App-Benachrichtigung oder warte bis sie sich selbst schließt.</string>
+    <string name="modifyCountdownActivity_countdown_category_helptext">Farbe wird z.B. für Benachrichtigungen verwendet (Led-Farbe, &#8320;)</string>
+    <string name="generic_help_inappnotification_default_title">Hilfe ist da</string>
+    <string name="modifyCountdownActivity_countdown_motivateMe_helptext">Bei Aktivierung dieses Modus bekommst du in gewählten Abständen eine motivierende Benachrichtung auf deinen Display.</string>
+    <string name="modifyCountdownActivity_countdown_motivateMe_interval_helptext">Im gewählten Intervall erscheinen motivierende Benachrichtigungen. Kürzere Intervalle (z.B. 5 Sekunden) sind unzuverlässiger (da Android versucht Ressourcen zu sparen).</string>
+    <string name="modifyCountdownActivity_countdown_motivateMe_languagepacks_helptext">Menschen sind oft mehrerer Sprachen mächtig. Deshalb kannst du dir hier aussuchen, in welchen Sprachen motivierende Zitate in deinen Benachrichtigungen angezeigt werden dürfen.</string>
+    <string name="modifyCountdownActivity_countdown_liveCountdown_helptext">Wenn aktiviert, dann zeigen wir dir eine Benachrichtigung mit deinem Countdown.</string>
+    <string name="settingsActivity_saveBattery_helptext">Ist diese Einstellung aktiv, dann werden Benachrichtigungen möglicherweise nicht genau zum gewählten Intervall angezeigt. Dadurch hält allerdings dein Akku länger.</string>
+    <string name="settingsActivity_durationOfInAppNotifications_helptext">Je höher die Nr. (in Sekunden angegeben), desto länger wird eine In-App-Benachrichtigung am Bildschirm angezeigt. Dieser Text wird ebenfalls in einer In-App-Benachrichtigung angezeigt. Versuchs mal.</string>
+
 
     <!-- #################################### ACTIVITIES ################################################## -->
     <!-- MainActivity -->
@@ -75,7 +90,6 @@
     <string name="setting_saveBattery_title">Batterie sparen</string>
     <string name="setting_saveBattery_description">Wenn aktiviert, dann erscheinen Benachrichtigungen möglicherweise in unregelmäßigeren Abständen.</string>
     <string name="setting_durationOfInAppNotifications_title">In-App-Benachrichtigungen</string>
-    <string name="setting_durationOfInAppNotifications_description">Je höher die Nr. (in Sekunden angegeben), deso länger wird eine In-App-Benachrichtigung am Bildschirm angezeigt. Diese erscheinen nur, wenn du auf eine motivierende Benachrichtigung klickst.</string>
 
     <!-- CountdownActivity -->
     <string name="countdownActivity_countdownNotFound">Countdown nicht gefunden.</string>
@@ -112,16 +126,16 @@
 
     <!-- ModifyCountdownActivity -->
     <string name="modifyCountdownActivity_countdown_title_label">Titel</string>
+    <string name="modifyCountdownActivity_countdown_validationerror_constraintMinLengthFailed">Bitte gib für das Feld \'%1$s\' mehr als %2$d Zeichen ein!</string>
+    <string name="modifyCountdownActivity_countdown_validationerror_constraintMinLengthFailed_generic">Bitte gib zumindest %1$1d Zeichen ein!</string>
     <string name="modifyCountdownActivity_countdown_title_edittext_exampleValue">Arbeit</string>
     <string name="modifyCountdownActivity_countdown_description_label">Beschreibung</string>
     <string name="modifyCountdownActivity_countdown_description_edittext_exampleValue">IKEA Verkäufer</string>
     <string name="modifyCountdownActivity_countdown_fromDateTime_label">Von</string>
     <string name="modifyCountdownActivity_countdown_untilDateTime_label">Bis</string>
     <string name="modifyCountdownActivity_countdown_category_label">Kategorie</string>
-    <string name="modifyCountdownActivity_countdown_category_textview_fieldDescription">Farbe wird z.B. für Benachrichtigungen verwendet (Led-Farbe, &#8320;)</string>
-    <string name="modifyCountdownActivity_countdown_interval_textview_fieldDescription">Kürzere Intervalle (z.B. 5 Sekunden) sind unzuverlässiger (da Android versucht Ressourcen zu sparen). Wenn du darauf bestehst kannst du in den Einstellungen die Vorwärtskompatibilität ausschalten!</string>
     <string name="modifyCountdownActivity_countdown_motivateMe_label">Motiviere mich</string>
-    <string name="modifyCountdownActivity_countdown_motivateMeInterval_label">Intervall</string>
+    <string name="modifyCountdownActivity_countdown_motivateMe_interval_label">Intervall</string>
     <string name="modifyCountdownActivity_countdown_showLiveCountdown_label">Echtzeit-Countdown</string>
     <string name="modifyCountdownActivity_countdown_validation_LengthConstraints">%1$s muss zwischen %2$d - %3$d Zeichen haben!</string>
     <string name="modifyCountdownActivity_countdown_validation_UntilAfterStartDateTime">Das Bis-Datum muss NACH dem Von-Datum sein!</string>
@@ -223,6 +237,7 @@
     <!-- DateTimePicker -->
     <string name="dateTimePicker_format_date">%1$d.%2$d.%3$d</string>
     <string name="dateTimePicker_format_DateTime">%1$s %2$s:%3$s:%4$s</string>
+    <string name="dateTimePicker_timePicker_notify_setCurrentTime">Aktuelle Uhrzeit gesetzt.</string>
 
     <!-- AdManager/GlobalStorageMgr -->
     <string name="adManager_noInternetConnectionMaxExceeded_notification_title">Konnte Werbung nicht anzeigen. :(</string>

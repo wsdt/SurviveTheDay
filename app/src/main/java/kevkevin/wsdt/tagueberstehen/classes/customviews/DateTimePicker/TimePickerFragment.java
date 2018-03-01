@@ -44,7 +44,7 @@ public class TimePickerFragment extends MyTimePickerDialog implements MyTimePick
         //if cancelled set current time
         GregorianCalendar now = new GregorianCalendar();
         getResultView().setText(String.format(getRes().getString(R.string.dateTimePicker_format_DateTime),getResultView().getText(),String.format(Constants.GLOBAL.LOCALE,"%02d", now.get(Calendar.HOUR_OF_DAY)),String.format(Constants.GLOBAL.LOCALE,"%02d", now.get(Calendar.MINUTE)),String.format(Constants.GLOBAL.LOCALE,"%02d", now.get(Calendar.SECOND))));
-        Toast.makeText(getContext(), "Set current date.",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), getRes().getString(R.string.dateTimePicker_timePicker_notify_setCurrentTime),Toast.LENGTH_SHORT).show();
     }
 
     @Override

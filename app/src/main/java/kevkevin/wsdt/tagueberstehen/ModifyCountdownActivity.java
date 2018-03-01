@@ -7,10 +7,9 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.GridLayout;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -31,6 +30,7 @@ import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
 import kevkevin.wsdt.tagueberstehen.classes.Languagepack;
 import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
+import kevkevin.wsdt.tagueberstehen.classes.customviews.CustomEdittext;
 import kevkevin.wsdt.tagueberstehen.classes.customviews.DateTimePicker.DateTimePicker;
 
 public class ModifyCountdownActivity extends AppCompatActivity {
@@ -39,6 +39,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     private int existingCountdownId = (-1); //if edit then this value will be updated and used to overwrite existing countdown
     private InAppPurchaseManager inAppPurchaseManager;
     private DialogManager dialogManager; //important that kevkevin dialogManager gets imported and not the one of android!
+    private HelperClass helperClass = new HelperClass(); //must be a member! (to prevent influencing iapnotifications of other activities)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +57,8 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         //ADS - END
 
         //Set custom onclick listener so time and datepicker show up
-        setCustomOnClickListener(findViewById(R.id.startDateTimeValue));
-        setCustomOnClickListener(findViewById(R.id.untilDateTimeValue));
+        setCustomOnClickListener((TextView) findViewById(R.id.startDateTimeValue), (RelativeLayout) findViewById(R.id.startDateTimeValueParent));
+        setCustomOnClickListener((TextView) findViewById(R.id.untilDateTimeValue), (RelativeLayout) findViewById(R.id.untilDateTimeValueParent));
 
         //Create dialogManager instance for showing purchaseDialogs when product not bought already
         this.setDialogManager(new DialogManager(this));
@@ -148,26 +149,27 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
         //Validate lengths of texts ------------------------------------------------------------------
         Resources res = getResources();
-        String countdownTitleValue = (((EditText) findViewById(R.id.countdownTitleValue)).getText()).toString();
-        if (countdownTitleValue.length() >= Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MAX || countdownTitleValue.length() <= Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MIN) {
-            Log.w(TAG, "areFormValuesValid: CountdownTitleValue is not valid!");
-            Toast.makeText(this, String.format(res.getString(R.string.modifyCountdownActivity_countdown_validation_LengthConstraints), "Title", (Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MIN + 1), (Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MAX - 1)), Toast.LENGTH_SHORT).show();
+
+        String countdownTitleValue = ((CustomEdittext) findViewById(R.id.countdownTitleValue)).getText().toString();
+        if (countdownTitleValue.length() < Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MIN) {
+            Log.w(TAG, "areFormValuesValid: CountdownTitleValue is not valid!"); //do not use getHint because it might get null if used as label!
+            Toast.makeText(this, String.format(res.getString(R.string.modifyCountdownActivity_countdown_validationerror_constraintMinLengthFailed), res.getString(R.string.modifyCountdownActivity_countdown_title_label), Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MIN), Toast.LENGTH_SHORT).show();
             return false;
         }
-        String countdownDescriptionValue = (((EditText) findViewById(R.id.countdownDescriptionValue)).getText()).toString();
-        if (countdownDescriptionValue.length() >= Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MAX || countdownDescriptionValue.length() <= Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MIN) {
+        String countdownDescriptionValue = ((CustomEdittext) findViewById(R.id.countdownDescriptionValue)).getText().toString();
+        if (countdownDescriptionValue.length() < Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MIN) {
             Log.w(TAG, "areFormValuesValid: CountdownDescriptionValue is not valid!");
-            Toast.makeText(this, String.format(res.getString(R.string.modifyCountdownActivity_countdown_validation_LengthConstraints), "Description", (Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MIN + 1), (Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MAX - 1)), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, String.format(res.getString(R.string.modifyCountdownActivity_countdown_validationerror_constraintMinLengthFailed), res.getString(R.string.modifyCountdownActivity_countdown_description_label), Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MIN), Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        //TODO: ADD HERE FURTHER VALIDATIONS
+        //TODO: ADD HERE FURTHER VALIDATIONS (also make them seeable in CustomEdittext (if one used))
         return true;
     }
 
     private void setFormValues(Countdown countdown) {
-        ((TextView) findViewById(R.id.countdownTitleValue)).setText(countdown.getCountdownTitle());
-        ((TextView) findViewById(R.id.countdownDescriptionValue)).setText(countdown.getCountdownDescription());
+        ((CustomEdittext) findViewById(R.id.countdownTitleValue)).setText(countdown.getCountdownTitle());
+        ((CustomEdittext) findViewById(R.id.countdownDescriptionValue)).setText(countdown.getCountdownDescription());
         ((TextView) findViewById(R.id.startDateTimeValue)).setText(countdown.getStartDateTime());
         ((TextView) findViewById(R.id.untilDateTimeValue)).setText(countdown.getUntilDateTime());
         (findViewById(R.id.categoryValue)).setBackgroundColor(Color.parseColor(countdown.getCategory()));
@@ -191,8 +193,8 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
     private void loadFormValues() {
         this.setNewEditedCountdown(new Countdown(this,
-                ((TextView) findViewById(R.id.countdownTitleValue)).getText().toString(),
-                ((TextView) findViewById(R.id.countdownDescriptionValue)).getText().toString(),
+                ((CustomEdittext) findViewById(R.id.countdownTitleValue)).getText().toString(),
+                ((CustomEdittext) findViewById(R.id.countdownDescriptionValue)).getText().toString(),
                 ((TextView) findViewById(R.id.startDateTimeValue)).getText().toString(),
                 ((TextView) findViewById(R.id.untilDateTimeValue)).getText().toString(),
                 ColorPicker.getBackgroundColorHexString(findViewById(R.id.categoryValue)),
@@ -237,9 +239,9 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
         //disable/enable fields (if toggle button is checked = active then buttons should be enabled. otherwise it is false
         TextView notificationIntervalTextView = findViewById(R.id.notificationIntervalTextView);
-        LinearLayout notificationIntervalDescriptionAndSpinner = findViewById(R.id.notificationIntervalRightCol);
+        RelativeLayout notificationIntervalDescriptionAndSpinner = findViewById(R.id.notificationIntervalInputAndHelp);
         TextView languagePackListTextView = findViewById(R.id.customNotification_random_generic_texts_allArrays_headingLbl);
-        GridLayout languagePackList = findViewById(R.id.modifyCountdownActivity_motivation_languagePacks);
+        RelativeLayout languagePackList = findViewById(R.id.modifyCountdownActivity_motivation_languagePacks_parent);
 
         if (!tbIsChecked) {
             notificationIntervalTextView.setVisibility(View.GONE);
@@ -306,17 +308,25 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         this.inAppPurchaseManager = inAppPurchaseManager;
     }
 
+    public DialogManager getDialogManager() {
+        return dialogManager;
+    }
+
+    public void setDialogManager(DialogManager dialogManager) {
+        this.dialogManager = dialogManager;
+    }
+
 
     // ################################################################################################################
     // TIMER/DATE PICKER ##############################################################################################
     // ################################################################################################################
 
-    public void setCustomOnClickListener(View v) {
+    public void setCustomOnClickListener(@NonNull TextView v, @NonNull RelativeLayout parentView) {
         //GregorianCalendar now = new GregorianCalendar(); //now
         GregorianCalendar now = new GregorianCalendar(); //so current time gets automatically set
-        final DateTimePicker DATETIMEPICKER = new DateTimePicker(this, getSupportFragmentManager(), (TextView) v, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND), true);
+        final DateTimePicker DATETIMEPICKER = new DateTimePicker(this, getSupportFragmentManager(), v, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND), true);
 
-        v.setOnClickListener(new View.OnClickListener() {
+        parentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DATETIMEPICKER.showDateTimePicker();
@@ -324,11 +334,13 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         });
     }
 
-    public DialogManager getDialogManager() {
-        return dialogManager;
-    }
+    // ######################### HELP CLICK METHOD ########################################
 
-    public void setDialogManager(DialogManager dialogManager) {
-        this.dialogManager = dialogManager;
+    /**
+     * In order that the method knows which help text to show, the provided view has to contain a valid TAG!
+     * --> TAG has to be the exact string resource name! (e.g. modifyCountdownActivity_countdown_category_textview_fieldDescription)
+     */
+    public void onHelpClick(View view) {
+        helperClass.showQuestionMarkHelpText(this,view,(ViewGroup) findViewById(R.id.wrappingRLForAdsModifyCountdowns));
     }
 }

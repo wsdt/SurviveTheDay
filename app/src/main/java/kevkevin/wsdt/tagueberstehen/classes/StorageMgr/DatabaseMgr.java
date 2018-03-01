@@ -288,7 +288,8 @@ public class DatabaseMgr {
      */
     public Countdown getCountdown(@NonNull Context context, boolean forceReload, int countdownId) { //do not use in loops! (use getAllCountdowns, because there is only ONE sql statement executed)
         //If allCountdowns not already downloaded they will, if they are then we just get returned the sparseArray
-        return getAllCountdowns(context, forceReload).valueAt(countdownId); //IMPORTANT: always use ValueAt() better performance than get()!!!!
+        return getAllCountdowns(context, forceReload).get(countdownId);
+        //IMPORTANT: always use ValueAt() better performance than get()!!!! --> BUT: ValueAt = Index, Get = Key (=CountdownId)
     }
 
     /**

@@ -18,7 +18,6 @@ public class DateTimePicker {
         Log.d(TAG, "Created instance.");
         //this.setMainResultView(mainResultView);
         this.setFragmentManager(fragmentManager);
-
         Log.d(TAG, "Tried to assign and create DatePickerFragment. ");
 
         //Create datepicker and assign it to outer class

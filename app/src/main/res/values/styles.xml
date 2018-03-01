@@ -57,6 +57,16 @@
     </style>
 
     <!-- Modify Countdown Styles -->
+    <style name="smallTextLabelOverInputField">
+        <item name="android:textColor">@color/colorGrey_666</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+
+        <!-- Additional fields, when this style is used in textinputlayout -->
+        <item name="android:textColorHint">@color/colorGrey_666</item>
+    </style>
+
     <style name="textForForm"><!-- If you place here a textcolor the disabled spinner and corr. textview will be always that way colored!! -->
         <item name="android:textColor">@color/colorDark_111</item>
         <item name="android:textSize">18sp</item>
@@ -65,11 +75,16 @@
     <!-- Custom Views -->
     <!-- customEdittext: This edittext does not allow enter! [combine with CustomEdittext.java! ] -->
     <style name="customEdittext" parent="textForForm">
+        <item name="android:maxLength">32</item><!-- always have a maxlength-->
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:inputType">text|textAutoComplete|textAutoCorrect</item>
+        <item name="android:inputType">text|textAutoComplete|textAutoCorrect|textMultiLine</item>
         <item name="android:autoText">true</item>
-        <item name="android:scrollHorizontally">true</item>
+        <item name="android:scrollbars">vertical</item>
+        <item name="android:smoothScrollbar">true</item>
+        <item name="android:minLines">1</item>
+        <item name="android:maxLines">2</item>
+        <!--<item name="android:scrollHorizontally">true</item>-->
         <item name="android:ellipsize">end</item><!-- seems to be (e.g ...) when text too long for field -->
         <!--<item name="android:drawablePadding">10dp</item>
         TODO: <item name="android:background">@drawable/customedittext</item>
@@ -77,7 +92,7 @@
         <item name="android:drawableRight">@drawable/search</item>
         <item name="android:paddingLeft">15dp</item>-->
         <item name="android:hint">@string/customEdittext_default_hint</item>
-
+        <item name="android:textColorHint">@color/colorGrey_aaa</item>
     </style>
 
     <!-- Loading screen -->

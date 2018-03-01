@@ -1,227 +1,333 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/wrappingRLForAdsModifyCountdowns"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="kevkevin.wsdt.tagueberstehen.ModifyCountdownActivity">
 
-    <!-- layouts not useless because ad gets added programmatically -->
+    <!-- layouts not useless because ad gets added programmatically
+    (!): fillViewPort=true == So match parent width of scrollview is correct !-->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="50dp">
+        android:layout_marginBottom="50dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="10dp"
+        android:fillViewport="true">
 
-        <GridLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginStart="5dp"
-            android:columnCount="2"
-            android:orientation="horizontal">
-            <!-- TITLE -->
+            android:orientation="vertical">
+            <!-- Title -->
+            <android.support.design.widget.TextInputLayout
+                style="@style/smallTextLabelOverInputField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp">
+
+                <kevkevin.wsdt.tagueberstehen.classes.customviews.CustomEdittext
+                    android:id="@+id/countdownTitleValue"
+                    style="@style/customEdittext"
+                    android:hint="@string/modifyCountdownActivity_countdown_title_label" />
+            </android.support.design.widget.TextInputLayout>
+
+            <!-- Description -->
+            <android.support.design.widget.TextInputLayout
+                style="@style/smallTextLabelOverInputField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp">
+                <!-- for description we use a little bit longer max length than default -->
+                <kevkevin.wsdt.tagueberstehen.classes.customviews.CustomEdittext
+                    android:id="@+id/countdownDescriptionValue"
+                    style="@style/customEdittext"
+                    android:maxLength="50"
+                    android:hint="@string/modifyCountdownActivity_countdown_description_label" />
+            </android.support.design.widget.TextInputLayout>
+
+            <!-- StartDate -->
             <TextView
-                style="@style/textForForm"
-                android:layout_width="120dp"
-                android:layout_gravity="start|top"
-                android:layout_marginTop="15dp"
-                android:text="@string/modifyCountdownActivity_countdown_title_label" />
-
-            <kevkevin.wsdt.tagueberstehen.classes.customviews.CustomEdittext
-                android:id="@+id/countdownTitleValue"
-                style="@style/customEdittext"
-                android:layout_width="240dp"
-                android:layout_gravity="start|top"
-                android:layout_marginTop="6dp"
-                android:text="@string/modifyCountdownActivity_countdown_title_edittext_exampleValue" />
-
-            <!-- DESCRIPTION -->
-            <TextView
-                style="@style/textForForm"
-                android:layout_width="120dp"
-                android:layout_gravity="start|top"
-                android:layout_marginTop="10dp"
-                android:text="@string/modifyCountdownActivity_countdown_description_label" />
-
-            <!-- inputType and autoText combination (both) -->
-            <kevkevin.wsdt.tagueberstehen.classes.customviews.CustomEdittext
-                android:id="@+id/countdownDescriptionValue"
-                style="@style/customEdittext"
-                android:layout_width="240dp"
-                android:layout_gravity="start|top"
-                android:text="@string/modifyCountdownActivity_countdown_description_edittext_exampleValue"
-                android:hint="@string/modifyCountdownActivity_countdown_description_edittext_exampleValue" />
-
-            <!-- Start Datetime -->
-            <TextView
-                style="@style/textForForm"
-                android:layout_width="120dp"
-                android:layout_gravity="start|top"
-                android:layout_marginTop="10dp"
+                style="@style/smallTextLabelOverInputField"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
                 android:text="@string/modifyCountdownActivity_countdown_fromDateTime_label" />
 
-            <TextView
-                android:id="@+id/startDateTimeValue"
-                style="@style/textForForm"
-                android:layout_width="240dp"
-                android:layout_gravity="start|top"
-                android:layout_marginTop="10dp"
-                android:text="@string/modifyCountdownActivity_countdown_fromDateTime_textview_exampleValue" />
-            <!--android:inputType="datetime"-->
+            <RelativeLayout
+                android:id="@+id/startDateTimeValueParent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:orientation="horizontal">
 
-            <!-- Until Datetime http://www.truiton.com/2013/03/android-pick-date-time-from-edittext-onclick-event/ >>> super Lösung -->
+                <TextView
+                    android:id="@+id/startDateTimeValue"
+                    style="@style/textForForm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/modifyCountdownActivity_countdown_fromDateTime_textview_exampleValue" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:contentDescription="@string/modifyCountdownActivity_datetime_calendar_contentDescription"
+                    android:src="@drawable/coloraccent_datetimepicker_icon" />
+            </RelativeLayout>
+
+
+            <!-- UntilDate -->
             <TextView
-                style="@style/textForForm"
-                android:layout_width="120dp"
-                android:layout_gravity="start|top"
-                android:layout_marginTop="15dp"
+                style="@style/smallTextLabelOverInputField"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
                 android:text="@string/modifyCountdownActivity_countdown_untilDateTime_label" />
 
-            <TextView
-                android:id="@+id/untilDateTimeValue"
-                style="@style/textForForm"
-                android:layout_width="240dp"
-                android:layout_gravity="start|top"
-                android:layout_marginTop="15dp"
-                android:text="@string/modifyCountdownActivity_countdown_untilDateTime_textview_exampleValue" />
+            <RelativeLayout
+                android:id="@+id/untilDateTimeValueParent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp">
+
+                <TextView
+                    android:id="@+id/untilDateTimeValue"
+                    style="@style/textForForm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/modifyCountdownActivity_countdown_untilDateTime_textview_exampleValue" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:contentDescription="@string/modifyCountdownActivity_datetime_calendar_contentDescription"
+                    android:src="@drawable/coloraccent_datetimepicker_icon" />
+            </RelativeLayout>
+
+
             <!-- Category -->
             <TextView
-                style="@style/textForForm"
-                android:layout_width="120dp"
-                android:layout_gravity="start|top"
-                android:layout_marginTop="15dp"
+                style="@style/smallTextLabelOverInputField"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
                 android:text="@string/modifyCountdownActivity_countdown_category_label" />
 
-            <LinearLayout android:orientation="vertical">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp">
 
                 <View
                     android:id="@+id/categoryValue"
-                    style="@style/textForForm"
-                    android:layout_width="240dp"
+                    android:layout_width="163dp"
                     android:layout_height="25dp"
-                    android:layout_gravity="start|top"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginTop="17dp"
                     android:background="@color/colorPrimaryDark"
                     android:onClick="onClickOpenColorPicker" />
 
-                <TextView
-                    style="@style/textForForm"
+                <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginStart="5dp"
-                    android:width="225dp"
-                    android:text="@string/modifyCountdownActivity_countdown_category_textview_fieldDescription"
-                    android:textSize="12sp" />
-            </LinearLayout>
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:contentDescription="@string/generic_help_contentDescription"
+                    android:onClick="onHelpClick"
+                    android:src="@drawable/coloraccent_help_btn"
+                    android:tag="modifyCountdownActivity_countdown_category_helptext" />
+            </RelativeLayout>
 
             <!-- isActive -->
             <TextView
-                style="@style/textForForm"
-                android:layout_width="120dp"
-                android:layout_gravity="start|top"
-                android:layout_marginTop="10dp"
+                style="@style/smallTextLabelOverInputField"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
                 android:text="@string/modifyCountdownActivity_countdown_motivateMe_label" />
 
-            <ToggleButton
-                android:id="@+id/isActive"
-                style="@style/textForForm"
-                android:layout_width="250dp"
-                android:layout_height="40dp"
-                android:layout_gravity="start|top"
-                android:layout_marginTop="5dp"
-                android:onClick="onMotivateMeToggleClick"
-                android:textColor="@color/colorDark_111"
-                android:textSize="15sp" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="1dp"
+                android:layout_marginStart="1dp">
+
+                <ToggleButton
+                    android:id="@+id/isActive"
+                    style="@style/textForForm"
+                    android:layout_width="172dp"
+                    android:layout_height="40dp"
+                    android:onClick="onMotivateMeToggleClick"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:contentDescription="@string/generic_help_contentDescription"
+                    android:onClick="onHelpClick"
+                    android:src="@drawable/coloraccent_help_btn"
+                    android:tag="modifyCountdownActivity_countdown_motivateMe_helptext" />
+            </RelativeLayout>
+
 
             <!-- Service settings (Interval for notifications: by default disabled) -->
             <TextView
                 android:id="@+id/notificationIntervalTextView"
-                style="@style/textForForm"
-                android:layout_width="120dp"
-                android:layout_height="50dp"
-                android:layout_gravity="start|top"
+                style="@style/smallTextLabelOverInputField"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 android:layout_marginTop="5dp"
-                android:text="@string/modifyCountdownActivity_countdown_motivateMeInterval_label" />
+                android:text="@string/modifyCountdownActivity_countdown_motivateMe_interval_label" />
 
-            <!-- SLIDER currently -->
-            <LinearLayout android:orientation="vertical"
-                android:id="@+id/notificationIntervalRightCol">
+            <RelativeLayout
+                android:id="@+id/notificationIntervalInputAndHelp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp">
 
                 <Spinner
                     android:id="@+id/notificationIntervalSpinner"
-                    android:layout_width="240dp"
+                    android:layout_width="170dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_gravity="start"
-                    android:gravity="start"
                     android:spinnerMode="dropdown" />
 
-                <TextView
-                    style="@style/textForForm"
+                <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginStart="5dp"
-                    android:width="225dp"
-                    android:text="@string/modifyCountdownActivity_countdown_interval_textview_fieldDescription"
-                    android:textSize="12sp" />
-            </LinearLayout>
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:contentDescription="@string/generic_help_contentDescription"
+                    android:onClick="onHelpClick"
+                    android:src="@drawable/coloraccent_help_btn"
+                    android:tag="modifyCountdownActivity_countdown_motivateMe_interval_helptext" />
+            </RelativeLayout>
 
-            <!-- TODO Checkboxes, also hide when motivate off-->
+            <!-- LanguagePacks -->
             <TextView
                 android:id="@+id/customNotification_random_generic_texts_allArrays_headingLbl"
-                android:text="@string/customNotification_random_generic_texts_allArrays_headingLbl"
-                style="@style/textForForm"
-                android:layout_width="120dp"
-                android:layout_marginTop="10dp"
-                android:layout_gravity="start|top"
-                android:textColor="@color/colorDark_111"/>
-            <GridLayout
-                android:id="@+id/modifyCountdownActivity_motivation_languagePacks"
-                android:orientation="horizontal"
-                android:columnCount="2"
+                style="@style/smallTextLabelOverInputField"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 android:layout_marginTop="5dp"
-                android:layout_gravity="start|top"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-                <!-- Checkboxes will created in gl above -->
+                android:text="@string/customNotification_random_generic_texts_allArrays_headingLbl" />
 
+            <RelativeLayout
+                android:id="@+id/modifyCountdownActivity_motivation_languagePacks_parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="-3dp"
+                android:layout_marginStart="-3dp">
+
+                <GridLayout
+                    android:id="@+id/modifyCountdownActivity_motivation_languagePacks"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:columnCount="2"
+                    android:orientation="horizontal" />
+                <!-- Checkboxes will created in Gridlayout above! -->
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:contentDescription="@string/generic_help_contentDescription"
+                    android:onClick="onHelpClick"
+                    android:src="@drawable/coloraccent_help_btn"
+                    android:tag="modifyCountdownActivity_countdown_motivateMe_languagepacks_helptext" />
+            </RelativeLayout>
+
+
+            <!-- Live Countdown -->
             <TextView
-                style="@style/textForForm"
-                android:layout_width="120dp"
-                android:layout_gravity="start|top"
-                android:layout_marginTop="10dp"
+                style="@style/smallTextLabelOverInputField"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
                 android:text="@string/modifyCountdownActivity_countdown_showLiveCountdown_label" />
 
-            <ToggleButton
-                android:id="@+id/showLiveCountdown"
-                style="@style/textForForm"
-                android:layout_width="250dp"
-                android:layout_height="40dp"
-                android:layout_gravity="start|top"
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="1dp"
+                android:layout_marginStart="1dp">
+
+                <ToggleButton
+                    android:id="@+id/showLiveCountdown"
+                    style="@style/textForForm"
+                    android:layout_width="172dp"
+                    android:layout_height="40dp"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:contentDescription="@string/generic_help_contentDescription"
+                    android:onClick="onHelpClick"
+                    android:src="@drawable/coloraccent_help_btn"
+                    android:tag="modifyCountdownActivity_countdown_liveCountdown_helptext" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 android:layout_marginTop="5dp"
-                android:textColor="@color/colorDark_111"
-                android:textSize="15sp" />
+                android:gravity="center_horizontal">
 
+                <Button
+                    android:id="@+id/saveCountdown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onSaveClick"
+                    android:padding="5dp"
+                    android:text="@string/button_save" />
 
-            <Button
-                android:id="@+id/saveCountdown"
-                android:onClick="onSaveClick"
-                android:padding="5dp"
-                android:text="@string/button_save" />
-
-            <Button
-                android:id="@+id/abortCountdown"
-                android:onClick="onAbortClick"
-                android:padding="5dp"
-                android:text="@string/button_abort" />
-        </GridLayout>
+                <Button
+                    android:id="@+id/abortCountdown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_toEndOf="@+id/saveCountdown"
+                    android:layout_toRightOf="@id/saveCountdown"
+                    android:onClick="onAbortClick"
+                    android:padding="5dp"
+                    android:text="@string/button_abort" />
+            </RelativeLayout>
+        </LinearLayout>
     </ScrollView>
 
 </RelativeLayout>
