@@ -28,7 +28,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import kevkevin.wsdt.tagueberstehen.R;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 
 
 public class Countdown {

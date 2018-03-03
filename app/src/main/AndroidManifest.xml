@@ -11,10 +11,12 @@
     <!-- It's also possible to constraint, which files/data we want to backup! just google for fullbackupcontent! (own xml to create) -->
     <!-- Also now just static appIcon: we could also distinguish between roundIcons etc: android:roundIcon="@mipmap/ic_launcher_round"
                 TODO: which might be optically more nice for newer phone so we should do it in future! android:roundIcon="@mipmap/ic_launcher_round"-->
+    <!-- AppIcon: For icon use not a round one, because looks terrible, for round one use round icon-->
     <application
         android:allowBackup="true"
         android:fullBackupContent="true"
-        android:icon="@drawable/app_icon"
+        android:icon="@mipmap/ic_launcher_square"
+        android:roundIcon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">

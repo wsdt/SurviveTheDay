@@ -6,12 +6,12 @@ import android.util.Log;
 
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 
-import kevkevin.wsdt.tagueberstehen.classes.AdManager;
+import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
 
 public class RewardedVideoAdActivity extends AppCompatActivity {
     //This Activity is only used to show rewarded video ads!
     private RewardedVideoAd mRewardedVideoAd;
-    private AdManager adManager;
+    private AdMgr adMgr;
     private static final String TAG = "RewardedVideoAdActivity";
 
 
@@ -20,10 +20,10 @@ public class RewardedVideoAdActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rewarded_video_ad);
 
-        this.setAdManager(new AdManager(this));
-        this.getAdManager().initializeAdmob();
+        this.setAdMgr(new AdMgr(this));
+        this.getAdMgr().initializeAdmob();
         //redirect to mainActivity after ad
-        this.setmRewardedVideoAd(this.getAdManager().loadRewardedVideoInRewardActivity(null,null));
+        this.setmRewardedVideoAd(this.getAdMgr().loadRewardedVideoInRewardActivity(null,null));
     }
 
 
@@ -58,11 +58,11 @@ public class RewardedVideoAdActivity extends AppCompatActivity {
         this.mRewardedVideoAd = mRewardedVideoAd;
     }
 
-    public AdManager getAdManager() {
-        return adManager;
+    public AdMgr getAdMgr() {
+        return adMgr;
     }
 
-    public void setAdManager(AdManager adManager) {
-        this.adManager = adManager;
+    public void setAdMgr(AdMgr adMgr) {
+        this.adMgr = adMgr;
     }
 }

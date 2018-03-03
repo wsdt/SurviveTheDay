@@ -15,6 +15,11 @@
     <string name="actionBar_mainActivity_menu_removeAdsTemporarily">Remove Ads temporary</string>
     <string name="actionBar_mainActivity_menu_showInAppProducts">In-App-Products</string>
 
+    <!-- SHARING -->
+    <string name="share_postfix_appreference">[Provided by Survive The Day (downloadable on Playstore)]</string>
+    <string name="share_livecountdown_text_expired">%1$s - It\'s over! I got it.</string>
+    <string name="share_livecountdown_text_running">%1$s - My personal countdown: %2$s</string>
+
     <!-- ACTIONBAR MENUS:COUNTDOWNACTIVITY -->
     <string name="actionBar_countdownActivity_menu_shareCountdown_title">Share</string>
     <string name="actionBar_countdownActivity_menu_shareCountdown_shareContent_text">The moment you just have %1$s seconds for %2$s (%3$s)! Do you also need motivation? SurviveTheDay is now available on Playstore for free!</string>
@@ -205,6 +210,8 @@
 
     <!-- CLASSES ###################################################################################################### -->
     <!-- CustomNotification -->
+    <string name="customNotification_countdownCounter_expired">Countdown has expired on %1$s.</string>
+    <string name="customNotification_countdownCounter_running">Remaining: %1$s</string>
     <string name="customNotification_notificationTicker">SurviveTheDay - Motivation</string>
     <string-array name="customNotification_random_generic_titles">
         <item>Keep going!</item>
@@ -244,7 +251,7 @@
     <string name="dateTimePicker_format_DateTime">%1$s %2$s:%3$s:%4$s</string>
     <string name="dateTimePicker_timePicker_notify_setCurrentTime">Have set current time.</string>
 
-    <!-- AdManager/GlobalStorageMgr -->
+    <!-- Admgr GlobalStorageMgr -->
     <string name="adManager_noInternetConnectionMaxExceeded_notification_title">Could not display ads. :(</string>
     <string name="adManager_noInternetConnectionMaxExceeded_notification_normalAndBigText">SurviveTheDay gets financed by ads. Please use this app when you have a working internet connection. Thank you very much :).</string>
     <string name="adManager_loadRewardedVideoInRewardActivity_reward_successMessage">You got rewarded with %1$d minutes free of ads!</string>
@@ -275,7 +282,7 @@
     <string name="inAppProduct_notBought_useMoreCountdownNodes">Please buy the Use-More-Nodes package to display more nodes!</string>
     <string name="inAppProduct_notBought_changeNotificationColor">Please buy the Change-Notification-Color package to change this!</string>
 
-    <!-- DialogManager - In App Purchase -->
+    <!-- DialogMgr - In App Purchase -->
     <string name="dialog_inAppProduct_button_positive_buy">Buy now</string>
     <string name="dialog_inAppProduct_button_negative_buy">Cancel</string>
     <string name="dialog_generic_button_positive">OK</string>

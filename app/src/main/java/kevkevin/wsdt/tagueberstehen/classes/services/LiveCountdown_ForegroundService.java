@@ -17,8 +17,8 @@ import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
-import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 
 public class LiveCountdown_ForegroundService extends Service {
     /**
@@ -29,7 +29,7 @@ public class LiveCountdown_ForegroundService extends Service {
     private static final String TAG = "LiveCountdown";
     private SparseArray<Countdown> loadedCountdownsForLiveCountdown;
     private CustomNotification customNotificationMgr;
-    private InAppPurchaseManager inAppPurchaseManager;
+    private InAppPurchaseMgr inAppPurchaseMgr;
     public static Thread refreshAllNotificationCounters_Interval_Thread;
 
     @Nullable
@@ -48,14 +48,14 @@ public class LiveCountdown_ForegroundService extends Service {
         //set everything null
         this.setLoadedCountdownsForLiveCountdown(null);
         this.setCustomNotificationMgr(null);
-        this.setInAppPurchaseManager(null);
+        this.setInAppPurchaseMgr(null);
 
 
         //Notification Manager in shouldThisServiceBeKilled() NEEDED! (NullPointerException)
         this.setCustomNotificationMgr(new CustomNotification(this, CountdownActivity.class, (NotificationManager) getSystemService(NOTIFICATION_SERVICE)));
 
         //normally inapp purchase mgr context should be an activity, but as long as we do not try to launch purchases we will not get an error!
-        this.setInAppPurchaseManager(new InAppPurchaseManager(this));
+        this.setInAppPurchaseMgr(new InAppPurchaseMgr(this));
 
         shouldThisServiceBeKilled(intent); //third function call should be this!! (because service gets killed with startService = goodPractice
 
@@ -107,7 +107,7 @@ public class LiveCountdown_ForegroundService extends Service {
             } else {
                 //only do this if more than one node-package bought! (better realize in getLoadedCountdowns() --> harder to implement so maybe better here in service)
                 //non-removable notifications
-                this.getInAppPurchaseManager().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                this.getInAppPurchaseMgr().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
                     public void success_is_true() {
                         Log.d(TAG, "startRefreshAllNotificationCounters: UseMoreCountdownNodes-Package bought. Loaded more live countdowns.");
@@ -191,12 +191,12 @@ public class LiveCountdown_ForegroundService extends Service {
         this.customNotificationMgr = customNotificationMgr;
     }
 
-    public InAppPurchaseManager getInAppPurchaseManager() {
-        return inAppPurchaseManager;
+    public InAppPurchaseMgr getInAppPurchaseMgr() {
+        return inAppPurchaseMgr;
     }
 
-    public void setInAppPurchaseManager(InAppPurchaseManager inAppPurchaseManager) {
-        this.inAppPurchaseManager = inAppPurchaseManager;
+    public void setInAppPurchaseMgr(InAppPurchaseMgr inAppPurchaseMgr) {
+        this.inAppPurchaseMgr = inAppPurchaseMgr;
     }
     //TODO: refresh notifications with BigCountdown_Stirng() from Countdown.class
 }

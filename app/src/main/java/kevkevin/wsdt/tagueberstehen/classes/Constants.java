@@ -114,10 +114,8 @@ public class Constants {
 
     public interface COUNTDOWN {
         //COUNTDOWN Properties (for validation e.g.)
-        int COUNTDOWN_TITLE_LENGTH_MIN = 1; //(including this nr. and below all values will be rejected!)
-        int COUNTDOWN_TITLE_LENGTH_MAX = 15; //including this nr. and above all values will be rejected
+        int COUNTDOWN_TITLE_LENGTH_MIN = 1; //(excluding this nr. and below all values will be rejected!)
         int COUNTDOWN_DESCRIPTION_LENGTH_MIN = 1; //same constraint as above
-        int COUNTDOWN_DESCRIPTION_LENGTH_MAX = 18; //(old before multiline: 29) same constraint as above
 
         //Escape methods
         interface ESCAPE {
@@ -270,7 +268,7 @@ public class Constants {
                             new String[] {"Change your thoughts and you change the world. (Norman Vincent Peale)",QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0]},
                             new String[] {"Nothing is impossible, the word itself says \'I\'m possible\'. (Audrey Hepburn)",QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0]},
                             new String[] {"My mission in life is not merely to survive, but to thrive; and to do so with some passion, some compassion, some humor, and some style. (Maya Angelou)",QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0]},
-                            new String[] {"Today I choose life. Every morning when I wake up I can choose joy, happiness, negativity, pain&#8230; To feel the freedom that comes from being able to continue to make mistakes and choices - today I choose to feel life, not to deny my humanity but embrace it. (Kevyn Aucoin)",QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0]},
+                            new String[] {"Today I choose life. Every morning when I wake up I can choose joy, happiness, negativity, pain... To feel the freedom that comes from being able to continue to make mistakes and choices - today I choose to feel life, not to deny my humanity but embrace it. (Kevyn Aucoin)",QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0]},
                             new String[] {"Your work is going to fill a large part of your life, and the only way to be truly satisfied is to do what you believe is great work. And the only way to do great work is to love what you do. If you haven\'t found it yet keep looking. Don\'t settle. As with all matters of the heart, you\'ll know when you find it. (Steve Jobs)",QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0]},
                             new String[] {"Believe you can and you\'re halfway there. (Theodore Roosevelt)",QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0]},
                             new String[] {"Keep your face always toward the sunshine - and shadows will fall behind you. (Walt Whitman)",QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0]},

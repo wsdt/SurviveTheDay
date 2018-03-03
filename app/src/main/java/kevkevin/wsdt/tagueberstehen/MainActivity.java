@@ -19,24 +19,24 @@ import android.widget.Toast;
 
 import com.daimajia.swipe.SwipeLayout;
 
-import kevkevin.wsdt.tagueberstehen.classes.AdManager;
+import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
-import kevkevin.wsdt.tagueberstehen.classes.DialogManager;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
-import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.services.LiveCountdown_ForegroundService;
 
 public class MainActivity extends AppCompatActivity {
     private LinearLayout nodeList;
     private int anzahlShowingNodes = 0;
     private static final String TAG = "MainActivity";
-    private InAppPurchaseManager inAppPurchaseManager;
-    private AdManager adManager; //used e.g. for banner ad (so we can dynamically remove it etc.)
+    private InAppPurchaseMgr inAppPurchaseMgr;
+    private AdMgr adMgr; //used e.g. for banner ad (so we can dynamically remove it etc.)
     private RelativeLayout mainActivityPage;
-    private DialogManager dialogManager;
+    private DialogMgr dialogMgr;
     //private InternalCountdownStorageMgr internalCountdownStorageMgr;
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -48,16 +48,16 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Manager setting up
-        this.setInAppPurchaseManager(new InAppPurchaseManager(this));
-        this.setDialogManager(new DialogManager(this));
+        this.setInAppPurchaseMgr(new InAppPurchaseMgr(this));
+        this.setDialogMgr(new DialogMgr(this));
         //this.setInternalCountdownStorageMgr(new InternalCountdownStorageMgr(this));
 
         //Initiliaze AdMob
-        this.setAdManager(new AdManager(this));
-        this.getAdManager().initializeAdmob(); //no fullpage ad because this happens already in loading screen
+        this.setAdMgr(new AdMgr(this));
+        this.getAdMgr().initializeAdmob(); //no fullpage ad because this happens already in loading screen
         this.setMainActivityPage((RelativeLayout) findViewById(R.id.mainActivityPage));
-        this.getAdManager().loadBannerAd(this.getMainActivityPage());
-        this.getAdManager().loadFullPageAd(null, null); //now frequency capping (so real interstitial ad is only 2x every 10 minutes shown when calling main activity)
+        this.getAdMgr().loadBannerAd(this.getMainActivityPage());
+        this.getAdMgr().loadFullPageAd(null, null); //now frequency capping (so real interstitial ad is only 2x every 10 minutes shown when calling main activity)
 
         //Nodelist
         nodeList = findViewById(R.id.nodeList);
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         //reload all nodes from sharedpreferences (remove them beforehand)
         removeAllNodesFromLayout();
         loadAddNodes();
-        this.getAdManager().loadBannerAd(this.getMainActivityPage()); //ad might get removed if settings have changed (in app purchase, temporarly ad free etc.)
+        this.getAdMgr().loadBannerAd(this.getMainActivityPage()); //ad might get removed if settings have changed (in app purchase, temporarly ad free etc.)
         //restart of service happens in InternalCountdownStorageMgr!
 
         //Stop refreshing
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
             final Countdown currCountdown = allCountdowns.valueAt(i); //necessary because i cannot be final (i++)
             if (this.anzahlShowingNodes > 0) {
                 //Already at least one node shown! Not showing more without purchasing product
-                this.getInAppPurchaseManager().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                this.getInAppPurchaseMgr().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
                     public void success_is_true() {
                         Log.d(TAG, "createAddNodeToLayout:isProductBought:is_true: Product is bought. Showing more than one node (if there are any).");
@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
         if (countdown == null) {Log.e(TAG, "onClick_node_sl_bottomview_rightMenu_deleteNode: Countdown obj is null!");return;}
 
         //create dialog to ask user whether he wants really delete countdown
-        this.getDialogManager().showDialog_Generic(
+        this.getDialogMgr().showDialog_Generic(
                 getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_title),
                 getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_description),
                 getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_yesDelete),
@@ -386,7 +386,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu(final Menu menu) {
         //Remove menu points dynamically (not in onCreateOptionsMenu)
-        this.getInAppPurchaseManager().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.REMOVE_ALL_ADS.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+        this.getInAppPurchaseMgr().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.REMOVE_ALL_ADS.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
             public void success_is_true() {
                 MenuItem rewardedAdMenuItem = menu.findItem(R.id.action_removeAdsTemporary);
@@ -413,7 +413,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ModifyCountdownActivity.class));
                 break;
             case R.id.action_removeAllCountdowns:
-                this.getDialogManager().showDialog_Generic(
+                this.getDialogMgr().showDialog_Generic(
                         getResources().getString(R.string.mainActivity_countdownNode_deleteAll_warningDialog_title),
                         getResources().getString(R.string.mainActivity_countdownNode_deleteAll_warningDialog_description),
                         getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_yesDelete),
@@ -455,20 +455,20 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    public InAppPurchaseManager getInAppPurchaseManager() {
-        return this.inAppPurchaseManager;
+    public InAppPurchaseMgr getInAppPurchaseMgr() {
+        return this.inAppPurchaseMgr;
     }
 
-    public void setInAppPurchaseManager(InAppPurchaseManager inAppPurchaseManager) {
-        this.inAppPurchaseManager = inAppPurchaseManager;
+    public void setInAppPurchaseMgr(InAppPurchaseMgr inAppPurchaseMgr) {
+        this.inAppPurchaseMgr = inAppPurchaseMgr;
     }
 
-    public AdManager getAdManager() {
-        return adManager;
+    public AdMgr getAdMgr() {
+        return adMgr;
     }
 
-    public void setAdManager(AdManager adManager) {
-        this.adManager = adManager;
+    public void setAdMgr(AdMgr adMgr) {
+        this.adMgr = adMgr;
     }
 
     public RelativeLayout getMainActivityPage() {
@@ -479,12 +479,12 @@ public class MainActivity extends AppCompatActivity {
         this.mainActivityPage = mainActivityPage;
     }
 
-    public DialogManager getDialogManager() {
-        return dialogManager;
+    public DialogMgr getDialogMgr() {
+        return dialogMgr;
     }
 
-    public void setDialogManager(DialogManager dialogManager) {
-        this.dialogManager = dialogManager;
+    public void setDialogMgr(DialogMgr dialogMgr) {
+        this.dialogMgr = dialogMgr;
     }
 
     public SwipeRefreshLayout getSwipeRefreshLayout() {

@@ -13,16 +13,17 @@ import android.widget.Switch;
 
 import java.util.Arrays;
 
-import kevkevin.wsdt.tagueberstehen.classes.AdManager;
+import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.InAppNotificationMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
 
 public class AppSettingsActivity extends AppCompatActivity {
     private GlobalAppSettingsMgr globalAppSettingsMgr;
     private static final String TAG = "AppSettingsActivity";
     private Switch saveBattery;
     private Spinner inappNotificationShowDuration;
-    private HelperClass helperClass = new HelperClass(); //must be a member! (to prevent influencing iapnotifications of other activities)
+    private InAppNotificationMgr inAppNotificationMgr = new InAppNotificationMgr(); //must be a member! (to prevent influencing iapnotifications of other activities)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,9 +31,9 @@ public class AppSettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_app_settings);
 
         //Ads ---------------------------------------------
-        AdManager adManager = new AdManager(this);
-        adManager.initializeAdmob();
-        adManager.loadBannerAd((RelativeLayout) findViewById(R.id.settingsRLforAd));
+        AdMgr adMgr = new AdMgr(this);
+        adMgr.initializeAdmob();
+        adMgr.loadBannerAd((RelativeLayout) findViewById(R.id.settingsRLforAd));
 
         //declare storagemgr
         this.globalAppSettingsMgr = new GlobalAppSettingsMgr(this);
@@ -79,6 +80,11 @@ public class AppSettingsActivity extends AppCompatActivity {
     }
 
     public void onHelpClick(View view) {
-        helperClass.showQuestionMarkHelpText(this, view, (ViewGroup) findViewById(R.id.settingsRLforAd));
+        this.getInAppNotificationMgr().showQuestionMarkHelpText(this, view, (ViewGroup) findViewById(R.id.settingsRLforAd));
+    }
+
+    //GETTER/SETTER -----------------------
+    public InAppNotificationMgr getInAppNotificationMgr() {
+        return inAppNotificationMgr;
     }
 }

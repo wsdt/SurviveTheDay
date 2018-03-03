@@ -7,8 +7,8 @@ import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import kevkevin.wsdt.tagueberstehen.classes.AdManager;
-import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
+import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
 
 public class InAppPurchaseActivity extends AppCompatActivity{
     private static final String TAG = "InAppPurchaseActivity";
@@ -20,13 +20,13 @@ public class InAppPurchaseActivity extends AppCompatActivity{
         setContentView(R.layout.activity_in_app_purchase);
 
         //Load ads
-        AdManager adManager = new AdManager(this);
-        adManager.initializeAdmob();
-        adManager.loadBannerAd((RelativeLayout) findViewById(R.id.inAppPurchaseAct_RL));
+        AdMgr adMgr = new AdMgr(this);
+        adMgr.initializeAdmob();
+        adMgr.loadBannerAd((RelativeLayout) findViewById(R.id.inAppPurchaseAct_RL));
 
         //IMPORTANT: Purchase failed is only when we clicked on buttons before. But this code worked before!
         Log.d(TAG, "onStart: Now trying to load resources from Google play.");
-        new InAppPurchaseManager(this).printAllInAppProductsAsNode((LinearLayout) findViewById(R.id.inappProductList));
+        new InAppPurchaseMgr(this).printAllInAppProductsAsNode((LinearLayout) findViewById(R.id.inappProductList));
     }
 
 

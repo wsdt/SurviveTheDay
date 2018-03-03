@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 
 
 /** This broadcast receiver gets called when smartphone is turned on AND when created countdown's startdate is not longer in the future (so

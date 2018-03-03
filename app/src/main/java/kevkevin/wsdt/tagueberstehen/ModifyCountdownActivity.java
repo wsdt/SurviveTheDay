@@ -21,15 +21,16 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import kevkevin.wsdt.tagueberstehen.classes.AdManager;
+import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
 import kevkevin.wsdt.tagueberstehen.classes.ColorPicker;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
-import kevkevin.wsdt.tagueberstehen.classes.DialogManager;
+import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
-import kevkevin.wsdt.tagueberstehen.classes.InAppPurchaseManager;
+import kevkevin.wsdt.tagueberstehen.classes.manager.InAppNotificationMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.Languagepack;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.customviews.CustomEdittext;
 import kevkevin.wsdt.tagueberstehen.classes.customviews.DateTimePicker.DateTimePicker;
 
@@ -37,9 +38,9 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     private Countdown newEditedCountdown;
     private static final String TAG = "ModifyCountdownActivity";
     private int existingCountdownId = (-1); //if edit then this value will be updated and used to overwrite existing countdown
-    private InAppPurchaseManager inAppPurchaseManager;
-    private DialogManager dialogManager; //important that kevkevin dialogManager gets imported and not the one of android!
-    private HelperClass helperClass = new HelperClass(); //must be a member! (to prevent influencing iapnotifications of other activities)
+    private InAppPurchaseMgr inAppPurchaseMgr;
+    private DialogMgr dialogMgr; //important that kevkevin dialogMgr gets imported and not the one of android!
+    private InAppNotificationMgr inAppNotificationMgr = new InAppNotificationMgr(); //must be a member! (to prevent influencing iapnotifications of other activities)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,21 +48,21 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         setContentView(R.layout.activity_modify_countdown);
 
         //InAppPurchaseMgr if validation is too low countdown can be saved, but it will not be displayed
-        this.setInAppPurchaseManager(new InAppPurchaseManager(this));
+        this.setInAppPurchaseMgr(new InAppPurchaseMgr(this));
 
 
         //ADS - START
-        AdManager adManager = new AdManager(this);
-        adManager.initializeAdmob();
-        adManager.loadBannerAd((RelativeLayout) findViewById(R.id.wrappingRLForAdsModifyCountdowns));
+        AdMgr adMgr = new AdMgr(this);
+        adMgr.initializeAdmob();
+        adMgr.loadBannerAd((RelativeLayout) findViewById(R.id.wrappingRLForAdsModifyCountdowns));
         //ADS - END
 
         //Set custom onclick listener so time and datepicker show up
         setCustomOnClickListener((TextView) findViewById(R.id.startDateTimeValue), (RelativeLayout) findViewById(R.id.startDateTimeValueParent));
         setCustomOnClickListener((TextView) findViewById(R.id.untilDateTimeValue), (RelativeLayout) findViewById(R.id.untilDateTimeValueParent));
 
-        //Create dialogManager instance for showing purchaseDialogs when product not bought already
-        this.setDialogManager(new DialogManager(this));
+        //Create dialogMgr instance for showing purchaseDialogs when product not bought already
+        this.setDialogMgr(new DialogMgr(this));
 
         //Set List for intervalsetter (spinner)
         HelperClass.setIntervalSpinnerConfigurations((Spinner) findViewById(R.id.notificationIntervalSpinner), R.array.countdownIntervalSpinner_LABELS, 8);
@@ -86,7 +87,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
     public void onSaveClick(View view) {
         //Is use-more-nodes package bought? (here in onclick, so it gets refreshed!) --------------------------------------------------------------
-        this.getInAppPurchaseManager().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+        this.getInAppPurchaseMgr().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
             public void success_is_true() {
                 Log.d(TAG, "onCreate:executeIfProductIsBought: UseMoreCountdownNodes is bought. Not blocking anything.");
@@ -99,7 +100,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
                 Log.d(TAG, "onCreate:executeIfProductIsBought: UseMoreCountdownNodes is NOT bought. Blocking save-Button IF already one node saved AND NOT in editing mode.");
                 if (DatabaseMgr.getSingletonInstance(ModifyCountdownActivity.this).getAllCountdowns(ModifyCountdownActivity.this, false).size() > 0 && (existingCountdownId < 0)) {
                     Log.d(TAG, "onCreate:executeIfProductIsBought:OnClick: Did not save countdown, because inapp product not bought and more than one node already saved. EditMode disabled, Countdown-Id: " + existingCountdownId);
-                    getDialogManager().showDialog_InAppProductPromotion(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString());
+                    getDialogMgr().showDialog_InAppProductPromotion(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString());
                     //also show toast for additional clarification
                     Toast.makeText(ModifyCountdownActivity.this, R.string.inAppProduct_notBought_useMoreCountdownNodes, Toast.LENGTH_SHORT).show();
                 } else {
@@ -216,7 +217,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
     //Color picker for category value
     public void onClickOpenColorPicker(final View view) {
-        this.getInAppPurchaseManager().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.CHANGE_NOTIFICATION_COLOR.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+        this.getInAppPurchaseMgr().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.CHANGE_NOTIFICATION_COLOR.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
             public void success_is_true() {
                 Log.d(TAG, "onClickOpenColorPicker:executeIfProductIsBought: ChangeNotification is bought. Tried to open color picker");
@@ -226,7 +227,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             @Override
             public void failure_is_false() {
                 Log.d(TAG, "onClickOpenColorPicker:executeIfProductIsBought: ChangeNotification is NOT bought. Blocking color-Button.");
-                getDialogManager().showDialog_InAppProductPromotion(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.CHANGE_NOTIFICATION_COLOR.toString());
+                getDialogMgr().showDialog_InAppProductPromotion(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.CHANGE_NOTIFICATION_COLOR.toString());
                 Toast.makeText(ModifyCountdownActivity.this, R.string.inAppProduct_notBought_changeNotificationColor, Toast.LENGTH_SHORT).show();
             }
         });
@@ -300,20 +301,20 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         this.newEditedCountdown = newEditedCountdown;
     }
 
-    public InAppPurchaseManager getInAppPurchaseManager() {
-        return this.inAppPurchaseManager;
+    public InAppPurchaseMgr getInAppPurchaseMgr() {
+        return this.inAppPurchaseMgr;
     }
 
-    public void setInAppPurchaseManager(InAppPurchaseManager inAppPurchaseManager) {
-        this.inAppPurchaseManager = inAppPurchaseManager;
+    public void setInAppPurchaseMgr(InAppPurchaseMgr inAppPurchaseMgr) {
+        this.inAppPurchaseMgr = inAppPurchaseMgr;
     }
 
-    public DialogManager getDialogManager() {
-        return dialogManager;
+    public DialogMgr getDialogMgr() {
+        return dialogMgr;
     }
 
-    public void setDialogManager(DialogManager dialogManager) {
-        this.dialogManager = dialogManager;
+    public void setDialogMgr(DialogMgr dialogMgr) {
+        this.dialogMgr = dialogMgr;
     }
 
 
@@ -357,6 +358,10 @@ public class ModifyCountdownActivity extends AppCompatActivity {
      * --> TAG has to be the exact string resource name! (e.g. modifyCountdownActivity_countdown_category_textview_fieldDescription)
      */
     public void onHelpClick(View view) {
-        helperClass.showQuestionMarkHelpText(this,view,(ViewGroup) findViewById(R.id.wrappingRLForAdsModifyCountdowns));
+        this.getInAppNotificationMgr().showQuestionMarkHelpText(this,view,(ViewGroup) findViewById(R.id.wrappingRLForAdsModifyCountdowns));
+    }
+
+    public InAppNotificationMgr getInAppNotificationMgr() {
+        return inAppNotificationMgr;
     }
 }
