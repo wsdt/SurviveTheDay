@@ -12,6 +12,11 @@
     <string name="actionBar_mainActivity_menu_removeAdsTemporarily">Werbung temp. deaktivieren</string>
     <string name="actionBar_mainActivity_menu_showInAppProducts">In-App-Produkte</string>
 
+    <!-- Sharing -->
+    <string name="share_postfix_appreference">[Service von Survive The Day (Gratis in deinem Playstore)]</string>
+    <string name="share_livecountdown_text_expired">%1$s - Ich hab es geschafft!</string>
+    <string name="share_livecountdown_text_running">%1$s - Mein persönlicher Countdown: %2$s</string>
+
     <!-- ACTIONBAR MENUS:COUNTDOWNACTIVITY -->
     <string name="actionBar_countdownActivity_menu_shareCountdown_title">Teilen</string>
     <string name="actionBar_countdownActivity_menu_shareCountdown_shareContent_text">Der Moment in dem du nur noch %1$s Sekunden für %2$s (%3$s) hast! Möchtest du deinen Alltag auch motivierter angehen? SurviveTheDay jetzt kostenlos in deinem Playstore!</string>
@@ -88,7 +93,6 @@
 
     <!-- SettingsActivity -->
     <string name="setting_saveBattery_title">Batterie sparen</string>
-    <string name="setting_saveBattery_description">Wenn aktiviert, dann erscheinen Benachrichtigungen möglicherweise in unregelmäßigeren Abständen.</string>
     <string name="setting_durationOfInAppNotifications_title">In-App-Benachrichtigungen</string>
 
     <!-- CountdownActivity -->
@@ -137,7 +141,6 @@
     <string name="modifyCountdownActivity_countdown_motivateMe_label">Motiviere mich</string>
     <string name="modifyCountdownActivity_countdown_motivateMe_interval_label">Intervall</string>
     <string name="modifyCountdownActivity_countdown_showLiveCountdown_label">Echtzeit-Countdown</string>
-    <string name="modifyCountdownActivity_countdown_validation_LengthConstraints">%1$s muss zwischen %2$d - %3$d Zeichen haben!</string>
     <string name="modifyCountdownActivity_countdown_validation_UntilAfterStartDateTime">Das Bis-Datum muss NACH dem Von-Datum sein!</string>
     <string name="modifyCountdownActivity_countdown_validation_DateTimeNotValid">Zeitwert nicht gültig! Dies könnte ein interner Fehler sein.</string>
 
@@ -202,6 +205,8 @@
 
     <!-- CLASSES ###################################################################################################### -->
     <!-- CustomNotification -->
+    <string name="customNotification_countdownCounter_expired">Countdown am %1$s abgelaufen.</string>
+    <string name="customNotification_countdownCounter_running">Countdown: %1$s</string>
     <string name="customNotification_notificationTicker">SurviveTheDay - Motivation</string>
     <string-array name="customNotification_random_generic_titles">
         <item>Weiter so!</item>
@@ -239,7 +244,7 @@
     <string name="dateTimePicker_format_DateTime">%1$s %2$s:%3$s:%4$s</string>
     <string name="dateTimePicker_timePicker_notify_setCurrentTime">Aktuelle Uhrzeit gesetzt.</string>
 
-    <!-- AdManager/GlobalStorageMgr -->
+    <!-- GlobalStorageMgr -->
     <string name="adManager_noInternetConnectionMaxExceeded_notification_title">Konnte Werbung nicht anzeigen. :(</string>
     <string name="adManager_noInternetConnectionMaxExceeded_notification_normalAndBigText">SurviveTheDay wird mit Werbeanzeigen finanziert. Bitte benutze diese App wenn du eine Verbindung zum Internet hast. Vielen Dank :).</string>
     <string name="adManager_loadRewardedVideoInRewardActivity_reward_successMessage">Du wirst von uns %1$d Minuten mit Werbung verschont.</string>

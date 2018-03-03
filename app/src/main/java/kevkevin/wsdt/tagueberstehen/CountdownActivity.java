@@ -1,11 +1,7 @@
 package kevkevin.wsdt.tagueberstehen;
 
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -13,10 +9,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.support.v7.widget.ShareActionProvider;
 import android.widget.TextSwitcher;
@@ -26,14 +20,13 @@ import android.widget.ViewSwitcher;
 
 import com.daimajia.swipe.SwipeLayout;
 
-import kevkevin.wsdt.tagueberstehen.classes.AdManager;
+import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CountdownCounter;
-import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
+import kevkevin.wsdt.tagueberstehen.classes.manager.InAppNotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.Quote;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 
 public class CountdownActivity extends AppCompatActivity {
     private int countdownId = (-1);
@@ -42,7 +35,7 @@ public class CountdownActivity extends AppCompatActivity {
     private Intent lastIntent;
     private Intent shareIntent; //used for refreshing extras
     private CountdownCounter countdownCounter;
-    private HelperClass helperClass = new HelperClass(); //must be a member! (to prevent influencing iapnotifications of other activities)
+    private InAppNotificationMgr inAppNotificationMgr = new InAppNotificationMgr(); //must be a member! (to prevent influencing iapnotifications of other activities)
     public static boolean runGeneratingRandomQuotes = true; //true by default, because surfaceView, when false then countdownCounter thread will NOT automatically refresh quotes (also used to pause etc.)
 
     //TODO: With swipeLayout or/and automatically random quotes (only quotes)
@@ -54,12 +47,12 @@ public class CountdownActivity extends AppCompatActivity {
 
 
         // SHOW FULL PAGE ADD
-        AdManager adManager = new AdManager(this);
-        adManager.initializeAdmob();
+        AdMgr adMgr = new AdMgr(this);
+        adMgr.initializeAdmob();
         //make it possible to load and prevent stopping ui (also afterwards: because coutndown does not refresh!) --> esp. when fullpage from other activities opens to slow and gets closed in the countdownactivity
         //IMPORTANT: Do not place here fullpage ad because this blocks the countdown!
-        adManager.loadBannerAd((RelativeLayout) findViewById(R.id.content_main));
-        //adManager.loadFullPageAd(null, null); //why returns this asshole back to mainActivity?
+        adMgr.loadBannerAd((RelativeLayout) findViewById(R.id.content_main));
+        //adMgr.loadFullPageAd(null, null); //why returns this asshole back to mainActivity?
 
 
         //Notifications regularly: How long do you need to work today or similar and easy type in maybe in notification bar!
@@ -232,7 +225,7 @@ public class CountdownActivity extends AppCompatActivity {
     private void showInAppNotification() {
         Log.d(TAG, "showInAppNotificationIfAvailable: Started method.");
         try {
-            helperClass.showInAppNotification(this,
+            this.getInAppNotificationMgr().showInAppNotification(this,
                     this.getLastIntent().getStringExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_CONTENT_TITLE),
                     this.getLastIntent().getStringExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_CONTENT_TEXT),
                     this.getLastIntent().getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_SMALL_ICON, -1),
@@ -292,7 +285,7 @@ public class CountdownActivity extends AppCompatActivity {
     }
 
 
-    private Intent refreshShareIntent() { //call when to refresh! (because of totalSeconds e.g.)
+    private void refreshShareIntent() { //call when to refresh! (because of totalSeconds e.g.)
         /*Set implicit intent with extras and actions so other apps know what to share!
         Extra method, so we can setShareIntent dynamically not only on activity creation [countdown values share etc.]*/
         if (this.getCountdown() != null && this.getShareIntent() != null) {
@@ -302,7 +295,6 @@ public class CountdownActivity extends AppCompatActivity {
         } else {
             Log.e(TAG, "refreshShareIntent: ShareIntent or/and Countdown is NULL! Cannot set/refresh share content.");
         }
-        return this.getShareIntent();
     }
 
     public CountdownCounter getCountdownCounter() {
@@ -311,5 +303,9 @@ public class CountdownActivity extends AppCompatActivity {
 
     public void setCountdownCounter(CountdownCounter countdownCounter) {
         this.countdownCounter = countdownCounter;
+    }
+
+    public InAppNotificationMgr getInAppNotificationMgr() {
+        return inAppNotificationMgr;
     }
 }

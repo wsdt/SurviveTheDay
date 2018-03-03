@@ -16,7 +16,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import kevkevin.wsdt.tagueberstehen.classes.AdManager;
+import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
 
 public class CreditsActivity extends AppCompatActivity {
 
@@ -26,9 +26,9 @@ public class CreditsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_credits);
 
         //Ads - START
-        AdManager adManager = new AdManager(this);
-        adManager.initializeAdmob();
-        adManager.loadBannerAd((RelativeLayout) findViewById(R.id.wrappingRLForAds));
+        AdMgr adMgr = new AdMgr(this);
+        adMgr.initializeAdmob();
+        adMgr.loadBannerAd((RelativeLayout) findViewById(R.id.wrappingRLForAds));
         //Ads - END
 
         final Resources res = getResources();

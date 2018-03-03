@@ -18,10 +18,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import kevkevin.wsdt.tagueberstehen.R;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.GlobalAppSettingsMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.ShareMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.services.NotificationBroadcastMgr;
 
+@Deprecated
 public class CustomNotification { //one instance for every countdown or similar
     private Context activityThisTarget;
     private int mNotificationId = 0; //start with 0 should be first notification (index starts at 0)
@@ -48,11 +51,11 @@ public class CustomNotification { //one instance for every countdown or similar
 
         int count = 0;
         //do not call purchaseWorkflow or similar when only providing context [altough we mostly give an activity to this class we should not risk it]
-        InAppPurchaseManager inAppPurchaseManager = new InAppPurchaseManager(this.getActivityThisTarget());
+        InAppPurchaseMgr inAppPurchaseMgr = new InAppPurchaseMgr(this.getActivityThisTarget());
         for (int i = 0;i<allCountdowns.size();i++) {
             final Countdown currCountdown = allCountdowns.get(i); //necessary because i cannot be final (i++)
             if ((count++) > 0) {
-                inAppPurchaseManager.executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                inAppPurchaseMgr.executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
                     public void success_is_true() {
                         Log.d(TAG, "scheduleAllActiveCountdownNotifications:success_is_true: Product is bought. Scheduling countdown.");
@@ -118,36 +121,43 @@ public class CustomNotification { //one instance for every countdown or similar
         //because one notification for countdown
         //return (Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID+countdown.getCountdownId()); //e.g. 100 (high enough for collision avoidance) + countdownId (0,1,2,...) = 100,101,102 so easy to modify afterwards
         //not deprecated one requires api 16 (min is 15)
-        Notification counterServiceNotification;
+        boolean onGoing;
+        String contentText;
+        String shareText;
 
         if (!countdown.isUntilDateInTheFuture()) {
             //Remove countdown if it has expired (this method will never be called again for that countdown!
             Log.d(TAG, "createCounterServiceNotification: Countdown has expired! Making notification removable and making small changes.");
-            counterServiceNotification = new NotificationCompat.Builder(this.getActivityThisTarget(),Constants.CUSTOMNOTIFICATION.DEFAULT_NOTIFICATION_CHANNEL)
-                    .setSmallIcon(R.drawable.app_icon)
-                    //.setLargeIcon(BitmapFactory.decodeResource(this.getRes(),R.drawable.notification_timebased_color))
-                    .setContentTitle(countdown.getCountdownTitle())
-                    .setAutoCancel(true) //remove after clicking on it
-                    .setContentIntent(pendingIntent)
-                    .setOngoing(false) //notification is NOT REMOVEABLE
-                    //maybe no big text here because maybe hard to make notification small again (refresh etc.): .setStyle(new NotificationCompat.BigTextStyle().bigText("Remaining: "+countdown.getBigCountdownCurrentValues_String()+"\nTotal Years: 0\nTotal Months: 0\nTotal Weeks: 0\nTotal Days: 0\nTotal Hours: 0\nTotal Minutes: 0\nTotal Seconds: 0")) //make notification extendable
-                    .setContentText("Countdown has expired on "+countdown.getUntilDateTime())
-                    .build();
+            onGoing = false; //notification is now removeable
+            contentText = String.format(getRes().getString(R.string.customNotification_countdownCounter_expired),countdown.getUntilDateTime());
+            shareText = getRes().getString(R.string.share_livecountdown_text_expired);
         } else { //Countdown has not expired
-            counterServiceNotification = new NotificationCompat.Builder(this.getActivityThisTarget(),Constants.CUSTOMNOTIFICATION.DEFAULT_NOTIFICATION_CHANNEL)
-                    .setSmallIcon(R.drawable.app_icon)
-                    //Large icon is too small on new smartphones
-                    //.setLargeIcon(BitmapFactory.decodeResource(this.getRes(),R.drawable.notification_timebased_color))
-                    .setContentTitle(countdown.getCountdownTitle())
-                    .setAutoCancel(false) //remove after clicking on it
-                    .setContentIntent(pendingIntent)
-                    .setOngoing(true) //notification is NOT REMOVEABLE
-                    //maybe no big text here because maybe hard to make notification small again (refresh etc.): .setStyle(new NotificationCompat.BigTextStyle().bigText("Remaining: "+countdown.getBigCountdownCurrentValues_String()+"\nTotal Years: 0\nTotal Months: 0\nTotal Weeks: 0\nTotal Days: 0\nTotal Hours: 0\nTotal Minutes: 0\nTotal Seconds: 0")) //make notification extendable
-                    .setContentText("Remaining: "+CountdownCounter.craftBigCountdownString(countdown.getTotalSeconds().longValue()))
-                    .build();
+            onGoing = true; //not removeable
+            String countdownTmpStr = CountdownCounter.craftBigCountdownString(countdown.getTotalSeconds().longValue());
+            contentText = String.format(getRes().getString(R.string.customNotification_countdownCounter_running),countdownTmpStr);
+            shareText = String.format(getRes().getString(R.string.share_livecountdown_text_running),countdown.getCountdownTitle(),countdownTmpStr);
         }
 
-        return counterServiceNotification;
+        //Also liveCountdown should be shareable
+        PendingIntent sharePendingIntent = PendingIntent.getActivity(
+                this.getActivityThisTarget(),
+                countdown.getCountdownId(), //use same request code as in other pendingintent above (really important!, otherwise not correct pendingintent used)
+                ShareMgr.getSimpleShareIntent(countdown.getCountdownTitle(),shareText+" "+getRes().getString(R.string.share_postfix_appreference)),
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        return new NotificationCompat.Builder(this.getActivityThisTarget(),Constants.CUSTOMNOTIFICATION.DEFAULT_NOTIFICATION_CHANNEL)
+                .setSmallIcon(R.drawable.light_notification_appicon)
+                //Large icon is too small on new smartphones
+                //.setLargeIcon(BitmapFactory.decodeResource(this.getRes(),R.drawable.notification_timebased_color))
+                .setContentTitle(countdown.getCountdownTitle())
+                .setAutoCancel(false) //remove after clicking on it
+                .setContentIntent(pendingIntent)
+                .setOngoing(onGoing) //notification is NOT REMOVEABLE
+                .addAction(R.drawable.colorgrey555_share,getRes().getString(R.string.actionBar_countdownActivity_menu_shareCountdown_title),sharePendingIntent)
+                //maybe no big text here because maybe hard to make notification small again (refresh etc.): .setStyle(new NotificationCompat.BigTextStyle().bigText("Remaining: "+countdown.getBigCountdownCurrentValues_String()+"\nTotal Years: 0\nTotal Months: 0\nTotal Weeks: 0\nTotal Days: 0\nTotal Hours: 0\nTotal Minutes: 0\nTotal Seconds: 0")) //make notification extendable
+                .setContentText(contentText)
+                .build();
     }
 
     //Public so we can create also other notifications (if not needed we can place a dummy countdown)
@@ -207,6 +217,14 @@ public class CustomNotification { //one instance for every countdown or similar
                 this.getmNotificationId(),// instead of notificationId this was set (Problem: Always last intent was used): countdown.getCountdownId(),
                 tmpIntent,PendingIntent.FLAG_UPDATE_CURRENT);
 
+        //For addAction (shareBtn)
+        PendingIntent sharePendingIntent = PendingIntent.getActivity(
+                this.getActivityThisTarget(),
+                this.getmNotificationId(),
+                ShareMgr.getSimpleShareIntent(title,text+" "+getRes().getString(R.string.share_postfix_appreference)),
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
         //TODO: https://material.io/icons/
         //add notification
         this.getNotifications().put(this.getmNotificationId(), //save with current id
@@ -221,6 +239,7 @@ public class CustomNotification { //one instance for every countdown or similar
                 .setOngoing(false) //notification IS REMOVABLE
                 .setContentIntent(pendingIntent)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(text)) //make notification extendable
+                .addAction(R.drawable.colorgrey555_share,this.getActivityThisTarget().getString(R.string.actionBar_countdownActivity_menu_shareCountdown_title),sharePendingIntent)
                 .setContentText(text));
 
         Log.d(TAG, "createNotfiication: Tried to set notification color: "+countdown.getCategory());

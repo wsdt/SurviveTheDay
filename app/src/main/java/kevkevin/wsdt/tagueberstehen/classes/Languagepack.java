@@ -9,7 +9,7 @@ import android.util.SparseArray;
 
 import java.util.HashMap;
 
-import kevkevin.wsdt.tagueberstehen.classes.StorageMgr.DatabaseMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 
 public class Languagepack {
     private static final String TAG = "LanguagePack";
