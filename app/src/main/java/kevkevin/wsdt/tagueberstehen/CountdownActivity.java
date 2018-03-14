@@ -242,7 +242,7 @@ public class CountdownActivity extends AppCompatActivity {
     }
 
     public void setShareActionProvider(ShareActionProvider shareActionProvider) {
-        this.shareActionProvider = shareActionProvider;
+        CountdownActivity.shareActionProvider = shareActionProvider;
     }
 
 
@@ -306,16 +306,21 @@ public class CountdownActivity extends AppCompatActivity {
     private void refreshShareIntent() { //call when to refresh! (because of totalSeconds e.g.)
         /*Set implicit intent with extras and actions so other apps know what to share!
         Extra method, so we can setShareIntent dynamically not only on activity creation [countdown values share etc.]*/
-        Intent shareIntent;
-        Resources res = getResources();
-        if (this.getCountdown() != null) {
-            Log.d(TAG, "refreshShareIntent: Trying to refresh message (reset extras).");
-            shareIntent = ShareMgr.getSimpleShareIntent(res.getString(R.string.app_name),String.format(res.getString(R.string.actionBar_countdownActivity_menu_shareCountdown_shareContent_text), this.getCountdown().getTotalSecondsNoScientificNotation(), this.getCountdown().getCountdownTitle(), this.getCountdown().getCountdownDescription()));
-        } else {
-            Log.e(TAG, "refreshShareIntent: ShareIntent or/and Countdown is NULL! Cannot set/refresh share content. ");
-            shareIntent = ShareMgr.getSimpleShareIntent(res.getString(R.string.app_name),res.getString(R.string.error_contactAdministrator));
+        try {
+            Intent shareIntent;
+            Resources res = getResources();
+            if (this.getCountdown() != null) {
+                Log.d(TAG, "refreshShareIntent: Trying to refresh message (reset extras).");
+                shareIntent = ShareMgr.getSimpleShareIntent(null, res.getString(R.string.app_name), String.format(res.getString(R.string.actionBar_countdownActivity_menu_shareCountdown_shareContent_text), this.getCountdown().getTotalSecondsNoScientificNotation(), this.getCountdown().getCountdownTitle(), this.getCountdown().getCountdownDescription()));
+            } else {
+                Log.e(TAG, "refreshShareIntent: ShareIntent or/and Countdown is NULL! Cannot set/refresh share content. ");
+                shareIntent = ShareMgr.getSimpleShareIntent(null, res.getString(R.string.app_name), res.getString(R.string.error_contactAdministrator));
+            }
+            this.getShareActionProvider().setShareIntent(shareIntent);
+            Log.d(TAG, "refreshShareIntent: Tried to refresh share intent.");
+        } catch (NullPointerException e) {
+            Log.e(TAG, "refreshShareIntent: Could not refresh shareIntent!");
+            e.printStackTrace();
         }
-        this.getShareActionProvider().setShareIntent(shareIntent);
-        Log.d(TAG, "refreshShareIntent: Tried to refresh share intent.");
     }
 }

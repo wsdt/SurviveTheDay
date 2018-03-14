@@ -145,7 +145,7 @@ public class NotificationMgr { //one instance for every countdown or similar
         PendingIntent sharePendingIntent = PendingIntent.getActivity(
                 this.getActivityThisTarget(),
                 countdown.getCountdownId(), //use same request code as in other pendingintent above (really important!, otherwise not correct pendingintent used)
-                ShareMgr.getSimpleShareIntent(countdown.getCountdownTitle(),shareText+" "+getRes().getString(R.string.share_postfix_appreference)),
+                ShareMgr.getSimpleShareIntent(null,countdown.getCountdownTitle(),shareText+" "+getRes().getString(R.string.share_postfix_appreference)),
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 
@@ -224,7 +224,7 @@ public class NotificationMgr { //one instance for every countdown or similar
         PendingIntent sharePendingIntent = PendingIntent.getActivity(
                 this.getActivityThisTarget(),
                 this.getmNotificationId(),
-                ShareMgr.getSimpleShareIntent(title,text+" "+getRes().getString(R.string.share_postfix_appreference)),
+                ShareMgr.getSimpleShareIntent(null,title,text+" "+getRes().getString(R.string.share_postfix_appreference)),
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 

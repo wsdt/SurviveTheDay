@@ -83,6 +83,9 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         }
 
         onMotivateMeToggleClick(findViewById(R.id.isActive)); //simulate click so it is always at its correct state (enabled/disabled)
+
+        //Remove min constraint of description field (so user can let it empty)
+        ((CustomEdittext) findViewById(R.id.countdownDescriptionValue)).setMinLength(0);
     }
 
     public void onSaveClick(View view) {
@@ -151,16 +154,16 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         //Validate lengths of texts ------------------------------------------------------------------
         Resources res = getResources();
 
-        String countdownTitleValue = ((CustomEdittext) findViewById(R.id.countdownTitleValue)).getText().toString();
-        if (countdownTitleValue.length() < Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MIN) {
+        CustomEdittext countdownTitleValue = ((CustomEdittext) findViewById(R.id.countdownTitleValue));
+        if (countdownTitleValue.getText().toString().length() < countdownTitleValue.getMinLength()) {
             Log.w(TAG, "areFormValuesValid: CountdownTitleValue is not valid!"); //do not use getHint because it might get null if used as label!
-            Toast.makeText(this, String.format(res.getString(R.string.modifyCountdownActivity_countdown_validationerror_constraintMinLengthFailed), res.getString(R.string.modifyCountdownActivity_countdown_title_label), Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MIN), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, String.format(res.getString(R.string.modifyCountdownActivity_countdown_validationerror_constraintMinLengthFailed), res.getString(R.string.modifyCountdownActivity_countdown_title_label), countdownTitleValue.getMinLength()), Toast.LENGTH_SHORT).show();
             return false;
         }
-        String countdownDescriptionValue = ((CustomEdittext) findViewById(R.id.countdownDescriptionValue)).getText().toString();
-        if (countdownDescriptionValue.length() < Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MIN) {
+        CustomEdittext countdownDescriptionValue = ((CustomEdittext) findViewById(R.id.countdownDescriptionValue));
+        if (countdownDescriptionValue.getText().toString().length() < countdownDescriptionValue.getMinLength()) {
             Log.w(TAG, "areFormValuesValid: CountdownDescriptionValue is not valid!");
-            Toast.makeText(this, String.format(res.getString(R.string.modifyCountdownActivity_countdown_validationerror_constraintMinLengthFailed), res.getString(R.string.modifyCountdownActivity_countdown_description_label), Constants.COUNTDOWN.COUNTDOWN_DESCRIPTION_LENGTH_MIN), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, String.format(res.getString(R.string.modifyCountdownActivity_countdown_validationerror_constraintMinLengthFailed), res.getString(R.string.modifyCountdownActivity_countdown_description_label), countdownDescriptionValue.getMinLength()), Toast.LENGTH_SHORT).show();
             return false;
         }
 

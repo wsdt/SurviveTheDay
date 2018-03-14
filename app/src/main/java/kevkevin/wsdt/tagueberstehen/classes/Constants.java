@@ -113,10 +113,6 @@ public class Constants {
     }
 
     public interface COUNTDOWN {
-        //COUNTDOWN Properties (for validation e.g.)
-        int COUNTDOWN_TITLE_LENGTH_MIN = 1; //(excluding this nr. and below all values will be rejected!)
-        int COUNTDOWN_DESCRIPTION_LENGTH_MIN = 1; //same constraint as above
-
         //Escape methods
         interface ESCAPE {
             String escapeSQL_illegalCharacter = "'";
