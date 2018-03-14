@@ -139,12 +139,13 @@ public class CountdownCounter {
         //Seconds has the rest!
 
         String separator = ":"; //must not be a char (=number) or generally a number, because we use +! (polymorphism)
+        //do not make ifs nested (otherwise strings would not be shown) (multiple ifs necessary, so we avoid removing intermediate zeros: 1:0:58
         return ((years == 0) ? "" : years+separator) +
-                ((months == 0) ? "" : months+separator) +
-                ((weeks == 0) ? "" : weeks+separator) +
-                ((days == 0) ? "" : days+separator) +
-                ((hours == 0) ? "" : hours+separator) +
-                ((minutes == 0) ? "" : minutes+separator) +
+                ((years == 0 && months == 0) ? "" : months+separator) +
+                ((years == 0 && months == 0 && weeks == 0) ? "" : weeks+separator) +
+                ((years == 0 && months == 0 && weeks == 0 && days == 0) ? "" : days+separator) +
+                ((years == 0 && months == 0 && weeks == 0 && days == 0 && hours == 0) ? "" : hours+separator) +
+                ((years == 0 && months == 0 && weeks == 0 && days == 0 && hours == 0 && minutes == 0) ? "" : minutes+separator) +
                 (totalSeconds); //if seconds zero, then return zero //if seconds zero, then return zero
     }
 

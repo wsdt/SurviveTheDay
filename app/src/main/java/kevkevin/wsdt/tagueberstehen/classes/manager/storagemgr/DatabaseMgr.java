@@ -490,12 +490,9 @@ public class DatabaseMgr {
         Intent foregroundServiceIntent = new Intent(context, LiveCountdown_ForegroundService.class);
         try {
             Log.d(TAG, "restartNotificationService: Trying to restart foregroundService.");
-            if (LiveCountdown_ForegroundService.refreshAllThread != null) {
-                Log.d(TAG, "restartNotificationService: Trying to kill thread of countdownCounterService.");
-                LiveCountdown_ForegroundService.refreshAllThread.interrupt();
-            } //interrupt running thread
-            context.stopService(foregroundServiceIntent);
             LiveCountdown_ForegroundService.stopRefreshAll();
+            context.stopService(foregroundServiceIntent);
+            context.startService(foregroundServiceIntent);
         } catch (NullPointerException e) {
             Log.e(TAG, "restartNotificationService: foregroundServiceIntent equals null! Could not restart foregroundService.");
         }
