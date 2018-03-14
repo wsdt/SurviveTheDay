@@ -6,8 +6,8 @@ android {
         applicationId "kevkevin.wsdt.tagueberstehen"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 16
-        versionName "0.9.4" //{major}.{normal}.{bugfixes}
+        versionCode 17
+        versionName "0.9.5" //{major}.{minor}.{bugfixes}
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

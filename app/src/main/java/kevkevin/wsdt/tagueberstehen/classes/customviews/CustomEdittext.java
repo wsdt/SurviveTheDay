@@ -66,7 +66,7 @@ public class CustomEdittext extends android.support.v7.widget.AppCompatEditText 
             if (isInputValid) {
                 this.getTextInputLayout().setErrorEnabled(false); //remove errors
             } else {
-                this.getTextInputLayout().setError(String.format(res.getString(R.string.modifyCountdownActivity_countdown_validationerror_constraintMinLengthFailed_generic), Constants.COUNTDOWN.COUNTDOWN_TITLE_LENGTH_MIN));
+                this.getTextInputLayout().setError(String.format(res.getString(R.string.modifyCountdownActivity_countdown_validationerror_constraintMinLengthFailed_generic), this.getMinLength()));
             }
         }
     }
