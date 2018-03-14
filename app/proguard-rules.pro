@@ -22,3 +22,4 @@
 
 -keep class com.android.vending.billing.**
 -keep class kevkevin.wsdt.tagueberstehen.classes.**
+-keep class android.support.v7.widget.ShareActionProvider {*;}
