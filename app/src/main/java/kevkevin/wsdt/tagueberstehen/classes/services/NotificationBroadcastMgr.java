@@ -14,7 +14,7 @@ import android.util.SparseArray;
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
-import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
+import kevkevin.wsdt.tagueberstehen.classes.manager.NotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -42,9 +42,9 @@ public class NotificationBroadcastMgr extends BroadcastReceiver {
         if (currCountdown != null) {
             //If countdown found, then show random generated notification of loaded countdown (this function gets only called on its interval)
             if (currCountdown.isActive() && currCountdown.isUntilDateInTheFuture() && currCountdown.isStartDateInThePast()) {
-                CustomNotification customNotificationManager = new CustomNotification(context, CountdownActivity.class, (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE));
+                NotificationMgr notificationMgrManager = new NotificationMgr(context, CountdownActivity.class, (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE));
 
-                customNotificationManager.issueNotification(customNotificationManager.createRandomNotification(currCountdown));
+                notificationMgrManager.issueNotification(notificationMgrManager.createRandomNotification(currCountdown));
                 Log.d(TAG, "onReceive: Have shown countdown notification for ID: " + currCountdown.getCountdownId());
             } else {
                 Log.d(TAG, "onReceive: Countdown is not active, startDateTime is in the future or UntilDateTime is in the past. Deleted it from broadcast receiver (not deleted in SharedPreferences.");

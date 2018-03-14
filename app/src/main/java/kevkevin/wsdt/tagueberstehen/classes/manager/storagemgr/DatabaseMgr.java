@@ -22,7 +22,7 @@ import kevkevin.wsdt.tagueberstehen.classes.Constants.COUNTDOWN;
 import kevkevin.wsdt.tagueberstehen.classes.Constants.KICKSTARTER_BOOTANDGENERALRECEIVER;
 import kevkevin.wsdt.tagueberstehen.classes.Constants.STORAGE_MANAGERS.DATABASE_STR_MGR;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
-import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
+import kevkevin.wsdt.tagueberstehen.classes.manager.NotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.Languagepack;
 import kevkevin.wsdt.tagueberstehen.classes.Quote;
 import kevkevin.wsdt.tagueberstehen.classes.services.LiveCountdown_ForegroundService;
@@ -482,26 +482,20 @@ public class DatabaseMgr {
         if (getAllCountdowns(context, false, true, false).size() > 0) {
             //Only start broadcast receivers or service when at least one countdown acc. to criteria found
             //TODO: only do this when not already active (otherwise intervals will get restarted)
-            (new CustomNotification(context, CountdownActivity.class, (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications();
+            (new NotificationMgr(context, CountdownActivity.class, (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications();
             Log.d(TAG, "restartNotificationService: Rescheduled all broadcast receivers.");
         }
 
         //ALSO RESTART FOREGROUND SERVICE
         Intent foregroundServiceIntent = new Intent(context, LiveCountdown_ForegroundService.class);
         try {
-            /* Like this we could simply stop the service by extra! BUT IMPORTANT: To restart service we just need to start it again, because onStart gets executed and only one instance is created!
-            foregroundServiceIntent.putExtra(Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE_LABEL,Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE);
-            this.getContext().startService(foregroundServiceIntent); //startService instead of stopService, react to extra and stopSelf()*/
             Log.d(TAG, "restartNotificationService: Trying to restart foregroundService.");
-            if (LiveCountdown_ForegroundService.refreshAllNotificationCounters_Interval_Thread != null) {
+            if (LiveCountdown_ForegroundService.refreshAllThread != null) {
                 Log.d(TAG, "restartNotificationService: Trying to kill thread of countdownCounterService.");
-                LiveCountdown_ForegroundService.refreshAllNotificationCounters_Interval_Thread.interrupt();
+                LiveCountdown_ForegroundService.refreshAllThread.interrupt();
             } //interrupt running thread
             context.stopService(foregroundServiceIntent);
-            if (this.getAllCountdowns(context, false, false, true).size() > 0) {
-                //only start service, if at least one countdown acc. to criteria found (performance enhancement)
-                context.startService(foregroundServiceIntent);
-            }
+            LiveCountdown_ForegroundService.stopRefreshAll();
         } catch (NullPointerException e) {
             Log.e(TAG, "restartNotificationService: foregroundServiceIntent equals null! Could not restart foregroundService.");
         }

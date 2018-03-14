@@ -48,11 +48,6 @@ public class Countdown {
     private String[] quotesLanguagePacksStr; //for random e.g.
     private static final String TAG = "Countdown";
 
-    //Members for service (do not save them explicitely [unneccesary])
-    private Timer timer = new Timer();
-    private TimerTask timerTask;
-    private Handler handler = new Handler();
-
 
     //Constructor for lastEdit/createdDateTime automatically
     public Countdown(Context context, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String category, boolean isActive, int notificationInterval, boolean showLiveCountdown, String[] quotesLanguagePacks) {
@@ -335,26 +330,6 @@ public class Countdown {
 
     public void setNotificationInterval(int notificationInterval) {
         this.notificationInterval = notificationInterval;
-    }
-
-    public Timer getTimer() {
-        return timer;
-    }
-
-    public void setTimer(Timer timer) {
-        this.timer = timer;
-    }
-
-    public TimerTask getTimerTask() {
-        return timerTask;
-    }
-
-    public void setTimerTask(TimerTask timerTask) {
-        this.timerTask = timerTask;
-    }
-
-    public Handler getHandler() {
-        return handler;
     }
 
     public boolean isShowLiveCountdown() {

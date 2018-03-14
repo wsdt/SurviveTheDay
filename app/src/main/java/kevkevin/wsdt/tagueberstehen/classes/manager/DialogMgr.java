@@ -78,43 +78,47 @@ public class DialogMgr {
      * @param lblNegativeBtn: By providing an empty string ("") [not null!] there will only the OK button added
      */
     public void showDialog_Generic(@Nullable String title, @Nullable String msg, @Nullable String lblPositiveBtn, @Nullable String lblNegativeBtn, int icon, @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) { //to nullable icon just put a negative value in it
-        AlertDialog.Builder builder;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Dialog_Alert);
-        } else {
-            builder = new AlertDialog.Builder(getContext());
-        }
+        if (!getContext().isFinishing()) { //really important
+            AlertDialog.Builder builder;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Dialog_Alert);
+            } else {
+                builder = new AlertDialog.Builder(getContext());
+            }
 
-        builder.setTitle((title == null) ? this.getRes().getString(R.string.dialog_generic_error_title) : title)
-                .setMessage((msg == null) ? this.getRes().getString(R.string.dialog_generic_error_msg) : msg)
-                .setIcon((icon < 0) ? R.drawable.light_appicon_48dp : icon) //ids have to be positive
-                .setPositiveButton((lblPositiveBtn == null) ? this.getRes().getString(R.string.dialog_generic_button_positive) : lblPositiveBtn, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.d(TAG, "showDialog_InAppProductPromotion: Closing dialog (Positive Button).");
-                        dialog.dismiss();
-                        if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
-                            executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true();
+            builder.setTitle((title == null) ? this.getRes().getString(R.string.dialog_generic_error_title) : title)
+                    .setMessage((msg == null) ? this.getRes().getString(R.string.dialog_generic_error_msg) : msg)
+                    .setIcon((icon < 0) ? R.drawable.light_appicon_48dp : icon) //ids have to be positive
+                    .setPositiveButton((lblPositiveBtn == null) ? this.getRes().getString(R.string.dialog_generic_button_positive) : lblPositiveBtn, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Log.d(TAG, "showDialog_InAppProductPromotion: Closing dialog (Positive Button).");
+                            dialog.dismiss();
+                            if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
+                                executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true();
+                            }
                         }
-                    }
-                });
-        //use provided listener if not null otherwise use default one below, but if empty string then use no negative btn
-        if (lblNegativeBtn != null) {
-            if (lblNegativeBtn.equals("")) {
-                builder.show();
-                return; //show dialog now and exit method (we dont want a negative button because NOT null and only empty string provided.
-            }
-        } //not else!!
-        builder.setNegativeButton((lblNegativeBtn == null) ? this.getRes().getString(R.string.dialog_generic_button_negative) : lblNegativeBtn, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Log.d(TAG, "showDialog_InAppProductPromotion: Closing dialog (Negative Button).");
-                dialog.dismiss();
-                if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
-                    executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
+                    });
+            //use provided listener if not null otherwise use default one below, but if empty string then use no negative btn
+            if (lblNegativeBtn != null) {
+                if (lblNegativeBtn.equals("")) {
+                    builder.show();
+                    return; //show dialog now and exit method (we dont want a negative button because NOT null and only empty string provided.
                 }
-            }
-        }).show(); //if btnLabelNegative was not an empty string, but null OR another string then we add a negativeButton
+            } //not else!!
+            builder.setNegativeButton((lblNegativeBtn == null) ? this.getRes().getString(R.string.dialog_generic_button_negative) : lblNegativeBtn, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Log.d(TAG, "showDialog_InAppProductPromotion: Closing dialog (Negative Button).");
+                    dialog.dismiss();
+                    if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
+                        executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
+                    }
+                }
+            }).show(); //if btnLabelNegative was not an empty string, but null OR another string then we add a negativeButton
+        } else {
+            Log.d(TAG, "showDialog_Generic: Activity/Context is finishing. Did not show dialog. Prevented bad token exception.");
+        }
     }
 
 

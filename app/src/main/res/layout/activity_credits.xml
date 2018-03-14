@@ -8,7 +8,6 @@
     tools:context="kevkevin.wsdt.tagueberstehen.CreditsActivity"
     android:background="@color/colorWhite_fff">
 
-
     <RelativeLayout
         android:id="@+id/wrappingRLForAds"
         android:layout_width="match_parent"
@@ -52,5 +51,6 @@
         app:layout_anchor="@id/wrappingRLForAds"
         app:layout_anchorGravity="center_vertical|end"
         app:srcCompat="@android:drawable/ic_dialog_email" />
+    <!-- TODO: Use google msg icon instead of android icon here -->
 
 </android.support.design.widget.CoordinatorLayout>
