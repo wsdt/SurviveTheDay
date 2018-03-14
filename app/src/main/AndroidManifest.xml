@@ -106,11 +106,6 @@
             </intent-filter>
         </service>
 
-        <!--
-             BACKGROUND NOTIFICATION SERVICE
-             directBootAware (allows running service also when phone is locked), if not supported by current device then savely IGNORED!
-        -->
-
     </application>
 
 </manifest>

@@ -11,7 +11,7 @@ import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.CreditsActivity;
 import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
-import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
+import kevkevin.wsdt.tagueberstehen.classes.manager.NotificationMgr;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -63,9 +63,9 @@ public class GlobalAppSettingsMgr {
     public void incrementNoInternetConnectionCounter() {
         int newNoInternetConnectionValue = getNoInternetConnectionCounter() + 1;
         if (newNoInternetConnectionValue >= Constants.ADMANAGER.NO_INTERNET_CONNECTION_MAX) {
-            CustomNotification customNotification = (new CustomNotification(this.getContext(), CreditsActivity.class, (NotificationManager) this.getContext().getSystemService(NOTIFICATION_SERVICE)));
+            NotificationMgr notificationMgr = (new NotificationMgr(this.getContext(), CreditsActivity.class, (NotificationManager) this.getContext().getSystemService(NOTIFICATION_SERVICE)));
             String notificationText = this.getContext().getResources().getString(R.string.adManager_noInternetConnectionMaxExceeded_notification_normalAndBigText);
-            customNotification.issueNotification(customNotification.createNotCountdownRelatedNotification(this.getContext().getResources().getString(R.string.adManager_noInternetConnectionMaxExceeded_notification_title), notificationText, notificationText, R.drawable.light_notification_warning));
+            notificationMgr.issueNotification(notificationMgr.createNotCountdownRelatedNotification(this.getContext().getResources().getString(R.string.adManager_noInternetConnectionMaxExceeded_notification_title), notificationText, notificationText, R.drawable.light_notification_warning));
             resetNoInternetConnectionCounter();
         } else {
             this.getGlobalSettings_SharedPref().edit().putInt(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.NO_INTERNET_CONNECTION_COUNTER, newNoInternetConnectionValue).apply(); //increase about 1 when ad cannot be displayed
@@ -144,7 +144,7 @@ public class GlobalAppSettingsMgr {
         }
 
         //USE broadcast receivers
-        (new CustomNotification(this.getContext(), CountdownActivity.class, (NotificationManager) this.getContext().getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications();
+        (new NotificationMgr(this.getContext(), CountdownActivity.class, (NotificationManager) this.getContext().getSystemService(NOTIFICATION_SERVICE))).scheduleAllActiveCountdownNotifications();
         Log.d(TAG, "OnCreate: Scheduled broadcast receivers. ");
     }
 }

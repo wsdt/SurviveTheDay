@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
-import kevkevin.wsdt.tagueberstehen.classes.CustomNotification;
+import kevkevin.wsdt.tagueberstehen.classes.manager.NotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
@@ -28,9 +28,9 @@ public class LiveCountdown_ForegroundService extends Service {
      */
     private static final String TAG = "LiveCountdown";
     private SparseArray<Countdown> loadedCountdownsForLiveCountdown;
-    private CustomNotification customNotificationMgr;
+    private NotificationMgr notificationMgrMgr;
     private InAppPurchaseMgr inAppPurchaseMgr;
-    public static Thread refreshAllNotificationCounters_Interval_Thread;
+    public static Thread refreshAllThread;
 
     @Nullable
     @Override
@@ -40,45 +40,34 @@ public class LiveCountdown_ForegroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (refreshAllNotificationCounters_Interval_Thread != null) {
-            Log.d(TAG, "onStartCommand: Thread is not null. Killing it to provide restart of service.");
-            refreshAllNotificationCounters_Interval_Thread.interrupt();
-            refreshAllNotificationCounters_Interval_Thread = null;
-        }
-        //set everything null
-        this.setLoadedCountdownsForLiveCountdown(null);
-        this.setCustomNotificationMgr(null);
-        this.setInAppPurchaseMgr(null);
-
-
         //Notification Manager in shouldThisServiceBeKilled() NEEDED! (NullPointerException)
-        this.setCustomNotificationMgr(new CustomNotification(this, CountdownActivity.class, (NotificationManager) getSystemService(NOTIFICATION_SERVICE)));
+        this.setNotificationMgrMgr(new NotificationMgr(this, CountdownActivity.class, (NotificationManager) getSystemService(NOTIFICATION_SERVICE)));
 
         //normally inapp purchase mgr context should be an activity, but as long as we do not try to launch purchases we will not get an error!
         this.setInAppPurchaseMgr(new InAppPurchaseMgr(this));
 
-        shouldThisServiceBeKilled(intent); //third function call should be this!! (because service gets killed with startService = goodPractice
-
         //Only do when null at first, because notifications would not be removed when expired! (so we will have to restart whole service for new countdowns)
         this.setLoadedCountdownsForLiveCountdown(DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this, false, false, true)); //false because this service should be also possible when motivateMe is off
 
-        refreshAllNotificationCounters_Interval();
+        startRefreshAll();
 
         Log.d(TAG, "Finished onStartCommand().");
 
         return START_STICKY;
     }
 
-    private void refreshAllNotificationCounters_Interval() {
+    /** Private and non-static because only livecountdownmgr should do this! Stopping is allowed to everyone. */
+    private void startRefreshAll() {
         Log.d(TAG, "refreshALlNotificationCounters_Interval: Started method.");
-        refreshAllNotificationCounters_Interval_Thread = new Thread(new Runnable() {
+        refreshAllThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 Looper.prepare(); //so Handler in Countdown.class can be created (only necessary for background service)
                 while (true) {
-                    startRefreshAllNotificationCounters(); //refresh all (before first Thread.sleep, so called as only method in onstart()
+                    doRefreshAll(); //refresh all (before first Thread.sleep, so called as only method in onstart()
                     try {
                         //TODO: Make seconds configurable (for battery saving [show only when battery saving ON]
+                        //TODO: Better: Make a pause button for akku saving / after click to resume
                         Thread.sleep(1000); //refresh after 1 second
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -87,36 +76,38 @@ public class LiveCountdown_ForegroundService extends Service {
                 }
             }
         });
-        refreshAllNotificationCounters_Interval_Thread.start();
+        refreshAllThread.start();
     }
 
-    private void startRefreshAllNotificationCounters() {
+    /** Private and non-static because only livecountdownmgr should do this! Stopping is allowed to everyone. */
+    private void doRefreshAll() {
         int foregroundNotificationCount = 0;
 
         for (int i = 0; i<this.getLoadedCountdownsForLiveCountdown().size(); i++) {
-            final Countdown currCountdown = this.getLoadedCountdownsForLiveCountdown().valueAt(i); //because i cannot be final!
-            Log.d(TAG, "startRefreshAllNotificationCounters: Found entry: " + this.getLoadedCountdownsForLiveCountdown().keyAt(i));
+            final Countdown currCountdown = this.getLoadedCountdownsForLiveCountdown().valueAt(i); //because i cannot be final! (valueAt because we want index and not id)
+            Log.d(TAG, "startRefreshAll: Found entry: " + this.getLoadedCountdownsForLiveCountdown().keyAt(i));
             //IMPORTANT: 999999950 - 999999999 reserved for FOREGROUNDCOUNTERSERVICE [999999950+countdownId = foregroundNotificationID, etc.]
             //only show if setting set for that countdown
             //NO FURTHER VALIDATION NECESSARY [untilStartDateTime Value constraints AND onlyLiveCountdowns are all validated in getAllCountdowns]
             int foregroundServiceNotificationId = Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID + currCountdown.getCountdownId();
-            Log.d(TAG, "startRefreshAllNotificationCounters: foregroundServiceNotification-Id: " + foregroundServiceNotificationId + " (foregroundCount: " + foregroundNotificationCount + ")");
+            Log.d(TAG, "startRefreshAll: foregroundServiceNotification-Id: " + foregroundServiceNotificationId + " (foregroundCount: " + foregroundNotificationCount + ")");
             if ((foregroundNotificationCount++) <= 0) {
                 //only make foreground notification for first countdown, others just get a non-removable notification
-                startForeground(foregroundServiceNotificationId, customNotificationMgr.createCounterServiceNotification(currCountdown));//customNotificationMgr.getNotifications().get((long) foregroundServiceNotificationId).build());
+                startForeground(foregroundServiceNotificationId, notificationMgrMgr.createCounterServiceNotification(currCountdown));//notificationMgrMgr.getNotifications().get((long) foregroundServiceNotificationId).build());
             } else {
                 //only do this if more than one node-package bought! (better realize in getLoadedCountdowns() --> harder to implement so maybe better here in service)
                 //non-removable notifications
                 this.getInAppPurchaseMgr().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
                     public void success_is_true() {
-                        Log.d(TAG, "startRefreshAllNotificationCounters: UseMoreCountdownNodes-Package bought. Loaded more live countdowns.");
-                        customNotificationMgr.getmNotifyMgr().notify(Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID + currCountdown.getCountdownId(), customNotificationMgr.createCounterServiceNotification(currCountdown));
+                        Log.d(TAG, "startRefreshAll: UseMoreCountdownNodes-Package bought. Loaded more live countdowns.");
+                        //do not use issueNotification at this moment, because we would send a normal notification and not a countdown counter one btw. a null notification, because livecountdowns have another id range
+                        notificationMgrMgr.getmNotifyMgr().notify(Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID + currCountdown.getCountdownId(), notificationMgrMgr.createCounterServiceNotification(currCountdown));
                     }
 
                     @Override
                     public void failure_is_false() {
-                        Log.d(TAG, "startRefreshAllNotificationCounters: UseMoreCountdownNodes-Package NOT bought. Will not load any more.");
+                        Log.d(TAG, "startRefreshAll: UseMoreCountdownNodes-Package NOT bought. Will not load any more.");
                     }
                 });
             }
@@ -124,37 +115,27 @@ public class LiveCountdown_ForegroundService extends Service {
 
         //Kill service if NO countdowns should be active
         if (foregroundNotificationCount <= 0) {
-            Log.d(TAG, "startRefreshAllNotificationCounters: No live countdown candidate found. Killing myself.");
+            Log.d(TAG, "startRefreshAll: No live countdown candidate found. Killing myself.");
             killThisService();
         }
 
         //Do after above lines, because so expired countdowns can be modified/removed in createCounterServiceNotification()
         // --> forceReload, because object cannot be updated by mainThread (because service has it's OWN process and so it's own addressspace!)
-        //TODO: maybe forceReload only every 10th loop or so (acc. to battery saving etc.)
+        //Maybe no problem because of Sqlitehelper caching: maybe forceReload only every 10th loop or so (acc. to battery saving etc.)
         this.setLoadedCountdownsForLiveCountdown(DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this, true,false, true)); //false because this service should be also possible when motivateMe is off
     }
 
-    private void shouldThisServiceBeKilled(Intent intent) {
-        if (intent != null) {
-            try {
-                int stopServiceLabel = intent.getIntExtra(Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE_LABEL, (Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE) * (-1));
-                if (Constants.COUNTDOWNCOUNTERSERVICE.STOP_SERVICE == stopServiceLabel) {//*-1 so error value can NEVER equal to correct stopValue
-                    Log.d(TAG, "shouldThisServiceBeKilled: Service will be killed: " + stopServiceLabel);
-                    killThisService();
-                } else {
-                    Log.e(TAG, "shouldThisServiceBeKilled: Maybe no extra found for killing this service or given value is wrong!. So this instance will stay alive.");
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "shouldThisServiceBeKilled: Error happened. Maybe no extra found for killing this service. So this instance will stay alive.");
-                e.printStackTrace();
-            }
-        } else {
-            Log.w(TAG, "shouldThisServiceBeKilled: Intent equals null! Maybe foreground service got restarted!");
+    public static void stopRefreshAll() {
+        if (refreshAllThread != null) {
+            Log.d(TAG, "stopRefreshAll: Thread is not null. Killing it to provide restart of service.");
+            refreshAllThread.interrupt();
+            refreshAllThread = null;
         }
     }
 
-    private void killThisService() {
+    public void killThisService() {
         Log.d(TAG, "killThisService: Trying to kill myself.");
+        stopRefreshAll();
         stopForeground(true); //both lines are necessary
         //remove all notifications of this service
         removeAllServiceLiveCountdownNotifications();
@@ -168,10 +149,14 @@ public class LiveCountdown_ForegroundService extends Service {
 
         for (int i=0, nsize=this.getLoadedCountdownsForLiveCountdown().size();i<nsize;i++) {
             //false because this service should be also possible when motivateMe is off
-            allLiveCountdownNotificationIds.add(Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID + this.getLoadedCountdownsForLiveCountdown().valueAt(i).getCountdownId());
+            //Only add here running live countdowns and not expired ones, because we want to show expired msg also when service is off
+            Countdown tmpCountdown = this.getLoadedCountdownsForLiveCountdown().valueAt(i);
+            if (tmpCountdown.isUntilDateInTheFuture()) { //if in past, then just do not remove it
+                allLiveCountdownNotificationIds.add(Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID + tmpCountdown.getCountdownId());
+            } //Important: We have to ensure that expired countdowns are already removeable!
         }
 
-        this.getCustomNotificationMgr().removeNotifications(allLiveCountdownNotificationIds);
+        this.getNotificationMgrMgr().removeNotifications(allLiveCountdownNotificationIds);
     }
 
 
@@ -183,12 +168,12 @@ public class LiveCountdown_ForegroundService extends Service {
         this.loadedCountdownsForLiveCountdown = loadedCountdownsForLiveCountdown;
     }
 
-    public CustomNotification getCustomNotificationMgr() {
-        return customNotificationMgr;
+    public NotificationMgr getNotificationMgrMgr() {
+        return notificationMgrMgr;
     }
 
-    public void setCustomNotificationMgr(CustomNotification customNotificationMgr) {
-        this.customNotificationMgr = customNotificationMgr;
+    public void setNotificationMgrMgr(NotificationMgr notificationMgrMgr) {
+        this.notificationMgrMgr = notificationMgrMgr;
     }
 
     public InAppPurchaseMgr getInAppPurchaseMgr() {

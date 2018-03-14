@@ -57,7 +57,7 @@ public class AdMgr {
     /** This method searches the smartphone's host file for admob entries. Because many adblocker put there redirecting to localhost or other ips */
     public boolean isAdBlockerActivated() {
         boolean isAdBlockerActivated = false;
-        BufferedReader in = null;
+        BufferedReader in;
 
         try {
             in = new BufferedReader(new InputStreamReader(new FileInputStream("/etc/hosts")));

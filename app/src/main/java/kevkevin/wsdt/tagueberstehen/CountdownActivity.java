@@ -1,6 +1,7 @@
 package kevkevin.wsdt.tagueberstehen;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
@@ -20,12 +21,14 @@ import android.widget.ViewSwitcher;
 
 import com.daimajia.swipe.SwipeLayout;
 
+import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CountdownCounter;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppNotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.Quote;
+import kevkevin.wsdt.tagueberstehen.classes.manager.ShareMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 
 public class CountdownActivity extends AppCompatActivity {
@@ -33,10 +36,10 @@ public class CountdownActivity extends AppCompatActivity {
     private Countdown countdown;
     private static final String TAG = "CountdownActivity";
     private Intent lastIntent;
-    private Intent shareIntent; //used for refreshing extras
     private CountdownCounter countdownCounter;
     private InAppNotificationMgr inAppNotificationMgr = new InAppNotificationMgr(); //must be a member! (to prevent influencing iapnotifications of other activities)
     public static boolean runGeneratingRandomQuotes = true; //true by default, because surfaceView, when false then countdownCounter thread will NOT automatically refresh quotes (also used to pause etc.)
+    private static ShareActionProvider shareActionProvider;
 
     //TODO: With swipeLayout or/and automatically random quotes (only quotes)
 
@@ -74,6 +77,8 @@ public class CountdownActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        HelperClass.stopPeriodically(); //also stop refreshing share intent!
+
         //IMPORTANT: Stop thread of countdowncounterservice when activity gets hidden
         if (this.getCountdownCounter() != null) {
             if (this.getCountdownCounter().getCountdownCounterThread() != null) {
@@ -183,8 +188,20 @@ public class CountdownActivity extends AppCompatActivity {
     public void startCountdownOnUI() {
         if (this.getCountdown() != null) { //if (-1) was e.g. found as intent countdown id then it will be null
             //search in storage and get total seconds then start countdown (if not found because smaller 0 or deleted and notification referenced it
-            this.setCountdownCounter(new CountdownCounter(this, this.getCountdown()));
+            this.setCountdownCounter(new CountdownCounter(this, this.getCountdown())); //USE MEMBER, so we can refresh also ShareIntent
             this.getCountdownCounter().runOnUI();
+            HelperClass.doPeriodically(this, 1000, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                @Override
+                public void success_is_true() {
+                    refreshShareIntent();
+                    Log.d(TAG, "startCountdownOnUI:doPeriodically: Refreshed share intent.");
+                }
+
+                @Override
+                public void failure_is_false() {
+                    Log.d(TAG, "startCountdownOnUI:doPeriodically: Stopped refreshing share intent.");
+                }
+            });
         } else {
             Toast.makeText(this, R.string.countdownActivity_countdownNotFound, Toast.LENGTH_LONG).show();
             Log.e(TAG, "startCountdownOnUI: Countdown not found. ID: " + countdownId);
@@ -200,20 +217,32 @@ public class CountdownActivity extends AppCompatActivity {
     }
 
 
-    public Intent getShareIntent() {
-        return shareIntent;
-    }
-
-    public void setShareIntent(Intent shareIntent) {
-        this.shareIntent = shareIntent;
-    }
-
     public Countdown getCountdown() {
         return countdown;
     }
 
     public void setCountdown(Countdown countdown) {
         this.countdown = countdown;
+    }
+
+    public CountdownCounter getCountdownCounter() {
+        return countdownCounter;
+    }
+
+    public void setCountdownCounter(CountdownCounter countdownCounter) {
+        this.countdownCounter = countdownCounter;
+    }
+
+    public InAppNotificationMgr getInAppNotificationMgr() {
+        return inAppNotificationMgr;
+    }
+
+    public ShareActionProvider getShareActionProvider() {
+        return shareActionProvider;
+    }
+
+    public void setShareActionProvider(ShareActionProvider shareActionProvider) {
+        this.shareActionProvider = shareActionProvider;
     }
 
 
@@ -257,28 +286,17 @@ public class CountdownActivity extends AppCompatActivity {
         Log.d(TAG, "onCreateOptionsMenu: Trying to set ShareIntent.");
         if (shareActionProvider != null) {
             try {
-                Intent shareIntent = new Intent();
-                shareIntent.setAction(Intent.ACTION_SEND); //implicit intent for sharing
-                shareIntent.setType("text/plain"); //currently only text (todo: later picture of countdown? etc.)
                 this.setCountdown(DatabaseMgr.getSingletonInstance(this).getCountdown(this,false, this.countdownId));
-                this.setShareIntent(shareIntent); //important, so we can modify extras afterwards
-                refreshShareIntent(); //refreshes set Intent (setShareIntent must be called before!)
-                shareActionProvider.setShareIntent(shareIntent);
-                //TODO: always return current value (not only when created)
-                /*shareActionProvider.setOnShareTargetSelectedListener(new ShareActionProvider.OnShareTargetSelectedListener() {
-                    @Override
-                    public boolean onShareTargetSelected(ShareActionProvider source, Intent intent) {
-                        Log.d(TAG, "onCreateOptionsMenu:onShareTargetSelected: Trying to refresh share intent.");
-                        //class member intent seems not to be refreshed
-                        source.setShareIntent(refreshShareIntent());
-                        return false;
-                    }
-                });*/
+
+                //Provider is member so we can refresh share intent!
+                this.setShareActionProvider(shareActionProvider); //must be called before refreshShareIntent()!
+                refreshShareIntent();
+                Log.d(TAG, "onCreateOptionsMenu: Tried to set share intent first time.");
             } catch (NullPointerException e) {
-                Log.e(TAG, "onOptionsItemSelected: Could not share countdown, because countdown not found!");
+                Log.e(TAG, "onCreateOptionsMenu: Could not share countdown, because countdown not found!");
             }
         } else {
-            Log.w(TAG, "setShareIntent: Could not share values, because Actionprovider is null!");
+            Log.w(TAG, "onCreateOptionsMenu: Could not share values, because Actionprovider is null!");
         }//needing to call in menuOnCreate() first time (but we can change it afterwards with setShareIntent)
 
         return true;
@@ -288,24 +306,16 @@ public class CountdownActivity extends AppCompatActivity {
     private void refreshShareIntent() { //call when to refresh! (because of totalSeconds e.g.)
         /*Set implicit intent with extras and actions so other apps know what to share!
         Extra method, so we can setShareIntent dynamically not only on activity creation [countdown values share etc.]*/
-        if (this.getCountdown() != null && this.getShareIntent() != null) {
+        Intent shareIntent;
+        Resources res = getResources();
+        if (this.getCountdown() != null) {
             Log.d(TAG, "refreshShareIntent: Trying to refresh message (reset extras).");
-            this.getShareIntent().putExtra(Intent.EXTRA_SUBJECT, R.string.app_name);
-            this.getShareIntent().putExtra(Intent.EXTRA_TEXT, String.format(getResources().getString(R.string.actionBar_countdownActivity_menu_shareCountdown_shareContent_text), this.getCountdown().getTotalSecondsNoScientificNotation(), this.getCountdown().getCountdownTitle(), this.getCountdown().getCountdownDescription()));
+            shareIntent = ShareMgr.getSimpleShareIntent(res.getString(R.string.app_name),String.format(res.getString(R.string.actionBar_countdownActivity_menu_shareCountdown_shareContent_text), this.getCountdown().getTotalSecondsNoScientificNotation(), this.getCountdown().getCountdownTitle(), this.getCountdown().getCountdownDescription()));
         } else {
-            Log.e(TAG, "refreshShareIntent: ShareIntent or/and Countdown is NULL! Cannot set/refresh share content.");
+            Log.e(TAG, "refreshShareIntent: ShareIntent or/and Countdown is NULL! Cannot set/refresh share content. ");
+            shareIntent = ShareMgr.getSimpleShareIntent(res.getString(R.string.app_name),res.getString(R.string.error_contactAdministrator));
         }
-    }
-
-    public CountdownCounter getCountdownCounter() {
-        return countdownCounter;
-    }
-
-    public void setCountdownCounter(CountdownCounter countdownCounter) {
-        this.countdownCounter = countdownCounter;
-    }
-
-    public InAppNotificationMgr getInAppNotificationMgr() {
-        return inAppNotificationMgr;
+        this.getShareActionProvider().setShareIntent(shareIntent);
+        Log.d(TAG, "refreshShareIntent: Tried to refresh share intent.");
     }
 }

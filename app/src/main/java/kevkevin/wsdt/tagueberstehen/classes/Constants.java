@@ -68,7 +68,7 @@ public class Constants {
     }
 
     public interface ADMANAGER {
-        boolean USE_TEST_ADS = true;
+        boolean USE_TEST_ADS = false;
         String ADMOB_USER_ID = "ca-app-pub-8160960481527784~1956004763";
         int NO_INTERNET_CONNECTION_MAX = 5; //after 5 ads which cannot be displayed notify user that this app gets financed by ads
         //Reward for rewarded video must be changed on Admob Console AND the following constant has to be the same Value!!!!

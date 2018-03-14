@@ -1,6 +1,7 @@
 package kevkevin.wsdt.tagueberstehen.classes;
 
 
+import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ArrayAdapter;
@@ -14,7 +15,42 @@ import kevkevin.wsdt.tagueberstehen.R;
 public class HelperClass {
     private static final String TAG = "HelperClass";
     private static final Random random = new Random();
+    private static Thread doPeriodicallyThread; //ONLY allow one thread at the same time (so we can manage it)
 
+    /** Do sth periodically, this method does support UI updating!
+     * --> IMPORTANT: Stop thread with stopPeriodically if not needed anymore.*/
+    public static void doPeriodically(@NonNull final Activity activity, final int intervall, final ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
+        doPeriodicallyThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    while (!doPeriodicallyThread.isInterrupted()) { //do until not interrupted
+                        Thread.sleep(intervall);
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true();
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {
+                    Log.d(TAG, "doPeriodically: Thread interrupted. Ending thread.");
+                    executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
+                }
+            }
+        });
+        doPeriodicallyThread.start();
+        Log.d(TAG, "doPeriodically: Tried to start doPeriodically thread.");
+    }
+
+    public static void stopPeriodically() {
+        //ExecuteFalse will be executed! (provided in doPeriodically())
+        if (doPeriodicallyThread != null) {
+            doPeriodicallyThread.interrupt();
+            Log.d(TAG, "stopPeriodically: Tried to stop periodically thread.");
+        }
+        Log.d(TAG, "stopPeriodically: Method ended.");
+    }
 
     /**
      * With this random no. factory only one object is created once :)
