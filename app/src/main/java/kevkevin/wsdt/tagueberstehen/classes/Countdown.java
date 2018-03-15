@@ -166,7 +166,7 @@ public class Countdown {
     }
 
     public boolean isStartDateInThePast() {
-        return (getDateTime(getStartDateTime()).compareTo(getCurrentDateTime()) <= 0); //only if in the past or NOW
+        return (getDateTime(getCurrentDateTime()).compareTo(getStartDateTime()) > 0); //only if in the past or NOW
     }
 
     public boolean isUntilDateInTheFuture() {
@@ -177,23 +177,30 @@ public class Countdown {
         Resources res = this.getContext().getResources();
         Double totalSeconds = 0D;
         try {
-            if (getDateTime(getStartDateTime()).compareTo(getCurrentDateTime()) > 0) {
-                //date is in the future
-                Toast.makeText(this.getContext(), String.format(res.getString(R.string.countdown_info_startDateInFuture), this.getStartDateTime()), Toast.LENGTH_SHORT).show();
-                totalSeconds = 0D; //prevent from counting to infinity (because negative)
+            if (isUntilDateInTheFuture()) {
+                if (isStartDateInThePast()) {
+                    //untildateinfuture and startdate in past (running)
+                    totalSeconds = Long.valueOf((getDateTime(getUntilDateTime()).getTimeInMillis() - getCurrentDateTime().getTimeInMillis()) / 1000).doubleValue();
+                    Log.d(TAG, "getTotalSeconds: Countdown running->Seconds: "+totalSeconds);
+                    if (totalSeconds < 0D) {
+                        Log.e(TAG, "getTotalSeconds: TotalSeconds negative. This should not be possible.");
+                    }
+                } else {
+                    //untildateinfuture but startdate also in future (not started yet)
+                    Toast.makeText(this.getContext(), String.format(res.getString(R.string.countdown_info_startDateInFuture), this.getStartDateTime()), Toast.LENGTH_SHORT).show();
+                    totalSeconds = 0D;
+                    Log.d(TAG, "getTotalSeconds: Countdown not started yet.");
+                }
             } else {
-                //date is in the past and countdown started already
-                totalSeconds = Long.valueOf((getDateTime(getUntilDateTime()).getTimeInMillis() - getCurrentDateTime().getTimeInMillis()) / 1000).doubleValue();
+                //untildateinpast (expired
+                Toast.makeText(this.getContext(), String.format(res.getString(R.string.countdown_info_untilDateInPast), this.getUntilDateTime()), Toast.LENGTH_SHORT).show();
+                totalSeconds = 0D; //prevent from counting to infinity (because negative)
+                Log.d(TAG, "getTotalSeconds: Countdown has expired.");
             }
         } catch (NullPointerException e) {
             Log.e("getTotalSeconds", "totalSeconds could not be calculated. Nullpointerexception!");
             e.printStackTrace();
         }
-        if (totalSeconds < 0) {
-            Toast.makeText(this.getContext(), String.format(res.getString(R.string.countdown_info_untilDateInPast), this.getUntilDateTime()), Toast.LENGTH_SHORT).show();
-            totalSeconds = 0D; //prevent from counting to infinity (because negative)
-        }
-
         return totalSeconds;
     }
 
