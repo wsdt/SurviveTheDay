@@ -166,11 +166,13 @@ public class Countdown {
     }
 
     public boolean isStartDateInThePast() {
-        return (getDateTime(getCurrentDateTime()).compareTo(getStartDateTime()) > 0); //only if in the past or NOW
+        return (getDateTime(getStartDateTime()).before(getCurrentDateTime()));
+        //Works but time comparison does not work properly: return (getDateTime(getCurrentDateTime()).compareTo(getStartDateTime()) > 0); //only if in the past or NOW
     }
 
     public boolean isUntilDateInTheFuture() {
-        return (getDateTime(getUntilDateTime()).compareTo(getCurrentDateTime()) > 0); //only if in the future
+        return (getCurrentDateTime().before(getDateTime(getUntilDateTime())));
+        //Works but time comparison does not work properly: return (getDateTime(getUntilDateTime()).compareTo(getCurrentDateTime()) > 0); //only if in the future
     }
 
     public Double getTotalSeconds() {
