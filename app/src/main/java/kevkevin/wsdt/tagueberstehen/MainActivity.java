@@ -194,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
 
         //create dialog to ask user whether he wants really delete countdown
         this.getDialogMgr().showDialog_Generic(
+                null,
                 getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_title),
                 getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_description),
                 getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_yesDelete),
@@ -414,6 +415,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.action_removeAllCountdowns:
                 this.getDialogMgr().showDialog_Generic(
+                        null,
                         getResources().getString(R.string.mainActivity_countdownNode_deleteAll_warningDialog_title),
                         getResources().getString(R.string.mainActivity_countdownNode_deleteAll_warningDialog_description),
                         getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_yesDelete),

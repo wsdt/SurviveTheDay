@@ -83,6 +83,7 @@ public class AdMgr {
     private void showAntiAdBlockerDialog(){
         Resources res = this.getContext().getResources();
         new DialogMgr(this.getContext()).showDialog_Generic(
+            null,
             res.getString(R.string.adManager_adBlocker_detected_antiAdblockerDialog_title),
             res.getString(R.string.adManager_adBlocker_detected_antiAdblockerDialog_description),
                 null,"",R.drawable.light_notification_warning,null);
