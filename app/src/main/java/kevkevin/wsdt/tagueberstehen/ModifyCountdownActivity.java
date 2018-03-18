@@ -21,18 +21,19 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
 import kevkevin.wsdt.tagueberstehen.classes.ColorPicker;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
-import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
-import kevkevin.wsdt.tagueberstehen.classes.manager.InAppNotificationMgr;
-import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.Languagepack;
-import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.customviews.CustomEdittext;
 import kevkevin.wsdt.tagueberstehen.classes.customviews.DateTimePicker.DateTimePicker;
+import kevkevin.wsdt.tagueberstehen.classes.customviews.DateTimePicker.DateTimePickerMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.InAppNotificationMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 
 public class ModifyCountdownActivity extends AppCompatActivity {
     private Countdown newEditedCountdown;
@@ -325,12 +326,30 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     // TIMER/DATE PICKER ##############################################################################################
     // ################################################################################################################
 
-    public void setCustomOnClickListener(@NonNull TextView v, @NonNull RelativeLayout parentView) {
+    public void setCustomOnClickListener(@NonNull final TextView targetTextView, @NonNull RelativeLayout parentView) {
+        /*parentView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { //do not use this v, because we also can click on other childs of parentView.
+                //create onClick new instance to also keep now-member uptodate (only when instantiating refreshed)
+                DateTimePickerMgr dateTimePickerMgr = new DateTimePickerMgr(getFragmentManager(), targetTextView);
+
+                String viewTag = (String) targetTextView.getTag();
+                if (viewTag != null) {
+                    if (viewTag.equals("modifyCountdownActivity_countdown_untilDateTime_label")) {
+                        //just add 2 hours for untilDateTime per default (TODO: Does it also work at 23:50 e.g.? --> 01:50
+                        dateTimePickerMgr.setSelectedHour(dateTimePickerMgr.getSelectedHour()+2);
+                    }
+                }
+                dateTimePickerMgr.showDialog();
+            }
+        });*/
+
+
         //GregorianCalendar now = new GregorianCalendar(); //now
         GregorianCalendar now = new GregorianCalendar(); //so current time gets automatically set
-        final DateTimePicker DATETIMEPICKER = new DateTimePicker(getSupportFragmentManager(), v);
+        final DateTimePicker DATETIMEPICKER = new DateTimePicker(getSupportFragmentManager(), targetTextView);
 
-        String viewTag = (String) v.getTag();
+        String viewTag = (String) targetTextView.getTag();
         int addToHourUntilDateTime = 0; //add two hours to be greater than startdatetime
         if (viewTag != null) {
             if (viewTag.equals("modifyCountdownActivity_countdown_untilDateTime_label")) {
@@ -344,7 +363,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
                         now.get(Calendar.HOUR_OF_DAY)+addToHourUntilDateTime),
                 String.format(Constants.GLOBAL.LOCALE,"%02d", now.get(Calendar.MINUTE)),String.format(Constants.GLOBAL.LOCALE,"%02d", now.get(Calendar.SECOND)));
         Log.d(TAG, "setCustomOnClickListener: Current-Datetime->"+currentDateTime);
-        v.setText(currentDateTime);
+        targetTextView.setText(currentDateTime);
 
         parentView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -361,7 +380,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
      * --> TAG has to be the exact string resource name! (e.g. modifyCountdownActivity_countdown_category_textview_fieldDescription)
      */
     public void onHelpClick(View view) {
-        this.getInAppNotificationMgr().showQuestionMarkHelpText(this,view,(ViewGroup) findViewById(R.id.wrappingRLForAdsModifyCountdowns));
+        this.getInAppNotificationMgr().showQuestionMarkHelpText(this, view, (ViewGroup) findViewById(R.id.wrappingRLForAdsModifyCountdowns));
     }
 
     public InAppNotificationMgr getInAppNotificationMgr() {

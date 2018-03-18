@@ -242,6 +242,7 @@
     <string name="countdown_info_untilDateInPast">Countdown bereits abgelaufen: %1$s</string>
 
     <!-- DateTimePicker -->
+    <string name="dateTimePicker_dialog_title">Zeitpunkt wählen</string>
     <string name="dateTimePicker_format_date">%1$d.%2$d.%3$d</string>
     <string name="dateTimePicker_format_DateTime">%1$s %2$s:%3$s:%4$s</string>
     <string name="dateTimePicker_timePicker_notify_setCurrentTime">Aktuelle Uhrzeit gesetzt.</string>

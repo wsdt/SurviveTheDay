@@ -249,6 +249,9 @@
     <string name="countdown_info_untilDateInPast">Countdown has already expired on: %1$s</string>
 
     <!-- DateTimePicker -->
+    <string name="dateTimePicker_dialog_title">Set date and time</string>
+    <string translatable="false" name="dateTimePicker_textView_format_dateTime">%1$s.%2$s.%3$s %4$s:%5$s:%6$s</string>
+
     <string name="dateTimePicker_format_date">%1$d.%2$d.%3$d</string>
     <string name="dateTimePicker_format_DateTime">%1$s %2$s:%3$s:%4$s</string>
     <string name="dateTimePicker_timePicker_notify_setCurrentTime">Have set current time.</string>
