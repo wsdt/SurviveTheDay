@@ -268,6 +268,8 @@
     <string name="databaseMgr_error_saveCountdown_unsuccessful">Countdown could not be saved.</string>
 
     <!-- InApp Purchase Manager -->
+    <string name="inAppPurchaseManager_userOwnsPaidAppVersion_dialog_title">Paid App</string>
+    <string name="inAppPurchaseManager_userOwnsPaidAppVersion_dialog_description">You own the paid app version. Thanks for that! Considering this you already own all in-app-products.</string>
     <string name="inAppPurchaseManager_buyManagedInAppProduct_msg_ProductAlreadyBoughtORnotLoggedInOnGoogle">This item might have been already purchased by you or you need to login into your Google account.</string>
     <string name="inAppProductsNode_default_title">Product could not be loaded</string>
     <string name="inAppProductsNode_default_description">Maybe you have no active internet connection or this is an internal error. </string>
