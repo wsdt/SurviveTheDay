@@ -83,7 +83,6 @@ public class AdMgr {
     private void showAntiAdBlockerDialog(){
         Resources res = this.getContext().getResources();
         new DialogMgr(this.getContext()).showDialog_Generic(
-            null,
             res.getString(R.string.adManager_adBlocker_detected_antiAdblockerDialog_title),
             res.getString(R.string.adManager_adBlocker_detected_antiAdblockerDialog_description),
                 null,"",R.drawable.light_notification_warning,null);
@@ -164,6 +163,11 @@ public class AdMgr {
                     Log.d(TAG, "onRewardedVideoAdFailedToLoad: Tried to finish activity.");
                     getContext().finish();
                 }
+            }
+
+            @Override
+            public void onRewardedVideoCompleted() {
+
             }
         } : adListener); //add given listener or create default one
         Log.d(TAG, "loadRewardedVideoInRewardActivity: Created reward video instance etc.");

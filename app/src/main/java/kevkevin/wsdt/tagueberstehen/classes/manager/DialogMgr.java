@@ -10,7 +10,6 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import kevkevin.wsdt.tagueberstehen.R;
@@ -48,7 +47,7 @@ public class DialogMgr {
                         Log.e(TAG, "showDialog_InAppProductPromotion: Queried inventory does not contain product (maybe online deleted or wrong id?): " + skuProductId);
                         Toast.makeText(getContext(), R.string.inAppPurchaseManager_error_queriedInventoryDoesNotContainProduct, Toast.LENGTH_SHORT).show();
                     } else {
-                        showDialog_Generic(null, skuDetails.getTitle(), skuDetails.getDescription(), getRes().getString(R.string.dialog_inAppProduct_button_positive_buy), getRes().getString(R.string.dialog_inAppProduct_button_negative_buy), R.drawable.light_appicon_48dp, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                        showDialog_Generic(skuDetails.getTitle(), skuDetails.getDescription(), getRes().getString(R.string.dialog_inAppProduct_button_positive_buy), getRes().getString(R.string.dialog_inAppProduct_button_negative_buy), R.drawable.light_appicon_48dp, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                             @Override
                             public void success_is_true() {
                                 //resultcode 0 for inapppurchaseactivity and 1 for dialogs
@@ -78,22 +77,22 @@ public class DialogMgr {
 
     /**
      * @param lblNegativeBtn: By providing an empty string ("") [not null!] there will only the OK button added
-     * @param nestedView: Used e.g. when no msg to put as body of the dialog an view(group) structure (such as dateTimer picker in one dialog e.g.)
      */
-    public void showDialog_Generic(@Nullable View nestedView, @Nullable String title, @Nullable String msg, @Nullable String lblPositiveBtn, @Nullable String lblNegativeBtn, int icon, @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) { //to nullable icon just put a negative value in it
-        showDialog_Generic(createDialog(nestedView, title,msg,lblPositiveBtn,lblNegativeBtn,icon,executeIfTrueSuccess_or_ifFalseFailure_afterCompletation));
+    public void showDialog_Generic(@Nullable String title, @Nullable String msg, @Nullable String lblPositiveBtn, @Nullable String lblNegativeBtn, int icon, @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) { //to nullable icon just put a negative value in it
+        showDialog_Generic(createDialog(title,msg,lblPositiveBtn,lblNegativeBtn,icon,executeIfTrueSuccess_or_ifFalseFailure_afterCompletation));
     }
 
     /** Overloaded method for showing already crafted dialog. [use always this method for avoiding TokenException!] */
     public void showDialog_Generic(@NonNull Dialog dialog) {
         if (!getContext().isFinishing()) { //really important
+            dialog.setCanceledOnTouchOutside(false);
             dialog.show();
         } else {
             Log.d(TAG, "showDialog_Generic: Activity/Context is finishing. Did not show dialog. Prevented bad token exception.");
         }
     }
 
-    public Dialog createDialog(@Nullable View nestedView, @Nullable String title, @Nullable String msg, @Nullable String lblPositiveBtn, @Nullable String lblNegativeBtn, int icon, @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
+    public Dialog createDialog(@Nullable String title, @Nullable String msg, @Nullable String lblPositiveBtn, @Nullable String lblNegativeBtn, int icon, @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
         AlertDialog.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Dialog_Alert);
@@ -114,11 +113,6 @@ public class DialogMgr {
                         }
                     }
                 });
-
-        //Set views inside alertdialog when provided
-        if (nestedView != null) {
-            builder.setView(nestedView);
-        }
 
         //use provided listener if not null otherwise use default one below, but if empty string then use no negative btn
         if (lblNegativeBtn != null) {

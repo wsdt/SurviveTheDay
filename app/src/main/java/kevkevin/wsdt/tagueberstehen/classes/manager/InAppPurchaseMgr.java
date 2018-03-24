@@ -3,6 +3,7 @@ package kevkevin.wsdt.tagueberstehen.classes.manager;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import kevkevin.wsdt.tagueberstehen.BuildConfig;
 import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
@@ -47,6 +49,45 @@ public class InAppPurchaseMgr {
     }
 
     //IMPORTANT FOR NEW METHODS: new strategy --> In every method make the WHOLE workflow independently from other methods or values!!!!
+
+    /**
+     * Uses product flavors to determine whether user paid for app (paid version = true) or used the lite version where user can pay for in app products.
+     * If this is true in app products should NOT be buyable!
+     */
+    public boolean isAppPaid() {
+        return BuildConfig.PAID_VERSION;
+    }
+
+    /**
+     * Should be only called when user owns paid app version.
+     */
+    public void showPaidVersionDialog() {
+        try {
+            Resources res = this.getActivityContext().getResources();
+            final Activity activity = (Activity) this.getActivityContext();
+            new DialogMgr(activity).showDialog_Generic(
+                    res.getString(R.string.inAppPurchaseManager_userOwnsPaidAppVersion_dialog_title),
+                    res.getString(R.string.inAppPurchaseManager_userOwnsPaidAppVersion_dialog_description),
+                    null, "", (-1), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                        @Override
+                        public void success_is_true() {
+                            //Close activity when clicking on ok btn (used e.g. in inappproducts activity)
+                            if (activity != null) {
+                                activity.finish();
+                            }
+                        }
+
+                        @Override
+                        public void failure_is_false() {
+                            //This dialog has no cancel btn
+                        }
+                    });
+        } catch (ClassCastException e) {
+            Log.e(TAG, "showPaidVersionDialog: Cannot show paid version dialog, because context is not an activity. Showing toast instead.");
+            e.printStackTrace();
+            Toast.makeText(this.getActivityContext(), R.string.inAppPurchaseManager_userOwnsPaidAppVersion_dialog_description, Toast.LENGTH_LONG).show();
+        }
+    }
 
     //DONE
     public void queryAllProducts_ASYNC(boolean forceRefresh, @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
@@ -135,26 +176,30 @@ public class InAppPurchaseMgr {
 
 
     public void printAllInAppProductsAsNode(final @NonNull LinearLayout nodeContainer) {
-        //no iabsetupcompleted listener here necessary (is in queryallproducts)
-        this.queryAllProducts_ASYNC(false, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
-            @Override
-            public void success_is_true() {
-                //NodeContainer should have a vertical orientation and maybe be scrollable (so nodeContainer should be within a Scrollview)
-                //validate whether relativelayout of craft function is null otherwise do not add it
-                if (getAllInAppProducts() != null) {
-                    for (Map.Entry<String, SkuDetails> entryStrSkuDetails : getAllInAppProducts().getmSkuMap().entrySet()) {
-                        printInAppProductAsNode(nodeContainer, entryStrSkuDetails);
+        if (isAppPaid()) {
+            showPaidVersionDialog();
+        } else {
+            //no iabsetupcompleted listener here necessary (is in queryallproducts)
+            this.queryAllProducts_ASYNC(false, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                @Override
+                public void success_is_true() {
+                    //NodeContainer should have a vertical orientation and maybe be scrollable (so nodeContainer should be within a Scrollview)
+                    //validate whether relativelayout of craft function is null otherwise do not add it
+                    if (getAllInAppProducts() != null) {
+                        for (Map.Entry<String, SkuDetails> entryStrSkuDetails : getAllInAppProducts().getmSkuMap().entrySet()) {
+                            printInAppProductAsNode(nodeContainer, entryStrSkuDetails);
+                        }
+                    } else {
+                        Log.w(TAG, "printAllInAppProductsAsNode: getAllInAppProducts() is NULL! Maybe no products in Google Play Console created or no internet?");
                     }
-                } else {
-                    Log.w(TAG, "printAllInAppProductsAsNode: getAllInAppProducts() is NULL! Maybe no products in Google Play Console created or no internet?");
                 }
-            }
 
-            @Override
-            public void failure_is_false() {
-                Log.e(TAG, "printAllInAppProductsAsNode: Could not query products!");
-            }
-        });
+                @Override
+                public void failure_is_false() {
+                    Log.e(TAG, "printAllInAppProductsAsNode: Could not query products!");
+                }
+            });
+        }
     }
 
 
@@ -283,32 +328,36 @@ public class InAppPurchaseMgr {
     }
 
     public void executeIfProductIsBought(final String productSkuId, final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
-        //forceReload:true necessary (when false you would buy sth and you would need to restart app to see changes!)
-        this.queryAllProducts_ASYNC(true, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
-            @Override
-            public void success_is_true() {
-                //Querying and setup successfull then verify purchase and execute again different interface methods
-                try {
-                    if (getAllInAppProducts().hasPurchase(productSkuId)) {
-                        Log.d(TAG, "ExecuteIfProductIsBought:onIabSetupFinished: Needed to download inventory. Product is bought. Executed Interface execute().");
-                        executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true(); //overwritten execute method will be executed
-                    } else {
-                        Log.d(TAG, "ExecuteIfProductIsBought:onIabSetupFinished: Needed to download inventory. Product is NOT bought (executed negative method).");
+        if (isAppPaid()) {
+            executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true();
+        } else {
+            //forceReload:true necessary (when false you would buy sth and you would need to restart app to see changes!)
+            this.queryAllProducts_ASYNC(true, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                @Override
+                public void success_is_true() {
+                    //Querying and setup successfull then verify purchase and execute again different interface methods
+                    try {
+                        if (getAllInAppProducts().hasPurchase(productSkuId)) {
+                            Log.d(TAG, "ExecuteIfProductIsBought:onIabSetupFinished: Needed to download inventory. Product is bought. Executed Interface execute().");
+                            executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true(); //overwritten execute method will be executed
+                        } else {
+                            Log.d(TAG, "ExecuteIfProductIsBought:onIabSetupFinished: Needed to download inventory. Product is NOT bought (executed negative method).");
+                            executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
+                        }
+                    } catch (NullPointerException e) {
+                        Log.e(TAG, "isProductBought: Inventory not already set. Try it later again.");
+                        Toast.makeText(getActivityContext(), R.string.inAppPurchaseManager_error_isProductPurchasedFailure, Toast.LENGTH_SHORT).show(); //maybe remove, because if not internet and not bought this msg is useless [but useful if no internet and bought]
                         executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
                     }
-                } catch (NullPointerException e) {
-                    Log.e(TAG, "isProductBought: Inventory not already set. Try it later again.");
-                    Toast.makeText(getActivityContext(), R.string.inAppPurchaseManager_error_isProductPurchasedFailure, Toast.LENGTH_SHORT).show(); //maybe remove, because if not internet and not bought this msg is useless [but useful if no internet and bought]
-                    executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
                 }
-            }
 
-            @Override
-            public void failure_is_false() { //querying/setup failure then do failure-method of bought interface
-                executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
-                Log.e(TAG, "isProductBought:querySetupHelper: Could not setup helper or could not fetch inventory.");
-            }
-        });
+                @Override
+                public void failure_is_false() { //querying/setup failure then do failure-method of bought interface
+                    executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
+                    Log.e(TAG, "isProductBought:querySetupHelper: Could not setup helper or could not fetch inventory.");
+                }
+            });
+        }
     }
 
     /* NOT NECESSARY: Because we can use queryInventory_ASYNC and then just execute in successMethod: this.queryAllProducts(false).getSkuDetails(productSkuId);

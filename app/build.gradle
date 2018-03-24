@@ -1,13 +1,21 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        SurviveTheDayKey {
+            keyAlias 'SurviveTheDayKey'
+            keyPassword 'Ad12VK1A'
+            storeFile file('C:/Users/kevin/Desktop/Android_PUBLICPRIVATE_KEYS/survivetheday.jks')
+            storePassword '459145914591'
+        }
+    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "kevkevin.wsdt.tagueberstehen"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 22
-        versionName "1.0.0" //{major}.{minor}.{bugfixes} auch mehrstellig
+        versionCode 23
+        versionName "1.0.1" //{major}.{minor}.{bugfixes} auch mehrstellig
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -17,13 +25,13 @@ android {
             shrinkResources true /*shrinks unused res (drawables etc.)*/
             minifyEnabled true /*same as shrinkResources but for code itself*/
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-
             /*productFlavors.free.signingConfig signingConfigs.freeRelease
             productFlavors.paid.signingConfig signingConfigs.paidRelease*/
             lintOptions {
                 //Do not abort when errors occur, but tell me (CAUTION!) --> used for e.g. untranslated string arrays
                 abortOnError false
             }
+            signingConfig signingConfigs.SurviveTheDayKey
         }
     }
     //this creates resource string while compiling with current versionName! (e.g. Loading screen)
@@ -31,7 +39,6 @@ android {
         variant ->
             variant.resValue "string", "versionName", variant.versionName
     }
-
     // Specifies dimensions (for different dependencies and similar or so)
     flavorDimensions "dim"
     productFlavors {
@@ -42,7 +49,7 @@ android {
             buildConfigField "boolean", "PAID_VERSION", "false"
         }
         paid {
-            //applicationIdSuffix ".paid"
+            applicationIdSuffix ".paid"
             versionNameSuffix "-p"
             dimension "dim"
             buildConfigField "boolean", "PAID_VERSION", "true"
@@ -51,16 +58,23 @@ android {
 }
 
 dependencies {
-    implementation 'com.android.support:recyclerview-v7:27.0.2' //also necessary for swipelayout
-    implementation "com.daimajia.swipelayout:library:1.2.0@aar" //swipelayout for nodes etc.
-    implementation 'com.github.yukuku:ambilwarna:2.0.1' //Color picker
-    implementation 'com.google.firebase:firebase-ads:11.8.0'
-    implementation 'com.kovachcode:timePickerWithSeconds:1.0.1' //For time picker with seconds
+    //Do not use 27.1.0 at the moment because it causes app to crash (wait for new release of Google or similar!)
+    implementation 'com.android.support:recyclerview-v7:27.0.2'
+    //also necessary for swipelayout
+    implementation 'com.daimajia.swipelayout:library:1.2.0@aar'
+    //swipelayout for nodes etc.
+    implementation 'com.github.yukuku:ambilwarna:2.0.1'
+    //Color picker
+    implementation 'com.google.firebase:firebase-ads:12.0.0'
+    //implementation 'com.appeaser.sublimepickerlibrary:sublimepickerlibrary:2.1.1' //for datetimerecurrence picker TODO: for compatibility add library manually as zip and edit gradle gridlayout library to 27.1
+    implementation 'com.kovachcode:timePickerWithSeconds:1.0.1'
+    //For time picker with seconds
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.0.2'
     implementation 'com.android.support:design:27.0.2'
-    implementation 'com.google.firebase:firebase-core:11.8.0'
-    implementation 'com.android.support:support-v4:27.0.2' //needed for swipelayout and many other things
+    implementation 'com.google.firebase:firebase-core:12.0.0'
+    implementation 'com.android.support:support-v4:27.0.2'
+    //needed for swipelayout and many other things
     implementation 'com.android.support:support-vector-drawable:27.0.2'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     testImplementation 'junit:junit:4.12'

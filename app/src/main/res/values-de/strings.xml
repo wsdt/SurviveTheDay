@@ -260,6 +260,8 @@
     <string name="databaseMgr_error_saveCountdown_unsuccessful">Countdown konnte nicht gespeichert werden.</string>
 
     <!-- InApp Purchase Manager -->
+    <string name="inAppPurchaseManager_userOwnsPaidAppVersion_dialog_title">Premium App</string>
+    <string name="inAppPurchaseManager_userOwnsPaidAppVersion_dialog_description">Du besitzt die Premium-Version dieser App. Vielen Dank dafür! Deshalb besitzt du bereits alle In-App-Produkte.</string>
     <string name="inAppPurchaseManager_buyManagedInAppProduct_msg_ProductAlreadyBoughtORnotLoggedInOnGoogle">Entweder du hast dieses Produkt bereits erworben oder du musst dich in deinen Google-Account einloggen.</string>
 
     <string name="inAppProductsNode_default_title">Produkt konnte nicht geladen werden.</string>
