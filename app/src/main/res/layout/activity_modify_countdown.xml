@@ -78,6 +78,7 @@
                     android:text="@string/modifyCountdownActivity_countdown_fromDateTime_textview_exampleValue" />
 
                 <ImageView
+                    android:id="@+id/startDateTimeIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
@@ -114,6 +115,7 @@
                     android:text="@string/modifyCountdownActivity_countdown_untilDateTime_textview_exampleValue" />
 
                 <ImageView
+                    android:id="@+id/untilDateTimeIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
@@ -147,6 +149,7 @@
                     android:onClick="onClickOpenColorPicker" />
 
                 <ImageView
+                    android:id="@+id/exampleHelpBtn4Spotlight"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"

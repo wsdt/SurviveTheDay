@@ -2,7 +2,9 @@ package kevkevin.wsdt.tagueberstehen;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,12 +14,23 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.daimajia.swipe.SwipeLayout;
+import com.takusemba.spotlight.CustomTarget;
+import com.takusemba.spotlight.OnSpotlightEndedListener;
+import com.takusemba.spotlight.OnSpotlightStartedListener;
+import com.takusemba.spotlight.OnTargetStateChangedListener;
+import com.takusemba.spotlight.SimpleTarget;
+import com.takusemba.spotlight.Spotlight;
+import com.takusemba.spotlight.Target;
+
+import java.util.ArrayList;
 
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
@@ -39,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private DialogMgr dialogMgr;
     //private InternalCountdownStorageMgr internalCountdownStorageMgr;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private ArrayList<View> allSpotLightTargetsAsViews = new ArrayList<>(); //might be empty (used for position of spotlight, list does not contain targetObjects only normal views!)
 
 
     @Override
@@ -84,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         reloadEverything();
         this.invalidateOptionsMenu(); //invalidate also options menu (no need in reloadEverything, would be too often [only in PurchaseActivity ads will be removed, so restart() is enough])
     }
+
 
     private void reloadEverything() { //TODO: use if possible for small changes (like motivation toggle not this method (only change text --> better user experience)
         this.anzahlShowingNodes = 0;

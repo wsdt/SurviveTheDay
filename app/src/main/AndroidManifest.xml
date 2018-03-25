@@ -64,8 +64,10 @@
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
+        <!-- windowSoftInputMode:StateUnchanged>>> don't change keyboard on activity startup [prevent auto-focus keyboard] (e.g. don't show it if it isn't already shown, but if it was open when entering the activity, leave it open).-->
         <activity
             android:name=".ModifyCountdownActivity"
+            android:windowSoftInputMode="stateUnchanged"
             android:label="@string/title_activity_modify_countdown">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

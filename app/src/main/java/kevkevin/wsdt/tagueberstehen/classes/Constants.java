@@ -101,7 +101,12 @@ public class Constants {
     public interface CUSTOMNOTIFICATION {
         //MUST BE LOWER than NOTIFICATION_ID of COUNTDOWNCOUNTERSERVICE! Below this no. a motivational notification gets its random notification id
         int NOTIFICATION_ID = (COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID-1); //currently 999999949
-        String DEFAULT_NOTIFICATION_CHANNEL = "SURVIVE_THE_DAY"; //now obligatory for android o etc.
+        String NOTIFICATION_CHANNEL_DEFAULT_ID = "SURVIVE THE_DAY_GENERAL"; //now obligatory for android o etc.
+        String NOTIFICATION_CHANNEL_DEFAULT_NAME = "General Notifications";
+        String NOTIFICATION_CHANNEL_LIVECOUNTDOWN_ID = "SURVIVE_THE_DAY_LIVECOUNTDOWN";
+        String NOTIFICATION_CHANNEL_LIVECOUNTDOWN_NAME = "Live Countdown";
+        String NOTIFICATION_CHANNEL_MOTIVATION_ID = "SURVIVE_THE_DAY_MOTIVATION";
+        String NOTIFICATION_CHANNEL_MOTIVATION_NAME = "Motivation";
 
         //LED light of notification (how long to blink on/off)
         int NOTIFICATION_BLINK_OFF_TIME_IN_MS = 1000;
@@ -470,6 +475,7 @@ public class Constants {
 
         interface GLOBAL_APPSETTINGS_STR_MGR {
             String SHAREDPREFERENCES_DBNAME = "APP_SETTINGS";
+            String SPIDENTIFIER_SPOTLIGHTHELP_MODIFYCOUNTDOWNACTIVITY = "SPOTLIGHT_MODIFY_ACTIVITY_ALREADYSHOWN";
             String SPIDENTIFIER_BG_SERVICE_PID = "BG_SERVICE_PID";
             String SPIDENTIFIER_USE_FORWARD_COMPATIBILITY = "USE_FORWARD_COMPATIBILITY";
             String SPIDENTIFIER_SAVE_BATTERY = "SAVE_BATTERY";

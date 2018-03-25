@@ -28,6 +28,16 @@ public class GlobalAppSettingsMgr {
         this.setGlobalSettings_SharedPref(context.getSharedPreferences(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.SHAREDPREFERENCES_DBNAME, Context.MODE_MULTI_PROCESS)); //Multi_mode process necessary so we have update contents in our services
     }
 
+    /** @param alreadyShown: When false then you reset it and spotlight will be shown next time. Otherwise it won't be shown anymore. */
+    public void setModifyCountdownSpotlightHelpAlreadyShown(boolean alreadyShown) {
+        this.getGlobalSettings_SharedPref().edit().putBoolean(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.SPIDENTIFIER_SPOTLIGHTHELP_MODIFYCOUNTDOWNACTIVITY,alreadyShown).apply();
+        Log.d(TAG, "setModifyCountdownSpotlightHelpAlreadyShown: Tried to save new spotlight status. If true spotlight won't show up again.");
+    }
+    public boolean isModifyCountdownSpotlightHelpAlreadyShown() {
+        Log.d(TAG, "setModifyCountdownSpotlightHelpAlreadyShown: Tried to save new spotlight status. If true spotlight won't show up again.");
+        return this.getGlobalSettings_SharedPref().getBoolean(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.SPIDENTIFIER_SPOTLIGHTHELP_MODIFYCOUNTDOWNACTIVITY,false); //show if no value present (first start up)
+    }
+
     //Save system.currentTimeMillis()+rewardedValue() in Milliseconds or so as new grenzwert
     public void setRemoveAdsTemporarlyInMinutes(int adFreeMinutes) {
         this.getGlobalSettings_SharedPref().edit().putLong(Constants.STORAGE_MANAGERS.GLOBAL_APPSETTINGS_STR_MGR.REMOVE_ADS_TEMPORARLY_IN_MINUTES, System.currentTimeMillis() + (adFreeMinutes * 60 * 1000)).apply(); //convert to milliseconds (as long current timestamp is smaller ads will be hidden)

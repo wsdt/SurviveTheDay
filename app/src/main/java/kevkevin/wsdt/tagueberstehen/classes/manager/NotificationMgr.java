@@ -3,12 +3,14 @@ package kevkevin.wsdt.tagueberstehen.classes.manager;
 
 import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -42,6 +44,11 @@ public class NotificationMgr { //one instance for every countdown or similar
         this.setmNotifyMgr(mNotifyMgr);
         this.setTargetActivityClass(targetActivityClass);
         this.setRes(activityThisTarget.getResources());
+
+        //Create NotificationChannels for Oreo
+        createNotificationChannel(Constants.CUSTOMNOTIFICATION.NOTIFICATION_CHANNEL_LIVECOUNTDOWN_ID,Constants.CUSTOMNOTIFICATION.NOTIFICATION_CHANNEL_LIVECOUNTDOWN_NAME,3);
+        createNotificationChannel(Constants.CUSTOMNOTIFICATION.NOTIFICATION_CHANNEL_DEFAULT_ID,Constants.CUSTOMNOTIFICATION.NOTIFICATION_CHANNEL_DEFAULT_NAME,3);
+        createNotificationChannel(Constants.CUSTOMNOTIFICATION.NOTIFICATION_CHANNEL_MOTIVATION_ID,Constants.CUSTOMNOTIFICATION.NOTIFICATION_CHANNEL_MOTIVATION_NAME,3);
 
         //With countdown ID we are able to look in our persistent storage for the right countdown
         // IMPORTANT: Pending intent in create countdown so always correct one opened
@@ -111,6 +118,16 @@ public class NotificationMgr { //one instance for every countdown or similar
         }
     }
 
+    /** @param importance: Has to be supplied as normal int and not NotificationManager.IMPORTANCE_BLA because too low api level, just supply the int behind that constant! */
+    private void createNotificationChannel(@NonNull String channelId, @NonNull String channelName, int importance) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.getmNotifyMgr().createNotificationChannel(new NotificationChannel(
+                    channelId,
+                    channelName,
+                    importance));
+        }
+    }
+
     public Notification createCounterServiceNotification(Countdown countdown) {
         Intent tmpIntent = new Intent(this.getActivityThisTarget(), getTargetActivityClass());
         tmpIntent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID,countdown.getCountdownId()); //countdown to open
@@ -149,7 +166,7 @@ public class NotificationMgr { //one instance for every countdown or similar
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 
-        return new NotificationCompat.Builder(this.getActivityThisTarget(),Constants.CUSTOMNOTIFICATION.DEFAULT_NOTIFICATION_CHANNEL)
+        return new NotificationCompat.Builder(this.getActivityThisTarget(),Constants.CUSTOMNOTIFICATION.NOTIFICATION_CHANNEL_LIVECOUNTDOWN_ID)
                 .setSmallIcon(R.drawable.light_notification_appicon)
                 //Large icon is too small on new smartphones
                 //.setLargeIcon(BitmapFactory.decodeResource(this.getRes(),R.drawable.notification_timebased_color))
@@ -181,7 +198,7 @@ public class NotificationMgr { //one instance for every countdown or similar
 
         //add notification
         this.getNotifications().put(this.getmNotificationId(), //save with current id
-                new NotificationCompat.Builder(this.getActivityThisTarget(),Constants.CUSTOMNOTIFICATION.DEFAULT_NOTIFICATION_CHANNEL)
+                new NotificationCompat.Builder(this.getActivityThisTarget(),Constants.CUSTOMNOTIFICATION.NOTIFICATION_CHANNEL_DEFAULT_ID)
                         .setSmallIcon(icon)
                         .setContentTitle(title)
                         //onMs = how long on / offMs = how long off (repeating, so blinking!)
@@ -228,10 +245,9 @@ public class NotificationMgr { //one instance for every countdown or similar
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 
-        //TODO: https://material.io/icons/
         //add notification
         this.getNotifications().put(this.getmNotificationId(), //save with current id
-                new NotificationCompat.Builder(this.getActivityThisTarget(),Constants.CUSTOMNOTIFICATION.DEFAULT_NOTIFICATION_CHANNEL)
+                new NotificationCompat.Builder(this.getActivityThisTarget(),Constants.CUSTOMNOTIFICATION.NOTIFICATION_CHANNEL_MOTIVATION_ID)
                 .setSmallIcon(icon)
                 .setContentTitle(title)
                 //onMs = how long on / offMs = how long off (repeating, so blinking!)

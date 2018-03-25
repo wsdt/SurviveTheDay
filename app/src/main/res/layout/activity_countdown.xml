@@ -33,17 +33,27 @@
                 android:layout_marginTop="15dp"
                 android:text="@string/countdownActivity_countdownMainCounter_zero" />
 
-            <!-- PROGRESSBAR for countdown (how much achieved) -->
-            <ProgressBar
+            <!-- PROGRESSBAR for countdown (how much achieved)
+            style="?android:attr/progressBarStyleHorizontal" -->
+            <com.daimajia.numberprogressbar.NumberProgressBar
                 android:id="@+id/countdownProgressBar"
-                style="?android:attr/progressBarStyleHorizontal"
+                style="@style/NumberProgressBar_Funny_Orange"
                 android:layout_centerHorizontal="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_margin="5dp"
                 android:progress="100"
+                app:progress_current="100"
                 android:max="100"
+                app:progress_max="100"
+
+                app:progress_unreached_color="@color/colorGrey_aaa"
+                app:progress_unreached_bar_height="0.75dp"
+                app:progress_reached_color="@color/colorAccent"
+                app:progress_reached_bar_height="1.5dp"
+                app:progress_text_color="@color/colorAccent"
+
                 android:minWidth="200dp"
                 android:layout_below="@id/countdownCounter"
                 android:indeterminate="false"/>
