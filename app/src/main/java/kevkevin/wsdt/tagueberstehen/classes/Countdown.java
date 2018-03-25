@@ -139,7 +139,7 @@ public class Countdown {
         try {
             double all100percentSeconds = Long.valueOf((getDateTime(getUntilDateTime()).getTimeInMillis() - getDateTime(getStartDateTime()).getTimeInMillis()) / 1000).doubleValue();
             double leftXpercentSeconds = Long.valueOf((getDateTime(getUntilDateTime()).getTimeInMillis() - getCurrentDateTime().getTimeInMillis()) / 1000).doubleValue();
-
+            Log.d(TAG, "getRemainingPercentage: "+all100percentSeconds+" // "+leftXpercentSeconds);
 
             double percentageValueUnformatted;
             if (getRemainingOtherwisePassedPercentage) {
@@ -147,6 +147,8 @@ public class Countdown {
             } else {
                 percentageValueUnformatted = 100 - ((leftXpercentSeconds / all100percentSeconds) * 100); //get passed percentage if false
             }
+
+            Log.d(TAG, "getRemainingPercentage:Unformatted: "+percentageValueUnformatted);
 
             //Double result = Double.parseDouble((new DecimalFormat("##,"+nachkommaStellen)).format((leftXpercentSeconds / all100percentSeconds) * 100)); //formatting percentage to 2 nachkommastellen
             return (percentageValueUnformatted >= 0) ? ((percentageValueUnformatted <= 100) ? percentageValueUnformatted : 100) : 0; //always return 0-100
@@ -221,7 +223,7 @@ public class Countdown {
 
     //also needed in ModifyCountdownActivity
     public GregorianCalendar getDateTime(String formattedDate) {
-        DateFormat df = new SimpleDateFormat(Constants.GLOBAL.DATETIME_FORMAT, Locale.GERMAN);
+        DateFormat df = new SimpleDateFormat(Constants.GLOBAL.DATETIME_FORMAT, Locale.getDefault());
         GregorianCalendar result;
         try {
             Date date = df.parse(formattedDate);

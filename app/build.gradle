@@ -14,8 +14,8 @@ android {
         applicationId "kevkevin.wsdt.tagueberstehen"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 23
-        versionName "1.0.1" //{major}.{minor}.{bugfixes} auch mehrstellig
+        versionCode 25
+        versionName "1.2.0" //{major}.{minor}.{bugfixes} auch mehrstellig
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -27,10 +27,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             /*productFlavors.free.signingConfig signingConfigs.freeRelease
             productFlavors.paid.signingConfig signingConfigs.paidRelease*/
-            lintOptions {
-                //Do not abort when errors occur, but tell me (CAUTION!) --> used for e.g. untranslated string arrays
-                abortOnError false
-            }
+
             signingConfig signingConfigs.SurviveTheDayKey
         }
     }
@@ -58,6 +55,12 @@ android {
 }
 
 dependencies {
+    //NumberProgressBar (e.g. CountdownActivity)
+    implementation 'com.daimajia.numberprogressbar:library:1.4@aar'
+
+    //Spotlight for first time explanation (or overall help (help menu btn))
+    implementation 'com.github.takusemba:spotlight:1.3.3'
+
     //Do not use 27.1.0 at the moment because it causes app to crash (wait for new release of Google or similar!)
     implementation 'com.android.support:recyclerview-v7:27.0.2'
     //also necessary for swipelayout

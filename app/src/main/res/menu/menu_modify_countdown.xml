@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainActionbar"
+    tools:context="kevkevin.wsdt.tagueberstehen.MainActivity">
+
+    <!-- actionViewClass used for getting position for setting spotlight.
+         To prevent nullPointers if no room catch them -->
+    <item
+        android:id="@+id/action_showSpotlightHelp"
+        android:orderInCategory="0"
+        android:icon="@drawable/light_help"
+        android:title="@string/actionBar_modifyCountdownActivity_menu_showSpotlightHelp"
+        app:showAsAction="ifRoom" />
+</menu>

@@ -4,6 +4,20 @@
     <string name="app_owner_mail" translatable="false">kevin.riedl.privat@gmail.com</string>
     <string name="app_version_label">App-Version: </string>
 
+    <!-- Spotlight (how to use app) -->
+    <string name="spotlight_modifyCountdownActivity_target_startDateTimeIcon_title">When does it start?</string>
+    <string name="spotlight_modifyCountdownActivity_target_startDateTimeIcon_description">When does your unpleasant activity start? Click here to set a timestamp.</string>
+    <string name="spotlight_modifyCountdownActivity_target_untilDateTimeIcon_title">When is it over?</string>
+    <string name="spotlight_modifyCountdownActivity_target_untilDateTimeIcon_description">By clicking here you can set the end of your unpleasant activity.</string>
+    <string name="spotlight_modifyCountdownActivity_target_exampleHelpBtn_title">Any questions?</string>
+    <string name="spotlight_modifyCountdownActivity_target_exampleHelpBtn_description">Do you need help? Just click on one of these question marks and you will receive a short explanation.</string>
+    <string name="spotlight_modifyCountdownActivity_target_categoryNotificationColor_title">Don\'t you like green?</string>
+    <string name="spotlight_modifyCountdownActivity_target_categoryNotificationColor_description">Click here to change the color of the small LED lamp on your phone. By default all motivating notifications will have a green-blinking color.</string>
+    <string name="spotlight_modifyCountdownActivity_target_isActive_title">Get motivated!</string>
+    <string name="spotlight_modifyCountdownActivity_target_isActive_description">By turning this option on you will receive motivating quotes or time-based notifications (such as \'Only 50 minutes to go!\')</string>
+    <string name="spotlight_modifyCountdownActivity_target_showLiveCountdown_title">Do you need pressure?</string>
+    <string name="spotlight_modifyCountdownActivity_target_showLiveCountdown_description">To get e.g. your bachelor thesis done you can activate the live countdown, which will print the remaining time in your notification bar.</string>
+
     <!-- ACTIONBAR TITLES -->
     <string name="title_activity_credits">Credits</string><!-- entry also used in actionBar menu-->
     <string name="title_activity_settings">Settings</string><!-- entry also used in actionBar menu-->
@@ -15,8 +29,11 @@
     <string name="actionBar_mainActivity_menu_removeAdsTemporarily">Remove Ads temporary</string>
     <string name="actionBar_mainActivity_menu_showInAppProducts">In-App-Products</string>
 
+    <!-- ACTIONBAR MENUS:MODIFYCOUNTDOWNACTIVITY -->
+    <string name="actionBar_modifyCountdownActivity_menu_showSpotlightHelp">Help me</string>
+
     <!-- SHARING -->
-    <string name="share_postfix_appreference">[Provided by Survive The Day (downloadable on Playstore)]</string>
+    <string name="share_postfix_appreference">[Provided by Survive The Day (downloadable on Playstore: https://play.google.com/store/apps/details?id=kevkevin.wsdt.tagueberstehen )]</string>
     <string name="share_livecountdown_text_expired">%1$s - It\'s over! I got it.</string>
     <string name="share_livecountdown_text_running">%1$s - My personal countdown: %2$s</string>
 

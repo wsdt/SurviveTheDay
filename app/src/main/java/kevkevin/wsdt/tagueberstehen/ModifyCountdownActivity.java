@@ -2,12 +2,19 @@ package kevkevin.wsdt.tagueberstehen;
 
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.CheckBox;
 import android.widget.GridLayout;
 import android.widget.RelativeLayout;
@@ -15,6 +22,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import com.takusemba.spotlight.OnSpotlightEndedListener;
+import com.takusemba.spotlight.OnSpotlightStartedListener;
+import com.takusemba.spotlight.OnTargetStateChangedListener;
+import com.takusemba.spotlight.SimpleTarget;
+import com.takusemba.spotlight.Spotlight;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +46,7 @@ import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppNotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
 
 public class ModifyCountdownActivity extends AppCompatActivity {
     private Countdown newEditedCountdown;
@@ -41,6 +55,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     private InAppPurchaseMgr inAppPurchaseMgr;
     private DialogMgr dialogMgr; //important that kevkevin dialogMgr gets imported and not the one of android!
     private InAppNotificationMgr inAppNotificationMgr = new InAppNotificationMgr(); //must be a member! (to prevent influencing iapnotifications of other activities)
+    private GlobalAppSettingsMgr globalAppSettingsMgr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +64,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
         //InAppPurchaseMgr if validation is too low countdown can be saved, but it will not be displayed
         this.setInAppPurchaseMgr(new InAppPurchaseMgr(this));
+        this.setGlobalAppSettingsMgr(new GlobalAppSettingsMgr(this));
 
 
         //ADS - START
@@ -86,6 +102,150 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
         //Remove min constraint of description field (so user can let it empty)
         ((CustomEdittext) findViewById(R.id.countdownDescriptionValue)).setMinLength(0);
+
+        //show spotlight help on start
+        if (!this.getGlobalAppSettingsMgr().isModifyCountdownSpotlightHelpAlreadyShown()) {
+            this.getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    showSpotLightHelp();
+                    //REMOVE GlobalLayoutListener
+                    if (getWindow().getDecorView().getViewTreeObserver().isAlive()) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                            getWindow().getDecorView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        } else {
+                            //deprecated since api 16 but our min is 15 so this if clause
+                            getWindow().getDecorView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        }
+                    }
+                    Log.d(TAG, "showSpotLightHelp: Tried to show spotlight help.");
+                }
+            });
+        } else {
+            Log.d(TAG, "showSpotLightHelp: Spotlight has been shown before. Won't show it again.");
+        }
+    }
+
+    private void showSpotLightHelp() {
+        //Craft targets (setPoint[view] must have the same reihenfolge wie in arraylist zugewiesen
+        SimpleTarget[] allSimpleTargets = {
+                new SimpleTarget.Builder(ModifyCountdownActivity.this)
+                        .setPoint(findViewById(R.id.startDateTimeIcon)) //position of target also point obj possible for getting concrete position of an object
+                        .setRadius(70f)
+                        .setTitle(ModifyCountdownActivity.this.getResources().getString(R.string.spotlight_modifyCountdownActivity_target_startDateTimeIcon_title))
+                        .setDescription(ModifyCountdownActivity.this.getResources().getString(R.string.spotlight_modifyCountdownActivity_target_startDateTimeIcon_description))
+                        .setOnSpotlightStartedListener(new OnTargetStateChangedListener<SimpleTarget>() {
+                            @Override
+                            public void onStarted(SimpleTarget target) {
+                                //target started
+                            }
+
+                            @Override
+                            public void onEnded(SimpleTarget target) {
+                                //target ended
+                            }
+                        }).build(),
+                new SimpleTarget.Builder(ModifyCountdownActivity.this)
+                        .setPoint(findViewById(R.id.untilDateTimeIcon)) //position of target
+                        .setRadius(70f)
+                        .setTitle(ModifyCountdownActivity.this.getResources().getString(R.string.spotlight_modifyCountdownActivity_target_untilDateTimeIcon_title))
+                        .setDescription(ModifyCountdownActivity.this.getResources().getString(R.string.spotlight_modifyCountdownActivity_target_untilDateTimeIcon_description))
+                        .setOnSpotlightStartedListener(new OnTargetStateChangedListener<SimpleTarget>() {
+                            @Override
+                            public void onStarted(SimpleTarget target) {
+                                //target started
+                            }
+
+                            @Override
+                            public void onEnded(SimpleTarget target) {
+                                //target ended
+                            }
+                        }).build(),
+                new SimpleTarget.Builder(ModifyCountdownActivity.this)
+                        .setPoint(findViewById(R.id.exampleHelpBtn4Spotlight)) //position of target
+                        .setRadius(70f)
+                        .setTitle(ModifyCountdownActivity.this.getResources().getString(R.string.spotlight_modifyCountdownActivity_target_exampleHelpBtn_title))
+                        .setDescription(ModifyCountdownActivity.this.getResources().getString(R.string.spotlight_modifyCountdownActivity_target_exampleHelpBtn_description))
+                        .setOnSpotlightStartedListener(new OnTargetStateChangedListener<SimpleTarget>() {
+                            @Override
+                            public void onStarted(SimpleTarget target) {
+                                //target started
+                            }
+
+                            @Override
+                            public void onEnded(SimpleTarget target) {
+                                //target ended
+                            }
+                        }).build(),
+                new SimpleTarget.Builder(ModifyCountdownActivity.this)
+                        .setPoint(findViewById(R.id.categoryValue)) //position of target
+                        .setRadius(90f)
+                        .setTitle(ModifyCountdownActivity.this.getResources().getString(R.string.spotlight_modifyCountdownActivity_target_categoryNotificationColor_title))
+                        .setDescription(ModifyCountdownActivity.this.getResources().getString(R.string.spotlight_modifyCountdownActivity_target_categoryNotificationColor_description))
+                        .setOnSpotlightStartedListener(new OnTargetStateChangedListener<SimpleTarget>() {
+                            @Override
+                            public void onStarted(SimpleTarget target) {
+                                //target started
+                            }
+
+                            @Override
+                            public void onEnded(SimpleTarget target) {
+                                //target ended
+                            }
+                        }).build(),
+                new SimpleTarget.Builder(ModifyCountdownActivity.this)
+                        .setPoint(findViewById(R.id.isActive)) //position of target
+                        .setRadius(170f)
+                        .setTitle(ModifyCountdownActivity.this.getResources().getString(R.string.spotlight_modifyCountdownActivity_target_isActive_title))
+                        .setDescription(ModifyCountdownActivity.this.getResources().getString(R.string.spotlight_modifyCountdownActivity_target_isActive_description))
+                        .setOnSpotlightStartedListener(new OnTargetStateChangedListener<SimpleTarget>() {
+                            @Override
+                            public void onStarted(SimpleTarget target) {
+                                //target started
+                            }
+
+                            @Override
+                            public void onEnded(SimpleTarget target) {
+                                //target ended
+                            }
+                        }).build(),
+                new SimpleTarget.Builder(ModifyCountdownActivity.this)
+                        .setPoint(findViewById(R.id.showLiveCountdown)) //position of target
+                        .setRadius(170f)
+                        .setTitle(ModifyCountdownActivity.this.getResources().getString(R.string.spotlight_modifyCountdownActivity_target_showLiveCountdown_title))
+                        .setDescription(ModifyCountdownActivity.this.getResources().getString(R.string.spotlight_modifyCountdownActivity_target_showLiveCountdown_description))
+                        .setOnSpotlightStartedListener(new OnTargetStateChangedListener<SimpleTarget>() {
+                            @Override
+                            public void onStarted(SimpleTarget target) {
+                                //target started
+                            }
+
+                            @Override
+                            public void onEnded(SimpleTarget target) {
+                                //target ended
+                            }
+                        }).build()};
+
+        //Show/Craft spotlight itself
+        Spotlight.with(ModifyCountdownActivity.this)
+                .setOverlayColor(ContextCompat.getColor(ModifyCountdownActivity.this, R.color.background))
+                .setDuration(1000L)
+                .setAnimation(new DecelerateInterpolator(2f))
+                .setTargets(allSimpleTargets)
+                .setClosedOnTouchedOutside(true) //close on touch outside (otherwise we would have to implement a next-routine)
+                .setOnSpotlightStartedListener(new OnSpotlightStartedListener() {
+                    @Override
+                    public void onStarted() {
+                        //maybe show initial text (you can skip this or always redo)
+                    }
+                })
+                .setOnSpotlightEndedListener(new OnSpotlightEndedListener() {
+                    @Override
+                    public void onEnded() {
+                        //Save that spotlight was fully shown (so it won't show up again)
+                        getGlobalAppSettingsMgr().setModifyCountdownSpotlightHelpAlreadyShown(true);
+                    }
+                }).start();
     }
 
     public void onSaveClick(View view) {
@@ -357,11 +517,11 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         }
 
         String currentDateTime = String.format(getString(R.string.dateTimePicker_format_DateTime),
-                String.format(getString(R.string.dateTimePicker_format_date),now.get(Calendar.DAY_OF_MONTH),(now.get(Calendar.MONTH) + 1),now.get(Calendar.YEAR))
-                ,String.format(Constants.GLOBAL.LOCALE,"%02d",
-                        now.get(Calendar.HOUR_OF_DAY)+addToHourUntilDateTime),
-                String.format(Constants.GLOBAL.LOCALE,"%02d", now.get(Calendar.MINUTE)),String.format(Constants.GLOBAL.LOCALE,"%02d", now.get(Calendar.SECOND)));
-        Log.d(TAG, "setCustomOnClickListener: Current-Datetime->"+currentDateTime);
+                String.format(getString(R.string.dateTimePicker_format_date), now.get(Calendar.DAY_OF_MONTH), (now.get(Calendar.MONTH) + 1), now.get(Calendar.YEAR))
+                , String.format(Constants.GLOBAL.LOCALE, "%02d",
+                        now.get(Calendar.HOUR_OF_DAY) + addToHourUntilDateTime),
+                String.format(Constants.GLOBAL.LOCALE, "%02d", now.get(Calendar.MINUTE)), String.format(Constants.GLOBAL.LOCALE, "%02d", now.get(Calendar.SECOND)));
+        Log.d(TAG, "setCustomOnClickListener: Current-Datetime->" + currentDateTime);
         targetTextView.setText(currentDateTime);
 
         parentView.setOnClickListener(new View.OnClickListener() {
@@ -370,6 +530,27 @@ public class ModifyCountdownActivity extends AppCompatActivity {
                 DATETIMEPICKER.showDateTimePicker();
             }
         });
+    }
+
+    // ACTION BAR ------------------------------------------------------------
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_modify_countdown, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_showSpotlightHelp:
+                showSpotLightHelp(); //show it explicetely again
+                Log.d(TAG, "onOptionsItemSelected: Explicetely showing spotlight help again. User requested it.");
+                break;
+            default:
+                Log.e(TAG, "onOptionsItemSelected: Button does not exist: " + item.getItemId());
+        }
+        return true;
     }
 
     // ######################### HELP CLICK METHOD ########################################
@@ -384,5 +565,13 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
     public InAppNotificationMgr getInAppNotificationMgr() {
         return inAppNotificationMgr;
+    }
+
+    public GlobalAppSettingsMgr getGlobalAppSettingsMgr() {
+        return globalAppSettingsMgr;
+    }
+
+    public void setGlobalAppSettingsMgr(GlobalAppSettingsMgr globalAppSettingsMgr) {
+        this.globalAppSettingsMgr = globalAppSettingsMgr;
     }
 }
