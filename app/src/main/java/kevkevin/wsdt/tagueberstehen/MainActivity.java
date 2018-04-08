@@ -2,43 +2,33 @@ package kevkevin.wsdt.tagueberstehen;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.daimajia.swipe.SwipeLayout;
-import com.takusemba.spotlight.CustomTarget;
-import com.takusemba.spotlight.OnSpotlightEndedListener;
-import com.takusemba.spotlight.OnSpotlightStartedListener;
-import com.takusemba.spotlight.OnTargetStateChangedListener;
-import com.takusemba.spotlight.SimpleTarget;
-import com.takusemba.spotlight.Spotlight;
-import com.takusemba.spotlight.Target;
 
 import java.util.ArrayList;
 
-import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
-import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
-import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
 import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
+import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.FirebaseStorageMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.services.LiveCountdown_ForegroundService;
 
@@ -88,6 +78,10 @@ public class MainActivity extends AppCompatActivity {
 
         //Set up onRefresh for pulling down
         initializePullForRefresh();
+
+        //TODO: Just for testing
+        FirebaseStorageMgr.downloadNewPackage("en/quotes/default.std.lib");
+
     }
 
 
@@ -122,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadAddNodes() {
         final SparseArray<Countdown> allCountdowns = DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this, false);
-        for (int i = 0, nsize = allCountdowns.size(); i<nsize;i++) {
+        for (int i = 0, nsize = allCountdowns.size(); i < nsize; i++) {
             final Countdown currCountdown = allCountdowns.valueAt(i); //necessary because i cannot be final (i++)
             if (this.anzahlShowingNodes > 0) {
                 //Already at least one node shown! Not showing more without purchasing product
@@ -179,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
 
     //SWIPELAYOUT - ONCLICK METHODS ###################################################################
     public void onClick_node_sl_instruction(View v) {
-        Toast.makeText(this,R.string.mainActivity_swipeLayout_onClickInstruction, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.mainActivity_swipeLayout_onClickInstruction, Toast.LENGTH_SHORT).show();
     }
 
     public void onClick_node_sl_bottomview_leftMenu_openCountdown(View v) {
@@ -205,7 +199,10 @@ public class MainActivity extends AppCompatActivity {
     public void onClick_node_sl_bottomview_rightMenu_deleteNode(final View v) {
         //Get countdownId of corresponding node to perform actions
         final Countdown countdown = getCountdownFromNode(v);
-        if (countdown == null) {Log.e(TAG, "onClick_node_sl_bottomview_rightMenu_deleteNode: Countdown obj is null!");return;}
+        if (countdown == null) {
+            Log.e(TAG, "onClick_node_sl_bottomview_rightMenu_deleteNode: Countdown obj is null!");
+            return;
+        }
 
         //create dialog to ask user whether he wants really delete countdown
         this.getDialogMgr().showDialog_Generic(
@@ -243,7 +240,10 @@ public class MainActivity extends AppCompatActivity {
     public void onClick_node_sl_bottomview_rightMenu_editNode(View v) {
         //Get countdownId of corresponding node to perform actions
         Countdown countdown = getCountdownFromNode(v);
-        if (countdown == null) {Log.e(TAG, "onClick_node_sl_bottomview_rightMenu_editNode: Countdown obj is null!");return;}
+        if (countdown == null) {
+            Log.e(TAG, "onClick_node_sl_bottomview_rightMenu_editNode: Countdown obj is null!");
+            return;
+        }
 
         Intent modifyCountdownActivity = new Intent(this, ModifyCountdownActivity.class);
         modifyCountdownActivity.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID, countdown.getCountdownId());
@@ -253,7 +253,10 @@ public class MainActivity extends AppCompatActivity {
     public void onClick_node_sl_bottomview_rightMenu_toggleMotivationNode(View v) {
         //Get countdownId of corresponding node to perform actions
         Countdown countdown = getCountdownFromNode(v);
-        if (countdown == null) {Log.e(TAG, "onClick_node_sl_bottomview_rightMenu_toggleMotivationNode: Countdown obj is null!");return;}
+        if (countdown == null) {
+            Log.e(TAG, "onClick_node_sl_bottomview_rightMenu_toggleMotivationNode: Countdown obj is null!");
+            return;
+        }
 
         if (countdown.isActive()) {
             countdown.setActive(false);
@@ -333,8 +336,8 @@ public class MainActivity extends AppCompatActivity {
         //expand categorycolor to whole height of node (because of wrap content) --> HAS TO BE AFTER SETTEXT (because they change the size of the view)
         countdownView.measure(countdownView.getLayoutParams().width, countdownView.getLayoutParams().height); //remeasure because of settext etc.
         //remain old width with own layoutparam.width and set new height with new measured parent height (-25 because of padding top/bottom in sum)
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(categoryColor.getLayoutParams().width, countdownView.getMeasuredHeight()-25); //set height of categorycolor view to same as relativelayout (not wrap content or match parent!)
-        Log.d(TAG, "createAddNodeToLayout: CategoryColorView: Future height -> "+countdownView.getMeasuredHeight());
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(categoryColor.getLayoutParams().width, countdownView.getMeasuredHeight() - 25); //set height of categorycolor view to same as relativelayout (not wrap content or match parent!)
+        Log.d(TAG, "createAddNodeToLayout: CategoryColorView: Future height -> " + countdownView.getMeasuredHeight());
         categoryColor.setLayoutParams(layoutParams);
 
         //Swipe layout configuration (node menu) -------------------------------
