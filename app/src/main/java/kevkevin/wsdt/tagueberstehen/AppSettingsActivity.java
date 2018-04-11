@@ -32,7 +32,6 @@ public class AppSettingsActivity extends AppCompatActivity {
 
         //Ads ---------------------------------------------
         AdMgr adMgr = new AdMgr(this);
-        adMgr.initializeAdmob();
         adMgr.loadBannerAd((RelativeLayout) findViewById(R.id.settingsRLforAd));
 
         //declare storagemgr

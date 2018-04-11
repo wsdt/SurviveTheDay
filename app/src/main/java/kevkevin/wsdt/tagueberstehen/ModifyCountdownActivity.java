@@ -73,7 +73,6 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
         //ADS - START
         AdMgr adMgr = new AdMgr(this);
-        adMgr.initializeAdmob();
         adMgr.loadBannerAd((RelativeLayout) findViewById(R.id.wrappingRLForAdsModifyCountdowns));
         //ADS - END
 

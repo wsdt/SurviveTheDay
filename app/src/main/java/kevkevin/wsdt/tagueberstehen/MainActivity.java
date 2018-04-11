@@ -43,16 +43,12 @@ public class MainActivity extends AppCompatActivity {
     private AdMgr adMgr; //used e.g. for banner ad (so we can dynamically remove it etc.)
     private RelativeLayout mainActivityPage;
     private DialogMgr dialogMgr;
-    //private InternalCountdownStorageMgr internalCountdownStorageMgr;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private ArrayList<View> allSpotLightTargetsAsViews = new ArrayList<>(); //might be empty (used for position of spotlight, list does not contain targetObjects only normal views!)
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         //Manager setting up
         this.setInAppPurchaseMgr(new InAppPurchaseMgr(this));
@@ -61,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Initiliaze AdMob
         this.setAdMgr(new AdMgr(this));
-        this.getAdMgr().initializeAdmob(); //no fullpage ad because this happens already in loading screen
+        //no fullpage ad because this happens already in loading screen
         this.setMainActivityPage((RelativeLayout) findViewById(R.id.mainActivityPage));
         this.getAdMgr().loadBannerAd(this.getMainActivityPage());
         this.getAdMgr().loadFullPageAd(null, null); //now frequency capping (so real interstitial ad is only 2x every 10 minutes shown when calling main activity)

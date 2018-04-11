@@ -50,9 +50,11 @@ public class AdMgr {
         this.setContext(context);
         this.setGlobalAppSettingsMgr(new GlobalAppSettingsMgr(context));
         this.setInAppPurchaseMgr(new InAppPurchaseMgr(context));
+        initializeAdmob(); //initialize necessary!
     }
 
-    public void initializeAdmob() {
+    /** Executed in constructor */
+    private void initializeAdmob() {
         MobileAds.initialize(this.getContext(), ADMOB_USER_ID);
         Log.d(TAG, "initializeAdMob: Tried to initialize Admob. Maybe regardless of temporarily ad-free, because we always want to display rewarded ads!");
     }

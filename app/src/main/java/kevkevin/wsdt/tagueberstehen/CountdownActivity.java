@@ -52,7 +52,6 @@ public class CountdownActivity extends AppCompatActivity {
 
         // SHOW FULL PAGE ADD
         AdMgr adMgr = new AdMgr(this);
-        adMgr.initializeAdmob();
         //make it possible to load and prevent stopping ui (also afterwards: because coutndown does not refresh!) --> esp. when fullpage from other activities opens to slow and gets closed in the countdownactivity
         //IMPORTANT: Do not place here fullpage ad because this blocks the countdown!
         adMgr.loadBannerAd((RelativeLayout) findViewById(R.id.content_main));
