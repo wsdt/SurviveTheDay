@@ -3,13 +3,15 @@ package kevkevin.wsdt.tagueberstehen.classes;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.daimajia.numberprogressbar.NumberProgressBar;
 
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
+import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
 import kevkevin.wsdt.tagueberstehen.R;
+
+import static kevkevin.wsdt.tagueberstehen.classes.interfaces.IConstants_CountdownCounter.*;
 
 public class CountdownCounter {
     //DO NOT USE ASYNCTASK (not ideal for long running operations and also stops when sth. comes) ++++++++++++++++++++++++++++++++++++++++++++++
@@ -27,7 +29,7 @@ public class CountdownCounter {
     private Double totalYears = 0D;
 
     //Big countdown parameters
-    private String bigCountdownStr = Constants.COUNTDOWN_COUNTER.BIG_COUNTDOWN_ZERO_VALUE;
+    private String bigCountdownStr = BIG_COUNTDOWN_ZERO_VALUE;
 
     public CountdownCounter(@NonNull CountdownActivity activityContext, @NonNull Countdown countdown) {
         this.setActivityContext(activityContext);
@@ -37,7 +39,7 @@ public class CountdownCounter {
     // COUNTDOWN DATA (random quote, etc.) -> everything that needs regular refresh like random quotes
     private int automaticRefreshBuffer = 0;
     private void automaticRefreshRandomQuote() { //gets called in updateUI() so it's handled on the Mainthread!
-        if ((automaticRefreshBuffer++) > Constants.COUNTDOWN_COUNTER.REFRESH_RANDOM_QUOTE_MULTIPLIKATOR && CountdownActivity.runGeneratingRandomQuotes) { //with this procedure we can handle this action in the same additional thread
+        if ((automaticRefreshBuffer++) > REFRESH_RANDOM_QUOTE_MULTIPLIKATOR && CountdownActivity.runGeneratingRandomQuotes) { //with this procedure we can handle this action in the same additional thread
             automaticRefreshBuffer = 0; //reset buffer
             this.getActivityContext().setNewRandomQuote(null); //method gets only called acc. buffer AND if swipeLayout is showing surfaceview (=quote view)
         }
@@ -56,7 +58,7 @@ public class CountdownCounter {
                     Log.d(TAG, "runOnUI: Trying to update UI.");
                     updateUI(false); //false == use real values
                     try {
-                        Thread.sleep(Constants.COUNTDOWN_COUNTER.REFRESH_UI_EVERY_X_MS); //a little bit smaller than 1 seconds so always the correct time
+                        Thread.sleep(REFRESH_UI_EVERY_X_MS); //a little bit smaller than 1 seconds so always the correct time
                     } catch (InterruptedException e) { //gets thrown when interrupted or/and when updateUI(true) is set!
                         Log.e(TAG, "runOnUI: Thread Sleep interrupted in countdownCounterThread! Exiting thread. This happens e.g. when countdown is 0 or activity called interrupt because it got destroyed/stopped, because we called interrupt().");
                         break;
@@ -80,19 +82,19 @@ public class CountdownCounter {
                     //TODO: Maybe dialog with share us/rate us or similar
                 }
                 //Set value for progressbar
-                ((NumberProgressBar) getActivityContext().findViewById(R.id.countdownProgressBar)).setProgress((setZero) ? Constants.COUNTDOWN_COUNTER.PROGRESS_ZERO_VALUE : (int) countdown.getRemainingPercentage( false));
+                ((NumberProgressBar) getActivityContext().findViewById(R.id.countdownProgressBar)).setProgress((setZero) ? PROGRESS_ZERO_VALUE : (int) countdown.getRemainingPercentage( false));
 
                 //values[0] set Progress
                 //Change CountdownActivity values
-                ((TextView) getActivityContext().findViewById(R.id.countdownCounterSeconds)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format(Constants.GLOBAL.LOCALE,"%.2f", getTotalSeconds_SYNCED()));
-                ((TextView) getActivityContext().findViewById(R.id.countdownCounterMinutes)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format(Constants.GLOBAL.LOCALE,"%.4f", getTotalMinutes()));
-                ((TextView) getActivityContext().findViewById(R.id.countdownCounterHours)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format(Constants.GLOBAL.LOCALE,"%.6f", getTotalHours()));
-                ((TextView) getActivityContext().findViewById(R.id.countdownCounterDays)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format(Constants.GLOBAL.LOCALE,"%.8f", getTotalDays()));
-                ((TextView) getActivityContext().findViewById(R.id.countdownCounterWeeks)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format(Constants.GLOBAL.LOCALE,"%.10f", getTotalWeeks()));
-                ((TextView) getActivityContext().findViewById(R.id.countdownCounterMonths)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format(Constants.GLOBAL.LOCALE,"%.12f", getTotalMonths()));
-                ((TextView) getActivityContext().findViewById(R.id.countdownCounterYears)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.TOTAL_TIMEUNIT_ZERO_VALUE : String.format(Constants.GLOBAL.LOCALE,"%.15f", getTotalYears()));
+                ((TextView) getActivityContext().findViewById(R.id.countdownCounterSeconds)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IConstants_Global.GLOBAL.LOCALE,"%.2f", getTotalSeconds_SYNCED()));
+                ((TextView) getActivityContext().findViewById(R.id.countdownCounterMinutes)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IConstants_Global.GLOBAL.LOCALE,"%.4f", getTotalMinutes()));
+                ((TextView) getActivityContext().findViewById(R.id.countdownCounterHours)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IConstants_Global.GLOBAL.LOCALE,"%.6f", getTotalHours()));
+                ((TextView) getActivityContext().findViewById(R.id.countdownCounterDays)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IConstants_Global.GLOBAL.LOCALE,"%.8f", getTotalDays()));
+                ((TextView) getActivityContext().findViewById(R.id.countdownCounterWeeks)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IConstants_Global.GLOBAL.LOCALE,"%.10f", getTotalWeeks()));
+                ((TextView) getActivityContext().findViewById(R.id.countdownCounterMonths)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IConstants_Global.GLOBAL.LOCALE,"%.12f", getTotalMonths()));
+                ((TextView) getActivityContext().findViewById(R.id.countdownCounterYears)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IConstants_Global.GLOBAL.LOCALE,"%.15f", getTotalYears()));
 
-                ((TextView) getActivityContext().findViewById(R.id.countdownCounter)).setText((setZero) ? Constants.COUNTDOWN_COUNTER.BIG_COUNTDOWN_ZERO_VALUE : getBigCountdownStr()); //show previous no only, if not zero!
+                ((TextView) getActivityContext().findViewById(R.id.countdownCounter)).setText((setZero) ? BIG_COUNTDOWN_ZERO_VALUE : getBigCountdownStr()); //show previous no only, if not zero!
 
                 automaticRefreshRandomQuote(); //refresh random quote after updating countdown
             }

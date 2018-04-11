@@ -35,7 +35,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import kevkevin.wsdt.tagueberstehen.classes.ColorPicker;
-import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.Languagepack;
@@ -45,8 +44,13 @@ import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppNotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppPurchaseMgr.*;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
+import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
+
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_NotificationMgr.IDENTIFIER_COUNTDOWN_ID;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_DatabaseMgr.*;
 
 public class ModifyCountdownActivity extends AppCompatActivity {
     private Countdown newEditedCountdown;
@@ -85,7 +89,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         //setIntervalSpinnerConfigurations();
 
         try {
-            this.existingCountdownId = getIntent().getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID, -1);
+            this.existingCountdownId = getIntent().getIntExtra(IDENTIFIER_COUNTDOWN_ID, -1);
             //say that we want to edit an existing countdown and not create a new one
         } catch (Exception e) {
             Log.e(TAG, "onCreate: Could not load existing countdown.");
@@ -250,7 +254,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
     public void onSaveClick(View view) {
         //Is use-more-nodes package bought? (here in onclick, so it gets refreshed!) --------------------------------------------------------------
-        this.getInAppPurchaseMgr().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+        this.getInAppPurchaseMgr().executeIfProductIsBought(INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
             public void success_is_true() {
                 Log.d(TAG, "onCreate:executeIfProductIsBought: UseMoreCountdownNodes is bought. Not blocking anything.");
@@ -263,7 +267,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
                 Log.d(TAG, "onCreate:executeIfProductIsBought: UseMoreCountdownNodes is NOT bought. Blocking save-Button IF already one node saved AND NOT in editing mode.");
                 if (DatabaseMgr.getSingletonInstance(ModifyCountdownActivity.this).getAllCountdowns(ModifyCountdownActivity.this, false).size() > 0 && (existingCountdownId < 0)) {
                     Log.d(TAG, "onCreate:executeIfProductIsBought:OnClick: Did not save countdown, because inapp product not bought and more than one node already saved. EditMode disabled, Countdown-Id: " + existingCountdownId);
-                    getDialogMgr().showDialog_InAppProductPromotion(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString());
+                    getDialogMgr().showDialog_InAppProductPromotion(INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString());
                     //also show toast for additional clarification
                     Toast.makeText(ModifyCountdownActivity.this, R.string.inAppProduct_notBought_useMoreCountdownNodes, Toast.LENGTH_SHORT).show();
                 } else {
@@ -294,7 +298,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
     private boolean areFormValuesValid() {
         //Validate dates ------------------------------------------------------------------
-        if (this.getNewEditedCountdown().getStartDateTime().matches(Constants.GLOBAL.DATETIME_FORMAT_REGEX) && this.getNewEditedCountdown().getUntilDateTime().matches(Constants.GLOBAL.DATETIME_FORMAT_REGEX)) {
+        if (this.getNewEditedCountdown().getStartDateTime().matches(IConstants_Global.GLOBAL.DATETIME_FORMAT_REGEX) && this.getNewEditedCountdown().getUntilDateTime().matches(IConstants_Global.GLOBAL.DATETIME_FORMAT_REGEX)) {
             // Is UntilDateTime AFTER StartDateTime? -------------------
             //getDateTime(getStartDateTime()).compareTo(getCurrentDateTime()) > 0
             if (getNewEditedCountdown().getDateTime(getNewEditedCountdown().getStartDateTime())
@@ -380,7 +384,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
     //Color picker for category value
     public void onClickOpenColorPicker(final View view) {
-        this.getInAppPurchaseMgr().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.CHANGE_NOTIFICATION_COLOR.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+        this.getInAppPurchaseMgr().executeIfProductIsBought(INAPP_PRODUCTS.CHANGE_NOTIFICATION_COLOR.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
             public void success_is_true() {
                 Log.d(TAG, "onClickOpenColorPicker:executeIfProductIsBought: ChangeNotification is bought. Tried to open color picker");
@@ -390,7 +394,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             @Override
             public void failure_is_false() {
                 Log.d(TAG, "onClickOpenColorPicker:executeIfProductIsBought: ChangeNotification is NOT bought. Blocking color-Button.");
-                getDialogMgr().showDialog_InAppProductPromotion(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.CHANGE_NOTIFICATION_COLOR.toString());
+                getDialogMgr().showDialog_InAppProductPromotion(INAPP_PRODUCTS.CHANGE_NOTIFICATION_COLOR.toString());
                 Toast.makeText(ModifyCountdownActivity.this, R.string.inAppProduct_notBought_changeNotificationColor, Toast.LENGTH_SHORT).show();
             }
         });
@@ -426,7 +430,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         for (CheckBox languagePackCheckbox : this.languagePackCheckboxes) {
             if (languagePackCheckbox.isChecked()) {
                 if ((countLanguagePacks++) > 0) {
-                    selectedLanguagePacks.append(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.ATTRIBUTE_ADDITIONALS.LANGUAGE_ID_LIST_SEPARATOR);
+                    selectedLanguagePacks.append(TABLES.ZWISCHENTABELLE_COU_QLP.ATTRIBUTE_ADDITIONALS.LANGUAGE_ID_LIST_SEPARATOR);
                 } //before languagepack and only if already one added
                 selectedLanguagePacks.append(languagePackCheckbox.getTag().toString());
             }
@@ -436,7 +440,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             Log.d(TAG, "loadSelectedLanguagePacksFromCheckboxes: User did not select language pack. Used default one.");
             selectedLanguagePacks.append("en");
         }
-        return selectedLanguagePacks.toString().split(Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.ZWISCHENTABELLE_COU_QLP.ATTRIBUTE_ADDITIONALS.LANGUAGE_ID_LIST_SEPARATOR); //string to array
+        return selectedLanguagePacks.toString().split(TABLES.ZWISCHENTABELLE_COU_QLP.ATTRIBUTE_ADDITIONALS.LANGUAGE_ID_LIST_SEPARATOR); //string to array
     }
 
     private ArrayList<CheckBox> languagePackCheckboxes = new ArrayList<>();
@@ -518,9 +522,9 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
         String currentDateTime = String.format(getString(R.string.dateTimePicker_format_DateTime),
                 String.format(getString(R.string.dateTimePicker_format_date), now.get(Calendar.DAY_OF_MONTH), (now.get(Calendar.MONTH) + 1), now.get(Calendar.YEAR))
-                , String.format(Constants.GLOBAL.LOCALE, "%02d",
+                , String.format(IConstants_Global.GLOBAL.LOCALE, "%02d",
                         now.get(Calendar.HOUR_OF_DAY) + addToHourUntilDateTime),
-                String.format(Constants.GLOBAL.LOCALE, "%02d", now.get(Calendar.MINUTE)), String.format(Constants.GLOBAL.LOCALE, "%02d", now.get(Calendar.SECOND)));
+                String.format(IConstants_Global.GLOBAL.LOCALE, "%02d", now.get(Calendar.MINUTE)), String.format(IConstants_Global.GLOBAL.LOCALE, "%02d", now.get(Calendar.SECOND)));
         Log.d(TAG, "setCustomOnClickListener: Current-Datetime->" + currentDateTime);
         targetTextView.setText(currentDateTime);
 

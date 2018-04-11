@@ -17,7 +17,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import kevkevin.wsdt.tagueberstehen.R;
-import kevkevin.wsdt.tagueberstehen.classes.Constants;
+import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
 
 public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
     private TextView resultView;
@@ -46,7 +46,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute, int seconds) {
                 // Do something with the time chosen by the user
-                getResultView().setText(String.format(getRes().getString(R.string.dateTimePicker_format_DateTime),getResultView().getText(),String.format(Constants.GLOBAL.LOCALE,"%02d", hourOfDay),String.format(Constants.GLOBAL.LOCALE,"%02d", minute),String.format(Constants.GLOBAL.LOCALE,"%02d", seconds)));
+                getResultView().setText(String.format(getRes().getString(R.string.dateTimePicker_format_DateTime),getResultView().getText(),String.format(IConstants_Global.GLOBAL.LOCALE,"%02d", hourOfDay),String.format(IConstants_Global.GLOBAL.LOCALE,"%02d", minute),String.format(IConstants_Global.GLOBAL.LOCALE,"%02d", seconds)));
                 Log.d(TAG, "onTimeSet: Assigned new time.");
             }
         }, this.getResultView(), now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND), true);

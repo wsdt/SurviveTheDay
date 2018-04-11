@@ -5,8 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
+
+import static kevkevin.wsdt.tagueberstehen.classes.services.interfaces.IConstants_Kickstart_BootAndGeneralReceiver.*;
 
 
 /** This broadcast receiver gets called when smartphone is turned on AND when created countdown's startdate is not longer in the future (so
@@ -19,7 +20,7 @@ public class Kickstarter_BootAndGeneralReceiver extends BroadcastReceiver {
         try {
             String action = intent.getAction();
             if (action != null) {
-                if (action.equals("android.intent.action.BOOT_COMPLETED") || action.equals(Constants.KICKSTARTER_BOOTANDGENERALRECEIVER.BROADCASTRECEIVER_ACTION_RESTART_ALL_SERVICES)) {
+                if (action.equals("android.intent.action.BOOT_COMPLETED") || action.equals(BROADCASTRECEIVER_ACTION_RESTART_ALL_SERVICES)) {
                     //first action gets invoked when smartphone gets started
                     //second action gets invoked when a newly saved or edited countdown has a startdate in future. If startdate expires then this broadcast receiver will be called
 

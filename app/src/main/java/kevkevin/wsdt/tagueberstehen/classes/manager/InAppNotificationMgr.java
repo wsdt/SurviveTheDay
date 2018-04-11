@@ -17,8 +17,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import kevkevin.wsdt.tagueberstehen.R;
-import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
+
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppNotificationMgr.*;
 
 public class InAppNotificationMgr {
     private static final String TAG = "InAppNotifMgr";
@@ -95,7 +96,7 @@ public class InAppNotificationMgr {
                     });
 
                     final ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(notificationContent, "y", 0); //get it back to positive animated (0 because we want no small space above shape)
-                    objectAnimator.setDuration(Constants.COUNTDOWN_ACTIVITY.INAPP_NOTIFICATION_ANIMATION_DURATION_IN_MS); //1,5 seconds
+                    objectAnimator.setDuration(INAPP_NOTIFICATION_ANIMATION_DURATION_IN_MS); //1,5 seconds
             /*objectAnimator.setRepeatCount(1); //show it and hide it after duration expired [making this with count var and restarting animation in onAnimationEnd()]
             objectAnimator.setRepeatMode(ValueAnimator.REVERSE);*/
                     objectAnimator.addListener(new Animator.AnimatorListener() {
@@ -109,7 +110,7 @@ public class InAppNotificationMgr {
                         @Override
                         public void onAnimationEnd(Animator animator) {
                             if (count++ < 1) {
-                                closeActiveInAppNotification(notificationContent, new GlobalAppSettingsMgr(activity).getInAppNotificationShowDurationInMs() + Constants.COUNTDOWN_ACTIVITY.INAPP_NOTIFICATION_ANIMATION_DURATION_IN_MS); //how long should be notification displayed (adding animation duration because time period delay is inclusive animation));
+                                closeActiveInAppNotification(notificationContent, new GlobalAppSettingsMgr(activity).getInAppNotificationShowDurationInMs() + INAPP_NOTIFICATION_ANIMATION_DURATION_IN_MS); //how long should be notification displayed (adding animation duration because time period delay is inclusive animation));
                             } else {
                                 Log.d(TAG, "onAnimationEnd: Inapp notification animation finished.");
                             }
@@ -139,7 +140,7 @@ public class InAppNotificationMgr {
     //Helper method for closeBtn of inAppNotification and objectAnimator end / MUST NOT BE STATIC
     public void closeActiveInAppNotification(@NonNull RelativeLayout notificationContent, int delay) {
         ObjectAnimator objectAnimatorClose = ObjectAnimator.ofFloat(notificationContent, "alpha", 0);
-        objectAnimatorClose.setDuration(Constants.COUNTDOWN_ACTIVITY.INAPP_NOTIFICATION_CLOSE_ANIMATION_DURATION_IN_MS);
+        objectAnimatorClose.setDuration(INAPP_NOTIFICATION_CLOSE_ANIMATION_DURATION_IN_MS);
         objectAnimatorClose.setStartDelay(delay);
         objectAnimatorClose.addListener(new Animator.AnimatorListener() {
             @Override

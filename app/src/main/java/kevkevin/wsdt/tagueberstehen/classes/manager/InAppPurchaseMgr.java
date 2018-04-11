@@ -22,13 +22,15 @@ import java.util.UUID;
 
 import kevkevin.wsdt.tagueberstehen.BuildConfig;
 import kevkevin.wsdt.tagueberstehen.R;
-import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppPurchaseMgr.*;
 import kevkevin.wsdt.tagueberstehen.util.IabHelper;
 import kevkevin.wsdt.tagueberstehen.util.IabResult;
 import kevkevin.wsdt.tagueberstehen.util.Inventory;
 import kevkevin.wsdt.tagueberstehen.util.Purchase;
 import kevkevin.wsdt.tagueberstehen.util.SkuDetails;
+
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppPurchaseMgr.USE_STATIC_TEST_INAPP_PRODUCTS;
 
 
 //TODO IMPORTANT TO RESOLVE ######################################################################################
@@ -95,14 +97,14 @@ public class InAppPurchaseMgr {
             try {
                 final ArrayList<String> skuList = new ArrayList<>();
 
-                if (Constants.INAPP_PURCHASES.USE_STATIC_TEST_INAPP_PRODUCTS) {
-                    for (Constants.INAPP_PURCHASES.TEST_INAPP_PRODUCTS.STATIC_TEST.GOOGLE_PLAY_STATIC_RESPONSES response : Constants.INAPP_PURCHASES.TEST_INAPP_PRODUCTS.STATIC_TEST.GOOGLE_PLAY_STATIC_RESPONSES.values()) {
+                if (USE_STATIC_TEST_INAPP_PRODUCTS) {
+                    for (TEST_INAPP_PRODUCTS.STATIC_TEST.GOOGLE_PLAY_STATIC_RESPONSES response : TEST_INAPP_PRODUCTS.STATIC_TEST.GOOGLE_PLAY_STATIC_RESPONSES.values()) {
                         Log.d(TAG, "queryAllProducts: Added test product to skuList: " + response.toString());
                         skuList.add(response.toString());
                     }
                 } else {
                     //Add all products from enum within interfaces to list (so all get downloaded)
-                    for (Constants.INAPP_PURCHASES.INAPP_PRODUCTS inAppProduct : Constants.INAPP_PURCHASES.INAPP_PRODUCTS.values()) {
+                    for (INAPP_PRODUCTS inAppProduct : INAPP_PRODUCTS.values()) {
                         Log.d(TAG, "queryAllProducts: Added product to skuList --> " + inAppProduct.toString());
                         skuList.add(inAppProduct.toString());
                     }
@@ -457,9 +459,9 @@ public class InAppPurchaseMgr {
             //manufactur public key so it is not written as static string in here
             StringBuilder base64EncodedPublicKey = new StringBuilder();
             int loopCounter = 0;
-            for (String substr : Constants.INAPP_PURCHASES.BASE64ENCODED_PUBLICKEY.substr_arr) {
+            for (String substr : BASE64ENCODED_PUBLICKEY.substr_arr) {
                 if ((loopCounter++) > 0) {
-                    base64EncodedPublicKey.append(Constants.INAPP_PURCHASES.BASE64ENCODED_PUBLICKEY.SEPARATOR);
+                    base64EncodedPublicKey.append(BASE64ENCODED_PUBLICKEY.SEPARATOR);
                 } //only first loop do not add separator (because it does not start with it)
                 base64EncodedPublicKey.append(substr);
             }

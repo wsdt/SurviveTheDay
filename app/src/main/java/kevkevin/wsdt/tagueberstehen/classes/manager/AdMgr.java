@@ -29,11 +29,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import kevkevin.wsdt.tagueberstehen.R;
-import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_AdMgr.*;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppPurchaseMgr.*;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
 
 import static com.google.android.gms.ads.AdRequest.ERROR_CODE_NETWORK_ERROR;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_AdMgr.ADMOB_USER_ID;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_AdMgr.USE_TEST_ADS;
 
 public class AdMgr {
     private Activity context;
@@ -50,7 +53,7 @@ public class AdMgr {
     }
 
     public void initializeAdmob() {
-        MobileAds.initialize(this.getContext(), Constants.ADMANAGER.ADMOB_USER_ID);
+        MobileAds.initialize(this.getContext(), ADMOB_USER_ID);
         Log.d(TAG, "initializeAdMob: Tried to initialize Admob. Maybe regardless of temporarily ad-free, because we always want to display rewarded ads!");
     }
 
@@ -91,7 +94,7 @@ public class AdMgr {
 
 
     public RewardedVideoAd loadRewardedVideoInRewardActivity(@Nullable RewardedVideoAdListener adListener, @Nullable final Intent goToActivityAfterShown) {
-        final String REWARDED_VIDEO_ID = Constants.ADMANAGER.USE_TEST_ADS ? Constants.ADMANAGER.TEST.REWARDED_VIDEO_AD_ID : Constants.ADMANAGER.REAL.REWARDED_VIDEO_AD_ID;
+        final String REWARDED_VIDEO_ID = USE_TEST_ADS ? TEST.REWARDED_VIDEO_AD_ID : REAL.REWARDED_VIDEO_AD_ID;
 
         final RewardedVideoAd rewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this.getContext());
         rewardedVideoAd.setRewardedVideoAdListener((adListener == null) ? new RewardedVideoAdListener() {
@@ -190,7 +193,7 @@ public class AdMgr {
             return;
         }
 
-        this.getInAppPurchaseMgr().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.REMOVE_ALL_ADS.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+        this.getInAppPurchaseMgr().executeIfProductIsBought(INAPP_PRODUCTS.REMOVE_ALL_ADS.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
             public void success_is_true() {
                 Log.d(TAG, "executeIfProductIsBought:is_true: App is ad-free! Not showing ad.");
@@ -205,7 +208,7 @@ public class AdMgr {
                 Log.d(TAG, "executeIfProductIsBought:is_false: App is NOT ad-free, so full page ad will be loaded.");
 
                 //IMPORTANT: ADMOB-GUIDELINE only place interestials between activities with contents and not too much!! Showing Fullpage Ad only allowed if loadingActivity shows BEFORE ad! (see: https://support.google.com/admob/answer/6201362?hl=de&ref_topic=2745287)
-                final String FULLPAGE_ID = Constants.ADMANAGER.USE_TEST_ADS ? Constants.ADMANAGER.TEST.INTERSTITIAL_AD_ID : Constants.ADMANAGER.REAL.INTERSTITIAL_AD_ID;
+                final String FULLPAGE_ID = USE_TEST_ADS ? TEST.INTERSTITIAL_AD_ID : REAL.INTERSTITIAL_AD_ID;
 
                 final InterstitialAd fullpageAd = new InterstitialAd(getContext());
                 fullpageAd.setAdUnitId(FULLPAGE_ID);
@@ -279,7 +282,7 @@ public class AdMgr {
             return;
         }
 
-        this.getInAppPurchaseMgr().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.REMOVE_ALL_ADS.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+        this.getInAppPurchaseMgr().executeIfProductIsBought(INAPP_PRODUCTS.REMOVE_ALL_ADS.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
             public void success_is_true() {
                 Log.d(TAG, "loadBannerAd:executeIfProductIsBought:is_true: App is ad-free! Not showing ad.");
@@ -288,7 +291,7 @@ public class AdMgr {
 
             @Override
             public void failure_is_false() {
-                final String BANNER_ID = Constants.ADMANAGER.USE_TEST_ADS ? Constants.ADMANAGER.TEST.BANNER_AD_ID : Constants.ADMANAGER.REAL.BANNER_AD_ID;
+                final String BANNER_ID = USE_TEST_ADS ? TEST.BANNER_AD_ID : REAL.BANNER_AD_ID;
 
                 final AdView adView = new AdView(getContext());
                 adView.setId(R.id.RL_BannerAd_ID); //so we can remove it afterwards when e.g. temporarly inactive
