@@ -10,7 +10,6 @@ import android.view.KeyEvent;
 import android.view.ViewParent;
 
 import kevkevin.wsdt.tagueberstehen.R;
-import kevkevin.wsdt.tagueberstehen.classes.Constants;
 
 
 /**

@@ -23,13 +23,14 @@ import com.daimajia.swipe.SwipeLayout;
 
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
-import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CountdownCounter;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppNotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.Quote;
 import kevkevin.wsdt.tagueberstehen.classes.manager.ShareMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
+
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_NotificationMgr.*;
 
 public class CountdownActivity extends AppCompatActivity {
     private int countdownId = (-1);
@@ -64,7 +65,7 @@ public class CountdownActivity extends AppCompatActivity {
 
         //ACTIVITY OPENED BY OTHER ACTIVITY: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         this.setLastIntent(getIntent());
-        this.countdownId = this.getLastIntent().getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID, -1);
+        this.countdownId = this.getLastIntent().getIntExtra(IDENTIFIER_COUNTDOWN_ID, -1);
         //maybe by main menu or notification, but we get the same Extra: COUNTDOWN_ID with the ID
         if (this.getCountdown() == null) {this.setCountdown(DatabaseMgr.getSingletonInstance(this).getCountdown(this,false, this.countdownId));} //load countdown if not already loaded by actionbar menu
         initializeCountdownDataSwipeLayout(); //to restore current bottom view if surface view would get updated (preventing it)
@@ -255,9 +256,9 @@ public class CountdownActivity extends AppCompatActivity {
         Log.d(TAG, "showInAppNotificationIfAvailable: Started method.");
         try {
             this.getInAppNotificationMgr().showInAppNotification(this,
-                    this.getLastIntent().getStringExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_CONTENT_TITLE),
-                    this.getLastIntent().getStringExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_CONTENT_TEXT),
-                    this.getLastIntent().getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_SMALL_ICON, -1),
+                    this.getLastIntent().getStringExtra(IDENTIFIER_CONTENT_TITLE),
+                    this.getLastIntent().getStringExtra(IDENTIFIER_CONTENT_TEXT),
+                    this.getLastIntent().getIntExtra(IDENTIFIER_SMALL_ICON, -1),
                     (RelativeLayout) findViewById(R.id.content_main),false); //do not preventmultiple, because reopen of notification would block new notification until old animation (which we cant see anymore is done)
         } catch (Exception e) {
             Log.e(TAG, "showInApNotificationIfAvailable: Could not show inapp-notification. Maybe activity was opened from main menu.");

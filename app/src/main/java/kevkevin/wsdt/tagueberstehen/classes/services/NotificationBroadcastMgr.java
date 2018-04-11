@@ -12,12 +12,12 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
-import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.manager.NotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_NotificationMgr.IDENTIFIER_COUNTDOWN_ID;
 
 public class NotificationBroadcastMgr extends BroadcastReceiver {
     /*For short intervals the background service might be more performant (so this should be selectable)*/
@@ -31,7 +31,7 @@ public class NotificationBroadcastMgr extends BroadcastReceiver {
         Countdown currCountdown = null;
         int alarmId = (-1);
         try {
-            alarmId = intent.getIntExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID,-1);
+            alarmId = intent.getIntExtra(IDENTIFIER_COUNTDOWN_ID,-1);
             currCountdown = DatabaseMgr.getSingletonInstance(context).getCountdown(context,false,alarmId);
         } catch (Exception e) {
             Log.e(TAG, "onReceive: Could not load countdown from countdown id.");

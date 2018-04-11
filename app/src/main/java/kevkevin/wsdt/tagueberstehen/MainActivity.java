@@ -21,7 +21,6 @@ import com.daimajia.swipe.SwipeLayout;
 
 import java.util.ArrayList;
 
-import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
@@ -31,6 +30,10 @@ import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.FirebaseStorageMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.services.LiveCountdown_ForegroundService;
+
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppPurchaseMgr.*;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_NotificationMgr.*;
+import static kevkevin.wsdt.tagueberstehen.interfaces.IConstants_MainActivity.COUNTDOWN_VIEW_TAG_PREFIX;
 
 public class MainActivity extends AppCompatActivity {
     private LinearLayout nodeList;
@@ -120,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
             final Countdown currCountdown = allCountdowns.valueAt(i); //necessary because i cannot be final (i++)
             if (this.anzahlShowingNodes > 0) {
                 //Already at least one node shown! Not showing more without purchasing product
-                this.getInAppPurchaseMgr().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                this.getInAppPurchaseMgr().executeIfProductIsBought(INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
                     public void success_is_true() {
                         Log.d(TAG, "createAddNodeToLayout:isProductBought:is_true: Product is bought. Showing more than one node (if there are any).");
@@ -188,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Open CountdownActivity
         if (countdownId >= 0) {
-            tmpintent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID, countdownId);
+            tmpintent.putExtra(IDENTIFIER_COUNTDOWN_ID, countdownId);
             startActivity(tmpintent);
         } else {
             //Toast was made in getCountdownIdFromNodeTag()
@@ -246,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Intent modifyCountdownActivity = new Intent(this, ModifyCountdownActivity.class);
-        modifyCountdownActivity.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID, countdown.getCountdownId());
+        modifyCountdownActivity.putExtra(IDENTIFIER_COUNTDOWN_ID, countdown.getCountdownId());
         startActivity(modifyCountdownActivity);
     }
 
@@ -294,9 +297,9 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "getCountdownIdFromNodeTag: Nodetag of countdown is: " + ((nodeTag == null) ? "null" : nodeTag));
         int nodeId = (-1);
         try {
-            if (nodeTag.length() >= 11) {
+            if (nodeTag.length() >= (COUNTDOWN_VIEW_TAG_PREFIX.length()+1)) { //+1 so we know that at least a no. between 0 and 9 is given
                 try {
-                    nodeId = Integer.parseInt(nodeTag.substring(10));
+                    nodeId = Integer.parseInt(nodeTag.substring(COUNTDOWN_VIEW_TAG_PREFIX.length()));
                 } catch (NumberFormatException e) {
                     Log.e(TAG, "getCountdownIdFromNodeTag: Node-Id could not be parsed to Integer. Wrong Tag: " + nodeTag);
                     Toast.makeText(this, "Could not identify Countdown ID.", Toast.LENGTH_SHORT).show();
@@ -327,7 +330,7 @@ public class MainActivity extends AppCompatActivity {
 
         //((TextView) countdownView.findViewById(R.id.startAndUntilDateTime)).setText(String.format(getResources().getString(R.string.mainActivity_countdownNode_DateTimeValues), countdown.getStartDateTime(), countdown.getUntilDateTime()));
         //Set tag to swipeLayout! so we can access it from every top/right menu etc.
-        swipeLayout.setTag(Constants.MAIN_ACTIVITY.COUNTDOWN_VIEW_TAG_PREFIX + countdown.getCountdownId()); //IMPORTANT: to determine what countdown to open in CountdownActivity
+        swipeLayout.setTag(COUNTDOWN_VIEW_TAG_PREFIX + countdown.getCountdownId()); //IMPORTANT: to determine what countdown to open in CountdownActivity
 
         //set category color
         View categoryColor = countdownView.findViewById(R.id.categoryColorView);
@@ -404,7 +407,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu(final Menu menu) {
         //Remove menu points dynamically (not in onCreateOptionsMenu)
-        this.getInAppPurchaseMgr().executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.REMOVE_ALL_ADS.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+        this.getInAppPurchaseMgr().executeIfProductIsBought(INAPP_PRODUCTS.REMOVE_ALL_ADS.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
             public void success_is_true() {
                 MenuItem rewardedAdMenuItem = menu.findItem(R.id.action_removeAdsTemporary);

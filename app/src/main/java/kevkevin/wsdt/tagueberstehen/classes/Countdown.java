@@ -3,7 +3,6 @@ package kevkevin.wsdt.tagueberstehen.classes;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -24,11 +23,13 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 
+import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
 import kevkevin.wsdt.tagueberstehen.R;
+
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
+import static kevkevin.wsdt.tagueberstehen.classes.interfaces.IConstants_Countdown.*;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_DatabaseMgr.*;
 
 
 public class Countdown {
@@ -162,7 +163,7 @@ public class Countdown {
     public String getTotalSecondsNoScientificNotation() {
         DecimalFormat decimalFormat = (DecimalFormat) NumberFormat.getInstance(Locale.US);
         DecimalFormatSymbols decimalFormatSymbols = decimalFormat.getDecimalFormatSymbols();
-        decimalFormatSymbols.setGroupingSeparator(Constants.GLOBAL.THOUSAND_GROUPING_SEPERATOR); //set separator
+        decimalFormatSymbols.setGroupingSeparator(IConstants_Global.GLOBAL.THOUSAND_GROUPING_SEPERATOR); //set separator
         decimalFormat.setDecimalFormatSymbols(decimalFormatSymbols);
         return decimalFormat.format(this.getTotalSeconds());
     }
@@ -223,7 +224,7 @@ public class Countdown {
 
     //also needed in ModifyCountdownActivity
     public GregorianCalendar getDateTime(String formattedDate) {
-        DateFormat df = new SimpleDateFormat(Constants.GLOBAL.DATETIME_FORMAT, Locale.getDefault());
+        DateFormat df = new SimpleDateFormat(IConstants_Global.GLOBAL.DATETIME_FORMAT, Locale.getDefault());
         GregorianCalendar result;
         try {
             Date date = df.parse(formattedDate);
@@ -247,8 +248,8 @@ public class Countdown {
     private String escapeEnter(@NonNull String string) { //so nicer for UI (node showing)
         Log.d(TAG, "escapeEnter: Trying to escape string for enter!");
         /* Used for CustomEdittext e.g. where no enter is allowed (so do not call this function on all countdown values (because we do not know whether new errors occur)*/
-        for (String illegalCharacter : Constants.COUNTDOWN.ESCAPE.escapeEnter_illegalCharacters) {
-            string = string.replaceAll(illegalCharacter, Constants.COUNTDOWN.ESCAPE.escapeEnter_legalCharacter);
+        for (String illegalCharacter : ESCAPE.escapeEnter_illegalCharacters) {
+            string = string.replaceAll(illegalCharacter, ESCAPE.escapeEnter_legalCharacter);
         }
         return string;
     }
@@ -372,7 +373,7 @@ public class Countdown {
 
     /** Necessary to determine which languagepacks are used for this countdown. (MIGHT RETURN NULL!)*/
     public Quote getRandomQuoteSuitableForCountdown() {
-        Quote fallbackQuoteErrorCase = new Quote(this.getContext(),-1,this.getContext().getResources().getString(R.string.error_contactAdministrator),Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0]); //no matter which language pack we return
+        Quote fallbackQuoteErrorCase = new Quote(this.getContext(),-1,this.getContext().getResources().getString(R.string.error_contactAdministrator),TABLES.QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0]); //no matter which language pack we return
         HashMap<String, Languagepack> languagepacks = this.getQuotesLanguagePacksObj();
 
         if (languagepacks.size() <= 0) { //no languagepacks defined!
@@ -418,7 +419,7 @@ public class Countdown {
         //If NO valid language found then just report fallback language (english)
         if (usedLanguagePacks.size() <= 0) {
             Log.d(TAG, "getQuotesLanguagePacks_Quotes: Languages not found. Used fallback language.");
-            String fallBackLanguagePack = Constants.STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0];
+            String fallBackLanguagePack = TABLES.QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0];
             usedLanguagePacks.put(fallBackLanguagePack,Languagepack.getAllLanguagePacks(this.getContext()).get(fallBackLanguagePack));
         }
         this.setQuotesLanguagePacksObj(usedLanguagePacks); //now use other setter

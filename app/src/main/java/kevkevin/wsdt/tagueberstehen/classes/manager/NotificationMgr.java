@@ -20,15 +20,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import kevkevin.wsdt.tagueberstehen.R;
-import kevkevin.wsdt.tagueberstehen.classes.Constants;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CountdownCounter;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
-import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
-import kevkevin.wsdt.tagueberstehen.classes.manager.ShareMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.services.NotificationBroadcastMgr;
+
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppPurchaseMgr.*;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_NotificationMgr.*;
 
 public class NotificationMgr { //one instance for every countdown or similar
     private Context activityThisTarget;
@@ -46,9 +46,9 @@ public class NotificationMgr { //one instance for every countdown or similar
         this.setRes(activityThisTarget.getResources());
 
         //Create NotificationChannels for Oreo
-        createNotificationChannel(Constants.CUSTOMNOTIFICATION.NOTIFICATION_CHANNEL_LIVECOUNTDOWN_ID,Constants.CUSTOMNOTIFICATION.NOTIFICATION_CHANNEL_LIVECOUNTDOWN_NAME,3);
-        createNotificationChannel(Constants.CUSTOMNOTIFICATION.NOTIFICATION_CHANNEL_DEFAULT_ID,Constants.CUSTOMNOTIFICATION.NOTIFICATION_CHANNEL_DEFAULT_NAME,3);
-        createNotificationChannel(Constants.CUSTOMNOTIFICATION.NOTIFICATION_CHANNEL_MOTIVATION_ID,Constants.CUSTOMNOTIFICATION.NOTIFICATION_CHANNEL_MOTIVATION_NAME,3);
+        createNotificationChannel(NOTIFICATION_CHANNEL_LIVECOUNTDOWN_ID,NOTIFICATION_CHANNEL_LIVECOUNTDOWN_NAME,3);
+        createNotificationChannel(NOTIFICATION_CHANNEL_DEFAULT_ID,NOTIFICATION_CHANNEL_DEFAULT_NAME,3);
+        createNotificationChannel(NOTIFICATION_CHANNEL_MOTIVATION_ID,NOTIFICATION_CHANNEL_MOTIVATION_NAME,3);
 
         //With countdown ID we are able to look in our persistent storage for the right countdown
         // IMPORTANT: Pending intent in create countdown so always correct one opened
@@ -65,7 +65,7 @@ public class NotificationMgr { //one instance for every countdown or similar
         for (int i = 0;i<allCountdowns.size();i++) {
             final Countdown currCountdown = allCountdowns.get(i); //necessary because i cannot be final (i++)
             if ((count++) > 0) {
-                inAppPurchaseMgr.executeIfProductIsBought(Constants.INAPP_PURCHASES.INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                inAppPurchaseMgr.executeIfProductIsBought(INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
                     public void success_is_true() {
                         Log.d(TAG, "scheduleAllActiveCountdownNotifications:success_is_true: Product is bought. Scheduling countdown.");
@@ -90,7 +90,7 @@ public class NotificationMgr { //one instance for every countdown or similar
         //Important: inexactRepeating to save battery!
         AlarmManager alarmManager = (AlarmManager) this.getActivityThisTarget().getSystemService(Context.ALARM_SERVICE);
         Intent tmpIntent = new Intent(this.getActivityThisTarget(), NotificationBroadcastMgr.class);
-        tmpIntent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID,countdownId);
+        tmpIntent.putExtra(IDENTIFIER_COUNTDOWN_ID,countdownId);
 
         //PendingIntent ID = Countdown ID (important so reload overwrites old one! AND we can show different notifications because different pendingIntent IDs!!
         PendingIntent alarmIntent = PendingIntent.getBroadcast(this.getActivityThisTarget(), countdownId, tmpIntent,0);
@@ -130,7 +130,7 @@ public class NotificationMgr { //one instance for every countdown or similar
 
     public Notification createCounterServiceNotification(Countdown countdown) {
         Intent tmpIntent = new Intent(this.getActivityThisTarget(), getTargetActivityClass());
-        tmpIntent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID,countdown.getCountdownId()); //countdown to open
+        tmpIntent.putExtra(IDENTIFIER_COUNTDOWN_ID,countdown.getCountdownId()); //countdown to open
         //make this locally because of the same reason why pending intent has no getter
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this.getActivityThisTarget(),
@@ -166,7 +166,7 @@ public class NotificationMgr { //one instance for every countdown or similar
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 
-        return new NotificationCompat.Builder(this.getActivityThisTarget(),Constants.CUSTOMNOTIFICATION.NOTIFICATION_CHANNEL_LIVECOUNTDOWN_ID)
+        return new NotificationCompat.Builder(this.getActivityThisTarget(),NOTIFICATION_CHANNEL_LIVECOUNTDOWN_ID)
                 .setSmallIcon(R.drawable.light_notification_appicon)
                 //Large icon is too small on new smartphones
                 //.setLargeIcon(BitmapFactory.decodeResource(this.getRes(),R.drawable.notification_timebased_color))
@@ -198,12 +198,12 @@ public class NotificationMgr { //one instance for every countdown or similar
 
         //add notification
         this.getNotifications().put(this.getmNotificationId(), //save with current id
-                new NotificationCompat.Builder(this.getActivityThisTarget(),Constants.CUSTOMNOTIFICATION.NOTIFICATION_CHANNEL_DEFAULT_ID)
+                new NotificationCompat.Builder(this.getActivityThisTarget(),NOTIFICATION_CHANNEL_DEFAULT_ID)
                         .setSmallIcon(icon)
                         .setContentTitle(title)
                         //onMs = how long on / offMs = how long off (repeating, so blinking!)
                         //USE category color
-                        .setLights(Color.parseColor("#ff0000"), Constants.CUSTOMNOTIFICATION.NOTIFICATION_BLINK_ON_TIME_IN_MS, Constants.CUSTOMNOTIFICATION.NOTIFICATION_BLINK_OFF_TIME_IN_MS)
+                        .setLights(Color.parseColor("#ff0000"), NOTIFICATION_BLINK_ON_TIME_IN_MS, NOTIFICATION_BLINK_OFF_TIME_IN_MS)
                         .setAutoCancel(false) //remove NOT after clicking on it
                         .setOngoing(false) //removeable!! --> so you have to click on notification to remove it
                         .setContentIntent(pendingIntent)
@@ -223,12 +223,12 @@ public class NotificationMgr { //one instance for every countdown or similar
         //IMPORTANT: Make no GETTER for this method, because this class is used for multiple countdowns!! So only the last assignment would open countdown
         //Create pending intent
         Intent tmpIntent = new Intent(this.getActivityThisTarget(), getTargetActivityClass());
-        tmpIntent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_COUNTDOWN_ID,countdown.getCountdownId()); //countdown to open
+        tmpIntent.putExtra(IDENTIFIER_COUNTDOWN_ID,countdown.getCountdownId()); //countdown to open
 
         //Following attributes are added to call them in countdownActivity and showing in-app-notification again.
-        tmpIntent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_CONTENT_TITLE, title);
-        tmpIntent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_CONTENT_TEXT, text);
-        tmpIntent.putExtra(Constants.CUSTOMNOTIFICATION.IDENTIFIER_SMALL_ICON, icon);
+        tmpIntent.putExtra(IDENTIFIER_CONTENT_TITLE, title);
+        tmpIntent.putExtra(IDENTIFIER_CONTENT_TEXT, text);
+        tmpIntent.putExtra(IDENTIFIER_SMALL_ICON, icon);
 
         tmpIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NO_HISTORY); //prevent activity to be added to history (preventing several back procedures) [also set in manifest]
         //make this locally because of the same reason why pending intent has no getter
@@ -247,12 +247,12 @@ public class NotificationMgr { //one instance for every countdown or similar
 
         //add notification
         this.getNotifications().put(this.getmNotificationId(), //save with current id
-                new NotificationCompat.Builder(this.getActivityThisTarget(),Constants.CUSTOMNOTIFICATION.NOTIFICATION_CHANNEL_MOTIVATION_ID)
+                new NotificationCompat.Builder(this.getActivityThisTarget(),NOTIFICATION_CHANNEL_MOTIVATION_ID)
                 .setSmallIcon(icon)
                 .setContentTitle(title)
                 //onMs = how long on / offMs = how long off (repeating, so blinking!)
                 //USE category color
-                .setLights(Color.parseColor(countdown.getCategory()), Constants.CUSTOMNOTIFICATION.NOTIFICATION_BLINK_ON_TIME_IN_MS, Constants.CUSTOMNOTIFICATION.NOTIFICATION_BLINK_OFF_TIME_IN_MS)
+                .setLights(Color.parseColor(countdown.getCategory()), NOTIFICATION_BLINK_ON_TIME_IN_MS, NOTIFICATION_BLINK_OFF_TIME_IN_MS)
                 .setTicker(this.getRes().getString(R.string.customNotification_notificationTicker))
                 .setAutoCancel(false) //remove NOT after clicking on it (realizing with button instead [action below])
                 .setOngoing(false) //notification IS REMOVABLE
@@ -374,7 +374,7 @@ public class NotificationMgr { //one instance for every countdown or similar
      * Randomness necessary so many customnotification-instances can create notifications without overwriting each other's notifications.*/
     public void incrementmNotificationId() {
         int tmpId = (this.getmNotificationId()+1); //IMPORTANT: 999999950 - 999999999 reserved for FOREGROUNDCOUNTERSERVICE [999999950+countdownId = foregroundNotificationID, etc.]
-        tmpId += HelperClass.getRandomInt(0,Constants.CUSTOMNOTIFICATION.NOTIFICATION_ID-tmpId); //-tmpId, so we cannot get over the bound of the constant!
+        tmpId += HelperClass.getRandomInt(0,NOTIFICATION_ID-tmpId); //-tmpId, so we cannot get over the bound of the constant!
         Log.d(TAG,"incrementNoficiationId: Old: "+this.getmNotificationId()+"/ New: "+tmpId);
         this.mNotificationId = tmpId; //small probability that notification has the same id! So multiple instances of this class usable without overwriten old notifications
     }
