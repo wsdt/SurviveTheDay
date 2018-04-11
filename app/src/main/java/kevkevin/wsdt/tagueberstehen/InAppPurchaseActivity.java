@@ -21,7 +21,6 @@ public class InAppPurchaseActivity extends AppCompatActivity{
 
         //Load ads
         AdMgr adMgr = new AdMgr(this);
-        adMgr.initializeAdmob();
         adMgr.loadBannerAd((RelativeLayout) findViewById(R.id.inAppPurchaseAct_RL));
 
         //IMPORTANT: Purchase failed is only when we clicked on buttons before. But this code worked before!

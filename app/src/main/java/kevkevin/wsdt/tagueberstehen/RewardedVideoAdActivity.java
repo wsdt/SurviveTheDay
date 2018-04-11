@@ -21,7 +21,6 @@ public class RewardedVideoAdActivity extends AppCompatActivity {
         setContentView(R.layout.activity_rewarded_video_ad);
 
         this.setAdMgr(new AdMgr(this));
-        this.getAdMgr().initializeAdmob();
         //redirect to mainActivity after ad
         this.setmRewardedVideoAd(this.getAdMgr().loadRewardedVideoInRewardActivity(null,null));
     }

@@ -27,7 +27,6 @@ public class CreditsActivity extends AppCompatActivity {
 
         //Ads - START
         AdMgr adMgr = new AdMgr(this);
-        adMgr.initializeAdmob();
         adMgr.loadBannerAd((RelativeLayout) findViewById(R.id.wrappingRLForAds));
         //Ads - END
 
