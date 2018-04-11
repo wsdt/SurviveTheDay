@@ -11,6 +11,8 @@ import java.util.HashMap;
 
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 
+//TODO: Make to Libpack (transform!)
+@Deprecated
 public class Languagepack {
     private static final String TAG = "LanguagePack";
     private static HashMap<String,Languagepack> allLanguagePacks = new HashMap<>(); //important that here declared
