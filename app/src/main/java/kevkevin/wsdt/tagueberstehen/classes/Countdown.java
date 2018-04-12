@@ -18,10 +18,12 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
@@ -47,6 +49,8 @@ public class Countdown {
     private boolean showLiveCountdown; //show Foreground service live countdown if countdown until start date constraints true
     private HashMap<String, UserLibrary_depr> quotesLanguagePacksObj; //by default local language will be chosen
     private String[] quotesLanguagePacksStr; //for random e.g.
+
+    private static List<Countdown> allCountdowns = new ArrayList<>();
     private static final String TAG = "Countdown";
 
 
@@ -82,6 +86,14 @@ public class Countdown {
         this.setNotificationInterval(notificationInterval);
         this.setShowLiveCountdown(showLiveCountdown);
         this.setQuotesLanguagePacksStr(quotesLanguagePacks);
+    }
+
+    public static List<Countdown> getAllCountdowns() {
+        return allCountdowns;
+    }
+
+    public static void setAllCountdowns(List<Countdown> allCountdowns) {
+        Countdown.allCountdowns = allCountdowns;
     }
 
 
