@@ -37,7 +37,7 @@ import java.util.GregorianCalendar;
 import kevkevin.wsdt.tagueberstehen.classes.ColorPicker;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
-import kevkevin.wsdt.tagueberstehen.classes.Languagepack;
+import kevkevin.wsdt.tagueberstehen.classes.UserLibrary_depr;
 import kevkevin.wsdt.tagueberstehen.classes.customviews.CustomEdittext;
 import kevkevin.wsdt.tagueberstehen.classes.customviews.DateTimePicker.DateTimePicker;
 import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
@@ -346,11 +346,11 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         ((ToggleButton) findViewById(R.id.showLiveCountdown)).setChecked(countdown.isShowLiveCountdown());
 
         GridLayout languagePackList = findViewById(R.id.modifyCountdownActivity_motivation_languagePacks);
-        for (Languagepack languagePack : countdown.getQuotesLanguagePacksObj().values()) {
+        for (UserLibrary_depr languagePack : countdown.getQuotesLanguagePacksObj().values()) {
             for (int i = 0; i < languagePackList.getChildCount(); i++) {
                 if (languagePackList.getChildAt(i).getTag() != null) {
                     CheckBox tmpCheckbox = ((CheckBox) languagePackList.getChildAt(i));
-                    if (languagePackList.getChildAt(i).getTag().toString().equals(languagePack.getLangPackId())) {
+                    if (languagePackList.getChildAt(i).getTag().toString().equals(languagePack.getUserLibraryId())) {
                         tmpCheckbox.setChecked(true);
                     }
                 }
@@ -445,10 +445,10 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     private ArrayList<CheckBox> languagePackCheckboxes = new ArrayList<>();
 
     private void loadLanguagePacksCheckboxes(@NonNull GridLayout superiorLayoutView) {
-        for (Languagepack languagepack : Languagepack.getAllLanguagePacks(this).values()) { //pre imkrement!
+        for (UserLibrary_depr languagepack : UserLibrary_depr.getAllUserLibraries(this).values()) { //pre imkrement!
             //Print Checkboxes etc.
             CheckBox languagePackCheckbox = new CheckBox(this);
-            languagePackCheckbox.setTag(languagepack.getLangPackId()); //en, de etc.
+            languagePackCheckbox.setTag(languagepack.getUserLibraryId()); //en, de etc.
             this.languagePackCheckboxes.add(languagePackCheckbox);
             superiorLayoutView.addView(languagePackCheckbox); //before text of checkbox
             TextView languagePackLbl = new TextView(this);

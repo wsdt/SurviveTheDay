@@ -26,7 +26,7 @@ import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CountdownCounter;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppNotificationMgr;
-import kevkevin.wsdt.tagueberstehen.classes.Quote;
+import kevkevin.wsdt.tagueberstehen.classes.UserLibrarySaying_depr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.ShareMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 
@@ -164,7 +164,7 @@ public class CountdownActivity extends AppCompatActivity {
     public void setNewRandomQuote(@Nullable View v) { //is called when clicking onRefreshButton, onActivity start and regularly (automatic refresh)
         //When used outside of onClick, then v might/will be NULL!, also use here user selected quote language packages!
         ((TextSwitcher) findViewById(R.id.swipeLayout_countdownActivity_randomQuotes_quote)).setText(
-                Quote.getRandomQuoteFromAll(this).getQuoteText()); //use random quote
+                UserLibrarySaying_depr.getRandomSayingFromAll(this).getSayingText()); //use random quote
     }
 
     public void onSwipeLayoutClick_UserInstruction(View v) { //only use on mainView of SwipeLayout, after swiping they will know that they can do it!

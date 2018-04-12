@@ -45,7 +45,7 @@ public class Countdown {
     private boolean isActive;
     private int notificationInterval; //in seconds!
     private boolean showLiveCountdown; //show Foreground service live countdown if countdown until start date constraints true
-    private HashMap<String, Languagepack> quotesLanguagePacksObj; //by default local language will be chosen
+    private HashMap<String, UserLibrary_depr> quotesLanguagePacksObj; //by default local language will be chosen
     private String[] quotesLanguagePacksStr; //for random e.g.
     private static final String TAG = "Countdown";
 
@@ -372,9 +372,9 @@ public class Countdown {
     }
 
     /** Necessary to determine which languagepacks are used for this countdown. (MIGHT RETURN NULL!)*/
-    public Quote getRandomQuoteSuitableForCountdown() {
-        Quote fallbackQuoteErrorCase = new Quote(this.getContext(),-1,this.getContext().getResources().getString(R.string.error_contactAdministrator),TABLES.QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0]); //no matter which language pack we return
-        HashMap<String, Languagepack> languagepacks = this.getQuotesLanguagePacksObj();
+    public UserLibrarySaying_depr getRandomQuoteSuitableForCountdown() {
+        UserLibrarySaying_depr fallbackQuoteErrorCase = new UserLibrarySaying_depr(this.getContext(),-1,this.getContext().getResources().getString(R.string.error_contactAdministrator),TABLES.QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0]); //no matter which language pack we return
+        HashMap<String, UserLibrary_depr> languagepacks = this.getQuotesLanguagePacksObj();
 
         if (languagepacks.size() <= 0) { //no languagepacks defined!
             Log.w(TAG, "getRandomQuoteSuitableForCountdown: No languagepack for countdown defined! Returned fallbackNotification.");
@@ -386,7 +386,7 @@ public class Countdown {
 
         //this way every language is shown the same probability (only drawback: languagepacks with less quotes might show more probably the same quotes again)
         //IMPORTANT: String array of language packs and hashmap need the same size so keep them uptodate! (we are doing above a if to prevent such error cases, but user gets notified about it)
-        SparseArray<Quote> languageQuotes = languagepacks.get(this.getQuotesLanguagePacksStr()[HelperClass.getRandomInt(0,languagepacks.size()-1)]).getLanguagePackQuotes(this.getContext());
+        SparseArray<UserLibrarySaying_depr> languageQuotes = languagepacks.get(this.getQuotesLanguagePacksStr()[HelperClass.getRandomInt(0,languagepacks.size()-1)]).getUserLibrarySayings(this.getContext());
         if (languageQuotes.size() <= 0) {
             Log.w(TAG, "getRandomQuoteSuitableForCountdown: No quote for languagepack for countdown defined! Returned fallbackNotification.");
             return fallbackQuoteErrorCase;
@@ -395,11 +395,11 @@ public class Countdown {
         return languageQuotes.valueAt(HelperClass.getRandomInt(0,languageQuotes.size()-1));
     }
 
-    public HashMap<String, Languagepack> getQuotesLanguagePacksObj() {
+    public HashMap<String, UserLibrary_depr> getQuotesLanguagePacksObj() {
         return quotesLanguagePacksObj;
     }
 
-    private void setQuotesLanguagePacksObj(HashMap<String, Languagepack> quotesLanguagePacksObj) {
+    private void setQuotesLanguagePacksObj(HashMap<String, UserLibrary_depr> quotesLanguagePacksObj) {
         //should only be called by setQuotesLStr(), because this method does not update hashmap
         this.quotesLanguagePacksObj = quotesLanguagePacksObj;
     }
@@ -407,12 +407,12 @@ public class Countdown {
     public void setQuotesLanguagePacksStr(String[] quotesLanguagePacks) { //additional setter (easier for constructor etc.) because no extra object creation necessary
         this.quotesLanguagePacksStr = quotesLanguagePacks; //IMPORTANT: That string array and hashmap are uptodate otherwise we will get errors!
         //now also refresh hashmap
-        HashMap<String,Languagepack> usedLanguagePacks = new HashMap<>();
+        HashMap<String,UserLibrary_depr> usedLanguagePacks = new HashMap<>();
         for (String langPack : quotesLanguagePacks) {
             Log.d(TAG, "getQuotesLanguagePacks_Quotes: Trying to evaluate language pack->"+langPack);
-            Languagepack languagepack = Languagepack.getAllLanguagePacks(this.getContext()).get(langPack);
+            UserLibrary_depr languagepack = UserLibrary_depr.getAllUserLibraries(this.getContext()).get(langPack);
             if (languagepack != null) {
-                usedLanguagePacks.put(languagepack.getLangPackId(),languagepack);
+                usedLanguagePacks.put(languagepack.getUserLibraryId(),languagepack);
             }
         }
 
@@ -420,7 +420,7 @@ public class Countdown {
         if (usedLanguagePacks.size() <= 0) {
             Log.d(TAG, "getQuotesLanguagePacks_Quotes: Languages not found. Used fallback language.");
             String fallBackLanguagePack = TABLES.QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0];
-            usedLanguagePacks.put(fallBackLanguagePack,Languagepack.getAllLanguagePacks(this.getContext()).get(fallBackLanguagePack));
+            usedLanguagePacks.put(fallBackLanguagePack, UserLibrary_depr.getAllUserLibraries(this.getContext()).get(fallBackLanguagePack));
         }
         this.setQuotesLanguagePacksObj(usedLanguagePacks); //now use other setter
     }

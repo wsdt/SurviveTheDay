@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         initializePullForRefresh();
 
         //TODO: Just for testing
-        FirebaseStorageMgr.downloadNewPackage("en/quotes/default.std.lib");
+        FirebaseStorageMgr.downloadNewPackage(this,"en/quotes/default.std.lib");
 
     }
 
