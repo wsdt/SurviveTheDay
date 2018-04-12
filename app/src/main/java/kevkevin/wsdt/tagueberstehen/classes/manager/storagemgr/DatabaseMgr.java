@@ -21,8 +21,8 @@ import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.interfaces.IConstants_Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.manager.NotificationMgr;
-import kevkevin.wsdt.tagueberstehen.classes.Languagepack;
-import kevkevin.wsdt.tagueberstehen.classes.Quote;
+import kevkevin.wsdt.tagueberstehen.classes.UserLibrary_depr;
+import kevkevin.wsdt.tagueberstehen.classes.UserLibrarySaying_depr;
 import kevkevin.wsdt.tagueberstehen.classes.services.LiveCountdown_ForegroundService;
 import kevkevin.wsdt.tagueberstehen.classes.services.Kickstarter_BootAndGeneralReceiver;
 
@@ -52,30 +52,24 @@ public class DatabaseMgr {
                 Log.d(TAG, "onCreate: Executed statement-> " + sqlStatement);
                 db.execSQL(sqlStatement); //ONLY one statement per method!
             }
-
-            //INSERT ALL Quotes (maybe there might a more nice solution)
-            ContentValues contentValues = new ContentValues();
-            int countRow = 0;
-            for (String[] quoteRow : TABLES.QUOTES.ALL_QUOTES) {
-                contentValues.put(TABLES.QUOTES.ATTRIBUTES.ID, countRow++);
-                contentValues.put(TABLES.QUOTES.ATTRIBUTES.QUOTE_TEXT, quoteRow[0]);
-                contentValues.put(TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID, quoteRow[1]);
-
-                db.insert(TABLES.QUOTES.TABLE_NAME, null, contentValues);
-            }
-
+            //By default no default data (so users have to download desired firebase libs)
 
             Log.d(TAG, "onCreate: Tried to create sql tables. ");
         }
 
         @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            //TODO: IMPORTANT: If new version, then do this procedure NOT on mainthread (needs longer!)
-            Log.w(TAG, "onUpgrade: Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data.");
-            for (String sqlStatement : DATABASE_HELPER.DATABASE_UPGRADE_RESETTABLES) {
-                db.execSQL(sqlStatement); //for each statement a separate method call (necessary)
-            }
-            onCreate(db); //recreate database!
+        public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
+            //IMPORTANT: If new version, then do this procedure NOT on mainthread (needs longer!)
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.w(TAG, "onUpgrade: Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data.");
+                    for (String sqlStatement : DATABASE_HELPER.DATABASE_UPGRADE_RESETTABLES) {
+                        db.execSQL(sqlStatement); //for each statement a separate method call (necessary)
+                    }
+                    onCreate(db); //recreate database!
+                }
+            }).start();
         }
         //Also onDowngrade exists!
     }
@@ -88,8 +82,8 @@ public class DatabaseMgr {
     private static SQLiteDatabase db; //MUST be a member var
     //do not put cursor as member (because simultaneous operations would maybe destroy object allocations)
     private static SparseArray<Countdown> allCountdowns;
-    private static SparseArray<Quote> allQuotes;
-    private static HashMap<String, Languagepack> allLanguagePacks;
+    private static SparseArray<UserLibrarySaying_depr> allQuotes;
+    private static HashMap<String, UserLibrary_depr> allLanguagePacks;
 
     //Also singleton, so only one database instance at a time open
     private DatabaseMgr(@NonNull Context context) { //do not set context as class member, otherwise we could not make a singleton! (give context via methods!)
@@ -114,13 +108,13 @@ public class DatabaseMgr {
      * This method will map a queried row to a quoteObj.
      * ATTENTION: @param cursorRow should be closed() in parent-method in a finally block!
      */
-    private Languagepack mapCursorRowToLanguagePack(@NonNull Context context, Cursor cursorRow) {
-        return new Languagepack(
+    private UserLibrary_depr mapCursorRowToUserLibrary(@NonNull Context context, Cursor cursorRow) {
+        return new UserLibrary_depr(
                 context,
                 cursorRow.getString(cursorRow.getColumnIndex(TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID)));
     }
 
-    public boolean saveLanguagePack(@NonNull Context context, @NonNull Languagepack languagepack) {
+    public boolean saveUserLibrary(@NonNull Context context, @NonNull UserLibrary_depr userLibrary) {
         ContentValues values = new ContentValues();
         //values.put(TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES);
 
@@ -129,17 +123,17 @@ public class DatabaseMgr {
     }
 
     //todo: Fürs Erste nur queryMethod für Languagepacks, (delete/replace, etc. erst später WENN eigene Quotes hinzufügbar bzw. generell Quotes verwaltbar
-    public HashMap<String, Languagepack> getAllLanguagePacks(@NonNull Context context, boolean forceReload) {
+    public HashMap<String, UserLibrary_depr> getAllUserLibraries(@NonNull Context context, boolean forceReload) {
         //SparseArray for setting the same rows/ids as in db, but string[] for setting row values (quote text, etc.)
-        Log.d(TAG, "getAllLanguagePacks: Trying to load all quotes.");
+        Log.d(TAG, "getAllUserLibraries: Trying to load all quotes.");
         if (allQuotes == null || forceReload) { //only do this if not already extracted in this session! (performance enhancement :)) --> so also not extra sql query necessary when getting single countdown
             if (forceReload) {
-                Log.d(TAG, "getAllLanguagePacks: Forcefully reloaded two-dimensional array.");
+                Log.d(TAG, "getAllUserLibraries: Forcefully reloaded two-dimensional array.");
             } else {
-                Log.d(TAG, "getAllLanguagePacks: Found no already extracted two-dimensional array for quotes. Doing it now.");
+                Log.d(TAG, "getAllUserLibraries: Found no already extracted two-dimensional array for quotes. Doing it now.");
             }
             Cursor dbCursor = null;
-            HashMap<String, Languagepack> queriedLanguagePacks = new HashMap<>(); //sparse array instead of hashmap because better performance for pimitives
+            HashMap<String, UserLibrary_depr> queriedLanguagePacks = new HashMap<>(); //sparse array instead of hashmap because better performance for pimitives
 
             try {
                 /* Following query gets executed: ---------------
@@ -148,26 +142,26 @@ public class DatabaseMgr {
                 dbCursor = getDb(context).rawQuery("SELECT * FROM " + TABLES.QUOTELANGUAGEPACKAGES.TABLE_NAME + ";", null); //query all
 
                 if (dbCursor != null) {
-                    Log.d(TAG, "getAllLanguagePacks: Cursor is not null :)");
+                    Log.d(TAG, "getAllUserLibraries: Cursor is not null :)");
 
                     while (dbCursor.moveToNext()) {
-                        Languagepack tmp = mapCursorRowToLanguagePack(context, dbCursor); //temporary cache-saving, to get countdownId for Index!
-                        Log.d(TAG, "getAllLanguagePacks: Found languagepack-> " + tmp.toString());
-                        queriedLanguagePacks.put(tmp.getLangPackId(), tmp);
+                        UserLibrary_depr tmp = mapCursorRowToUserLibrary(context, dbCursor); //temporary cache-saving, to get countdownId for Index!
+                        Log.d(TAG, "getAllUserLibraries: Found userpack-> " + tmp.toString());
+                        queriedLanguagePacks.put(tmp.getUserLibraryId(), tmp);
                     }
                     setAllLanguagePacks(queriedLanguagePacks); //save all queried countdowns so we do not have to do this procedure again for runtime :)
                 } else {
-                    Log.w(TAG, "getAllLanguagePacks: Cursor is null!");
+                    Log.w(TAG, "getAllUserLibraries: Cursor is null!");
                 }
             } finally { //always finally for closing cursor! (also in error case)
-                Log.d(TAG, "getAllLanguagePacks: Trying to close cursor (finally).");
+                Log.d(TAG, "getAllUserLibraries: Trying to close cursor (finally).");
                 if (dbCursor != null) {
-                    Log.d(TAG, "getAllLanguagePacks: Trying to close cursor now! It's not null.");
+                    Log.d(TAG, "getAllUserLibraries: Trying to close cursor now! It's not null.");
                     dbCursor.close();
                 }
             }
         } //no else necessary, because allCountdowns already set
-        Log.d(TAG, "getAllLanguagePacks: Length of returned two-dimensional array: " + allLanguagePacks.size());
+        Log.d(TAG, "getAllUserLibraries: Length of returned two-dimensional array: " + allLanguagePacks.size());
         return allLanguagePacks;
     }
 
@@ -178,8 +172,8 @@ public class DatabaseMgr {
      * This method will map a queried row to a quoteObj.
      * ATTENTION: @param cursorRow should be closed() in parent-method in a finally block!
      */
-    private Quote mapCursorRowToQuote(@NonNull Context context, Cursor cursorRow) {
-        return new Quote(
+    private UserLibrarySaying_depr mapCursorRowToQuote(@NonNull Context context, Cursor cursorRow) {
+        return new UserLibrarySaying_depr(
                 context,
                 cursorRow.getInt(cursorRow.getColumnIndex(TABLES.QUOTES.ATTRIBUTES.ID)),
                 cursorRow.getString(cursorRow.getColumnIndex(TABLES.QUOTES.ATTRIBUTES.QUOTE_TEXT)),
@@ -187,7 +181,7 @@ public class DatabaseMgr {
     }
 
     //todo: Fürs Erste nur queryMethod für Quotes, (delete/replace, etc. erst später WENN eigene Quotes hinzufügbar bzw. generell Quotes verwaltbar
-    public SparseArray<Quote> getAllQuotes(@NonNull Context context, boolean forceReload) {
+    public SparseArray<UserLibrarySaying_depr> getAllQuotes(@NonNull Context context, boolean forceReload) {
         //SparseArray for setting the same rows/ids as in db, but string[] for setting row values (quote text, etc.)
         Log.d(TAG, "getAllQuotes: Trying to load all quotes.");
         if (allQuotes == null || forceReload) { //only do this if not already extracted in this session! (performance enhancement :)) --> so also not extra sql query necessary when getting single countdown
@@ -197,7 +191,7 @@ public class DatabaseMgr {
                 Log.d(TAG, "getAllQuotes: Found no already extracted two-dimensional array for quotes. Doing it now.");
             }
             Cursor dbCursor = null;
-            SparseArray<Quote> queriedQuotes = new SparseArray<>(); //sparse array instead of hashmap because better performance for pimitives
+            SparseArray<UserLibrarySaying_depr> queriedQuotes = new SparseArray<>(); //sparse array instead of hashmap because better performance for pimitives
 
             try {
                 /* Following query gets executed: ---------------
@@ -209,9 +203,9 @@ public class DatabaseMgr {
                     Log.d(TAG, "getAllQuotes: Cursor is not null :)");
 
                     while (dbCursor.moveToNext()) {
-                        Quote tmp = mapCursorRowToQuote(context, dbCursor); //temporary cache-saving, to get countdownId for Index!
+                        UserLibrarySaying_depr tmp = mapCursorRowToQuote(context, dbCursor); //temporary cache-saving, to get countdownId for Index!
                         Log.d(TAG, "getAllQuotes: Found quote-> " + tmp.toString());
-                        queriedQuotes.put(tmp.getQuoteId(), tmp);
+                        queriedQuotes.put(tmp.getSayingId(), tmp);
                     }
                     setAllQuotes(queriedQuotes); //save all queried countdowns so we do not have to do this procedure again for runtime :)
                 } else {
@@ -437,11 +431,11 @@ public class DatabaseMgr {
         //Now also insertValues for zwischentabelle (AFTER countdown is inserted)
         long[] rowIdsZwischentabelle = new long[countdown.getQuotesLanguagePacksObj().size()];
         int iteration = 0;
-        for (Languagepack languagePack : countdown.getQuotesLanguagePacksObj().values()) {
+        for (UserLibrary_depr languagePack : countdown.getQuotesLanguagePacksObj().values()) {
             ContentValues insertZwischentabelleValues = new ContentValues();
             //for every row a separate insert!! (ergo for every languagepack of countdown a separate insert)
             insertZwischentabelleValues.put(TABLES.COUNTDOWN.ATTRIBUTES.ID, countdown.getCountdownId());
-            insertZwischentabelleValues.put(TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID, languagePack.getLangPackId());
+            insertZwischentabelleValues.put(TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID, languagePack.getUserLibraryId());
             rowIdsZwischentabelle[iteration++] = getDb(context).replace(TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME, null, insertZwischentabelleValues);
         }
 
@@ -572,11 +566,11 @@ public class DatabaseMgr {
         DatabaseMgr.db = db;
     }
 
-    public static void setAllQuotes(SparseArray<Quote> allQuotes) {
+    public static void setAllQuotes(SparseArray<UserLibrarySaying_depr> allQuotes) {
         DatabaseMgr.allQuotes = allQuotes;
     }
 
-    public static void setAllLanguagePacks(HashMap<String, Languagepack> allLanguagePacks) {
+    public static void setAllLanguagePacks(HashMap<String, UserLibrary_depr> allLanguagePacks) {
         DatabaseMgr.allLanguagePacks = allLanguagePacks;
     }
 }

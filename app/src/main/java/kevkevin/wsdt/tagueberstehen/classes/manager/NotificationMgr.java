@@ -316,7 +316,7 @@ public class NotificationMgr { //one instance for every countdown or similar
 
         //Choose one for each arraylist by random index (max is size-1!)
         randomNotification.title = randomNotification.titleList.get(HelperClass.getRandomInt(0,randomNotification.titleList.size()-1)); //size() index does exist!
-        randomNotification.text = countdown.getRandomQuoteSuitableForCountdown().getQuoteText();//randomNotification.textList.get(this.random.nextInt(randomNotification.textList.size()));
+        randomNotification.text = countdown.getRandomQuoteSuitableForCountdown().getSayingText();//randomNotification.textList.get(this.random.nextInt(randomNotification.textList.size()));
         randomNotification.icon = randomNotification.iconList.get(HelperClass.getRandomInt(0,randomNotification.iconList.size()-1));
 
         return randomNotification;
