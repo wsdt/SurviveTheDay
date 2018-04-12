@@ -14,11 +14,15 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.UserLibrary;
+import kevkevin.wsdt.tagueberstehen.classes.UserLibraryLine;
 import kevkevin.wsdt.tagueberstehen.classes.interfaces.IConstants_Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.manager.NotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.UserLibrary_depr;
@@ -81,9 +85,7 @@ public class DatabaseMgr {
     private static DatabaseHelper dbHelper; //SHOULD be static, because the same instance (to make singleton of it without a real singleton of helper class!)
     private static SQLiteDatabase db; //MUST be a member var
     //do not put cursor as member (because simultaneous operations would maybe destroy object allocations)
-    private static SparseArray<Countdown> allCountdowns;
-    private static SparseArray<UserLibrarySaying_depr> allQuotes;
-    private static HashMap<String, UserLibrary_depr> allLanguagePacks;
+    //Do not put countdown, userLib etc. as member, because this should be in their classes itself! (so no duplicates!)
 
     //Also singleton, so only one database instance at a time open
     private DatabaseMgr(@NonNull Context context) { //do not set context as class member, otherwise we could not make a singleton! (give context via methods!)
@@ -108,10 +110,14 @@ public class DatabaseMgr {
      * This method will map a queried row to a quoteObj.
      * ATTENTION: @param cursorRow should be closed() in parent-method in a finally block!
      */
-    private UserLibrary_depr mapCursorRowToUserLibrary(@NonNull Context context, Cursor cursorRow) {
-        return new UserLibrary_depr(
-                context,
-                cursorRow.getString(cursorRow.getColumnIndex(TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID)));
+    private UserLibrary mapCursorRowToUserLibrary(@NonNull Cursor cursorRow) {
+        return new UserLibrary(
+                cursorRow.getInt(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID)),
+                cursorRow.getString(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_NAME)),
+                cursorRow.getString(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_LANGUAGE_CODE)),
+                cursorRow.getString(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_BY)),
+                cursorRow.getString(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_ON)),
+                cursorRow.getString(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LAST_EDIT_ON)));
     }
 
     public boolean saveUserLibrary(@NonNull Context context, @NonNull UserLibrary_depr userLibrary) {
@@ -123,33 +129,27 @@ public class DatabaseMgr {
     }
 
     //todo: Fürs Erste nur queryMethod für Languagepacks, (delete/replace, etc. erst später WENN eigene Quotes hinzufügbar bzw. generell Quotes verwaltbar
-    public HashMap<String, UserLibrary_depr> getAllUserLibraries(@NonNull Context context, boolean forceReload) {
+    public List<UserLibrary> getAllUserLibraries(@NonNull Context context, boolean forceReload) {
         //SparseArray for setting the same rows/ids as in db, but string[] for setting row values (quote text, etc.)
         Log.d(TAG, "getAllUserLibraries: Trying to load all quotes.");
-        if (allQuotes == null || forceReload) { //only do this if not already extracted in this session! (performance enhancement :)) --> so also not extra sql query necessary when getting single countdown
-            if (forceReload) {
-                Log.d(TAG, "getAllUserLibraries: Forcefully reloaded two-dimensional array.");
-            } else {
-                Log.d(TAG, "getAllUserLibraries: Found no already extracted two-dimensional array for quotes. Doing it now.");
-            }
+        if (UserLibrary.getAllDownloadedUserLibraries() == null || forceReload) { //only do this if not already extracted in this session! (performance enhancement :)) --> so also not extra sql query necessary when getting single countdown
             Cursor dbCursor = null;
-            HashMap<String, UserLibrary_depr> queriedLanguagePacks = new HashMap<>(); //sparse array instead of hashmap because better performance for pimitives
+            List<UserLibrary> queriedUserLibraries = new ArrayList<>();
 
             try {
                 /* Following query gets executed: ---------------
-                 * SELECT * FROM Quote_languagepackages;*/
+                 * SELECT * FROM UserLibrary;*/
 
-                dbCursor = getDb(context).rawQuery("SELECT * FROM " + TABLES.QUOTELANGUAGEPACKAGES.TABLE_NAME + ";", null); //query all
+                dbCursor = getDb(context).rawQuery("SELECT * FROM " + TABLES.USERLIBRARY.TABLE_NAME + ";", null); //query all
 
                 if (dbCursor != null) {
                     Log.d(TAG, "getAllUserLibraries: Cursor is not null :)");
 
                     while (dbCursor.moveToNext()) {
-                        UserLibrary_depr tmp = mapCursorRowToUserLibrary(context, dbCursor); //temporary cache-saving, to get countdownId for Index!
-                        Log.d(TAG, "getAllUserLibraries: Found userpack-> " + tmp.toString());
-                        queriedLanguagePacks.put(tmp.getUserLibraryId(), tmp);
+                        Log.d(TAG, "getAllUserLibraries: Found userpack.");
+                        queriedUserLibraries.add(mapCursorRowToUserLibrary(dbCursor));
                     }
-                    setAllLanguagePacks(queriedLanguagePacks); //save all queried countdowns so we do not have to do this procedure again for runtime :)
+                    UserLibrary.setAllDownloadedUserLibraries(queriedUserLibraries); //save all queried countdowns so we do not have to do this procedure again for runtime :)
                 } else {
                     Log.w(TAG, "getAllUserLibraries: Cursor is null!");
                 }
@@ -161,8 +161,8 @@ public class DatabaseMgr {
                 }
             }
         } //no else necessary, because allCountdowns already set
-        Log.d(TAG, "getAllUserLibraries: Length of returned two-dimensional array: " + allLanguagePacks.size());
-        return allLanguagePacks;
+        Log.d(TAG, "getAllUserLibraries: Length of returned two-dimensional array: " + UserLibrary.getAllDownloadedUserLibraries().size());
+        return UserLibrary.getAllDownloadedUserLibraries();
     }
 
 

@@ -1,7 +1,7 @@
 package kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces;
 
 public interface IConstants_DatabaseMgr {
-    int DATABASE_VERSION = 1; //MUST NOT be smaller than 1, and if we change db schema we should increment this so onUpgrade gets called!
+    int DATABASE_VERSION = 2; //MUST NOT be smaller than 1, and if we change db schema we should increment this so onUpgrade gets called!
 
     interface TABLES {
         interface COUNTDOWN { //Sql names etc.
