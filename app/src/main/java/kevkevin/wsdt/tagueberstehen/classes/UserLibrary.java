@@ -5,14 +5,15 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 
 public class UserLibrary {
     private static final String TAG = "UserLibrary";
-    private static List<UserLibrary> allDownloadedUserLibraries = new ArrayList<>(); //should only contain userLibObjs where data is saved into local db
+    private static Map<String,UserLibrary> allDownloadedUserLibraries = new HashMap<>(); //should only contain userLibObjs where data is saved into local db
 
     private int libId;
     private String libName;
@@ -22,15 +23,16 @@ public class UserLibrary {
     private String lastEditOn;
 
     //Contains e.g. all quotes/jokes etc.
-    private List<UserLibraryLine> lines = new ArrayList<>(); //prevent nullpointer
+    private List<String> lines; //for null if in dbmgr
 
-    public UserLibrary(int libId, String libName, String libLanguageCode, String createdBy, String createdOn, String lastEditOn) {
+    public UserLibrary(int libId, String libName, String libLanguageCode, String createdBy, String createdOn, String lastEditOn, List<String> lines) {
         this.setLibId(libId);
         this.setLibName(libName);
         this.setLibLanguageCode(libLanguageCode);
         this.setCreatedBy(createdBy);
         this.setCreatedOn(createdOn);
         this.setLastEditOn(lastEditOn);
+        this.setLines(lines);
     }
 
     public static void extractAllUserLibrariesFromDb(@NonNull Context context) { //if no quotes in db, this method might run every time!
@@ -43,11 +45,11 @@ public class UserLibrary {
 
 
     //GETTER/SETTER -------------------------
-    public static List<UserLibrary> getAllDownloadedUserLibraries() {
+    public static Map<String,UserLibrary> getAllDownloadedUserLibraries() {
         return allDownloadedUserLibraries;
     }
 
-    public static void setAllDownloadedUserLibraries(List<UserLibrary> allDownloadedUserLibraries) {
+    public static void setAllDownloadedUserLibraries(Map<String,UserLibrary> allDownloadedUserLibraries) {
         UserLibrary.allDownloadedUserLibraries = allDownloadedUserLibraries;
     }
 
@@ -91,11 +93,11 @@ public class UserLibrary {
         this.lastEditOn = lastEditOn;
     }
 
-    public List<UserLibraryLine> getLines() {
+    public List<String> getLines() {
         return lines;
     }
 
-    public void setLines(List<UserLibraryLine> lines) {
+    public void setLines(List<String> lines) {
         this.lines = lines;
     }
 

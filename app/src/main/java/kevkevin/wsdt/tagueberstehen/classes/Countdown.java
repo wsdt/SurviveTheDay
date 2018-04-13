@@ -50,7 +50,7 @@ public class Countdown {
     private HashMap<String, UserLibrary_depr> quotesLanguagePacksObj; //by default local language will be chosen
     private String[] quotesLanguagePacksStr; //for random e.g.
 
-    private static List<Countdown> allCountdowns = new ArrayList<>();
+    private static SparseArray<Countdown> allCountdowns;
     private static final String TAG = "Countdown";
 
 
@@ -88,11 +88,11 @@ public class Countdown {
         this.setQuotesLanguagePacksStr(quotesLanguagePacks);
     }
 
-    public static List<Countdown> getAllCountdowns() {
+    public static SparseArray<Countdown> getAllCountdowns() {
         return allCountdowns;
     }
 
-    public static void setAllCountdowns(List<Countdown> allCountdowns) {
+    public static void setAllCountdowns(SparseArray<Countdown> allCountdowns) {
         Countdown.allCountdowns = allCountdowns;
     }
 
