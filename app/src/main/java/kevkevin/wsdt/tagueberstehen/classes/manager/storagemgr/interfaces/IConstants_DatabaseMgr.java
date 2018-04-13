@@ -54,10 +54,6 @@ public interface IConstants_DatabaseMgr {
             String TABLE_PREFIX = "zcu_";
 
             //no own attributes (only foreign keys until now)
-            @Deprecated /*TODO: Not sure if necessary anymore */
-            interface ATTRIBUTE_ADDITIONALS { //additional values for attributes
-                String LANGUAGE_ID_LIST_SEPARATOR = ","; //von sqlite vorgegeben so müssen wir diesen nutzen! (einheitlich)
-            }
         }
     }
 
