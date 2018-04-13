@@ -14,9 +14,8 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.R;
@@ -117,24 +116,16 @@ public class DatabaseMgr {
                 cursorRow.getString(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_LANGUAGE_CODE)),
                 cursorRow.getString(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_BY)),
                 cursorRow.getString(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_ON)),
-                cursorRow.getString(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LAST_EDIT_ON)));
+                cursorRow.getString(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LAST_EDIT_ON)),
+                /*TODO: Get string arraylist from userlibline table!*/);
     }
 
-    public boolean saveUserLibrary(@NonNull Context context, @NonNull UserLibrary_depr userLibrary) {
-        ContentValues values = new ContentValues();
-        //values.put(TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES);
-
-        long insertResult = getDb(context).insert(TABLES.QUOTELANGUAGEPACKAGES.TABLE_NAME,null,values);
-        return false;
-    }
-
-    //todo: Fürs Erste nur queryMethod für Languagepacks, (delete/replace, etc. erst später WENN eigene Quotes hinzufügbar bzw. generell Quotes verwaltbar
-    public List<UserLibrary> getAllUserLibraries(@NonNull Context context, boolean forceReload) {
+    public Map<String,UserLibrary> getAllUserLibraries(@NonNull Context context, boolean forceReload) {
         //SparseArray for setting the same rows/ids as in db, but string[] for setting row values (quote text, etc.)
         Log.d(TAG, "getAllUserLibraries: Trying to load all quotes.");
         if (UserLibrary.getAllDownloadedUserLibraries() == null || forceReload) { //only do this if not already extracted in this session! (performance enhancement :)) --> so also not extra sql query necessary when getting single countdown
             Cursor dbCursor = null;
-            List<UserLibrary> queriedUserLibraries = new ArrayList<>();
+            Map<String,UserLibrary> queriedUserLibraries = new HashMap<>();
 
             try {
                 /* Following query gets executed: ---------------
@@ -147,7 +138,8 @@ public class DatabaseMgr {
 
                     while (dbCursor.moveToNext()) {
                         Log.d(TAG, "getAllUserLibraries: Found userpack.");
-                        queriedUserLibraries.add(mapCursorRowToUserLibrary(dbCursor));
+                        UserLibrary userLibrary = mapCursorRowToUserLibrary(dbCursor);
+                        queriedUserLibraries.put(userLibrary.getLibId()+"",userLibrary);
                     }
                     UserLibrary.setAllDownloadedUserLibraries(queriedUserLibraries); //save all queried countdowns so we do not have to do this procedure again for runtime :)
                 } else {
@@ -166,62 +158,6 @@ public class DatabaseMgr {
     }
 
 
-    //QUOTE RELATED METHODS +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-    /**
-     * This method will map a queried row to a quoteObj.
-     * ATTENTION: @param cursorRow should be closed() in parent-method in a finally block!
-     */
-    private UserLibrarySaying_depr mapCursorRowToQuote(@NonNull Context context, Cursor cursorRow) {
-        return new UserLibrarySaying_depr(
-                context,
-                cursorRow.getInt(cursorRow.getColumnIndex(TABLES.QUOTES.ATTRIBUTES.ID)),
-                cursorRow.getString(cursorRow.getColumnIndex(TABLES.QUOTES.ATTRIBUTES.QUOTE_TEXT)),
-                cursorRow.getString(cursorRow.getColumnIndex(TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID)));
-    }
-
-    //todo: Fürs Erste nur queryMethod für Quotes, (delete/replace, etc. erst später WENN eigene Quotes hinzufügbar bzw. generell Quotes verwaltbar
-    public SparseArray<UserLibrarySaying_depr> getAllQuotes(@NonNull Context context, boolean forceReload) {
-        //SparseArray for setting the same rows/ids as in db, but string[] for setting row values (quote text, etc.)
-        Log.d(TAG, "getAllQuotes: Trying to load all quotes.");
-        if (allQuotes == null || forceReload) { //only do this if not already extracted in this session! (performance enhancement :)) --> so also not extra sql query necessary when getting single countdown
-            if (forceReload) {
-                Log.d(TAG, "getAllQuotes: Forcefully reloaded two-dimensional array.");
-            } else {
-                Log.d(TAG, "getAllQuotes: Found no already extracted two-dimensional array for quotes. Doing it now.");
-            }
-            Cursor dbCursor = null;
-            SparseArray<UserLibrarySaying_depr> queriedQuotes = new SparseArray<>(); //sparse array instead of hashmap because better performance for pimitives
-
-            try {
-                /* Following query gets executed: ---------------
-                 * SELECT * FROM Quotes;*/
-
-                dbCursor = getDb(context).rawQuery("SELECT * FROM " + TABLES.QUOTES.TABLE_NAME + ";", null); //query all
-
-                if (dbCursor != null) {
-                    Log.d(TAG, "getAllQuotes: Cursor is not null :)");
-
-                    while (dbCursor.moveToNext()) {
-                        UserLibrarySaying_depr tmp = mapCursorRowToQuote(context, dbCursor); //temporary cache-saving, to get countdownId for Index!
-                        Log.d(TAG, "getAllQuotes: Found quote-> " + tmp.toString());
-                        queriedQuotes.put(tmp.getSayingId(), tmp);
-                    }
-                    setAllQuotes(queriedQuotes); //save all queried countdowns so we do not have to do this procedure again for runtime :)
-                } else {
-                    Log.w(TAG, "getAllQuotes: Cursor is null!");
-                }
-            } finally { //always finally for closing cursor! (also in error case)
-                if (dbCursor != null) {
-                    dbCursor.close();
-                }
-            }
-        } //no else necessary, because allCountdowns already set
-        Log.d(TAG, "getAllQuotes: Length of returned two-dimensional array: " + allQuotes.size());
-        return allQuotes;
-    }
-
-
     //COUNTDOWN RELATED METHODS +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     /**
@@ -234,7 +170,7 @@ public class DatabaseMgr {
                 new String[]{String.valueOf(countdownId)}) > 0;
 
         //No foreach languagePack necessary, because we just delete all rows simultaneously where countdownId is
-        deletionSuccessful &= getDb(context).delete(TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME,
+        deletionSuccessful &= getDb(context).delete(TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME,
                 TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", new String[]{String.valueOf(countdownId)}) > 0;
 
         if (deletionSuccessful) {
@@ -255,8 +191,8 @@ public class DatabaseMgr {
 
         //Deletes all countdowns
         int amountRowsDeleted = getDb(context).delete(TABLES.COUNTDOWN.TABLE_NAME, "1", null); //no. 1 says, that we want to return not whether deletion was successful, but how many rows we deleted
-        amountRowsDeleted += getDb(context).delete(TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME, "1", null); //also delete auflösungstabelle (but not languagepacks itself)
-        setAllCountdowns(null); //also delete saved object!
+        amountRowsDeleted += getDb(context).delete(TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME, "1", null); //also delete auflösungstabelle (but not languagepacks itself)
+        Countdown.setAllCountdowns(null); //also delete saved object!
 
         //Restart service (because new/less services etc. / changed settings) [must be AFTER DELETION and BEFORE return (logically)!]
         restartNotificationService(context);
@@ -302,7 +238,7 @@ public class DatabaseMgr {
      */
     public SparseArray<Countdown> getAllCountdowns(@NonNull Context context, boolean forceReload) { //do not use in loops! (use getAllCountdowns, because there is only ONE sql statement executed)
         Log.d(TAG, "getAllCountdowns: Trying to get all countdowns.");
-        if (allCountdowns == null || forceReload) { //only do this if not already extracted in this session! (performance enhancement :)) --> so also not extra sql query necessary when getting single countdown
+        if (Countdown.getAllCountdowns() == null || forceReload) { //only do this if not already extracted in this session! (performance enhancement :)) --> so also not extra sql query necessary when getting single countdown
             if (forceReload) {
                 Log.d(TAG, "getAllCountdowns: Forcefully reloaded sparseArray.");
             } else {
@@ -319,11 +255,11 @@ public class DatabaseMgr {
                  GROUP BY cou_id
                  ) as zcq ON zcq.cou_id=cou.cou_id;*/
 
-                dbCursor = getDb(context).rawQuery("SELECT " + TABLES.COUNTDOWN.TABLE_PREFIX + ".*," + TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_PREFIX + "." + TABLES.QUOTELANGUAGEPACKAGES.TABLE_PREFIX + "idList FROM " + TABLES.COUNTDOWN.TABLE_NAME + " as " + TABLES.COUNTDOWN.TABLE_PREFIX +
+                dbCursor = getDb(context).rawQuery("SELECT " + TABLES.COUNTDOWN.TABLE_PREFIX + ".*," + TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_PREFIX + "." + TABLES.USERLIBRARY.TABLE_PREFIX + "idList FROM " + TABLES.COUNTDOWN.TABLE_NAME + " as " + TABLES.COUNTDOWN.TABLE_PREFIX +
                                 " INNER JOIN (" +
-                                " SELECT " + TABLES.COUNTDOWN.ATTRIBUTES.ID + ", GROUP_CONCAT(" + TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID + ") as " + TABLES.QUOTELANGUAGEPACKAGES.TABLE_PREFIX + "idList FROM " + TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME +
+                                " SELECT " + TABLES.COUNTDOWN.ATTRIBUTES.ID + ", GROUP_CONCAT(" + TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + ") as " + TABLES.USERLIBRARY.TABLE_PREFIX + "idList FROM " + TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME +
                                 " GROUP BY " + TABLES.COUNTDOWN.ATTRIBUTES.ID +
-                                " ) as " + TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_PREFIX + " ON " + TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_PREFIX + "." + TABLES.COUNTDOWN.ATTRIBUTES.ID + "=" + TABLES.COUNTDOWN.TABLE_PREFIX + "." + TABLES.COUNTDOWN.ATTRIBUTES.ID + ";"
+                                " ) as " + TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_PREFIX + " ON " + TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_PREFIX + "." + TABLES.COUNTDOWN.ATTRIBUTES.ID + "=" + TABLES.COUNTDOWN.TABLE_PREFIX + "." + TABLES.COUNTDOWN.ATTRIBUTES.ID + ";"
                         , null);
 
                 if (dbCursor != null) {
@@ -334,7 +270,7 @@ public class DatabaseMgr {
                         Log.d(TAG, "getAllCountdowns: Found countdown-> " + tmp.toString());
                         queriedCountdowns.put(tmp.getCountdownId(), tmp);
                     }
-                    setAllCountdowns(queriedCountdowns); //save all queried countdowns so we do not have to do this procedure again for runtime :)
+                    Countdown.setAllCountdowns(queriedCountdowns); //save all queried countdowns so we do not have to do this procedure again for runtime :)
                 } else {
                     Log.w(TAG, "getAllCountdowns: Cursor is null!");
                 }
@@ -344,8 +280,8 @@ public class DatabaseMgr {
                 }
             }
         } //no else necessary, because allCountdowns already set
-        Log.d(TAG, "getAllCountdowns: Length of returned sparseArray: " + allCountdowns.size());
-        return allCountdowns;
+        Log.d(TAG, "getAllCountdowns: Length of returned sparseArray: " + Countdown.getAllCountdowns().size());
+        return Countdown.getAllCountdowns();
     }
 
     public SparseArray<Countdown> getAllCountdowns(@NonNull Context context, boolean forceReload, boolean onlyActiveCountdowns, boolean onlyShowLiveCountdowns) {
@@ -423,7 +359,7 @@ public class DatabaseMgr {
         long rowIdCountdown = getDb(context).replace(TABLES.COUNTDOWN.TABLE_NAME, null, insertCountdownValues);
 
         //Delete auflösungstabelle für countdown, because what is when countdown has now less languagepacks (it would remain in zwischentabelle)
-        if (getDb(context).delete(TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME,
+        if (getDb(context).delete(TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME,
                 TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", new String[]{String.valueOf(countdown.getCountdownId())}) > 0) {
             Log.d(TAG, "setSaveCountdown: Deletion of entries of updated/new countdown in zwischentabelle successful.");
         }
@@ -435,8 +371,8 @@ public class DatabaseMgr {
             ContentValues insertZwischentabelleValues = new ContentValues();
             //for every row a separate insert!! (ergo for every languagepack of countdown a separate insert)
             insertZwischentabelleValues.put(TABLES.COUNTDOWN.ATTRIBUTES.ID, countdown.getCountdownId());
-            insertZwischentabelleValues.put(TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.ID, languagePack.getUserLibraryId());
-            rowIdsZwischentabelle[iteration++] = getDb(context).replace(TABLES.ZWISCHENTABELLE_COU_QLP.TABLE_NAME, null, insertZwischentabelleValues);
+            insertZwischentabelleValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID, languagePack.getUserLibraryId());
+            rowIdsZwischentabelle[iteration++] = getDb(context).replace(TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME, null, insertZwischentabelleValues);
         }
 
         //at least evaluate one row id of the zwischentablle (if those succeeded we assume others did also)
@@ -445,8 +381,8 @@ public class DatabaseMgr {
             Toast.makeText(context, R.string.databaseMgr_error_saveCountdown_unsuccessful, Toast.LENGTH_SHORT).show();
         } else {
             //if successfully saved, then update also locally downloaded/extracted sparseArray (if already in RAM)
-            if (allCountdowns != null) { //so we do not reload all countdowns with getAllCountdowns(); :)
-                allCountdowns.put(countdown.getCountdownId(), countdown);
+            if (Countdown.getAllCountdowns() != null) { //so we do not reload all countdowns with getAllCountdowns(); :)
+                Countdown.getAllCountdowns().put(countdown.getCountdownId(), countdown);
             } else {
                 Log.w(TAG, "setSaveCountdown: AllCountdowns SparseArray is NULL! Not updating sparseArray."); //if we call getAllCountdowns() next time there should be also the current countdown :)
             }
@@ -546,10 +482,6 @@ public class DatabaseMgr {
 
     //Getter not static (althoug members are static), so we can assume result won't be null that easily if we forgot instance creation
 
-    public static void setAllCountdowns(SparseArray<Countdown> allCountdowns) {
-        DatabaseMgr.allCountdowns = allCountdowns;
-    }
-
     public static SQLiteDatabase getDb(@NonNull Context context) {
         if (db == null) {
             if (context.getDatabasePath(DATABASE_HELPER.DATABASE_NAME).exists()) {
@@ -566,11 +498,4 @@ public class DatabaseMgr {
         DatabaseMgr.db = db;
     }
 
-    public static void setAllQuotes(SparseArray<UserLibrarySaying_depr> allQuotes) {
-        DatabaseMgr.allQuotes = allQuotes;
-    }
-
-    public static void setAllLanguagePacks(HashMap<String, UserLibrary_depr> allLanguagePacks) {
-        DatabaseMgr.allLanguagePacks = allLanguagePacks;
-    }
 }

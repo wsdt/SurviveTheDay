@@ -20,7 +20,7 @@ public class UserLibrarySaying_depr {
         this.setSayingId(sayingId);
         this.setSayingText(sayingText);
         this.setUserLibraryLbl(languagePack);
-        //Quote.getAllQuotes().put(sayingId,this); //add to global static sayinglist
+        //Quote.getAllUserLibraryLines().put(sayingId,this); //add to global static sayinglist
         UserLibrarySaying_depr.extractAllSayingsFromDb(context); //only downloads/extracts all sayings from db, if they are not already loaded
     }
 
@@ -29,7 +29,7 @@ public class UserLibrarySaying_depr {
             Log.d(TAG, "extractAllSayingsFromDb: Trying to extract all sayings from db.");
             //Quotes not extracted now, doing it now.
             currentlyLoadingAllQuotes = true; //blocking other method calls
-            UserLibrarySaying_depr.setAllUserSayings(DatabaseMgr.getSingletonInstance(context).getAllQuotes(context,false));
+            UserLibrarySaying_depr.setAllUserSayings(DatabaseMgr.getSingletonInstance(context).getAllUserLibraryLines(context,false));
             currentlyLoadingAllQuotes = false; //now allowing it again
         }
     }

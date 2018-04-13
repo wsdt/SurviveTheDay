@@ -1,24 +1,33 @@
 package kevkevin.wsdt.tagueberstehen.classes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+@Deprecated //Add all Lines as Strings into UserLibrary
 public class UserLibraryLine {
     private static final String TAG = "UserLibraryLine";
 
-    private int lineId;
+    private int lineId; //arrayindex
     private String lineText; //e.g. quote itself or similar
     private UserLibrary userLibrary; //for relationship
 
-    private static List<UserLibraryLine> allLibraryLines = new ArrayList<>();
+    private static Map<String,UserLibraryLine> allLibraryLines = new HashMap<>();
+
+    public UserLibraryLine(int lineId, String lineText, UserLibrary userLibrary) {
+        this.setLineId(lineId);
+        this.setLineText(lineText);
+        this.setUserLibrary(userLibrary);
+    }
 
 
     //GETTER/SETTER ----------------------------------
-    public static List<UserLibraryLine> getAllLibraryLines() {
+    public static Map<String,UserLibraryLine> getAllLibraryLines() {
         return allLibraryLines;
     }
 
-    public static void setAllLibraryLines(List<UserLibraryLine> allLibraryLines) {
+    public static void setAllLibraryLines(Map<String,UserLibraryLine> allLibraryLines) {
         UserLibraryLine.allLibraryLines = allLibraryLines;
     }
 
