@@ -10,27 +10,30 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.UserLibrary;
-import kevkevin.wsdt.tagueberstehen.classes.UserLibraryLine;
+import kevkevin.wsdt.tagueberstehen.classes.UserLibrary_depr;
 import kevkevin.wsdt.tagueberstehen.classes.interfaces.IConstants_Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.manager.NotificationMgr;
-import kevkevin.wsdt.tagueberstehen.classes.UserLibrary_depr;
-import kevkevin.wsdt.tagueberstehen.classes.UserLibrarySaying_depr;
-import kevkevin.wsdt.tagueberstehen.classes.services.LiveCountdown_ForegroundService;
 import kevkevin.wsdt.tagueberstehen.classes.services.Kickstarter_BootAndGeneralReceiver;
+import kevkevin.wsdt.tagueberstehen.classes.services.LiveCountdown_ForegroundService;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
-import static kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_DatabaseMgr.*;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_DatabaseMgr.DATABASE_HELPER;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_DatabaseMgr.DATABASE_VERSION;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_DatabaseMgr.TABLES;
 import static kevkevin.wsdt.tagueberstehen.classes.services.interfaces.IConstants_Kickstart_BootAndGeneralReceiver.BROADCASTRECEIVER_ACTION_RESTART_ALL_SERVICES;
 
 //Maybe more efficient in future: https://developer.android.com/training/data-storage/room/index.html (for mapping)
@@ -103,13 +106,18 @@ public class DatabaseMgr {
         /*Since getWritableDatabase() and getReadableDatabase() are expensive to call when the database is closed, you should leave your database connection open for as long as you possibly need to access it. Typically, it is optimal to close the database in the onDestroy() of the calling Activity.*/
     }
 
-    //LANGUAGEPACK RELATED METHODS ++++++++++++++++++++++++++++++++++++++++++++++++++++
+    //USERLIBRARY RELATED METHODS ++++++++++++++++++++++++++++++++++++++++++++++++++++
+    private void closeCursor(Cursor cursor) {
+        if (cursor != null) {
+            cursor.close();
+        }
+    }
 
     /**
      * This method will map a queried row to a quoteObj.
      * ATTENTION: @param cursorRow should be closed() in parent-method in a finally block!
      */
-    private UserLibrary mapCursorRowToUserLibrary(@NonNull Cursor cursorRow) {
+    private UserLibrary mapCursorRowToUserLibrary(@NonNull Cursor cursorRow, @NonNull List<String> userLibraryLines) {
         return new UserLibrary(
                 cursorRow.getInt(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID)),
                 cursorRow.getString(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_NAME)),
@@ -117,43 +125,54 @@ public class DatabaseMgr {
                 cursorRow.getString(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_BY)),
                 cursorRow.getString(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_ON)),
                 cursorRow.getString(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LAST_EDIT_ON)),
-                /*TODO: Get string arraylist from userlibline table!*/);
+                userLibraryLines);
     }
 
-    public Map<String,UserLibrary> getAllUserLibraries(@NonNull Context context, boolean forceReload) {
+    private Map<String, UserLibrary> mapCursorToUserLibraryMap(@Nullable Cursor cursorUserLibrary, @Nullable Cursor cursorUserLibraryLines) {
+        Map<String, UserLibrary> allUserLibraries = new HashMap<>();
+        if (cursorUserLibrary != null) {
+            while (cursorUserLibrary.moveToNext()) {
+                UserLibrary userLibrary = mapCursorRowToUserLibrary(cursorUserLibrary, mapCursorToUserLibraryList(cursorUserLibraryLines, cursorUserLibrary));
+                allUserLibraries.put(userLibrary.getLibId() + "", userLibrary);
+            }
+        }
+        return allUserLibraries;
+    }
+
+    private List<String> mapCursorToUserLibraryList(@Nullable Cursor cursorUserLibraryLines, @Nullable Cursor cursorUserLibrary) {
+        List<String> allUserLibraryLines = new ArrayList<>();
+        if (cursorUserLibraryLines != null && cursorUserLibrary != null) {
+            while (cursorUserLibraryLines.moveToNext()) {
+                //Attention to sql relationship so only add related texts to userlib
+                if (cursorUserLibraryLines.getInt(cursorUserLibraryLines.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID)) ==
+                        cursorUserLibrary.getInt(cursorUserLibrary.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID))) {
+                    allUserLibraryLines.add(cursorUserLibraryLines.getString(cursorUserLibraryLines.getColumnIndex(TABLES.USERLIBRARY_LINE.ATTRIBUTES.LINE_TEXT)));
+                }
+            }
+        }
+        return allUserLibraryLines;
+    }
+
+    public Map<String, UserLibrary> getAllUserLibraries(@NonNull Context context, boolean forceReload) {
         //SparseArray for setting the same rows/ids as in db, but string[] for setting row values (quote text, etc.)
         Log.d(TAG, "getAllUserLibraries: Trying to load all quotes.");
         if (UserLibrary.getAllDownloadedUserLibraries() == null || forceReload) { //only do this if not already extracted in this session! (performance enhancement :)) --> so also not extra sql query necessary when getting single countdown
-            Cursor dbCursor = null;
-            Map<String,UserLibrary> queriedUserLibraries = new HashMap<>();
+            Cursor cursorUserLibrary = null;
+            Cursor cursorUserLibraryLines = null;
 
             try {
-                /* Following query gets executed: ---------------
-                 * SELECT * FROM UserLibrary;*/
+                cursorUserLibrary =  getDb(context).rawQuery("SELECT * FROM " + TABLES.USERLIBRARY.TABLE_NAME + ";", null);
+                cursorUserLibraryLines = getDb(context).rawQuery("SELECT * FROM " + TABLES.USERLIBRARY_LINE.TABLE_NAME + ";", null);
 
-                dbCursor = getDb(context).rawQuery("SELECT * FROM " + TABLES.USERLIBRARY.TABLE_NAME + ";", null); //query all
-
-                if (dbCursor != null) {
-                    Log.d(TAG, "getAllUserLibraries: Cursor is not null :)");
-
-                    while (dbCursor.moveToNext()) {
-                        Log.d(TAG, "getAllUserLibraries: Found userpack.");
-                        UserLibrary userLibrary = mapCursorRowToUserLibrary(dbCursor);
-                        queriedUserLibraries.put(userLibrary.getLibId()+"",userLibrary);
-                    }
-                    UserLibrary.setAllDownloadedUserLibraries(queriedUserLibraries); //save all queried countdowns so we do not have to do this procedure again for runtime :)
-                } else {
-                    Log.w(TAG, "getAllUserLibraries: Cursor is null!");
-                }
+                UserLibrary.setAllDownloadedUserLibraries(mapCursorToUserLibraryMap(cursorUserLibrary,cursorUserLibraryLines)); //query all
             } finally { //always finally for closing cursor! (also in error case)
-                Log.d(TAG, "getAllUserLibraries: Trying to close cursor (finally).");
-                if (dbCursor != null) {
-                    Log.d(TAG, "getAllUserLibraries: Trying to close cursor now! It's not null.");
-                    dbCursor.close();
-                }
+                Log.d(TAG, "getAllUserLibraries: Trying to close cursors (finally).");
+                //IMPORTANT: Also close both cursors!
+                closeCursor(cursorUserLibrary);
+                closeCursor(cursorUserLibraryLines);
             }
         } //no else necessary, because allCountdowns already set
-        Log.d(TAG, "getAllUserLibraries: Length of returned two-dimensional array: " + UserLibrary.getAllDownloadedUserLibraries().size());
+        Log.d(TAG, "getAllUserLibraries: Length of returned map: " + UserLibrary.getAllDownloadedUserLibraries().size());
         return UserLibrary.getAllDownloadedUserLibraries();
     }
 
@@ -204,7 +223,7 @@ public class DatabaseMgr {
      * This method will map a queried row to a countdownObj.
      * ATTENTION: @param cursorRow should be closed() in parent-method in a finally block!
      */
-    private Countdown mapCursorRowToCountdown(@NonNull Context context, Cursor cursorRow) {
+    private Countdown mapCursorRowToCountdown(@NonNull Context context, @NonNull Cursor cursorRow, @NonNull HashMap<String, UserLibrary> userLibraries) {
         //TRUE = 1 | FALSE = 0 --> if == 1 then just give true otherwise false
         return new Countdown(context,
                 cursorRow.getInt(cursorRow.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.ID)),
@@ -218,7 +237,19 @@ public class DatabaseMgr {
                 (cursorRow.getInt(cursorRow.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.RANDOMNOTIFICATIONMOTIVATION)) == 1),
                 cursorRow.getInt(cursorRow.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.NOTIFICATIONINTERVAL)),
                 (cursorRow.getInt(cursorRow.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.LIVECOUNTDOWN)) == 1),
-                cursorRow.getString(cursorRow.getColumnIndex(TABLES.QUOTELANGUAGEPACKAGES.ATTRIBUTES.LANGUAGE_ID_LIST)).split(TABLES.ZWISCHENTABELLE_COU_QLP.ATTRIBUTE_ADDITIONALS.LANGUAGE_ID_LIST_SEPARATOR)); //, as concat is determined by Sqlite !!
+                userLibraries); //, as concat is determined by Sqlite !!
+    }
+
+    /** @param tableJoinedCursor: Double inner join query should be executed, so n:m relationship gets solved and all cols are available here. */
+    private SparseArray<Countdown> mapCursorToCountdownSparseArray(@NonNull Context context, @Nullable Cursor tableJoinedCursor) {
+        SparseArray<Countdown> countdownSparseArray = new SparseArray<>();
+        if (tableJoinedCursor != null) {
+            while (tableJoinedCursor.moveToNext()) {
+                Countdown countdown = mapCursorRowToCountdown(context,tableJoinedCursor,/*TODO: craft list maybe additional method like before*/);
+                countdownSparseArray.put(countdown.getCountdownId(), countdown);
+            }
+        }
+        return countdownSparseArray;
     }
 
     /**
@@ -244,40 +275,33 @@ public class DatabaseMgr {
             } else {
                 Log.d(TAG, "getAllCountdowns: Found no already extracted sparseArray for countdowns. Doing it now.");
             }
-            Cursor dbCursor = null;
+            Cursor cursorCountdown = null;
+            Cursor cursorUserLibrary = null;
             SparseArray<Countdown> queriedCountdowns = new SparseArray<>(); //sparse array instead of hashmap because better performance for pimitives
 
             try {
                 /* Following query gets executed: ---------------
-                 * SELECT cou.*,zcq.qlp_idList FROM Countdown as cou
-                 INNER JOIN (
-                 SELECT cou_id, GROUP_CONCAT(qlp_id) as qlp_idList FROM Zwischentabelle_COU_QLP
-                 GROUP BY cou_id
-                 ) as zcq ON zcq.cou_id=cou.cou_id;*/
+                 SELECT * FROM Countdown as C
+                 INNER JOIN Zwischentabelle ON countdownId = countdownID
+                 INNER JOIN UserLibrary ON libId = libId
+                 */
+                cursorCountdown = getDb(context).rawQuery("SELECT * FROM " +
+                        TABLES.COUNTDOWN.TABLE_NAME+" as C" +
+                        " INNER JOIN "+TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME+" AS ZT ON C."+TABLES.COUNTDOWN.ATTRIBUTES.ID+"=ZT."+TABLES.COUNTDOWN.ATTRIBUTES.ID+
+                        " INNER JOIN "+TABLES.USERLIBRARY.TABLE_NAME+" AS U ON ZT."+TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID+"=U."+TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID+";",null);
 
-                dbCursor = getDb(context).rawQuery("SELECT " + TABLES.COUNTDOWN.TABLE_PREFIX + ".*," + TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_PREFIX + "." + TABLES.USERLIBRARY.TABLE_PREFIX + "idList FROM " + TABLES.COUNTDOWN.TABLE_NAME + " as " + TABLES.COUNTDOWN.TABLE_PREFIX +
-                                " INNER JOIN (" +
-                                " SELECT " + TABLES.COUNTDOWN.ATTRIBUTES.ID + ", GROUP_CONCAT(" + TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + ") as " + TABLES.USERLIBRARY.TABLE_PREFIX + "idList FROM " + TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME +
-                                " GROUP BY " + TABLES.COUNTDOWN.ATTRIBUTES.ID +
-                                " ) as " + TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_PREFIX + " ON " + TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_PREFIX + "." + TABLES.COUNTDOWN.ATTRIBUTES.ID + "=" + TABLES.COUNTDOWN.TABLE_PREFIX + "." + TABLES.COUNTDOWN.ATTRIBUTES.ID + ";"
-                        , null);
+//TODO -------------------------------------------
 
-                if (dbCursor != null) {
-                    Log.d(TAG, "getAllCountdowns: Cursor is not null :)");
 
-                    while (dbCursor.moveToNext()) {
-                        Countdown tmp = mapCursorRowToCountdown(context, dbCursor); //temporary cache-saving, to get countdownId for Index!
+                    while (cursorCountdown.moveToNext()) {
+                        Countdown tmp = mapCursorRowToCountdown(context, cursorCountdown); //temporary cache-saving, to get countdownId for Index!
                         Log.d(TAG, "getAllCountdowns: Found countdown-> " + tmp.toString());
                         queriedCountdowns.put(tmp.getCountdownId(), tmp);
                     }
                     Countdown.setAllCountdowns(queriedCountdowns); //save all queried countdowns so we do not have to do this procedure again for runtime :)
-                } else {
-                    Log.w(TAG, "getAllCountdowns: Cursor is null!");
-                }
             } finally { //always finally for closing cursor! (also in error case)
-                if (dbCursor != null) {
-                    dbCursor.close();
-                }
+                closeCursor(cursorCountdown);
+                closeCursor(cursorUserLibrary);
             }
         } //no else necessary, because allCountdowns already set
         Log.d(TAG, "getAllCountdowns: Length of returned sparseArray: " + Countdown.getAllCountdowns().size());
@@ -365,13 +389,13 @@ public class DatabaseMgr {
         }
 
         //Now also insertValues for zwischentabelle (AFTER countdown is inserted)
-        long[] rowIdsZwischentabelle = new long[countdown.getQuotesLanguagePacksObj().size()];
+        long[] rowIdsZwischentabelle = new long[countdown.getUserSelectedUserLibraries().size()];
         int iteration = 0;
-        for (UserLibrary_depr languagePack : countdown.getQuotesLanguagePacksObj().values()) {
+        for (UserLibrary userLibrary : countdown.getUserSelectedUserLibraries().values()) {
             ContentValues insertZwischentabelleValues = new ContentValues();
             //for every row a separate insert!! (ergo for every languagepack of countdown a separate insert)
             insertZwischentabelleValues.put(TABLES.COUNTDOWN.ATTRIBUTES.ID, countdown.getCountdownId());
-            insertZwischentabelleValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID, languagePack.getUserLibraryId());
+            insertZwischentabelleValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID, userLibrary.getLibId());
             rowIdsZwischentabelle[iteration++] = getDb(context).replace(TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME, null, insertZwischentabelleValues);
         }
 
@@ -439,10 +463,10 @@ public class DatabaseMgr {
 
     public int getNextCountdownId(@NonNull Context context) {
         /* Returns Integer value of not existing countown id e.g.:
-        * --> 1,2,3,4 [next: 5]
-        * --> 1,2,4,5 [next: 3]
-        * By filling the gaps we do not need to resave all countdowns when deleting a countdown
-        * */
+         * --> 1,2,3,4 [next: 5]
+         * --> 1,2,4,5 [next: 3]
+         * By filling the gaps we do not need to resave all countdowns when deleting a countdown
+         * */
         int newCountdownId = (-1);
         //Load saved countdowns
         SparseArray<Countdown> countdowns = this.getAllCountdowns(context, false);

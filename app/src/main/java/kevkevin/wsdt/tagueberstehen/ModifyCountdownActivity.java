@@ -346,7 +346,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         ((ToggleButton) findViewById(R.id.showLiveCountdown)).setChecked(countdown.isShowLiveCountdown());
 
         GridLayout languagePackList = findViewById(R.id.modifyCountdownActivity_motivation_languagePacks);
-        for (UserLibrary_depr languagePack : countdown.getQuotesLanguagePacksObj().values()) {
+        for (UserLibrary_depr languagePack : countdown.getUserSelectedUserLibraries().values()) {
             for (int i = 0; i < languagePackList.getChildCount(); i++) {
                 if (languagePackList.getChildAt(i).getTag() != null) {
                     CheckBox tmpCheckbox = ((CheckBox) languagePackList.getChildAt(i));

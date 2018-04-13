@@ -18,12 +18,10 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 
 import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
@@ -47,15 +45,14 @@ public class Countdown {
     private boolean isActive;
     private int notificationInterval; //in seconds!
     private boolean showLiveCountdown; //show Foreground service live countdown if countdown until start date constraints true
-    private HashMap<String, UserLibrary_depr> quotesLanguagePacksObj; //by default local language will be chosen
-    private String[] quotesLanguagePacksStr; //for random e.g.
+    private HashMap<String, UserLibrary> userSelectedUserLibraries; //by default local language will be chosen
 
     private static SparseArray<Countdown> allCountdowns;
     private static final String TAG = "Countdown";
 
 
     //Constructor for lastEdit/createdDateTime automatically
-    public Countdown(Context context, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String category, boolean isActive, int notificationInterval, boolean showLiveCountdown, String[] quotesLanguagePacks) {
+    public Countdown(Context context, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String category, boolean isActive, int notificationInterval, boolean showLiveCountdown,  HashMap<String, UserLibrary> selectedUserLibraries) {
         this.setContext(context);
         this.setCountdownId(DatabaseMgr.getSingletonInstance(context).getNextCountdownId(context)); //get next countdown id (fill gap from deleted countdown or just increment)
         this.setCountdownTitle(countdownTitle);
@@ -68,11 +65,11 @@ public class Countdown {
         this.setActive(isActive);
         this.setNotificationInterval(notificationInterval);
         this.setShowLiveCountdown(showLiveCountdown);
-        this.setQuotesLanguagePacksStr(quotesLanguagePacks);
+        this.setUserSelectedUserLibraries(selectedUserLibraries);
     }
 
     //Constructor for all fields
-    public Countdown(Context context, int countdownId, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String createdDateTime, String lastEditDateTime, String category, boolean isActive, int notificationInterval, boolean showLiveCountdown, String[] quotesLanguagePacks) {
+    public Countdown(Context context, int countdownId, String countdownTitle, String countdownDescription, String startDateTime, String untilDateTime, String createdDateTime, String lastEditDateTime, String category, boolean isActive, int notificationInterval, boolean showLiveCountdown, HashMap<String, UserLibrary> selectedUserLibraries) {
         this.setContext(context);
         this.setCountdownId(countdownId);
         this.setCountdownTitle(countdownTitle);
@@ -85,7 +82,7 @@ public class Countdown {
         this.setActive(isActive);
         this.setNotificationInterval(notificationInterval);
         this.setShowLiveCountdown(showLiveCountdown);
-        this.setQuotesLanguagePacksStr(quotesLanguagePacks);
+        this.setUserSelectedUserLibraries(selectedUserLibraries);
     }
 
     public static SparseArray<Countdown> getAllCountdowns() {
@@ -380,13 +377,13 @@ public class Countdown {
                 isActive()+separator +
                 getNotificationInterval()+separator +
                 isShowLiveCountdown()+separator +
-                getQuotesLanguagePacksObj();
+                getUserSelectedUserLibraries();
     }
 
     /** Necessary to determine which languagepacks are used for this countdown. (MIGHT RETURN NULL!)*/
     public UserLibrarySaying_depr getRandomQuoteSuitableForCountdown() {
         UserLibrarySaying_depr fallbackQuoteErrorCase = new UserLibrarySaying_depr(this.getContext(),-1,this.getContext().getResources().getString(R.string.error_contactAdministrator),TABLES.QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0]); //no matter which language pack we return
-        HashMap<String, UserLibrary_depr> languagepacks = this.getQuotesLanguagePacksObj();
+        HashMap<String, UserLibrary_depr> languagepacks = this.getUserSelectedUserLibraries();
 
         if (languagepacks.size() <= 0) { //no languagepacks defined!
             Log.w(TAG, "getRandomQuoteSuitableForCountdown: No languagepack for countdown defined! Returned fallbackNotification.");
@@ -407,13 +404,13 @@ public class Countdown {
         return languageQuotes.valueAt(HelperClass.getRandomInt(0,languageQuotes.size()-1));
     }
 
-    public HashMap<String, UserLibrary_depr> getQuotesLanguagePacksObj() {
-        return quotesLanguagePacksObj;
+    public HashMap<String, UserLibrary> getUserSelectedUserLibraries() {
+        return userSelectedUserLibraries;
     }
 
-    private void setQuotesLanguagePacksObj(HashMap<String, UserLibrary_depr> quotesLanguagePacksObj) {
+    private void setUserSelectedUserLibraries(HashMap<String, UserLibrary> userSelectedUserLibraries) {
         //should only be called by setQuotesLStr(), because this method does not update hashmap
-        this.quotesLanguagePacksObj = quotesLanguagePacksObj;
+        this.userSelectedUserLibraries = userSelectedUserLibraries;
     }
 
     public void setQuotesLanguagePacksStr(String[] quotesLanguagePacks) { //additional setter (easier for constructor etc.) because no extra object creation necessary
@@ -434,7 +431,7 @@ public class Countdown {
             String fallBackLanguagePack = TABLES.QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0];
             usedLanguagePacks.put(fallBackLanguagePack, UserLibrary_depr.getAllUserLibraries(this.getContext()).get(fallBackLanguagePack));
         }
-        this.setQuotesLanguagePacksObj(usedLanguagePacks); //now use other setter
+        this.setUserSelectedUserLibraries(usedLanguagePacks); //now use other setter
     }
 
     public String[] getQuotesLanguagePacksStr() {
