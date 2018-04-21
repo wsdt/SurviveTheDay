@@ -85,7 +85,7 @@ public class FirebaseStorageMgr {
                         jsonStr.append(sc.nextLine());
                     }
                     UserLibrary userLibrary = mapFileToUserLibraryObj(new JSONObject(jsonStr.toString()));
-                    userLibrary.saveToDB();
+                    //TODO: userLibrary.saveToDB(); OR use DbMgr().saveUserLibToDb() or similar
 
                 } catch (JSONException e) {
                     Log.e(TAG, "saveNewPackage: Could not parse downloaded userLibrary to JsonObj.");

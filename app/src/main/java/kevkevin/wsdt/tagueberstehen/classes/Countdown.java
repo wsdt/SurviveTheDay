@@ -383,7 +383,7 @@ public class Countdown {
     /** Necessary to determine which languagepacks are used for this countdown. (MIGHT RETURN NULL!)*/
     public UserLibrarySaying_depr getRandomQuoteSuitableForCountdown() {
         UserLibrarySaying_depr fallbackQuoteErrorCase = new UserLibrarySaying_depr(this.getContext(),-1,this.getContext().getResources().getString(R.string.error_contactAdministrator),TABLES.QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0]); //no matter which language pack we return
-        HashMap<String, UserLibrary_depr> languagepacks = this.getUserSelectedUserLibraries();
+        HashMap<String, UserLibrary> languagepacks = this.getUserSelectedUserLibraries();
 
         if (languagepacks.size() <= 0) { //no languagepacks defined!
             Log.w(TAG, "getRandomQuoteSuitableForCountdown: No languagepack for countdown defined! Returned fallbackNotification.");
@@ -395,7 +395,7 @@ public class Countdown {
 
         //this way every language is shown the same probability (only drawback: languagepacks with less quotes might show more probably the same quotes again)
         //IMPORTANT: String array of language packs and hashmap need the same size so keep them uptodate! (we are doing above a if to prevent such error cases, but user gets notified about it)
-        SparseArray<UserLibrarySaying_depr> languageQuotes = languagepacks.get(this.getQuotesLanguagePacksStr()[HelperClass.getRandomInt(0,languagepacks.size()-1)]).getUserLibrarySayings(this.getContext());
+        SparseArray<UserLibrary> languageQuotes = languagepacks.get(this.getQuotesLanguagePacksStr()[HelperClass.getRandomInt(0,languagepacks.size()-1)]).getUserLibrarySayings(this.getContext());
         if (languageQuotes.size() <= 0) {
             Log.w(TAG, "getRandomQuoteSuitableForCountdown: No quote for languagepack for countdown defined! Returned fallbackNotification.");
             return fallbackQuoteErrorCase;
