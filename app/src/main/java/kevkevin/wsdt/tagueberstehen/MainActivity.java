@@ -29,6 +29,7 @@ import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.FirebaseStorageMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_FirebaseStorageMgr;
 import kevkevin.wsdt.tagueberstehen.classes.services.LiveCountdown_ForegroundService;
 
 import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppPurchaseMgr.*;
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         initializePullForRefresh();
 
         //TODO: Just for testing
-        FirebaseStorageMgr.downloadNewPackage(this,"en/quotes/default.std.lib");
+        FirebaseStorageMgr.downloadNewPackage(this,"quotes_de."+ IConstants_FirebaseStorageMgr.LIB_FILEEXTENSION);
 
     }
 

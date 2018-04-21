@@ -24,7 +24,6 @@ import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.UserLibrary;
-import kevkevin.wsdt.tagueberstehen.classes.UserLibrary_depr;
 import kevkevin.wsdt.tagueberstehen.classes.interfaces.IConstants_Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.manager.NotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.services.Kickstarter_BootAndGeneralReceiver;
@@ -128,7 +127,7 @@ public class DatabaseMgr {
                 userLibraryLines);
     }
 
-    private Map<String, UserLibrary> mapCursorToUserLibraryMap(@Nullable Cursor cursorUserLibrary, @Nullable Cursor cursorUserLibraryLines) {
+    private Map<String, UserLibrary> countdownGetSelectedUserLibraries(@Nullable Cursor cursorUserLibrary, @Nullable Cursor cursorUserLibraryLines) {
         Map<String, UserLibrary> allUserLibraries = new HashMap<>();
         if (cursorUserLibrary != null) {
             while (cursorUserLibrary.moveToNext()) {
@@ -164,7 +163,7 @@ public class DatabaseMgr {
                 cursorUserLibrary =  getDb(context).rawQuery("SELECT * FROM " + TABLES.USERLIBRARY.TABLE_NAME + ";", null);
                 cursorUserLibraryLines = getDb(context).rawQuery("SELECT * FROM " + TABLES.USERLIBRARY_LINE.TABLE_NAME + ";", null);
 
-                UserLibrary.setAllDownloadedUserLibraries(mapCursorToUserLibraryMap(cursorUserLibrary,cursorUserLibraryLines)); //query all
+                UserLibrary.setAllDownloadedUserLibraries(countdownGetSelectedUserLibraries(cursorUserLibrary,cursorUserLibraryLines)); //query all
             } finally { //always finally for closing cursor! (also in error case)
                 Log.d(TAG, "getAllUserLibraries: Trying to close cursors (finally).");
                 //IMPORTANT: Also close both cursors!
@@ -245,12 +244,13 @@ public class DatabaseMgr {
         SparseArray<Countdown> countdownSparseArray = new SparseArray<>();
         if (tableJoinedCursor != null) {
             while (tableJoinedCursor.moveToNext()) {
-                Countdown countdown = mapCursorRowToCountdown(context,tableJoinedCursor,/*TODO: craft list maybe additional method like before*/);
+                Countdown countdown = mapCursorRowToCountdown(context,tableJoinedCursor,countdownGetSelectedUserLibraries(tableJoinedCursor,));
                 countdownSparseArray.put(countdown.getCountdownId(), countdown);
             }
         }
         return countdownSparseArray;
     }
+
 
     /**
      * Get current countdown from database and map it onto countdownObj

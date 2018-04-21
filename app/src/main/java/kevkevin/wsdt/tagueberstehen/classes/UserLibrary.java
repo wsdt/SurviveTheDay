@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +27,18 @@ public class UserLibrary {
     //Contains e.g. all quotes/jokes etc.
     private List<String> lines; //for null if in dbmgr
 
+
+    //For mapping from FirebaseStorMgr to Obj
+    public UserLibrary(int libId, String libName, String libLanguageCode, String createdBy, String createdOn, String lastEditOn, JSONArray lines) {
+        this.setLibId(libId);
+        this.setLibName(libName);
+        this.setLibLanguageCode(libLanguageCode);
+        this.setCreatedBy(createdBy);
+        this.setCreatedOn(createdOn);
+        this.setLastEditOn(lastEditOn);
+        this.setLines(HelperClass.convertJsonArrayToList(lines));
+    }
+
     public UserLibrary(int libId, String libName, String libLanguageCode, String createdBy, String createdOn, String lastEditOn, List<String> lines) {
         this.setLibId(libId);
         this.setLibName(libName);
@@ -36,7 +50,7 @@ public class UserLibrary {
     }
 
     public static void extractAllUserLibrariesFromDb(@NonNull Context context) { //if no quotes in db, this method might run every time!
-        if (UserLibrary.getAllDownloadedUserLibraries().size() <= 0 && !currentlyLoadingAllUserLibraries) {
+        if (UserLibrary.getAllDownloadedUserLibraries().size() <= 0) {
             Log.d(TAG, "extractAllUserLibrariesFromDb: Trying to extract all userlibs from db.");
             //userLibs not extracted now, doing it now.
             UserLibrary.setAllDownloadedUserLibraries(DatabaseMgr.getSingletonInstance(context).getAllUserLibraries(context,false));
