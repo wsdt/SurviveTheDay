@@ -112,6 +112,75 @@ public class DatabaseMgr {
         }
     }
 
+    /* ##########################################################################################################################################
+    * ###########################################################################################################################################
+    * ------- USERLIBRARY - CRUD Operations -----------------------------------------------------------------------------------------------------
+    * ###########################################################################################################################################
+    * ########################################################################################################################################### */
+
+    //CREATE & UPDATE ---------------------------------------------------------------------------------------------------------------------------
+    public void saveUserLibrary(@NonNull Context context, @NonNull UserLibrary userLibrary) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID,userLibrary.getLibId());
+        contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LIB_NAME,userLibrary.getLibName());
+        contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LIB_LANGUAGE_CODE, userLibrary.getLibLanguageCode());
+        contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_BY, userLibrary.getCreatedBy());
+        contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_ON, userLibrary.getCreatedOn());
+        contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LAST_EDIT_ON, userLibrary.getLastEditOn());
+
+        getDb(context).replace(TABLES.USERLIBRARY.TABLE_NAME,null,contentValues);
+    }
+
+    //READ --------------------------------------------------------------------------------------------------------------------------------------
+    public UserLibrary getUserLibrary(@NonNull Context context, int userLibraryId) {
+        Cursor cursorUserLibrary = getDb(context).rawQuery("SELECT * FROM "+TABLES.USERLIBRARY.TABLE_NAME+" WHERE "+
+        TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID+"="+userLibraryId,null);
+
+        UserLibrary userLibrary = new UserLibrary(
+                cursorUserLibrary.getInt(cursorUserLibrary.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID)),
+                cursorUserLibrary.getString(cursorUserLibrary.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_NAME)),
+                cursorUserLibrary.getString(cursorUserLibrary.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_LANGUAGE_CODE)),
+                cursorUserLibrary.getString(cursorUserLibrary.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_BY)),
+                cursorUserLibrary.getString(cursorUserLibrary.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_ON)),
+                cursorUserLibrary.getString(cursorUserLibrary.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LAST_EDIT_ON)),
+                getUserLibraryLines(context,userLibraryId)
+        );
+        closeCursor(cursorUserLibrary);
+        return userLibrary;
+    }
+
+    public List<String> getUserLibraryLines(@NonNull Context context, int userLibraryId) {
+        Cursor cursorUserLibraryLines = getDb(context).rawQuery("SELECT * FROM "+TABLES.USERLIBRARY_LINE.TABLE_NAME+" WHERE "+
+        TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID+"="+userLibraryId,null);
+
+        List<String> userLibraryLines = new ArrayList<>();
+        while (cursorUserLibraryLines.moveToNext()) {
+            userLibraryLines.add(cursorUserLibraryLines.getString(cursorUserLibraryLines.getColumnIndex(TABLES.USERLIBRARY_LINE.ATTRIBUTES.LINE_TEXT)));
+        }
+
+        closeCursor(cursorUserLibraryLines);
+        return userLibraryLines;
+    }
+
+    //DELETE ------------------------------------------------------------------------------------------------------------------------------------
+    public void deleteUserLibrary(@NonNull Context context, int userLibraryId) {
+        getDb(context).delete(TABLES.USERLIBRARY.TABLE_NAME,
+                TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID+"="+userLibraryId,null);
+    }
+
+    /* ##########################################################################################################################################
+     * ###########################################################################################################################################
+     * ------- COUNTDOWN - CRUD Operations -----------------------------------------------------------------------------------------------------
+     * ###########################################################################################################################################
+     * ########################################################################################################################################### */
+
+    //TODO: CREATE
+    //TODO: READ
+    //TODO: UPDATE
+    //TODO: DELETE
+
+
+
     /**
      * This method will map a queried row to a quoteObj.
      * ATTENTION: @param cursorRow should be closed() in parent-method in a finally block!
