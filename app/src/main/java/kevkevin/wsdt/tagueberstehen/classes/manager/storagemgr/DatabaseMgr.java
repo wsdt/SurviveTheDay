@@ -122,36 +122,49 @@ public class DatabaseMgr {
     public void saveUserLibrary(@NonNull Context context, @NonNull UserLibrary userLibrary) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID,userLibrary.getLibId());
-        contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LIB_NAME,userLibrary.getLibName());
-        contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LIB_LANGUAGE_CODE, userLibrary.getLibLanguageCode());
-        contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_BY, userLibrary.getCreatedBy());
-        contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_ON, userLibrary.getCreatedOn());
-        contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LAST_EDIT_ON, userLibrary.getLastEditOn());
+        contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LIB_NAME,escapeString(userLibrary.getLibName()));
+        contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LIB_LANGUAGE_CODE, escapeString(userLibrary.getLibLanguageCode()));
+        contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_BY, escapeString(userLibrary.getCreatedBy()));
+        contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_ON, escapeString(userLibrary.getCreatedOn()));
+        contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LAST_EDIT_ON, escapeString(userLibrary.getLastEditOn()));
 
         getDb(context).replace(TABLES.USERLIBRARY.TABLE_NAME,null,contentValues);
+
+        //no need to restart, because userLib just get's active if selected in countdown (and if countdown saved services will be restarted)
     }
 
     //READ --------------------------------------------------------------------------------------------------------------------------------------
-    public UserLibrary getUserLibrary(@NonNull Context context, int userLibraryId) {
-        Cursor cursorUserLibrary = getDb(context).rawQuery("SELECT * FROM "+TABLES.USERLIBRARY.TABLE_NAME+" WHERE "+
-        TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID+"="+userLibraryId,null);
+    public Map<String, UserLibrary> getAllUserLibraries(@NonNull Context context, boolean forceReload) {
+        if (forceReload || UserLibrary.getAllDownloadedUserLibraries() == null || UserLibrary.getAllDownloadedUserLibraries().size() <= 0) {
 
-        UserLibrary userLibrary = new UserLibrary(
-                cursorUserLibrary.getInt(cursorUserLibrary.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID)),
-                cursorUserLibrary.getString(cursorUserLibrary.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_NAME)),
-                cursorUserLibrary.getString(cursorUserLibrary.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_LANGUAGE_CODE)),
-                cursorUserLibrary.getString(cursorUserLibrary.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_BY)),
-                cursorUserLibrary.getString(cursorUserLibrary.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_ON)),
-                cursorUserLibrary.getString(cursorUserLibrary.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LAST_EDIT_ON)),
-                getUserLibraryLines(context,userLibraryId)
-        );
-        closeCursor(cursorUserLibrary);
-        return userLibrary;
+            Cursor cursorAllUserLibraries = getDb(context).rawQuery("SELECT * FROM " + TABLES.USERLIBRARY.TABLE_NAME + ";", null);
+            Map<String, UserLibrary> allUserLibraries = new HashMap<>();
+
+            while (cursorAllUserLibraries.moveToNext()) {
+                int userLibraryId = cursorAllUserLibraries.getInt(cursorAllUserLibraries.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID));
+
+                allUserLibraries.put(userLibraryId + "", new UserLibrary(
+                        userLibraryId,
+                        cursorAllUserLibraries.getString(cursorAllUserLibraries.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_NAME)),
+                        cursorAllUserLibraries.getString(cursorAllUserLibraries.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_LANGUAGE_CODE)),
+                        cursorAllUserLibraries.getString(cursorAllUserLibraries.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_BY)),
+                        cursorAllUserLibraries.getString(cursorAllUserLibraries.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_ON)),
+                        cursorAllUserLibraries.getString(cursorAllUserLibraries.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LAST_EDIT_ON)),
+                        getUserLibraryLines(context, userLibraryId)
+                ));
+            }
+
+            closeCursor(cursorAllUserLibraries);
+            UserLibrary.setAllDownloadedUserLibraries(allUserLibraries);
+        }
+        return UserLibrary.getAllDownloadedUserLibraries();
     }
+    //don't extract one specific userLib directly from db (just use the hashmap in UserLibrary)
 
+    /** Extracts library lines of one specific userLibrary. */
     public List<String> getUserLibraryLines(@NonNull Context context, int userLibraryId) {
         Cursor cursorUserLibraryLines = getDb(context).rawQuery("SELECT * FROM "+TABLES.USERLIBRARY_LINE.TABLE_NAME+" WHERE "+
-        TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID+"="+userLibraryId,null);
+        TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID+"="+userLibraryId+";",null);
 
         List<String> userLibraryLines = new ArrayList<>();
         while (cursorUserLibraryLines.moveToNext()) {
@@ -163,21 +176,48 @@ public class DatabaseMgr {
     }
 
     //DELETE ------------------------------------------------------------------------------------------------------------------------------------
-    public void deleteUserLibrary(@NonNull Context context, int userLibraryId) {
-        getDb(context).delete(TABLES.USERLIBRARY.TABLE_NAME,
-                TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID+"="+userLibraryId,null);
+    public boolean deleteUserLibrary(@NonNull Context context, int userLibraryId) {
+        Log.d(TAG, "deleteUserLibrary: Trying to delete userLib with id: "+userLibraryId);
+        boolean deletionSuccessful = getDb(context).delete(TABLES.USERLIBRARY.TABLE_NAME,
+                TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID+"="+userLibraryId,null) > 0; //relationsships updated by cascade
+
+        if (deletionSuccessful) {
+            UserLibrary.getAllDownloadedUserLibraries().remove(userLibraryId+""); //remove from static hashmap
+        } //also delete to keep uptodate
+
+        restartNotificationService(context); //restart because userlibs might change output
+        return deletionSuccessful;
     }
 
-    /* ##########################################################################################################################################
+    /* ###########################################################################################################################################
      * ###########################################################################################################################################
      * ------- COUNTDOWN - CRUD Operations -----------------------------------------------------------------------------------------------------
      * ###########################################################################################################################################
      * ########################################################################################################################################### */
 
-    //TODO: CREATE
+    //TODO: CREATE & UPDATE
     //TODO: READ
-    //TODO: UPDATE
-    //TODO: DELETE
+    //DELETE ------------------------------------------------------------------------------------------------------------------------------------
+    public boolean deleteCountdown(@NonNull Context context, int countdownId) {
+        Log.d(TAG, "deleteCountdown: Trying to delete countdown with id: " + countdownId);
+        boolean deletionSuccessful = getDb(context).delete(TABLES.COUNTDOWN.TABLE_NAME,
+                TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", //do this for preventing sql injections!
+                new String[]{String.valueOf(countdownId)}) > 0;
+
+        //No foreach languagePack necessary, because we just delete all rows simultaneously where countdownId is
+        /*
+        NOT necessary because of ON DELETE CASCADE ?!
+        deletionSuccessful &= getDb(context).delete(TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME,
+                TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", new String[]{String.valueOf(countdownId)}) > 0;*/
+
+        if (deletionSuccessful) {
+            getAllCountdowns(context, false).delete(countdownId);
+        } //also delete from object to keep it uptodate
+
+        //Restart service because countown got removed
+        restartNotificationService(context); //TODO: not here in storage mgr (own service mgr for all of them maybe merge them or similar i do not know)
+        return deletionSuccessful;
+    }
 
 
 
@@ -221,53 +261,10 @@ public class DatabaseMgr {
         return allUserLibraryLines;
     }
 
-    public Map<String, UserLibrary> getAllUserLibraries(@NonNull Context context, boolean forceReload) {
-        //SparseArray for setting the same rows/ids as in db, but string[] for setting row values (quote text, etc.)
-        Log.d(TAG, "getAllUserLibraries: Trying to load all quotes.");
-        if (UserLibrary.getAllDownloadedUserLibraries() == null || forceReload) { //only do this if not already extracted in this session! (performance enhancement :)) --> so also not extra sql query necessary when getting single countdown
-            Cursor cursorUserLibrary = null;
-            Cursor cursorUserLibraryLines = null;
-
-            try {
-                cursorUserLibrary =  getDb(context).rawQuery("SELECT * FROM " + TABLES.USERLIBRARY.TABLE_NAME + ";", null);
-                cursorUserLibraryLines = getDb(context).rawQuery("SELECT * FROM " + TABLES.USERLIBRARY_LINE.TABLE_NAME + ";", null);
-
-                UserLibrary.setAllDownloadedUserLibraries(countdownGetSelectedUserLibraries(cursorUserLibrary,cursorUserLibraryLines)); //query all
-            } finally { //always finally for closing cursor! (also in error case)
-                Log.d(TAG, "getAllUserLibraries: Trying to close cursors (finally).");
-                //IMPORTANT: Also close both cursors!
-                closeCursor(cursorUserLibrary);
-                closeCursor(cursorUserLibraryLines);
-            }
-        } //no else necessary, because allCountdowns already set
-        Log.d(TAG, "getAllUserLibraries: Length of returned map: " + UserLibrary.getAllDownloadedUserLibraries().size());
-        return UserLibrary.getAllDownloadedUserLibraries();
-    }
-
 
     //COUNTDOWN RELATED METHODS +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    /**
-     * deleteCountdown: Deletes countdown with id and returns whether it was successful or not!
-     */
-    public boolean deleteCountdown(@NonNull Context context, int countdownId) {
-        Log.d(TAG, "deleteCountdown: Trying to delete countdown with id: " + countdownId);
-        boolean deletionSuccessful = getDb(context).delete(TABLES.COUNTDOWN.TABLE_NAME,
-                TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", //do this for preventing sql injections!
-                new String[]{String.valueOf(countdownId)}) > 0;
 
-        //No foreach languagePack necessary, because we just delete all rows simultaneously where countdownId is
-        deletionSuccessful &= getDb(context).delete(TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME,
-                TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", new String[]{String.valueOf(countdownId)}) > 0;
-
-        if (deletionSuccessful) {
-            getAllCountdowns(context, false).delete(countdownId);
-        } //also delete from object to keep it uptodate
-
-        //Restart service because countown got removed
-        restartNotificationService(context); //TODO: not here in storage mgr (own service mgr for all of them maybe merge them or similar i do not know)
-        return deletionSuccessful;
-    }
 
     /**
      * Deletes ALL countdowns and returns number of deleted rows
