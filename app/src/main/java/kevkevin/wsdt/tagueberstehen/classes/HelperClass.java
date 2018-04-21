@@ -7,7 +7,12 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import kevkevin.wsdt.tagueberstehen.R;
@@ -16,6 +21,20 @@ public class HelperClass {
     private static final String TAG = "HelperClass";
     private static final Random random = new Random();
     private static Thread doPeriodicallyThread; //ONLY allow one thread at the same time (so we can manage it)
+
+    /** Used for Userlibrary download for mapping to java obj. */
+    public static List<String> convertJsonArrayToList(@NonNull JSONArray jsonArray) {
+        List<String> list = new ArrayList<>();
+        try {
+            for (int i = 0; i < jsonArray.length(); i++) {
+                list.add(jsonArray.getString(i));
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "convertJsonArrayToList: Could not transform jsonarray to stringList.");
+            e.printStackTrace();
+        }
+        return list;
+    }
 
     /** Do sth periodically, this method does support UI updating!
      * --> IMPORTANT: Stop thread with stopPeriodically if not needed anymore.*/

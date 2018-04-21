@@ -4,21 +4,23 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StreamDownloadTask;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
-import kevkevin.wsdt.tagueberstehen.classes.UserLibrary_depr;
+import kevkevin.wsdt.tagueberstehen.classes.UserLibrary;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_FirebaseStorageMgr.*;
 
+//IMPORTANT: FirebaseObjs TO JavaObjs TO SQL and reverse
 public class FirebaseStorageMgr {
     private static final String TAG = "FirebaseStorageMgr";
     /**
@@ -32,22 +34,13 @@ public class FirebaseStorageMgr {
 
     public static void downloadNewPackage(@NonNull final Context context, @NonNull String relChildPath) {
         StorageReference childFileReference = getStorageReference().child(relChildPath);
-        final String libName = childFileReference.getName().replace(".std.lib",""); //better only this final to free up storage reference as soon as possible
-
-        /*TODO: ALSO TO SAVE INTO USERLIb ObJ!!
-        childFileReference.getMetadata().addOnCompleteListener(new OnCompleteListener<StorageMetadata>() {
-            @Override
-            public void onComplete(@NonNull Task<StorageMetadata> task) {
-                task.getResult().getCreationTimeMillis()
-                        task.getResult().getUpdatedTimeMillis()
-            }
-        })*/
+        final String libName = childFileReference.getName().replace("."+LIB_FILEEXTENSION,""); //better only this final to free up storage reference as soon as possible
 
         childFileReference.getStream().addOnSuccessListener(new OnSuccessListener<StreamDownloadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(StreamDownloadTask.TaskSnapshot taskSnapshot) {
                 Log.d(TAG, "downloadNewPackage:onSuccess: Got valid stream from firebase.");
-                readFile(context, libName,taskSnapshot.getStream());
+                saveNewPackage(context, libName,taskSnapshot.getStream());
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -57,34 +50,46 @@ public class FirebaseStorageMgr {
         });
     }
 
-    /**
-     * @param userLibrary: Libname will be the sql table name and is at the same time the filename (without fileextensions [.std.lib]).
-     * @param strLine: Text to save.
-     */
-    private static boolean saveFileLineToUserLibraryObj(@NonNull Context context, @NonNull UserLibrary_depr userLibrary, @NonNull String strLine) {
-        boolean savingSuccessful = false;
-        Log.d(TAG, "saveFileLineToUserLibraryObj: Trying to save new line (" + strLine + ") -> " + userLibrary.toString());
-        //TODO:save
-        //userLibrary.getUserLibrarySayings(context).
-        return savingSuccessful;
+    private static UserLibrary mapFileToUserLibraryObj(@NonNull JSONObject userLibraryJSONObject) {
+        Log.d(TAG, "mapFileToUserLibraryObj: Trying to save userLibrary.");
+        UserLibrary userLibrary = null;
+
+        try {
+            userLibrary = new UserLibrary(
+                    userLibraryJSONObject.getInt("libId"),
+                    userLibraryJSONObject.getString("libName"),
+                    userLibraryJSONObject.getString("libLanguageCode"),
+                    userLibraryJSONObject.getString("createdBy"),
+                    userLibraryJSONObject.getString("createdOn"),
+                    userLibraryJSONObject.getString("lastEditOn"),
+                    userLibraryJSONObject.getJSONArray("lines"));
+        } catch (JSONException e) {
+            Log.e(TAG, "mapFileToUserLibraryObj: Could not extract Userlibrary from json. Json malformed!");
+            e.printStackTrace();
+        }
+
+        return userLibrary;
     }
 
-    private static void readFile(@NonNull final Context context, @NonNull final String libName, final InputStream fis) {
+    private static void saveNewPackage(@NonNull final Context context, @NonNull final String libName, final InputStream fis) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 Scanner sc = null;
-                UserLibrary_depr userLibrary = null; //new userLib
 
                 try {
+                    StringBuilder jsonStr = new StringBuilder();
                     sc = new Scanner(fis, "UTF-8");
                     while (sc.hasNextLine()) {
                         // convert to char and display it
-                        if (!saveFileLineToUserLibraryObj(context, userLibrary, sc.nextLine())) {
-                            Log.e(TAG, "readFile: Could not save following line->" + sc.nextLine() + "\n");
-                        }
+                        jsonStr.append(sc.nextLine());
                     }
+                    UserLibrary userLibrary = mapFileToUserLibraryObj(new JSONObject(jsonStr.toString()));
+                    userLibrary.saveToDB();
 
+                } catch (JSONException e) {
+                    Log.e(TAG, "saveNewPackage: Could not parse downloaded userLibrary to JsonObj.");
+                    e.printStackTrace();
                 } finally {
                     try {
                         if (fis != null) {
