@@ -22,7 +22,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
 import kevkevin.wsdt.tagueberstehen.R;
@@ -371,27 +373,17 @@ public class Countdown {
     }
 
     /** Necessary to determine which languagepacks are used for this countdown. (MIGHT RETURN NULL!)*/
-    public UserLibrary getRandomQuoteSuitableForCountdown() {
-        UserLibrary fallbackQuoteErrorCase = new UserLibrarySaying_depr(this.getContext(),-1,this.getContext().getResources().getString(R.string.error_contactAdministrator),TABLES.QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0]); //no matter which language pack we return
+    public String getRandomQuoteSuitableForCountdown() {
         HashMap<String, UserLibrary> languagepacks = this.getUserSelectedUserLibraries();
 
         if (languagepacks.size() <= 0) { //no languagepacks defined!
             Log.w(TAG, "getRandomQuoteSuitableForCountdown: No languagepack for countdown defined! Returned fallbackNotification.");
-            return fallbackQuoteErrorCase;
-        } else if (languagepacks.size() != this.getQuotesLanguagePacksStr().length) {
-            Log.w(TAG, "getRandomQuoteSuitableForCountdown: Hashmap and string array of language packs does not have the same size. Might cause arrayoutofbounds!");
-            return fallbackQuoteErrorCase;
+            return this.getContext().getResources().getString(R.string.error_contactAdministrator);
         }
 
-        //this way every language is shown the same probability (only drawback: languagepacks with less quotes might show more probably the same quotes again)
-        //IMPORTANT: String array of language packs and hashmap need the same size so keep them uptodate! (we are doing above a if to prevent such error cases, but user gets notified about it)
-        SparseArray<UserLibrary> languageQuotes = languagepacks.get(this.getQuotesLanguagePacksStr()[HelperClass.getRandomInt(0,languagepacks.size()-1)]).getUserLibrarySayings(this.getContext());
-        if (languageQuotes.size() <= 0) {
-            Log.w(TAG, "getRandomQuoteSuitableForCountdown: No quote for languagepack for countdown defined! Returned fallbackNotification.");
-            return fallbackQuoteErrorCase;
-        }
-        //IMPORTANT: Hier ausnahmsweise valueAt(), WEIL wir hier den index selbst suchen und nicht den Key!
-        return languageQuotes.valueAt(HelperClass.getRandomInt(0,languageQuotes.size()-1));
+        String[] languagePackKeys = (String[]) languagepacks.keySet().toArray();
+        List<String> languagePackLines = languagepacks.get(languagePackKeys[HelperClass.getRandomInt(0,languagePackKeys.length-1)]).getLines();
+        return languagePackLines.get(HelperClass.getRandomInt(0,languagePackLines.size()));
     }
 
     public HashMap<String, UserLibrary> getUserSelectedUserLibraries() {
@@ -401,30 +393,5 @@ public class Countdown {
     private void setUserSelectedUserLibraries(HashMap<String, UserLibrary> userSelectedUserLibraries) {
         //should only be called by setQuotesLStr(), because this method does not update hashmap
         this.userSelectedUserLibraries = userSelectedUserLibraries;
-    }
-
-    public void setQuotesLanguagePacksStr(String[] quotesLanguagePacks) { //additional setter (easier for constructor etc.) because no extra object creation necessary
-        this.quotesLanguagePacksStr = quotesLanguagePacks; //IMPORTANT: That string array and hashmap are uptodate otherwise we will get errors!
-        //now also refresh hashmap
-        HashMap<String,UserLibrary> usedLanguagePacks = new HashMap<>();
-        for (String langPack : quotesLanguagePacks) {
-            Log.d(TAG, "getQuotesLanguagePacks_Quotes: Trying to evaluate language pack->"+langPack);
-            UserLibrary languagepack = UserLibrary.getAllDownloadedUserLibraries(this.getContext()).get(langPack);
-            if (languagepack != null) {
-                usedLanguagePacks.put(languagepack.getUserLibraryId(),languagepack);
-            }
-        }
-
-        //If NO valid language found then just report fallback language (english)
-        if (usedLanguagePacks.size() <= 0) {
-            Log.d(TAG, "getQuotesLanguagePacks_Quotes: Languages not found. Used fallback language.");
-            String fallBackLanguagePack = TABLES.QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0];
-            usedLanguagePacks.put(fallBackLanguagePack, UserLibrary.getAllDownloadedUserLibraries(this.getContext()).get(fallBackLanguagePack));
-        }
-        this.setUserSelectedUserLibraries(usedLanguagePacks); //now use other setter
-    }
-
-    public String[] getQuotesLanguagePacksStr() {
-        return quotesLanguagePacksStr;
     }
 }
