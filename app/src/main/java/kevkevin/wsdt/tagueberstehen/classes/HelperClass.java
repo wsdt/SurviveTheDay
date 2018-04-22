@@ -89,6 +89,7 @@ public class HelperClass {
      * With this random no. factory only one object is created once :)
      */
     public static int getRandomInt(int min, int max) {
+        Log.d(TAG, "getRandomInt: "+min+"//"+max);
         return random.nextInt(max - min + 1) + min; //r.nextInt(max - min + 1) + min;
     }
 
