@@ -65,7 +65,7 @@ public class CountdownActivity extends AppCompatActivity {
         this.setLastIntent(getIntent());
         this.countdownId = this.getLastIntent().getIntExtra(IDENTIFIER_COUNTDOWN_ID, -1);
         //maybe by main menu or notification, but we get the same Extra: COUNTDOWN_ID with the ID
-        if (this.getCountdown() == null) {this.setCountdown(DatabaseMgr.getSingletonInstance(this).getCountdown(this,false, this.countdownId));} //load countdown if not already loaded by actionbar menu
+        if (this.getCountdown() == null) {this.setCountdown(DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this,false).get(this.countdownId));} //load countdown if not already loaded by actionbar menu
         initializeCountdownDataSwipeLayout(); //to restore current bottom view if surface view would get updated (preventing it)
         startCountdownOnUI(); //0 is default value
         loadCountdownDataToUI();
@@ -163,7 +163,7 @@ public class CountdownActivity extends AppCompatActivity {
     public void setNewRandomQuote(@Nullable View v) { //is called when clicking onRefreshButton, onActivity start and regularly (automatic refresh)
         //When used outside of onClick, then v might/will be NULL!, also use here user selected quote language packages!
         ((TextSwitcher) findViewById(R.id.swipeLayout_countdownActivity_randomQuotes_quote)).setText(
-                UserLibrarySaying_depr.getRandomSayingFromAll(this).getSayingText()); //use random quote
+                this.getCountdown().getRandomQuoteSuitableForCountdown()); //use random quote
     }
 
     public void onSwipeLayoutClick_UserInstruction(View v) { //only use on mainView of SwipeLayout, after swiping they will know that they can do it!
@@ -285,7 +285,7 @@ public class CountdownActivity extends AppCompatActivity {
         Log.d(TAG, "onCreateOptionsMenu: Trying to set ShareIntent.");
         if (shareActionProvider != null) {
             try {
-                this.setCountdown(Countdown.getAllCountdowns().get(this.countdownId));
+                this.setCountdown(DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this, false).get(this.countdownId));
 
                 //Provider is member so we can refresh share intent!
                 this.setShareActionProvider(shareActionProvider); //must be called before refreshShareIntent()!

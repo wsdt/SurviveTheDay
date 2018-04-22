@@ -32,7 +32,7 @@ public class NotificationBroadcastMgr extends BroadcastReceiver {
         int alarmId = (-1);
         try {
             alarmId = intent.getIntExtra(IDENTIFIER_COUNTDOWN_ID,-1);
-            currCountdown = DatabaseMgr.getSingletonInstance(context).getCountdown(context,false,alarmId);
+            currCountdown = DatabaseMgr.getSingletonInstance(context).getAllCountdowns(context,false).get(alarmId);
         } catch (Exception e) {
             Log.e(TAG, "onReceive: Could not load countdown from countdown id.");
             e.printStackTrace();

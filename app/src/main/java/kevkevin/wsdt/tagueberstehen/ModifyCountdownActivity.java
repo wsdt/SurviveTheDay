@@ -33,10 +33,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import kevkevin.wsdt.tagueberstehen.classes.ColorPicker;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
+import kevkevin.wsdt.tagueberstehen.classes.UserLibrary;
 import kevkevin.wsdt.tagueberstehen.classes.customviews.CustomEdittext;
 import kevkevin.wsdt.tagueberstehen.classes.customviews.DateTimePicker.DateTimePicker;
 import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
@@ -97,7 +100,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
         if (this.existingCountdownId >= 0) {
             Log.d(TAG, "onCreate: Being in EditMode, because countdown already exists.");
-            setFormValues(Countdown.getAllCountdowns().get(this.existingCountdownId));
+            setFormValues(DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this,false).get(this.existingCountdownId));
         }
 
         onMotivateMeToggleClick(findViewById(R.id.isActive)); //simulate click so it is always at its correct state (enabled/disabled)
@@ -345,11 +348,11 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         ((ToggleButton) findViewById(R.id.showLiveCountdown)).setChecked(countdown.isShowLiveCountdown());
 
         GridLayout languagePackList = findViewById(R.id.modifyCountdownActivity_motivation_languagePacks);
-        for (UserLibrary_depr languagePack : countdown.getUserSelectedUserLibraries().values()) {
+        for (UserLibrary languagePack : countdown.getUserSelectedUserLibraries().values()) {
             for (int i = 0; i < languagePackList.getChildCount(); i++) {
                 if (languagePackList.getChildAt(i).getTag() != null) {
                     CheckBox tmpCheckbox = ((CheckBox) languagePackList.getChildAt(i));
-                    if (languagePackList.getChildAt(i).getTag().toString().equals(languagePack.getUserLibraryId())) {
+                    if (languagePackList.getChildAt(i).getTag().toString().equals(languagePack.getLibId()+"")) {
                         tmpCheckbox.setChecked(true);
                     }
                 }
@@ -367,7 +370,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
                 ((ToggleButton) findViewById(R.id.isActive)).isChecked(),
                 Integer.parseInt(getResources().getStringArray(R.array.countdownIntervalSpinner_VALUES)[((Spinner) findViewById(R.id.notificationIntervalSpinner)).getSelectedItemPosition()]),
                 ((ToggleButton) findViewById(R.id.showLiveCountdown)).isChecked(),
-                loadSelectedLanguagePacksFromCheckboxes()/*--> TMP --> TODO: Checkboxen für languagePacks*/));
+                loadSelectedUserLibrariesFromCheckboxes()/*--> TMP --> TODO: Checkboxen für languagePacks*/));
         // .getProgress()+5 for old seekbar slider +5 seconds by default (because if 0) app crashes
         //line above: gets selected spinner items position and uses this to get the associated array entry with the correct value in seconds.
 
@@ -422,36 +425,30 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         }
     }
 
-    private String[] loadSelectedLanguagePacksFromCheckboxes() {
-        StringBuilder selectedLanguagePacks = new StringBuilder();
-        int countLanguagePacks = 0;
-        for (CheckBox languagePackCheckbox : this.languagePackCheckboxes) {
-            if (languagePackCheckbox.isChecked()) {
-                if ((countLanguagePacks++) > 0) {
-                    selectedLanguagePacks.append(TABLES.ZWISCHENTABELLE_COU_ULB.ATTRIBUTE_ADDITIONALS.LANGUAGE_ID_LIST_SEPARATOR);
-                } //before languagepack and only if already one added
-                selectedLanguagePacks.append(languagePackCheckbox.getTag().toString());
+    private HashMap<String, UserLibrary> loadSelectedUserLibrariesFromCheckboxes() {
+        HashMap<String, UserLibrary> selectedUserLibraries = new HashMap<>();
+
+        for (CheckBox userLibraryCheckbox : this.userLibraryCheckboxes) {
+            if (userLibraryCheckbox.isChecked()) {
+                String libId = userLibraryCheckbox.getTag().toString();
+                selectedUserLibraries.put(libId, DatabaseMgr.getSingletonInstance(this).getAllUserLibraries(this,false).get(libId));
             }
         }
-        if (countLanguagePacks <= 0) { //keep this validation, because user might uncheck all boxes
-            //no pack selected, choosing default one (english)
-            Log.d(TAG, "loadSelectedLanguagePacksFromCheckboxes: User did not select language pack. Used default one.");
-            selectedLanguagePacks.append("en");
-        }
-        return selectedLanguagePacks.toString().split(TABLES.ZWISCHENTABELLE_COU_ULB.ATTRIBUTE_ADDITIONALS.LANGUAGE_ID_LIST_SEPARATOR); //string to array
+
+        return selectedUserLibraries;
     }
 
-    private ArrayList<CheckBox> languagePackCheckboxes = new ArrayList<>();
+    private ArrayList<CheckBox> userLibraryCheckboxes = new ArrayList<>();
 
     private void loadLanguagePacksCheckboxes(@NonNull GridLayout superiorLayoutView) {
-        for (UserLibrary_depr languagepack : UserLibrary_depr.getAllUserLibraries(this).values()) { //pre imkrement!
+        for (UserLibrary languagepack : DatabaseMgr.getSingletonInstance(this).getAllUserLibraries(this,false).values()) { //pre imkrement!
             //Print Checkboxes etc.
             CheckBox languagePackCheckbox = new CheckBox(this);
-            languagePackCheckbox.setTag(languagepack.getUserLibraryId()); //en, de etc.
-            this.languagePackCheckboxes.add(languagePackCheckbox);
+            languagePackCheckbox.setTag(languagepack.getLibId()); //en, de etc.
+            this.userLibraryCheckboxes.add(languagePackCheckbox);
             superiorLayoutView.addView(languagePackCheckbox); //before text of checkbox
             TextView languagePackLbl = new TextView(this);
-            languagePackLbl.setText(languagepack.getLabelString(this));
+            languagePackLbl.setText(languagepack.getLibName());
             superiorLayoutView.addView(languagePackLbl);
         }
         Log.d(TAG, "loadLanguagePacksCheckboxes: Tried to load all language packs.");
