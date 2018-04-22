@@ -15,8 +15,6 @@ import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 
 public class UserLibrary {
     private static final String TAG = "UserLibrary";
-    //Following hashmap should only be modified by DatabaseMgr!!
-    private static Map<String,UserLibrary> allDownloadedUserLibraries = new HashMap<>(); //should only contain userLibObjs where data is saved into local db
 
     private int libId;
     private String libName;
@@ -52,14 +50,6 @@ public class UserLibrary {
 
 
     //GETTER/SETTER -------------------------
-    public static Map<String,UserLibrary> getAllDownloadedUserLibraries() {
-        return allDownloadedUserLibraries;
-    }
-
-    public static void setAllDownloadedUserLibraries(Map<String,UserLibrary> allDownloadedUserLibraries) {
-        UserLibrary.allDownloadedUserLibraries = allDownloadedUserLibraries;
-    }
-
     public String getLibName() {
         return libName;
     }

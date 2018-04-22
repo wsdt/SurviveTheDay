@@ -117,6 +117,7 @@ public class DatabaseMgr {
     * ------- USERLIBRARY - CRUD Operations -----------------------------------------------------------------------------------------------------
     * ###########################################################################################################################################
     * ########################################################################################################################################### */
+    private Map<String, UserLibrary> global_AllUserLibraries; //no setter, because only this class should modify it (getter is getAllCountdowns(force etc.))
 
     //CREATE & UPDATE ---------------------------------------------------------------------------------------------------------------------------
     public void saveUserLibrary(@NonNull Context context, @NonNull UserLibrary userLibrary) {
@@ -136,7 +137,7 @@ public class DatabaseMgr {
 
     //READ --------------------------------------------------------------------------------------------------------------------------------------
     public Map<String, UserLibrary> getAllUserLibraries(@NonNull Context context, boolean forceReload) {
-        if (forceReload || UserLibrary.getAllDownloadedUserLibraries() == null || UserLibrary.getAllDownloadedUserLibraries().size() <= 0) {
+        if (forceReload || this.global_AllUserLibraries == null) {
 
             Cursor cursorAllUserLibraries = getDb(context).rawQuery("SELECT * FROM " + TABLES.USERLIBRARY.TABLE_NAME + ";", null);
             Map<String, UserLibrary> allUserLibraries = new HashMap<>();
@@ -147,9 +148,9 @@ public class DatabaseMgr {
             }
 
             closeCursor(cursorAllUserLibraries);
-            UserLibrary.setAllDownloadedUserLibraries(allUserLibraries);
+            this.global_AllUserLibraries = allUserLibraries;
         }
-        return UserLibrary.getAllDownloadedUserLibraries();
+        return this.global_AllUserLibraries;
     }
     //don't extract one specific userLib directly from db (just use the hashmap in UserLibrary)
 
@@ -187,7 +188,7 @@ public class DatabaseMgr {
                 TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID+"="+userLibraryId,null) > 0; //relationsships updated by cascade
 
         if (deletionSuccessful) {
-            UserLibrary.getAllDownloadedUserLibraries().remove(userLibraryId+""); //remove from static hashmap
+            this.global_AllUserLibraries.remove(userLibraryId+""); //remove from static hashmap
         } //also delete to keep uptodate
 
         restartNotificationService(context); //restart because userlibs might change output
@@ -199,6 +200,8 @@ public class DatabaseMgr {
      * ------- COUNTDOWN - CRUD Operations -----------------------------------------------------------------------------------------------------
      * ###########################################################################################################################################
      * ########################################################################################################################################### */
+    private SparseArray<Countdown> global_AllCountdowns; //no setter, because only this class should modify it (getter is getAllCountdowns(force etc.))
+
 
     // CREATE & UPDATE ---------------------------------------------------------------------------------------------------------------------------
     public void saveCountdown(@NonNull Context context, Countdown countdown) {
@@ -247,8 +250,8 @@ public class DatabaseMgr {
             Toast.makeText(context, R.string.databaseMgr_error_saveCountdown_unsuccessful, Toast.LENGTH_SHORT).show();
         } else {
             //if successfully saved, then update also locally downloaded/extracted sparseArray (if already in RAM)
-            if (Countdown.getAllCountdowns() != null) { //so we do not reload all countdowns with getAllCountdowns(); :)
-                Countdown.getAllCountdowns().put(countdown.getCountdownId(), countdown);
+            if (this.global_AllCountdowns != null) { //so we do not reload all countdowns with getAllCountdowns(); :)
+                this.global_AllCountdowns.put(countdown.getCountdownId(), countdown);
             } else {
                 Log.w(TAG, "setSaveCountdown: AllCountdowns SparseArray is NULL! Not updating sparseArray."); //if we call getAllCountdowns() next time there should be also the current countdown :)
             }
@@ -285,7 +288,7 @@ public class DatabaseMgr {
      */
     public SparseArray<Countdown> getAllCountdowns(@NonNull Context context, boolean forceReload) { //do not use in loops! (use getAllCountdowns, because there is only ONE sql statement executed)
         Log.d(TAG, "getAllCountdowns: Trying to get all countdowns.");
-        if (Countdown.getAllCountdowns() == null || forceReload) { //only do this if not already extracted in this session! (performance enhancement :)) --> so also not extra sql query necessary when getting single countdown
+        if (this.global_AllCountdowns == null || forceReload) { //only do this if not already extracted in this session! (performance enhancement :)) --> so also not extra sql query necessary when getting single countdown
             if (forceReload) {
                 Log.d(TAG, "getAllCountdowns: Forcefully reloaded sparseArray.");
             } else {
@@ -310,13 +313,13 @@ public class DatabaseMgr {
                     Log.d(TAG, "getAllCountdowns: Found countdown-> " + countdown.toString());
                     queriedCountdowns.put(countdown.getCountdownId(), countdown);
                 }
-                Countdown.setAllCountdowns(queriedCountdowns); //save all queried countdowns so we do not have to do this procedure again for runtime :)
+                this.global_AllCountdowns = (queriedCountdowns); //save all queried countdowns so we do not have to do this procedure again for runtime :)
             } finally { //always finally for closing cursor! (also in error case)
                 closeCursor(cursorCountdown);
             }
         } //no else necessary, because allCountdowns already set
-        Log.d(TAG, "getAllCountdowns: Length of returned sparseArray: " + Countdown.getAllCountdowns().size());
-        return Countdown.getAllCountdowns();
+        Log.d(TAG, "getAllCountdowns: Length of returned sparseArray: " + this.global_AllCountdowns.size());
+        return this.global_AllCountdowns;
     }
 
     public SparseArray<Countdown> getAllCountdowns(@NonNull Context context, boolean forceReload, boolean onlyActiveCountdowns, boolean onlyShowLiveCountdowns) {
@@ -415,7 +418,7 @@ public class DatabaseMgr {
         //Deletes all countdowns
         int amountRowsDeleted = getDb(context).delete(TABLES.COUNTDOWN.TABLE_NAME, "1", null); //no. 1 says, that we want to return not whether deletion was successful, but how many rows we deleted
         amountRowsDeleted += getDb(context).delete(TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME, "1", null); //also delete auflösungstabelle (but not languagepacks itself)
-        Countdown.setAllCountdowns(null); //also delete saved object!
+        this.global_AllCountdowns = (null); //also delete saved object!
 
         //Restart service (because new/less services etc. / changed settings) [must be AFTER DELETION and BEFORE return (logically)!]
         restartNotificationService(context);
