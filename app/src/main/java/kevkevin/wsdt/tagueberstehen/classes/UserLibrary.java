@@ -15,6 +15,7 @@ import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 
 public class UserLibrary {
     private static final String TAG = "UserLibrary";
+    //Following hashmap should only be modified by DatabaseMgr!!
     private static Map<String,UserLibrary> allDownloadedUserLibraries = new HashMap<>(); //should only contain userLibObjs where data is saved into local db
 
     private int libId;
@@ -47,14 +48,6 @@ public class UserLibrary {
         this.setCreatedOn(createdOn);
         this.setLastEditOn(lastEditOn);
         this.setLines(lines);
-    }
-
-    public static void extractAllUserLibrariesFromDb(@NonNull Context context) { //if no quotes in db, this method might run every time!
-        if (UserLibrary.getAllDownloadedUserLibraries().size() <= 0) {
-            Log.d(TAG, "extractAllUserLibrariesFromDb: Trying to extract all userlibs from db.");
-            //userLibs not extracted now, doing it now.
-            UserLibrary.setAllDownloadedUserLibraries(DatabaseMgr.getSingletonInstance(context).getAllUserLibraries(context,false));
-        }
     }
 
 
