@@ -162,8 +162,10 @@ public class CountdownActivity extends AppCompatActivity {
 
     public void setNewRandomQuote(@Nullable View v) { //is called when clicking onRefreshButton, onActivity start and regularly (automatic refresh)
         //When used outside of onClick, then v might/will be NULL!, also use here user selected quote language packages!
-        ((TextSwitcher) findViewById(R.id.swipeLayout_countdownActivity_randomQuotes_quote)).setText(
-                this.getCountdown().getRandomQuoteSuitableForCountdown()); //use random quote
+        if (this.getCountdown() != null) { //might be called after countdown is already deleted.
+            ((TextSwitcher) findViewById(R.id.swipeLayout_countdownActivity_randomQuotes_quote)).setText(
+                    this.getCountdown().getRandomQuoteSuitableForCountdown()); //use random quote
+        }
     }
 
     public void onSwipeLayoutClick_UserInstruction(View v) { //only use on mainView of SwipeLayout, after swiping they will know that they can do it!

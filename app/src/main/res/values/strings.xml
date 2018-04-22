@@ -165,6 +165,8 @@
     <string name="modifyCountdownActivity_countdown_showLiveCountdown_label">Live countdown</string>
     <string name="modifyCountdownActivity_countdown_validation_UntilAfterStartDateTime">UntilDateTime needs to be AFTER StartDateTime!</string>
     <string name="modifyCountdownActivity_countdown_validation_DateTimeNotValid">DateTime is not valid! This might be an internal error.</string>
+    <string name="modifyCountdownActivity_countdown_userLibrary_noInstalled">It seems that you haven\'t installed any user libraries. This should not be possible!</string>
+    <string name="modifyCountdownActivity_countdown_userLibrary_lblCheckbox">%1$s (%2$d)</string><!-- LibName (Libsize) -->
 
     <!-- CreditsActivity -->
     <string name="creditsActivity_floatingButton_contactAppOwnerMailIntent_mail_subject">SurviveTheDay: Review</string>
