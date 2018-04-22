@@ -1,7 +1,7 @@
 package kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces;
 
 public interface IConstants_DatabaseMgr {
-    int DATABASE_VERSION = 2; //MUST NOT be smaller than 1, and if we change db schema we should increment this so onUpgrade gets called!
+    int DATABASE_VERSION = 5; //MUST NOT be smaller than 1, and if we change db schema we should increment this so onUpgrade gets called!
 
     interface TABLES {
         interface COUNTDOWN { //Sql names etc.
@@ -63,14 +63,15 @@ public interface IConstants_DatabaseMgr {
         //IMPORTANT: Booleans are saved as integers! (0=FALSE | 1=TRUE)
         String[] DATABASE_CREATE_SQL = new String[]{ //MUST be a string array for each statement! (because we cannot execute multiple statements at once!
                 "PRAGMA foreign_keys = ON;",
-                "CREATE TABLE " + TABLES.USERLIBRARY.TABLE_NAME + " (\n" +
+                "CREATE TABLE IF NOT EXISTS " + TABLES.USERLIBRARY.TABLE_NAME + " (\n" +
                         TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + " INTEGER PRIMARY KEY,\n" +
                         TABLES.USERLIBRARY.ATTRIBUTES.LIB_NAME + " TEXT,\n" +
                         TABLES.USERLIBRARY.ATTRIBUTES.LIB_LANGUAGE_CODE + " TEXT,\n" +
                         TABLES.USERLIBRARY.ATTRIBUTES.CREATED_BY + " TEXT,\n" +
                         TABLES.USERLIBRARY.ATTRIBUTES.CREATED_ON + " TEXT,\n" +
                         TABLES.USERLIBRARY.ATTRIBUTES.LAST_EDIT_ON + " TEXT);",
-                "CREATE TABLE " + TABLES.COUNTDOWN.TABLE_NAME + " (\n" +
+
+                "CREATE TABLE IF NOT EXISTS " + TABLES.COUNTDOWN.TABLE_NAME + " (\n" +
                         TABLES.COUNTDOWN.ATTRIBUTES.ID + " INTEGER PRIMARY KEY,\n" +
                         TABLES.COUNTDOWN.ATTRIBUTES.TITLE + " TEXT,\n" +
                         TABLES.COUNTDOWN.ATTRIBUTES.DESCRIPTION + " TEXT,\n" +
@@ -83,7 +84,7 @@ public interface IConstants_DatabaseMgr {
                         TABLES.COUNTDOWN.ATTRIBUTES.RANDOMNOTIFICATIONMOTIVATION + " BOOLEAN,\n" +
                         TABLES.COUNTDOWN.ATTRIBUTES.LIVECOUNTDOWN + " BOOLEAN);",
 
-                "CREATE TABLE " + TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME + " (\n" +
+                "CREATE TABLE IF NOT EXISTS " + TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME + " (\n" +
                         TABLES.COUNTDOWN.ATTRIBUTES.ID + " INTEGER,\n" +
                         TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + " TEXT,\n" +
                         "PRIMARY KEY(" + TABLES.COUNTDOWN.ATTRIBUTES.ID + "," + TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + "),\n" +
@@ -94,7 +95,7 @@ public interface IConstants_DatabaseMgr {
                         " ON UPDATE CASCADE\n" +
                         " ON DELETE CASCADE);",
 
-                "CREATE TABLE " + TABLES.USERLIBRARY_LINE.TABLE_NAME + " (\n" +
+                "CREATE TABLE IF NOT EXISTS " + TABLES.USERLIBRARY_LINE.TABLE_NAME + " (\n" +
                         TABLES.USERLIBRARY_LINE.ATTRIBUTES.LINE_ID + " INTEGER PRIMARY KEY,\n" +
                         TABLES.USERLIBRARY_LINE.ATTRIBUTES.LINE_TEXT + " TEXT NOT NULL,\n" +
                         TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + " INTEGER,\n" +

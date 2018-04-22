@@ -10,7 +10,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
@@ -65,16 +64,13 @@ public class DatabaseMgr {
         @Override
         public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
             //IMPORTANT: If new version, then do this procedure NOT on mainthread (needs longer!)
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Log.w(TAG, "onUpgrade: Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data.");
-                    for (String sqlStatement : DATABASE_HELPER.DATABASE_UPGRADE_RESETTABLES) {
-                        db.execSQL(sqlStatement); //for each statement a separate method call (necessary)
-                    }
-                    onCreate(db); //recreate database!
-                }
-            }).start();
+            //BUT we do it on mainthread for now, because otherwise when upgrading the new version is not available and the app might crash for the first launch after the update.
+
+            Log.w(TAG, "onUpgrade: Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data.");
+            for (String sqlStatement : DATABASE_HELPER.DATABASE_UPGRADE_RESETTABLES) {
+                db.execSQL(sqlStatement); //for each statement a separate method call (necessary)
+            }
+            onCreate(db); //recreate database!
         }
         //Also onDowngrade exists!
     }
@@ -113,23 +109,23 @@ public class DatabaseMgr {
     }
 
     /* ##########################################################################################################################################
-    * ###########################################################################################################################################
-    * ------- USERLIBRARY - CRUD Operations -----------------------------------------------------------------------------------------------------
-    * ###########################################################################################################################################
-    * ########################################################################################################################################### */
+     * ###########################################################################################################################################
+     * ------- USERLIBRARY - CRUD Operations -----------------------------------------------------------------------------------------------------
+     * ###########################################################################################################################################
+     * ########################################################################################################################################### */
     private Map<String, UserLibrary> global_AllUserLibraries; //no setter, because only this class should modify it (getter is getAllCountdowns(force etc.))
 
     //CREATE & UPDATE ---------------------------------------------------------------------------------------------------------------------------
     public void saveUserLibrary(@NonNull Context context, @NonNull UserLibrary userLibrary) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID,userLibrary.getLibId());
-        contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LIB_NAME,escapeString(userLibrary.getLibName()));
+        contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID, userLibrary.getLibId());
+        contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LIB_NAME, escapeString(userLibrary.getLibName()));
         contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LIB_LANGUAGE_CODE, escapeString(userLibrary.getLibLanguageCode()));
         contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_BY, escapeString(userLibrary.getCreatedBy()));
         contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_ON, escapeString(userLibrary.getCreatedOn()));
         contentValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LAST_EDIT_ON, escapeString(userLibrary.getLastEditOn()));
 
-        getDb(context).replace(TABLES.USERLIBRARY.TABLE_NAME,null,contentValues);
+        getDb(context).replace(TABLES.USERLIBRARY.TABLE_NAME, null, contentValues);
 
         //no need to restart, because userLib just get's active if selected in countdown (and if countdown saved services will be restarted)
         //also no need to update countdown table, because countdowns with this lib will only exist after this operations if users selected this lib.
@@ -154,10 +150,12 @@ public class DatabaseMgr {
     }
     //don't extract one specific userLib directly from db (just use the hashmap in UserLibrary)
 
-    /** Extracts library lines of one specific userLibrary. */
+    /**
+     * Extracts library lines of one specific userLibrary.
+     */
     private List<String> getUserLibraryLines(@NonNull Context context, int userLibraryId) {
-        Cursor cursorUserLibraryLines = getDb(context).rawQuery("SELECT * FROM "+TABLES.USERLIBRARY_LINE.TABLE_NAME+" WHERE "+
-        TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID+"="+userLibraryId+";",null);
+        Cursor cursorUserLibraryLines = getDb(context).rawQuery("SELECT * FROM " + TABLES.USERLIBRARY_LINE.TABLE_NAME + " WHERE " +
+                TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + "=" + userLibraryId + ";", null);
 
         List<String> userLibraryLines = new ArrayList<>();
         while (cursorUserLibraryLines.moveToNext()) {
@@ -183,12 +181,12 @@ public class DatabaseMgr {
 
     //DELETE ------------------------------------------------------------------------------------------------------------------------------------
     public boolean deleteUserLibrary(@NonNull Context context, int userLibraryId) {
-        Log.d(TAG, "deleteUserLibrary: Trying to delete userLib with id: "+userLibraryId);
+        Log.d(TAG, "deleteUserLibrary: Trying to delete userLib with id: " + userLibraryId);
         boolean deletionSuccessful = getDb(context).delete(TABLES.USERLIBRARY.TABLE_NAME,
-                TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID+"="+userLibraryId,null) > 0; //relationsships updated by cascade
+                TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + "=" + userLibraryId, null) > 0; //relationsships updated by cascade
 
         if (deletionSuccessful) {
-            this.global_AllUserLibraries.remove(userLibraryId+""); //remove from static hashmap
+            this.global_AllUserLibraries.remove(userLibraryId + ""); //remove from static hashmap
         } //also delete to keep uptodate
 
         restartNotificationService(context); //restart because userlibs might change output
@@ -280,6 +278,7 @@ public class DatabaseMgr {
     } //no setSaveAllCountdowns() necessary!
 
     // READ ----------------------------------------------------------------------------------------------------------------------------
+
     /**
      * Get all countdowns from database and map them onto countdownObj
      *
@@ -298,15 +297,25 @@ public class DatabaseMgr {
             SparseArray<Countdown> queriedCountdowns = new SparseArray<>(); //sparse array instead of hashmap because better performance for pimitives
 
             try {
+                Cursor c = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
+
+                if (c.moveToFirst()) {
+                    while (!c.isAfterLast()) {
+                        Log.d(TAG, "Table Name=> " + c.getString(0));
+                        c.moveToNext();
+                    }
+                }
+                closeCursor(c);
+
                 /* Following query gets executed: ---------------
                  SELECT * FROM Countdown as C
                  INNER JOIN Zwischentabelle ON countdownId = countdownID
                  INNER JOIN UserLibrary ON libId = libId
                  */
                 cursorCountdown = getDb(context).rawQuery("SELECT * FROM " +
-                        TABLES.COUNTDOWN.TABLE_NAME+" as C" +
-                        " INNER JOIN "+TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME+" AS ZT ON C."+TABLES.COUNTDOWN.ATTRIBUTES.ID+"=ZT."+TABLES.COUNTDOWN.ATTRIBUTES.ID+
-                        " INNER JOIN "+TABLES.USERLIBRARY.TABLE_NAME+" AS U ON ZT."+TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID+"=U."+TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID+";",null);
+                        TABLES.COUNTDOWN.TABLE_NAME + " as C" +
+                        " INNER JOIN " + TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME + " AS ZT ON C." + TABLES.COUNTDOWN.ATTRIBUTES.ID + "=ZT." + TABLES.COUNTDOWN.ATTRIBUTES.ID +
+                        " INNER JOIN " + TABLES.USERLIBRARY.TABLE_NAME + " AS U ON ZT." + TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + "=U." + TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + ";", null);
 
                 while (cursorCountdown.moveToNext()) {
                     Countdown countdown = getCountdownFromCursor(context, cursorCountdown); //temporary cache-saving, to get countdownId for Index!
@@ -398,16 +407,17 @@ public class DatabaseMgr {
     private HashMap<String, UserLibrary> getUserLibrariesOfCountdownId(@NonNull Context context, int countdownId) {
         HashMap<String, UserLibrary> countdownUserLibraries = new HashMap<>();
 
-        Cursor selectedUserLibraries = getDb(context).rawQuery("SELECT * FROM "+TABLES.USERLIBRARY.TABLE_NAME+" WHERE "+TABLES.COUNTDOWN.ATTRIBUTES.ID+"="+countdownId+";",null);
+        Cursor selectedUserLibraries = getDb(context).rawQuery("SELECT * FROM " + TABLES.USERLIBRARY.TABLE_NAME + " WHERE " + TABLES.COUNTDOWN.ATTRIBUTES.ID + "=" + countdownId + ";", null);
         while (selectedUserLibraries.moveToNext()) {
             UserLibrary userLibrary = getUserLibraryFromCursor(context, selectedUserLibraries);
-            countdownUserLibraries.put(userLibrary.getLibId()+"",userLibrary);
+            countdownUserLibraries.put(userLibrary.getLibId() + "", userLibrary);
         }
         closeCursor(selectedUserLibraries);
         return countdownUserLibraries;
     }
 
     //DELETE ------------------------------------------------------------------------------------------------------------------------------------
+
     /**
      * Deletes ALL countdowns and returns number of deleted rows
      * (not whether it was successful or not)
@@ -443,8 +453,8 @@ public class DatabaseMgr {
 
 
     /* ################################################################################################################
-    * ########### Other methods #######################################################################################
-    * ################################################################################################################# */
+     * ########### Other methods #######################################################################################
+     * ################################################################################################################# */
 
 
     public void restartNotificationService(@NonNull Context context) { //also called by Kickstarter_BootAndGeneralReceiver
