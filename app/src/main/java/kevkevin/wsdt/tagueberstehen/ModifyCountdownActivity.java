@@ -435,6 +435,18 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             }
         }
 
+        if (selectedUserLibraries.size() <= 0) {
+            Log.d(TAG, "loadSelectedUserLibrariesFromCheckboxes: User did not select any user libs. Selecting default one.");
+            try {
+                String libId = this.userLibraryCheckboxes.get(0).getTag().toString(); //assumes that at least one userlib is installed!
+                selectedUserLibraries.put(libId, DatabaseMgr.getSingletonInstance(this).getAllUserLibraries(this,false).get(libId));
+            } catch (IndexOutOfBoundsException e) {
+                Toast.makeText(this, R.string.modifyCountdownActivity_countdown_userLibrary_noInstalled,Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "loadSelectedUserLibrariesFromCheckboxes: No user libs installed.");
+                e.printStackTrace();
+            }
+        }
+
         return selectedUserLibraries;
     }
 
@@ -448,7 +460,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             this.userLibraryCheckboxes.add(languagePackCheckbox);
             superiorLayoutView.addView(languagePackCheckbox); //before text of checkbox
             TextView languagePackLbl = new TextView(this);
-            languagePackLbl.setText(languagepack.getLibName());
+            languagePackLbl.setText(String.format(getString(R.string.modifyCountdownActivity_countdown_userLibrary_lblCheckbox),languagepack.getLibName(),languagepack.getLines().size()));
             superiorLayoutView.addView(languagePackLbl);
         }
         Log.d(TAG, "loadLanguagePacksCheckboxes: Tried to load all language packs.");

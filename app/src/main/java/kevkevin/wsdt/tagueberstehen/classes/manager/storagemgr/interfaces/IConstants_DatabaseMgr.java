@@ -1,7 +1,7 @@
 package kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces;
 
 public interface IConstants_DatabaseMgr {
-    int DATABASE_VERSION = 5; //MUST NOT be smaller than 1, and if we change db schema we should increment this so onUpgrade gets called!
+    int DATABASE_VERSION = 2; //MUST NOT be smaller than 1, and if we change db schema we should increment this so onUpgrade gets called!
 
     interface TABLES {
         interface COUNTDOWN { //Sql names etc.
@@ -96,7 +96,7 @@ public interface IConstants_DatabaseMgr {
                         " ON DELETE CASCADE);",
 
                 "CREATE TABLE IF NOT EXISTS " + TABLES.USERLIBRARY_LINE.TABLE_NAME + " (\n" +
-                        TABLES.USERLIBRARY_LINE.ATTRIBUTES.LINE_ID + " INTEGER PRIMARY KEY,\n" +
+                        TABLES.USERLIBRARY_LINE.ATTRIBUTES.LINE_ID + " INTEGER PRIMARY KEY,\n" + //in sqllite this is automatically auto_increment! (don't use the keyword)
                         TABLES.USERLIBRARY_LINE.ATTRIBUTES.LINE_TEXT + " TEXT NOT NULL,\n" +
                         TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + " INTEGER,\n" +
                         "FOREIGN KEY (" + TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + ") REFERENCES " + TABLES.USERLIBRARY.TABLE_NAME + "(" + TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + ")\n" +

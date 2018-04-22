@@ -25,6 +25,7 @@ import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.UserLibrary;
 import kevkevin.wsdt.tagueberstehen.classes.interfaces.IConstants_Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.manager.NotificationMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_FirebaseStorageMgr;
 import kevkevin.wsdt.tagueberstehen.classes.services.Kickstarter_BootAndGeneralReceiver;
 import kevkevin.wsdt.tagueberstehen.classes.services.LiveCountdown_ForegroundService;
 
@@ -56,7 +57,6 @@ public class DatabaseMgr {
                 Log.d(TAG, "onCreate: Executed statement-> " + sqlStatement);
                 db.execSQL(sqlStatement); //ONLY one statement per method!
             }
-            //By default no default data (so users have to download desired firebase libs)
 
             Log.d(TAG, "onCreate: Tried to create sql tables. ");
         }
@@ -82,13 +82,15 @@ public class DatabaseMgr {
     private static DatabaseHelper dbHelper; //SHOULD be static, because the same instance (to make singleton of it without a real singleton of helper class!)
     private static SQLiteDatabase db; //MUST be a member var
     //do not put cursor as member (because simultaneous operations would maybe destroy object allocations)
-    //Do not put countdown, userLib etc. as member, because this should be in their classes itself! (so no duplicates!)
 
     //Also singleton, so only one database instance at a time open
     private DatabaseMgr(@NonNull Context context) { //do not set context as class member, otherwise we could not make a singleton! (give context via methods!)
         dbHelper = new DatabaseHelper(context);
         setDb(dbHelper.getWritableDatabase()); //TODO: long running, should be maybe also in background thread
         Log.d(TAG, "Constructor: Created new DatabaseMgr instance.");
+
+        //Download default userlibs (e.g.) if not downloaded already
+        FirebaseStorageMgr.downloadDefaultData(context);
     }
 
     @Override
@@ -127,6 +129,16 @@ public class DatabaseMgr {
 
         getDb(context).replace(TABLES.USERLIBRARY.TABLE_NAME, null, contentValues);
 
+        //Now also save lines!
+        int rowId = 0;
+        for (String line : userLibrary.getLines()) {
+            ContentValues cvLine = new ContentValues();
+            cvLine.put(TABLES.USERLIBRARY_LINE.ATTRIBUTES.LINE_ID,rowId++); //explicitely add id instead of auto_increment to avoid saving the same rows more often into the same userlib! (when downloaded multiple times)
+            cvLine.put(TABLES.USERLIBRARY_LINE.ATTRIBUTES.LINE_TEXT,line);
+            cvLine.put(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID,userLibrary.getLibId());
+            getDb(context).replace(TABLES.USERLIBRARY_LINE.TABLE_NAME, null, cvLine);
+        }
+
         //no need to restart, because userLib just get's active if selected in countdown (and if countdown saved services will be restarted)
         //also no need to update countdown table, because countdowns with this lib will only exist after this operations if users selected this lib.
     }
@@ -140,6 +152,7 @@ public class DatabaseMgr {
 
             while (cursorAllUserLibraries.moveToNext()) {
                 UserLibrary userLibrary = getUserLibraryFromCursor(context, cursorAllUserLibraries);
+                Log.d(TAG, "UserLibsize: "+userLibrary.getLines().size());
                 allUserLibraries.put(userLibrary.getLibId() + "", userLibrary);
             }
 
@@ -407,7 +420,12 @@ public class DatabaseMgr {
     private HashMap<String, UserLibrary> getUserLibrariesOfCountdownId(@NonNull Context context, int countdownId) {
         HashMap<String, UserLibrary> countdownUserLibraries = new HashMap<>();
 
-        Cursor selectedUserLibraries = getDb(context).rawQuery("SELECT * FROM " + TABLES.USERLIBRARY.TABLE_NAME + " WHERE " + TABLES.COUNTDOWN.ATTRIBUTES.ID + "=" + countdownId + ";", null);
+        Cursor selectedUserLibraries = getDb(context).rawQuery("SELECT * FROM " +
+                TABLES.COUNTDOWN.TABLE_NAME + " as C" +
+                " INNER JOIN " + TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME + " AS ZT ON C." + TABLES.COUNTDOWN.ATTRIBUTES.ID + "=ZT." + TABLES.COUNTDOWN.ATTRIBUTES.ID +
+                " INNER JOIN " + TABLES.USERLIBRARY.TABLE_NAME + " AS U ON ZT." + TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + "=U." + TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID +
+                " WHERE C." + TABLES.COUNTDOWN.ATTRIBUTES.ID + "=" + countdownId+";",null);
+
         while (selectedUserLibraries.moveToNext()) {
             UserLibrary userLibrary = getUserLibraryFromCursor(context, selectedUserLibraries);
             countdownUserLibraries.put(userLibrary.getLibId() + "", userLibrary);

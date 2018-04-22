@@ -31,12 +31,22 @@ public class GlobalAppSettingsMgr {
     }
 
     /** @param alreadyShown: When false then you reset it and spotlight will be shown next time. Otherwise it won't be shown anymore. */
+    public void setFirebaseDefaultDataAlreadyDownloaded(boolean alreadyShown) {
+        this.getGlobalSettings_SharedPref().edit().putBoolean(SPIDENTIFIER_FIREBASESTORAGEMGR_DEFAULTDATADOWNLOADED,alreadyShown).apply();
+        Log.d(TAG, "setFirebaseDefaultDataAlreadyDownloaded: Tried to save new firebase default data status. If true default data won't be downloaded again.");
+    }
+    public boolean isFirebaseDefaultDataAlreadyDownloaded() {
+        Log.d(TAG, "isFirebaseDefaultDataAlreadyDownloaded: Tried to get default data (firebase) status.");
+        return this.getGlobalSettings_SharedPref().getBoolean(SPIDENTIFIER_FIREBASESTORAGEMGR_DEFAULTDATADOWNLOADED,false); //show if no value present (first start up)
+    }
+
+    /** @param alreadyShown: When false then you reset it and spotlight will be shown next time. Otherwise it won't be shown anymore. */
     public void setModifyCountdownSpotlightHelpAlreadyShown(boolean alreadyShown) {
         this.getGlobalSettings_SharedPref().edit().putBoolean(SPIDENTIFIER_SPOTLIGHTHELP_MODIFYCOUNTDOWNACTIVITY,alreadyShown).apply();
         Log.d(TAG, "setModifyCountdownSpotlightHelpAlreadyShown: Tried to save new spotlight status. If true spotlight won't show up again.");
     }
     public boolean isModifyCountdownSpotlightHelpAlreadyShown() {
-        Log.d(TAG, "setModifyCountdownSpotlightHelpAlreadyShown: Tried to save new spotlight status. If true spotlight won't show up again.");
+        Log.d(TAG, "setModifyCountdownSpotlightHelpAlreadyShown: Tried to get spotlight status.");
         return this.getGlobalSettings_SharedPref().getBoolean(SPIDENTIFIER_SPOTLIGHTHELP_MODIFYCOUNTDOWNACTIVITY,false); //show if no value present (first start up)
     }
 

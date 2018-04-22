@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StreamDownloadTask;
@@ -17,7 +18,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
+import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.UserLibrary;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_FirebaseStorageMgr;
+
 import static kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_FirebaseStorageMgr.*;
 
 //IMPORTANT: FirebaseObjs TO JavaObjs TO SQL and reverse
@@ -32,15 +36,30 @@ public class FirebaseStorageMgr {
     //TODO: create method for downloading (later if it works well implement uploading (after testing downloading) --> so just upload both language packs)
 
 
+
+    /** Download default userLibs (e.g.), but do this only once at the first time the app is called (versionized)
+     * Could be also called, if lastEditOn is not the same as the downloadedLibs. (do not use a separate version in Json!)*/
+    public static void downloadDefaultData(@NonNull Context context) {
+        GlobalAppSettingsMgr globalAppSettingsMgr = new GlobalAppSettingsMgr(context);
+
+        if (!globalAppSettingsMgr.isFirebaseDefaultDataAlreadyDownloaded() && HelperClass.isNetworkAvailable(context)) {
+            //By default only following data (so users have to download desired firebase libs)
+            FirebaseStorageMgr.downloadNewPackage(context, "quotes_de." + IConstants_FirebaseStorageMgr.LIB_FILEEXTENSION);
+            FirebaseStorageMgr.downloadNewPackage(context, "quotes_en." + IConstants_FirebaseStorageMgr.LIB_FILEEXTENSION);
+
+            globalAppSettingsMgr.setFirebaseDefaultDataAlreadyDownloaded(true); //is only set if internet was available and not already set
+            Log.d(TAG, "downloadDefaultData: Downloaded default data.");
+        }
+    }
+
     public static void downloadNewPackage(@NonNull final Context context, @NonNull String relChildPath) {
-        StorageReference childFileReference = getStorageReference().child(relChildPath);
-        final String libName = childFileReference.getName().replace("."+LIB_FILEEXTENSION,""); //better only this final to free up storage reference as soon as possible
+        StorageReference childFileReference = getStorageReference(context).child(relChildPath);
 
         childFileReference.getStream().addOnSuccessListener(new OnSuccessListener<StreamDownloadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(StreamDownloadTask.TaskSnapshot taskSnapshot) {
                 Log.d(TAG, "downloadNewPackage:onSuccess: Got valid stream from firebase.");
-                saveNewPackage(context, libName,taskSnapshot.getStream());
+                saveNewPackage(context, taskSnapshot.getStream());
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -71,7 +90,7 @@ public class FirebaseStorageMgr {
         return userLibrary;
     }
 
-    private static void saveNewPackage(@NonNull final Context context, @NonNull final String libName, final InputStream fis) {
+    private static void saveNewPackage(@NonNull final Context context, final InputStream fis) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -85,7 +104,7 @@ public class FirebaseStorageMgr {
                         jsonStr.append(sc.nextLine());
                     }
                     UserLibrary userLibrary = mapFileToUserLibraryObj(new JSONObject(jsonStr.toString()));
-                    //TODO: userLibrary.saveToDB(); OR use DbMgr().saveUserLibToDb() or similar
+                    DatabaseMgr.getSingletonInstance(context).saveUserLibrary(context,userLibrary); //save to db
 
                 } catch (JSONException e) {
                     Log.e(TAG, "saveNewPackage: Could not parse downloaded userLibrary to JsonObj.");
@@ -107,8 +126,9 @@ public class FirebaseStorageMgr {
     }
 
     //GETTER/SETTER --------------------
-    public static FirebaseStorage getFirebaseStorage() {
+    public static FirebaseStorage getFirebaseStorage(@NonNull Context context) {
         if (firebaseStorage == null) {
+            FirebaseApp.initializeApp(context);
             setFirebaseStorage(FirebaseStorage.getInstance());
             Log.d(TAG, "getFirebaseStorage: Firebasestorage was null. Created new one.");
         }
@@ -119,9 +139,9 @@ public class FirebaseStorageMgr {
         FirebaseStorageMgr.firebaseStorage = firebaseStorage;
     }
 
-    public static StorageReference getStorageReference() {
+    public static StorageReference getStorageReference(@NonNull Context context) {
         if (storageReference == null) {
-            setStorageReference(getFirebaseStorage().getReference());
+            setStorageReference(getFirebaseStorage(context).getReference());
             Log.d(TAG, "getStorageReference: StorageReference was null. Created new one.");
         }
         return storageReference;

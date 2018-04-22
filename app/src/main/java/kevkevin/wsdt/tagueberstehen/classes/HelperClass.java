@@ -2,6 +2,9 @@ package kevkevin.wsdt.tagueberstehen.classes;
 
 
 import android.app.Activity;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ArrayAdapter;
@@ -21,6 +24,17 @@ public class HelperClass {
     private static final String TAG = "HelperClass";
     private static final Random random = new Random();
     private static Thread doPeriodicallyThread; //ONLY allow one thread at the same time (so we can manage it)
+
+    public static boolean isNetworkAvailable(@NonNull Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        } else {
+            Log.e(TAG, "isNetworkAvailable: Smartphone does not support connectivity service. So we have to assume that internet works!");
+            return true;
+        }
+    }
 
     /** Used for Userlibrary download for mapping to java obj. */
     public static List<String> convertJsonArrayToList(@NonNull JSONArray jsonArray) {

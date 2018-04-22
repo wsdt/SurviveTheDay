@@ -78,10 +78,6 @@ public class MainActivity extends AppCompatActivity {
 
         //Set up onRefresh for pulling down
         initializePullForRefresh();
-
-        //TODO: Just for testing
-        FirebaseStorageMgr.downloadNewPackage(this,"quotes_de."+ IConstants_FirebaseStorageMgr.LIB_FILEEXTENSION);
-
     }
 
 

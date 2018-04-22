@@ -18,6 +18,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 
 import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
 import kevkevin.wsdt.tagueberstehen.R;
@@ -381,9 +383,11 @@ public class Countdown {
             return this.getContext().getResources().getString(R.string.error_contactAdministrator);
         }
 
-        String[] languagePackKeys = (String[]) languagepacks.keySet().toArray();
-        List<String> languagePackLines = languagepacks.get(languagePackKeys[HelperClass.getRandomInt(0,languagePackKeys.length-1)]).getLines();
-        return languagePackLines.get(HelperClass.getRandomInt(0,languagePackLines.size()));
+        //Get random userLibrary of countdownUserLibs (transform to arraylist before, because libId might not be inkrementally!! (rather arbitrary)
+        UserLibrary randomUserLibrary = new ArrayList<>(this.getUserSelectedUserLibraries().values()).get(HelperClass.getRandomInt(0,this.getUserSelectedUserLibraries().size()-1));
+
+        //get random userLibraryLine of userLib
+        return randomUserLibrary.getLines().get(HelperClass.getRandomInt(0,randomUserLibrary.getLines().size()-1));
     }
 
     public HashMap<String, UserLibrary> getUserSelectedUserLibraries() {
