@@ -332,6 +332,12 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             return false;
         }
 
+        if (this.userLibraryCheckboxes.size() <= 0) {
+            //Toast is done somewhere else so just block user from saving
+            Log.w(TAG, "areFormValuesValid: User has no userLibraries installed.");
+            return false;
+        }
+
         //TODO: ADD HERE FURTHER VALIDATIONS (also make them seeable in CustomEdittext (if one used))
         return true;
     }

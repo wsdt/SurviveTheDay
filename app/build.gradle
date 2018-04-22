@@ -14,8 +14,8 @@ android {
         applicationId "kevkevin.wsdt.tagueberstehen"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 25
-        versionName "1.2.0" //{major}.{minor}.{bugfixes} auch mehrstellig
+        versionCode 26
+        versionName "2.0.0" //{major}.{minor}.{bugfixes} auch mehrstellig
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

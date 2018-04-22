@@ -22,8 +22,6 @@ import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.UserLibrary;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_FirebaseStorageMgr;
 
-import static kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_FirebaseStorageMgr.*;
-
 //IMPORTANT: FirebaseObjs TO JavaObjs TO SQL and reverse
 public class FirebaseStorageMgr {
     private static final String TAG = "FirebaseStorageMgr";
@@ -36,16 +34,19 @@ public class FirebaseStorageMgr {
     //TODO: create method for downloading (later if it works well implement uploading (after testing downloading) --> so just upload both language packs)
 
 
-
-    /** Download default userLibs (e.g.), but do this only once at the first time the app is called (versionized)
-     * Could be also called, if lastEditOn is not the same as the downloadedLibs. (do not use a separate version in Json!)*/
+    /**
+     * Download default userLibs (e.g.), but do this only once at the first time the app is called (versionized)
+     * Could be also called, if lastEditOn is not the same as the downloadedLibs. (do not use a separate version in Json!)
+     */
     public static void downloadDefaultData(@NonNull Context context) {
         GlobalAppSettingsMgr globalAppSettingsMgr = new GlobalAppSettingsMgr(context);
 
         if (!globalAppSettingsMgr.isFirebaseDefaultDataAlreadyDownloaded() && HelperClass.isNetworkAvailable(context)) {
             //By default only following data (so users have to download desired firebase libs)
+            //FirebaseStorageMgr.downloadNewPackage(context, "quotes_en." + IConstants_FirebaseStorageMgr.LIB_FILEEXTENSION);
             FirebaseStorageMgr.downloadNewPackage(context, "quotes_de." + IConstants_FirebaseStorageMgr.LIB_FILEEXTENSION);
-            FirebaseStorageMgr.downloadNewPackage(context, "quotes_en." + IConstants_FirebaseStorageMgr.LIB_FILEEXTENSION);
+            //TODO (BUG): We cannot download here multiple packages at the same time (maybe because of the thread in saveNewPackage() --> but necessary [networkonmainthreadexception])
+            //TODO (BUG-Explanation): Both packages are successfully saved, but the second one does not contain any libraryLines :(
 
             globalAppSettingsMgr.setFirebaseDefaultDataAlreadyDownloaded(true); //is only set if internet was available and not already set
             Log.d(TAG, "downloadDefaultData: Downloaded default data.");
@@ -104,7 +105,7 @@ public class FirebaseStorageMgr {
                         jsonStr.append(sc.nextLine());
                     }
                     UserLibrary userLibrary = mapFileToUserLibraryObj(new JSONObject(jsonStr.toString()));
-                    DatabaseMgr.getSingletonInstance(context).saveUserLibrary(context,userLibrary); //save to db
+                    DatabaseMgr.getSingletonInstance(context).saveUserLibrary(context, userLibrary); //save to db
 
                 } catch (JSONException e) {
                     Log.e(TAG, "saveNewPackage: Could not parse downloaded userLibrary to JsonObj.");
