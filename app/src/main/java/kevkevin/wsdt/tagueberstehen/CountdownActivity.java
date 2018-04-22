@@ -26,7 +26,6 @@ import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CountdownCounter;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppNotificationMgr;
-import kevkevin.wsdt.tagueberstehen.classes.UserLibrarySaying_depr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.ShareMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 
@@ -286,7 +285,7 @@ public class CountdownActivity extends AppCompatActivity {
         Log.d(TAG, "onCreateOptionsMenu: Trying to set ShareIntent.");
         if (shareActionProvider != null) {
             try {
-                this.setCountdown(DatabaseMgr.getSingletonInstance(this).getCountdown(this,false, this.countdownId));
+                this.setCountdown(Countdown.getAllCountdowns().get(this.countdownId));
 
                 //Provider is member so we can refresh share intent!
                 this.setShareActionProvider(shareActionProvider); //must be called before refreshShareIntent()!

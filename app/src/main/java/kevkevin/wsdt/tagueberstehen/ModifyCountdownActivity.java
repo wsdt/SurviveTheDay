@@ -37,7 +37,6 @@ import java.util.GregorianCalendar;
 import kevkevin.wsdt.tagueberstehen.classes.ColorPicker;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
-import kevkevin.wsdt.tagueberstehen.classes.UserLibrary_depr;
 import kevkevin.wsdt.tagueberstehen.classes.customviews.CustomEdittext;
 import kevkevin.wsdt.tagueberstehen.classes.customviews.DateTimePicker.DateTimePicker;
 import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
@@ -98,7 +97,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
         if (this.existingCountdownId >= 0) {
             Log.d(TAG, "onCreate: Being in EditMode, because countdown already exists.");
-            setFormValues((DatabaseMgr.getSingletonInstance(this).getCountdown(this, false, this.existingCountdownId)));
+            setFormValues(Countdown.getAllCountdowns().get(this.existingCountdownId));
         }
 
         onMotivateMeToggleClick(findViewById(R.id.isActive)); //simulate click so it is always at its correct state (enabled/disabled)
@@ -281,7 +280,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         //Helper method because needed twice (in onSaveClick())
         loadFormValues();
         if (areFormValuesValid()) {
-            DatabaseMgr.getSingletonInstance(this).setSaveCountdown(this, this.getNewEditedCountdown());
+            DatabaseMgr.getSingletonInstance(this).saveCountdown(this, this.getNewEditedCountdown());
             Log.d(TAG, "onSaveClick: Tried to save new countdown.");
             ModifyCountdownActivity.this.finish(); //go back to main
         } else {
@@ -429,7 +428,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         for (CheckBox languagePackCheckbox : this.languagePackCheckboxes) {
             if (languagePackCheckbox.isChecked()) {
                 if ((countLanguagePacks++) > 0) {
-                    selectedLanguagePacks.append(TABLES.ZWISCHENTABELLE_COU_QLP.ATTRIBUTE_ADDITIONALS.LANGUAGE_ID_LIST_SEPARATOR);
+                    selectedLanguagePacks.append(TABLES.ZWISCHENTABELLE_COU_ULB.ATTRIBUTE_ADDITIONALS.LANGUAGE_ID_LIST_SEPARATOR);
                 } //before languagepack and only if already one added
                 selectedLanguagePacks.append(languagePackCheckbox.getTag().toString());
             }
@@ -439,7 +438,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             Log.d(TAG, "loadSelectedLanguagePacksFromCheckboxes: User did not select language pack. Used default one.");
             selectedLanguagePacks.append("en");
         }
-        return selectedLanguagePacks.toString().split(TABLES.ZWISCHENTABELLE_COU_QLP.ATTRIBUTE_ADDITIONALS.LANGUAGE_ID_LIST_SEPARATOR); //string to array
+        return selectedLanguagePacks.toString().split(TABLES.ZWISCHENTABELLE_COU_ULB.ATTRIBUTE_ADDITIONALS.LANGUAGE_ID_LIST_SEPARATOR); //string to array
     }
 
     private ArrayList<CheckBox> languagePackCheckboxes = new ArrayList<>();

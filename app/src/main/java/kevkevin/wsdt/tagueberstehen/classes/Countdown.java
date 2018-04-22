@@ -47,7 +47,6 @@ public class Countdown {
     private boolean showLiveCountdown; //show Foreground service live countdown if countdown until start date constraints true
     private HashMap<String, UserLibrary> userSelectedUserLibraries; //by default local language will be chosen
 
-    private static SparseArray<Countdown> allCountdowns;
     private static final String TAG = "Countdown";
 
 
@@ -84,15 +83,6 @@ public class Countdown {
         this.setShowLiveCountdown(showLiveCountdown);
         this.setUserSelectedUserLibraries(selectedUserLibraries);
     }
-
-    public static SparseArray<Countdown> getAllCountdowns() {
-        return allCountdowns;
-    }
-
-    public static void setAllCountdowns(SparseArray<Countdown> allCountdowns) {
-        Countdown.allCountdowns = allCountdowns;
-    }
-
 
     /**
      * getEventMsg:
