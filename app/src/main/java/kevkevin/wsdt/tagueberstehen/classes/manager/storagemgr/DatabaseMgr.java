@@ -131,6 +131,7 @@ public class DatabaseMgr {
         getDb(context).replace(TABLES.USERLIBRARY.TABLE_NAME,null,contentValues);
 
         //no need to restart, because userLib just get's active if selected in countdown (and if countdown saved services will be restarted)
+        //also no need to update countdown table, because countdowns with this lib will only exist after this operations if users selected this lib.
     }
 
     //READ --------------------------------------------------------------------------------------------------------------------------------------
@@ -141,17 +142,8 @@ public class DatabaseMgr {
             Map<String, UserLibrary> allUserLibraries = new HashMap<>();
 
             while (cursorAllUserLibraries.moveToNext()) {
-                int userLibraryId = cursorAllUserLibraries.getInt(cursorAllUserLibraries.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID));
-
-                allUserLibraries.put(userLibraryId + "", new UserLibrary(
-                        userLibraryId,
-                        cursorAllUserLibraries.getString(cursorAllUserLibraries.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_NAME)),
-                        cursorAllUserLibraries.getString(cursorAllUserLibraries.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_LANGUAGE_CODE)),
-                        cursorAllUserLibraries.getString(cursorAllUserLibraries.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_BY)),
-                        cursorAllUserLibraries.getString(cursorAllUserLibraries.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_ON)),
-                        cursorAllUserLibraries.getString(cursorAllUserLibraries.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LAST_EDIT_ON)),
-                        getUserLibraryLines(context, userLibraryId)
-                ));
+                UserLibrary userLibrary = getUserLibraryFromCursor(context, cursorAllUserLibraries);
+                allUserLibraries.put(userLibrary.getLibId() + "", userLibrary);
             }
 
             closeCursor(cursorAllUserLibraries);
@@ -162,7 +154,7 @@ public class DatabaseMgr {
     //don't extract one specific userLib directly from db (just use the hashmap in UserLibrary)
 
     /** Extracts library lines of one specific userLibrary. */
-    public List<String> getUserLibraryLines(@NonNull Context context, int userLibraryId) {
+    private List<String> getUserLibraryLines(@NonNull Context context, int userLibraryId) {
         Cursor cursorUserLibraryLines = getDb(context).rawQuery("SELECT * FROM "+TABLES.USERLIBRARY_LINE.TABLE_NAME+" WHERE "+
         TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID+"="+userLibraryId+";",null);
 
@@ -173,6 +165,19 @@ public class DatabaseMgr {
 
         closeCursor(cursorUserLibraryLines);
         return userLibraryLines;
+    }
+
+    private UserLibrary getUserLibraryFromCursor(@NonNull Context context, @NonNull Cursor userLibraryCursor) {
+        int userLibraryId = userLibraryCursor.getInt(userLibraryCursor.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID));
+        return new UserLibrary(
+                userLibraryId,
+                userLibraryCursor.getString(userLibraryCursor.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_NAME)),
+                userLibraryCursor.getString(userLibraryCursor.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_LANGUAGE_CODE)),
+                userLibraryCursor.getString(userLibraryCursor.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_BY)),
+                userLibraryCursor.getString(userLibraryCursor.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_ON)),
+                userLibraryCursor.getString(userLibraryCursor.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LAST_EDIT_ON)),
+                getUserLibraryLines(context, userLibraryId)
+        );
     }
 
     //DELETE ------------------------------------------------------------------------------------------------------------------------------------
@@ -195,138 +200,83 @@ public class DatabaseMgr {
      * ###########################################################################################################################################
      * ########################################################################################################################################### */
 
-    //TODO: CREATE & UPDATE
-    //TODO: READ
-    //DELETE ------------------------------------------------------------------------------------------------------------------------------------
-    public boolean deleteCountdown(@NonNull Context context, int countdownId) {
-        Log.d(TAG, "deleteCountdown: Trying to delete countdown with id: " + countdownId);
-        boolean deletionSuccessful = getDb(context).delete(TABLES.COUNTDOWN.TABLE_NAME,
-                TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", //do this for preventing sql injections!
-                new String[]{String.valueOf(countdownId)}) > 0;
+    // CREATE & UPDATE ---------------------------------------------------------------------------------------------------------------------------
+    public void saveCountdown(@NonNull Context context, Countdown countdown) {
+        Log.d(TAG, "setSaveCountdown: Entry might be replaced if it exists already.");
 
-        //No foreach languagePack necessary, because we just delete all rows simultaneously where countdownId is
-        /*
-        NOT necessary because of ON DELETE CASCADE ?!
-        deletionSuccessful &= getDb(context).delete(TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME,
-                TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", new String[]{String.valueOf(countdownId)}) > 0;*/
+        /* Following query gets executed: (INSERT OR REPLACE INTO == REPLACE INTO [Abbr.]) ---------------
+         * REPLACE INTO Countdown VALUES ({countdownDataRow});*/
 
-        if (deletionSuccessful) {
-            getAllCountdowns(context, false).delete(countdownId);
-        } //also delete from object to keep it uptodate
+        //Countdown to contentvalues to be inserted!
+        ContentValues insertCountdownValues = new ContentValues();
+        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.ID, countdown.getCountdownId()); //escaping makes only sense for strings!
+        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.TITLE, escapeString(countdown.getCountdownTitle()));
+        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.DESCRIPTION, escapeString(countdown.getCountdownDescription()));
+        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.STARTDATETIME, escapeString(countdown.getStartDateTime()));
+        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.UNTILDATETIME, escapeString(countdown.getUntilDateTime()));
+        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.CREATEDDATETIME, escapeString(countdown.getCreatedDateTime()));
+        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.LASTEDITDATETIME, escapeString(countdown.getLastEditDateTime()));
+        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.CATEGORYCOLOR, escapeString(countdown.getCategory()));
+        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.RANDOMNOTIFICATIONMOTIVATION, countdown.isActive());
+        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.NOTIFICATIONINTERVAL, countdown.getNotificationInterval());
+        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.LIVECOUNTDOWN, countdown.isShowLiveCountdown());
 
-        //Restart service because countown got removed
-        restartNotificationService(context); //TODO: not here in storage mgr (own service mgr for all of them maybe merge them or similar i do not know)
-        return deletionSuccessful;
-    }
+        //If countdown with id exists already, it gets overwritten!
+        long rowIdCountdown = getDb(context).replace(TABLES.COUNTDOWN.TABLE_NAME, null, insertCountdownValues);
 
+        //Delete auflösungstabelle für countdown, because what is when countdown has now less userlibs (it would remain in zwischentabelle)
+        if (getDb(context).delete(TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME,
+                TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", new String[]{String.valueOf(countdown.getCountdownId())}) > 0) {
+            Log.d(TAG, "setSaveCountdown: Deletion of entries of updated/new countdown in zwischentabelle successful.");
+        }
 
+        //Now also insertValues for zwischentabelle (AFTER countdown is inserted)
+        long[] rowIdsZwischentabelle = new long[countdown.getUserSelectedUserLibraries().size()];
+        int iteration = 0;
+        for (UserLibrary userLibrary : countdown.getUserSelectedUserLibraries().values()) {
+            ContentValues insertZwischentabelleValues = new ContentValues();
+            //for every row a separate insert!! (ergo for every languagepack of countdown a separate insert)
+            insertZwischentabelleValues.put(TABLES.COUNTDOWN.ATTRIBUTES.ID, countdown.getCountdownId());
+            insertZwischentabelleValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID, userLibrary.getLibId());
+            rowIdsZwischentabelle[iteration++] = getDb(context).replace(TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME, null, insertZwischentabelleValues);
+        }
 
-    /**
-     * This method will map a queried row to a quoteObj.
-     * ATTENTION: @param cursorRow should be closed() in parent-method in a finally block!
-     */
-    private UserLibrary mapCursorRowToUserLibrary(@NonNull Cursor cursorRow, @NonNull List<String> userLibraryLines) {
-        return new UserLibrary(
-                cursorRow.getInt(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID)),
-                cursorRow.getString(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_NAME)),
-                cursorRow.getString(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_LANGUAGE_CODE)),
-                cursorRow.getString(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_BY)),
-                cursorRow.getString(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.CREATED_ON)),
-                cursorRow.getString(cursorRow.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LAST_EDIT_ON)),
-                userLibraryLines);
-    }
+        //at least evaluate one row id of the zwischentablle (if those succeeded we assume others did also)
+        if (rowIdCountdown < 0 || rowIdsZwischentabelle[0] < 0) { //replace() returns -1 if failure otherwise it returns the rowid which must be equal or higher 0
+            Log.e(TAG, "setSaveCountdown: Could not save/update countdown!");
+            Toast.makeText(context, R.string.databaseMgr_error_saveCountdown_unsuccessful, Toast.LENGTH_SHORT).show();
+        } else {
+            //if successfully saved, then update also locally downloaded/extracted sparseArray (if already in RAM)
+            if (Countdown.getAllCountdowns() != null) { //so we do not reload all countdowns with getAllCountdowns(); :)
+                Countdown.getAllCountdowns().put(countdown.getCountdownId(), countdown);
+            } else {
+                Log.w(TAG, "setSaveCountdown: AllCountdowns SparseArray is NULL! Not updating sparseArray."); //if we call getAllCountdowns() next time there should be also the current countdown :)
+            }
 
-    private Map<String, UserLibrary> countdownGetSelectedUserLibraries(@Nullable Cursor cursorUserLibrary, @Nullable Cursor cursorUserLibraryLines) {
-        Map<String, UserLibrary> allUserLibraries = new HashMap<>();
-        if (cursorUserLibrary != null) {
-            while (cursorUserLibrary.moveToNext()) {
-                UserLibrary userLibrary = mapCursorRowToUserLibrary(cursorUserLibrary, mapCursorToUserLibraryList(cursorUserLibraryLines, cursorUserLibrary));
-                allUserLibraries.put(userLibrary.getLibId() + "", userLibrary);
+            Log.d(TAG, "setSaveCountdown: Tried to save countdown not only to sparseArray, but also to Database [RowId: " + rowIdCountdown + "]: " + countdown.toString());
+        }
+
+        //TODO: Maybe this block should be in future sth else (separation of concerns), so we might be able to ensure that this is also checked on device start etc.
+        //When saved then validate whether startDate is in future and if so, then schedule broadcast receiver for restarting all services so countdown gets started without opening app
+        if (!countdown.isStartDateInThePast()) {
+            Log.d(TAG, "setSaveCountdown: New saved countdown's StartDate is in the future! Scheduling broadcast receiver for restarting services.");
+            AlarmManager alarmManager = ((AlarmManager) context.getSystemService(Context.ALARM_SERVICE));
+            if (alarmManager != null) {
+                Intent intent = new Intent(context, Kickstarter_BootAndGeneralReceiver.class);
+                intent.setAction(BROADCASTRECEIVER_ACTION_RESTART_ALL_SERVICES);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, intent, 0);
+                alarmManager.set(AlarmManager.RTC_WAKEUP, countdown.getDateTime(countdown.getStartDateTime()).getTimeInMillis(), pendingIntent);
+                Log.d(TAG, "setSaveCountdown: Tried setting alarm for restarting all services when startdate gets into past.");
+            } else {
+                Log.e(TAG, "setSaveCountdown: Could not set alarm for future start date. Alarmmanager is null!");
             }
         }
-        return allUserLibraries;
-    }
 
-    private List<String> mapCursorToUserLibraryList(@Nullable Cursor cursorUserLibraryLines, @Nullable Cursor cursorUserLibrary) {
-        List<String> allUserLibraryLines = new ArrayList<>();
-        if (cursorUserLibraryLines != null && cursorUserLibrary != null) {
-            while (cursorUserLibraryLines.moveToNext()) {
-                //Attention to sql relationship so only add related texts to userlib
-                if (cursorUserLibraryLines.getInt(cursorUserLibraryLines.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID)) ==
-                        cursorUserLibrary.getInt(cursorUserLibrary.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID))) {
-                    allUserLibraryLines.add(cursorUserLibraryLines.getString(cursorUserLibraryLines.getColumnIndex(TABLES.USERLIBRARY_LINE.ATTRIBUTES.LINE_TEXT)));
-                }
-            }
-        }
-        return allUserLibraryLines;
-    }
-
-
-    //COUNTDOWN RELATED METHODS +++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-
-    /**
-     * Deletes ALL countdowns and returns number of deleted rows
-     * (not whether it was successful or not)
-     */
-    public int deleteAllCountdowns(@NonNull Context context) {
-        Log.d(TAG, "deleteAllCountdowns: Trying to delete all countdowns.");
-
-        //Deletes all countdowns
-        int amountRowsDeleted = getDb(context).delete(TABLES.COUNTDOWN.TABLE_NAME, "1", null); //no. 1 says, that we want to return not whether deletion was successful, but how many rows we deleted
-        amountRowsDeleted += getDb(context).delete(TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME, "1", null); //also delete auflösungstabelle (but not languagepacks itself)
-        Countdown.setAllCountdowns(null); //also delete saved object!
-
-        //Restart service (because new/less services etc. / changed settings) [must be AFTER DELETION and BEFORE return (logically)!]
+        //Restart service (because new/less services etc. / changed settings)
         restartNotificationService(context);
+    } //no setSaveAllCountdowns() necessary!
 
-        return amountRowsDeleted;
-    }
-
-    /**
-     * This method will map a queried row to a countdownObj.
-     * ATTENTION: @param cursorRow should be closed() in parent-method in a finally block!
-     */
-    private Countdown mapCursorRowToCountdown(@NonNull Context context, @NonNull Cursor cursorRow, @NonNull HashMap<String, UserLibrary> userLibraries) {
-        //TRUE = 1 | FALSE = 0 --> if == 1 then just give true otherwise false
-        return new Countdown(context,
-                cursorRow.getInt(cursorRow.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.ID)),
-                cursorRow.getString(cursorRow.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.TITLE)),
-                cursorRow.getString(cursorRow.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.DESCRIPTION)),
-                cursorRow.getString(cursorRow.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.STARTDATETIME)),
-                cursorRow.getString(cursorRow.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.UNTILDATETIME)),
-                cursorRow.getString(cursorRow.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.CREATEDDATETIME)),
-                cursorRow.getString(cursorRow.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.LASTEDITDATETIME)),
-                cursorRow.getString(cursorRow.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.CATEGORYCOLOR)),
-                (cursorRow.getInt(cursorRow.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.RANDOMNOTIFICATIONMOTIVATION)) == 1),
-                cursorRow.getInt(cursorRow.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.NOTIFICATIONINTERVAL)),
-                (cursorRow.getInt(cursorRow.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.LIVECOUNTDOWN)) == 1),
-                userLibraries); //, as concat is determined by Sqlite !!
-    }
-
-    /** @param tableJoinedCursor: Double inner join query should be executed, so n:m relationship gets solved and all cols are available here. */
-    private SparseArray<Countdown> mapCursorToCountdownSparseArray(@NonNull Context context, @Nullable Cursor tableJoinedCursor) {
-        SparseArray<Countdown> countdownSparseArray = new SparseArray<>();
-        if (tableJoinedCursor != null) {
-            while (tableJoinedCursor.moveToNext()) {
-                Countdown countdown = mapCursorRowToCountdown(context,tableJoinedCursor,countdownGetSelectedUserLibraries(tableJoinedCursor,));
-                countdownSparseArray.put(countdown.getCountdownId(), countdown);
-            }
-        }
-        return countdownSparseArray;
-    }
-
-
-    /**
-     * Get current countdown from database and map it onto countdownObj
-     */
-    public Countdown getCountdown(@NonNull Context context, boolean forceReload, int countdownId) { //do not use in loops! (use getAllCountdowns, because there is only ONE sql statement executed)
-        //If allCountdowns not already downloaded they will, if they are then we just get returned the sparseArray
-        return getAllCountdowns(context, forceReload).get(countdownId);
-        //IMPORTANT: always use ValueAt() better performance than get()!!!! --> BUT: ValueAt = Index, Get = Key (=CountdownId)
-    }
-
+    // READ ----------------------------------------------------------------------------------------------------------------------------
     /**
      * Get all countdowns from database and map them onto countdownObj
      *
@@ -342,7 +292,6 @@ public class DatabaseMgr {
                 Log.d(TAG, "getAllCountdowns: Found no already extracted sparseArray for countdowns. Doing it now.");
             }
             Cursor cursorCountdown = null;
-            Cursor cursorUserLibrary = null;
             SparseArray<Countdown> queriedCountdowns = new SparseArray<>(); //sparse array instead of hashmap because better performance for pimitives
 
             try {
@@ -356,18 +305,14 @@ public class DatabaseMgr {
                         " INNER JOIN "+TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME+" AS ZT ON C."+TABLES.COUNTDOWN.ATTRIBUTES.ID+"=ZT."+TABLES.COUNTDOWN.ATTRIBUTES.ID+
                         " INNER JOIN "+TABLES.USERLIBRARY.TABLE_NAME+" AS U ON ZT."+TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID+"=U."+TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID+";",null);
 
-//TODO -------------------------------------------
-
-
-                    while (cursorCountdown.moveToNext()) {
-                        Countdown tmp = mapCursorRowToCountdown(context, cursorCountdown); //temporary cache-saving, to get countdownId for Index!
-                        Log.d(TAG, "getAllCountdowns: Found countdown-> " + tmp.toString());
-                        queriedCountdowns.put(tmp.getCountdownId(), tmp);
-                    }
-                    Countdown.setAllCountdowns(queriedCountdowns); //save all queried countdowns so we do not have to do this procedure again for runtime :)
+                while (cursorCountdown.moveToNext()) {
+                    Countdown countdown = getCountdownFromCursor(context, cursorCountdown); //temporary cache-saving, to get countdownId for Index!
+                    Log.d(TAG, "getAllCountdowns: Found countdown-> " + countdown.toString());
+                    queriedCountdowns.put(countdown.getCountdownId(), countdown);
+                }
+                Countdown.setAllCountdowns(queriedCountdowns); //save all queried countdowns so we do not have to do this procedure again for runtime :)
             } finally { //always finally for closing cursor! (also in error case)
                 closeCursor(cursorCountdown);
-                closeCursor(cursorUserLibrary);
             }
         } //no else necessary, because allCountdowns already set
         Log.d(TAG, "getAllCountdowns: Length of returned sparseArray: " + Countdown.getAllCountdowns().size());
@@ -425,80 +370,78 @@ public class DatabaseMgr {
         return filteredCountdowns; //IMPORTANT: It is extremely important that the arraylist is ordered (for that we assign objects with index = countdown id
     }
 
-    public void setSaveCountdown(@NonNull Context context, Countdown countdown) {
-        Log.d(TAG, "setSaveCountdown: Entry might be replaced if it exists already.");
 
-        /* Following query gets executed: (INSERT OR REPLACE INTO == REPLACE INTO [Abbr.]) ---------------
-         * REPLACE INTO Countdown VALUES ({countdownDataRow});*/
+    /**
+     * This method will map a queried row to a countdownObj.
+     * ATTENTION: @param cursorRow should be closed() in parent-method in a finally block!
+     */
+    private Countdown getCountdownFromCursor(@NonNull Context context, @NonNull Cursor countdownCursor) {
+        //TRUE = 1 | FALSE = 0 --> if == 1 then just give true otherwise false
+        return new Countdown(context,
+                countdownCursor.getInt(countdownCursor.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.ID)),
+                countdownCursor.getString(countdownCursor.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.TITLE)),
+                countdownCursor.getString(countdownCursor.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.DESCRIPTION)),
+                countdownCursor.getString(countdownCursor.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.STARTDATETIME)),
+                countdownCursor.getString(countdownCursor.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.UNTILDATETIME)),
+                countdownCursor.getString(countdownCursor.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.CREATEDDATETIME)),
+                countdownCursor.getString(countdownCursor.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.LASTEDITDATETIME)),
+                countdownCursor.getString(countdownCursor.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.CATEGORYCOLOR)),
+                (countdownCursor.getInt(countdownCursor.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.RANDOMNOTIFICATIONMOTIVATION)) == 1),
+                countdownCursor.getInt(countdownCursor.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.NOTIFICATIONINTERVAL)),
+                (countdownCursor.getInt(countdownCursor.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.LIVECOUNTDOWN)) == 1),
+                getUserLibrariesOfCountdownId(context, countdownCursor.getInt(countdownCursor.getColumnIndex(TABLES.COUNTDOWN.ATTRIBUTES.ID))));
+    }
 
-        //Countdown to contentvalues to be inserted!
-        ContentValues insertCountdownValues = new ContentValues();
-        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.ID, countdown.getCountdownId()); //escaping makes only sense for strings!
-        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.TITLE, escapeString(countdown.getCountdownTitle()));
-        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.DESCRIPTION, escapeString(countdown.getCountdownDescription()));
-        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.STARTDATETIME, escapeString(countdown.getStartDateTime()));
-        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.UNTILDATETIME, escapeString(countdown.getUntilDateTime()));
-        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.CREATEDDATETIME, escapeString(countdown.getCreatedDateTime()));
-        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.LASTEDITDATETIME, escapeString(countdown.getLastEditDateTime()));
-        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.CATEGORYCOLOR, escapeString(countdown.getCategory()));
-        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.RANDOMNOTIFICATIONMOTIVATION, countdown.isActive());
-        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.NOTIFICATIONINTERVAL, countdown.getNotificationInterval());
-        insertCountdownValues.put(TABLES.COUNTDOWN.ATTRIBUTES.LIVECOUNTDOWN, countdown.isShowLiveCountdown());
+    private HashMap<String, UserLibrary> getUserLibrariesOfCountdownId(@NonNull Context context, int countdownId) {
+        HashMap<String, UserLibrary> countdownUserLibraries = new HashMap<>();
 
-        //If countdown with id exists already, it gets overwritten!
-        long rowIdCountdown = getDb(context).replace(TABLES.COUNTDOWN.TABLE_NAME, null, insertCountdownValues);
-
-        //Delete auflösungstabelle für countdown, because what is when countdown has now less languagepacks (it would remain in zwischentabelle)
-        if (getDb(context).delete(TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME,
-                TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", new String[]{String.valueOf(countdown.getCountdownId())}) > 0) {
-            Log.d(TAG, "setSaveCountdown: Deletion of entries of updated/new countdown in zwischentabelle successful.");
+        Cursor selectedUserLibraries = getDb(context).rawQuery("SELECT * FROM "+TABLES.USERLIBRARY.TABLE_NAME+" WHERE "+TABLES.COUNTDOWN.ATTRIBUTES.ID+"="+countdownId+";",null);
+        while (selectedUserLibraries.moveToNext()) {
+            UserLibrary userLibrary = getUserLibraryFromCursor(context, selectedUserLibraries);
+            countdownUserLibraries.put(userLibrary.getLibId()+"",userLibrary);
         }
+        closeCursor(selectedUserLibraries);
+        return countdownUserLibraries;
+    }
 
-        //Now also insertValues for zwischentabelle (AFTER countdown is inserted)
-        long[] rowIdsZwischentabelle = new long[countdown.getUserSelectedUserLibraries().size()];
-        int iteration = 0;
-        for (UserLibrary userLibrary : countdown.getUserSelectedUserLibraries().values()) {
-            ContentValues insertZwischentabelleValues = new ContentValues();
-            //for every row a separate insert!! (ergo for every languagepack of countdown a separate insert)
-            insertZwischentabelleValues.put(TABLES.COUNTDOWN.ATTRIBUTES.ID, countdown.getCountdownId());
-            insertZwischentabelleValues.put(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID, userLibrary.getLibId());
-            rowIdsZwischentabelle[iteration++] = getDb(context).replace(TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME, null, insertZwischentabelleValues);
-        }
+    //DELETE ------------------------------------------------------------------------------------------------------------------------------------
+    /**
+     * Deletes ALL countdowns and returns number of deleted rows
+     * (not whether it was successful or not)
+     */
+    public int deleteAllCountdowns(@NonNull Context context) {
+        Log.d(TAG, "deleteAllCountdowns: Trying to delete all countdowns.");
 
-        //at least evaluate one row id of the zwischentablle (if those succeeded we assume others did also)
-        if (rowIdCountdown < 0 || rowIdsZwischentabelle[0] < 0) { //replace() returns -1 if failure otherwise it returns the rowid which must be equal or higher 0
-            Log.e(TAG, "setSaveCountdown: Could not save/update countdown!");
-            Toast.makeText(context, R.string.databaseMgr_error_saveCountdown_unsuccessful, Toast.LENGTH_SHORT).show();
-        } else {
-            //if successfully saved, then update also locally downloaded/extracted sparseArray (if already in RAM)
-            if (Countdown.getAllCountdowns() != null) { //so we do not reload all countdowns with getAllCountdowns(); :)
-                Countdown.getAllCountdowns().put(countdown.getCountdownId(), countdown);
-            } else {
-                Log.w(TAG, "setSaveCountdown: AllCountdowns SparseArray is NULL! Not updating sparseArray."); //if we call getAllCountdowns() next time there should be also the current countdown :)
-            }
+        //Deletes all countdowns
+        int amountRowsDeleted = getDb(context).delete(TABLES.COUNTDOWN.TABLE_NAME, "1", null); //no. 1 says, that we want to return not whether deletion was successful, but how many rows we deleted
+        amountRowsDeleted += getDb(context).delete(TABLES.ZWISCHENTABELLE_COU_ULB.TABLE_NAME, "1", null); //also delete auflösungstabelle (but not languagepacks itself)
+        Countdown.setAllCountdowns(null); //also delete saved object!
 
-            Log.d(TAG, "setSaveCountdown: Tried to save countdown not only to sparseArray, but also to Database [RowId: " + rowIdCountdown + "]: " + countdown.toString());
-        }
-
-        //TODO: Maybe this block should be in future sth else (separation of concerns), so we might be able to ensure that this is also checked on device start etc.
-        //When saved then validate whether startDate is in future and if so, then schedule broadcast receiver for restarting all services so countdown gets started without opening app
-        if (!countdown.isStartDateInThePast()) {
-            Log.d(TAG, "setSaveCountdown: New saved countdown's StartDate is in the future! Scheduling broadcast receiver for restarting services.");
-            AlarmManager alarmManager = ((AlarmManager) context.getSystemService(Context.ALARM_SERVICE));
-            if (alarmManager != null) {
-                Intent intent = new Intent(context, Kickstarter_BootAndGeneralReceiver.class);
-                intent.setAction(BROADCASTRECEIVER_ACTION_RESTART_ALL_SERVICES);
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, intent, 0);
-                alarmManager.set(AlarmManager.RTC_WAKEUP, countdown.getDateTime(countdown.getStartDateTime()).getTimeInMillis(), pendingIntent);
-                Log.d(TAG, "setSaveCountdown: Tried setting alarm for restarting all services when startdate gets into past.");
-            } else {
-                Log.e(TAG, "setSaveCountdown: Could not set alarm for future start date. Alarmmanager is null!");
-            }
-        }
-
-        //Restart service (because new/less services etc. / changed settings)
+        //Restart service (because new/less services etc. / changed settings) [must be AFTER DELETION and BEFORE return (logically)!]
         restartNotificationService(context);
-    } //no setSaveAllCountdowns() necessary!
+
+        return amountRowsDeleted;
+    }
+
+    public boolean deleteCountdown(@NonNull Context context, int countdownId) {
+        Log.d(TAG, "deleteCountdown: Trying to delete countdown with id: " + countdownId);
+        boolean deletionSuccessful = getDb(context).delete(TABLES.COUNTDOWN.TABLE_NAME,
+                TABLES.COUNTDOWN.ATTRIBUTES.ID + "=?", //do this for preventing sql injections!
+                new String[]{String.valueOf(countdownId)}) > 0;
+
+        if (deletionSuccessful) {
+            getAllCountdowns(context, false).delete(countdownId);
+        } //also delete from object to keep it uptodate
+
+        //Restart service because countown got removed
+        restartNotificationService(context); //TODO: not here in storage mgr (own service mgr for all of them maybe merge them or similar i do not know)
+        return deletionSuccessful;
+    }
+
+
+    /* ################################################################################################################
+    * ########### Other methods #######################################################################################
+    * ################################################################################################################# */
 
 
     public void restartNotificationService(@NonNull Context context) { //also called by Kickstarter_BootAndGeneralReceiver

@@ -140,7 +140,7 @@ public class Countdown {
     }
 
     public void savePersistently() {
-        DatabaseMgr.getSingletonInstance(this.getContext()).setSaveCountdown(this.getContext(),this);
+        DatabaseMgr.getSingletonInstance(this.getContext()).saveCountdown(this.getContext(),this);
     }
 
 
@@ -381,8 +381,8 @@ public class Countdown {
     }
 
     /** Necessary to determine which languagepacks are used for this countdown. (MIGHT RETURN NULL!)*/
-    public UserLibrarySaying_depr getRandomQuoteSuitableForCountdown() {
-        UserLibrarySaying_depr fallbackQuoteErrorCase = new UserLibrarySaying_depr(this.getContext(),-1,this.getContext().getResources().getString(R.string.error_contactAdministrator),TABLES.QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0]); //no matter which language pack we return
+    public UserLibrary getRandomQuoteSuitableForCountdown() {
+        UserLibrary fallbackQuoteErrorCase = new UserLibrarySaying_depr(this.getContext(),-1,this.getContext().getResources().getString(R.string.error_contactAdministrator),TABLES.QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0]); //no matter which language pack we return
         HashMap<String, UserLibrary> languagepacks = this.getUserSelectedUserLibraries();
 
         if (languagepacks.size() <= 0) { //no languagepacks defined!
@@ -416,10 +416,10 @@ public class Countdown {
     public void setQuotesLanguagePacksStr(String[] quotesLanguagePacks) { //additional setter (easier for constructor etc.) because no extra object creation necessary
         this.quotesLanguagePacksStr = quotesLanguagePacks; //IMPORTANT: That string array and hashmap are uptodate otherwise we will get errors!
         //now also refresh hashmap
-        HashMap<String,UserLibrary_depr> usedLanguagePacks = new HashMap<>();
+        HashMap<String,UserLibrary> usedLanguagePacks = new HashMap<>();
         for (String langPack : quotesLanguagePacks) {
             Log.d(TAG, "getQuotesLanguagePacks_Quotes: Trying to evaluate language pack->"+langPack);
-            UserLibrary_depr languagepack = UserLibrary_depr.getAllUserLibraries(this.getContext()).get(langPack);
+            UserLibrary languagepack = UserLibrary.getAllDownloadedUserLibraries(this.getContext()).get(langPack);
             if (languagepack != null) {
                 usedLanguagePacks.put(languagepack.getUserLibraryId(),languagepack);
             }
@@ -429,7 +429,7 @@ public class Countdown {
         if (usedLanguagePacks.size() <= 0) {
             Log.d(TAG, "getQuotesLanguagePacks_Quotes: Languages not found. Used fallback language.");
             String fallBackLanguagePack = TABLES.QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0];
-            usedLanguagePacks.put(fallBackLanguagePack, UserLibrary_depr.getAllUserLibraries(this.getContext()).get(fallBackLanguagePack));
+            usedLanguagePacks.put(fallBackLanguagePack, UserLibrary.getAllDownloadedUserLibraries(this.getContext()).get(fallBackLanguagePack));
         }
         this.setUserSelectedUserLibraries(usedLanguagePacks); //now use other setter
     }
