@@ -32,7 +32,6 @@
         android:text="@string/versionName"
         android:textColor="@color/colorPrimary" />
 
-    <!-- TODO: Add question mark for description text for every setting extra -->
     <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

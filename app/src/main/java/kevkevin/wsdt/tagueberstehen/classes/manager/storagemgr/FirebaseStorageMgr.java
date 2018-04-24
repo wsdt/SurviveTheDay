@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.GregorianCalendar;
 import java.util.Scanner;
 
 import kevkevin.wsdt.tagueberstehen.R;
@@ -37,6 +38,25 @@ public class FirebaseStorageMgr {
 
     //TODO: create method for downloading (later if it works well implement uploading (after testing downloading) --> so just upload both language packs)
 
+
+    /* #########################################################################################################
+     * TODO: ########## UPLOAD PROCEDURES ###########################################################################
+     * ##########################################################################################################*/
+
+    /** IMPORTANT: This method should be uptodate, with the current used json version code!
+     * Json-Versioncode (/v1/ or /v2/ as folder on Firebase, which can have completely different structures). */
+    @Test (developer = IConstants_Global.DEVELOPERS.WSDT,
+            message = "first test", priority = Test.Priority.MEDIUM)
+    private static JSONObject mapUserLibraryObjToJson(@NonNull UserLibrary userLibrary) {
+        Log.d(TAG, "mapUserLibraryObjToJson: Is current version of json correct?");
+        //TODO:
+        return null;
+    }
+
+
+    /* #########################################################################################################
+    * ########## DOWNLOAD PROCEDURES ###########################################################################
+    * ##########################################################################################################*/
 
     /**
      * Download default userLibs (e.g.), but do this only once at the first time the app is called (versionized)
@@ -79,8 +99,8 @@ public class FirebaseStorageMgr {
         });
     }
 
-    private static UserLibrary mapFileToUserLibraryObj(@NonNull JSONObject userLibraryJSONObject) {
-        Log.d(TAG, "mapFileToUserLibraryObj: Trying to save userLibrary.");
+    private static UserLibrary mapJsonToUserLibraryObj(@NonNull JSONObject userLibraryJSONObject) {
+        Log.d(TAG, "mapJsonToUserLibraryObj: Trying to save userLibrary.");
         UserLibrary userLibrary = null;
 
         try {
@@ -93,7 +113,7 @@ public class FirebaseStorageMgr {
                     userLibraryJSONObject.getString("lastEditOn"),
                     userLibraryJSONObject.getJSONArray("lines"));
         } catch (JSONException e) {
-            Log.e(TAG, "mapFileToUserLibraryObj: Could not extract Userlibrary from json. Json malformed!");
+            Log.e(TAG, "mapJsonToUserLibraryObj: Could not extract Userlibrary from json. Json malformed!");
             e.printStackTrace();
         }
 
@@ -113,7 +133,7 @@ public class FirebaseStorageMgr {
                         // convert to char and display it
                         jsonStr.append(sc.nextLine());
                     }
-                    UserLibrary userLibrary = mapFileToUserLibraryObj(new JSONObject(jsonStr.toString()));
+                    UserLibrary userLibrary = mapJsonToUserLibraryObj(new JSONObject(jsonStr.toString()));
                     DatabaseMgr.getSingletonInstance(context).saveUserLibrary(context, userLibrary); //save to db
 
                 } catch (JSONException e) {

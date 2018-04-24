@@ -41,8 +41,6 @@ public class CountdownActivity extends AppCompatActivity {
     public static boolean runGeneratingRandomQuotes = true; //true by default, because surfaceView, when false then countdownCounter thread will NOT automatically refresh quotes (also used to pause etc.)
     private static ShareActionProvider shareActionProvider;
 
-    //TODO: With swipeLayout or/and automatically random quotes (only quotes)
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

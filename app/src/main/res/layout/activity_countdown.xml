@@ -295,7 +295,7 @@
                 </RelativeLayout>
                 <!-- First Bottom View - END  -->
 
-                <!-- TODO: Second Bottom View - START -->
+                <!-- Second Bottom View - START -->
                 <RelativeLayout
                     android:id="@+id/swipeLayout_countdownActivity_shareQuote"
                     android:padding="5dp"
@@ -331,7 +331,7 @@
                         android:textSize="16sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
-                    <!-- TODO: Share quote with countdown values maybe? MAKE separate class for sharing! -->
+                    <!-- TODO: Share quote with countdown values maybe?  -->
                     <ImageView
                         android:contentDescription="@string/countdownActivity_countdownData_pauseRandomQuoteToggle_contentDescription"
                         android:onClick="pausePlayRandomQuote"
