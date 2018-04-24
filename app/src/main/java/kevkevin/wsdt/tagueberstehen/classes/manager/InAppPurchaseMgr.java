@@ -34,7 +34,7 @@ import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants
 
 
 //TODO IMPORTANT TO RESOLVE ######################################################################################
-//TODO: App stürzt ab sobald PRODUKT GEKAUFT!!!!!!!!!!!!
+//TODO: App stürzt ab sobald PRODUKT GEKAUFT!!!!!!!!!!!! (24-04-2018: Nicht sicher, ob Fehler noch aktuell [glaube nicht, aber zu testen!])
 public class InAppPurchaseMgr {
     //IMPORTANT: Helper should NOT be a global MEMBER! (only locally for each listener etc.) --> to avoid overlapping
     private Context activityContext;

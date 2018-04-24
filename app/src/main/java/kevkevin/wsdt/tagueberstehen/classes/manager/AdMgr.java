@@ -45,7 +45,7 @@ public class AdMgr {
     private InAppPurchaseMgr inAppPurchaseMgr;
 
 
-    //TODO: für internet permission prüfen und verlangen usw.
+    //TODO: für internet permission prüfen und verlangen usw. (scheinbar nicht notwendig)
     public AdMgr(Activity context) {
         this.setContext(context);
         this.setGlobalAppSettingsMgr(new GlobalAppSettingsMgr(context));

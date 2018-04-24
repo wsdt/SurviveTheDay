@@ -1,6 +1,7 @@
 package kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces;
 
 public interface IConstants_DatabaseMgr {
+    //TODO: Increment to 3, because lastEdit etc. from String to INTEGER transformed etc.
     int DATABASE_VERSION = 2; //MUST NOT be smaller than 1, and if we change db schema we should increment this so onUpgrade gets called!
 
     interface TABLES {
@@ -60,6 +61,15 @@ public interface IConstants_DatabaseMgr {
     interface DATABASE_HELPER {
         String DATABASE_NAME = "SURVIVE_THE_DAY";
 
+        /**TODO: LibId (random/hash, etc.) [as text?]
+         * TODO: Developer unique etc.
+         *
+         * TODO: Firebase (sync?) / CouchDb / Syncthing
+         * TODO: Use unix timestamp instead of string
+         * TODO: evtl. created/lastEdited evtl. from FirebaseStorageReference nutzen (statt Json)
+         * TODO: evtl. index.json with hashes of files (new version etc? )
+         * */
+
         //IMPORTANT: Booleans are saved as integers! (0=FALSE | 1=TRUE)
         String[] DATABASE_CREATE_SQL = new String[]{ //MUST be a string array for each statement! (because we cannot execute multiple statements at once!
                 "PRAGMA foreign_keys = ON;",
@@ -68,8 +78,8 @@ public interface IConstants_DatabaseMgr {
                         TABLES.USERLIBRARY.ATTRIBUTES.LIB_NAME + " TEXT,\n" +
                         TABLES.USERLIBRARY.ATTRIBUTES.LIB_LANGUAGE_CODE + " TEXT,\n" +
                         TABLES.USERLIBRARY.ATTRIBUTES.CREATED_BY + " TEXT,\n" +
-                        TABLES.USERLIBRARY.ATTRIBUTES.CREATED_ON + " TEXT,\n" +
-                        TABLES.USERLIBRARY.ATTRIBUTES.LAST_EDIT_ON + " TEXT);",
+                        TABLES.USERLIBRARY.ATTRIBUTES.CREATED_ON + " INTEGER,\n" +
+                        TABLES.USERLIBRARY.ATTRIBUTES.LAST_EDIT_ON + " INTEGER);",
 
                 "CREATE TABLE IF NOT EXISTS " + TABLES.COUNTDOWN.TABLE_NAME + " (\n" +
                         TABLES.COUNTDOWN.ATTRIBUTES.ID + " INTEGER PRIMARY KEY,\n" +

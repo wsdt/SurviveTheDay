@@ -503,24 +503,6 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     // ################################################################################################################
 
     public void setCustomOnClickListener(@NonNull final TextView targetTextView, @NonNull RelativeLayout parentView) {
-        /*parentView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { //do not use this v, because we also can click on other childs of parentView.
-                //create onClick new instance to also keep now-member uptodate (only when instantiating refreshed)
-                DateTimePickerMgr dateTimePickerMgr = new DateTimePickerMgr(getFragmentManager(), targetTextView);
-
-                String viewTag = (String) targetTextView.getTag();
-                if (viewTag != null) {
-                    if (viewTag.equals("modifyCountdownActivity_countdown_untilDateTime_label")) {
-                        //just add 2 hours for untilDateTime per default (TODO: Does it also work at 23:50 e.g.? --> 01:50
-                        dateTimePickerMgr.setSelectedHour(dateTimePickerMgr.getSelectedHour()+2);
-                    }
-                }
-                dateTimePickerMgr.showDialog();
-            }
-        });*/
-
-
         //GregorianCalendar now = new GregorianCalendar(); //now
         GregorianCalendar now = new GregorianCalendar(); //so current time gets automatically set
         final DateTimePicker DATETIMEPICKER = new DateTimePicker(getSupportFragmentManager(), targetTextView);
