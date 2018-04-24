@@ -1,1 +1,1 @@
-[{"outputType":{"type":"APK"},"apkInfo":{"type":"MAIN","splits":[],"versionCode":25},"path":"app-free-release.apk","properties":{"packageId":"kevkevin.wsdt.tagueberstehen","split":"","minSdkVersion":"15"}}]
+[{"outputType":{"type":"APK"},"apkInfo":{"type":"MAIN","splits":[],"versionCode":26,"versionName":"2.0.0-f","enabled":true,"outputFile":"app-free-release.apk","fullName":"freeRelease","baseName":"free-release"},"path":"app-free-release.apk","properties":{}}]

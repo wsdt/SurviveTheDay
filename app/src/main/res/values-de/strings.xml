@@ -312,4 +312,7 @@
     <!-- CustomViews:CustomEdittext -->
     <string name="customEdittext_default_hint">Schreibe etwas</string>
 
+    <!-- FirebaseStorageMgr -->
+    <string name="firebaseStorageMgr_install_userlibrary_defaultdata">Installiere Standarddaten. Dein Smartphone benötigt dafür eine aktive Netzwerkverbindung.</string>
+
 </resources>
