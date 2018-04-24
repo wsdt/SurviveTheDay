@@ -31,6 +31,10 @@ android {
             signingConfig signingConfigs.SurviveTheDayKey
         }
     }
+    lintOptions {
+        abortOnError false
+    }
+
     //this creates resource string while compiling with current versionName! (e.g. Loading screen)
     applicationVariants.all {
         variant ->

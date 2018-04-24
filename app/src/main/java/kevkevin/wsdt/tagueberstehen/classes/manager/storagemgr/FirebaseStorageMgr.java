@@ -3,6 +3,7 @@ package kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -18,9 +19,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
+import kevkevin.wsdt.tagueberstehen.R;
+import kevkevin.wsdt.tagueberstehen.annotations.Test;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.UserLibrary;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_FirebaseStorageMgr;
+import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
 
 //IMPORTANT: FirebaseObjs TO JavaObjs TO SQL and reverse
 public class FirebaseStorageMgr {
@@ -38,13 +42,18 @@ public class FirebaseStorageMgr {
      * Download default userLibs (e.g.), but do this only once at the first time the app is called (versionized)
      * Could be also called, if lastEditOn is not the same as the downloadedLibs. (do not use a separate version in Json!)
      */
+    @Test(message = "Verify that this works again (after changing paths)",
+            priority = Test.Priority.HIGH,
+            developer = IConstants_Global.DEVELOPERS.WSDT)
     public static void downloadDefaultData(@NonNull Context context) {
         GlobalAppSettingsMgr globalAppSettingsMgr = new GlobalAppSettingsMgr(context);
-
         if (!globalAppSettingsMgr.isFirebaseDefaultDataAlreadyDownloaded() && HelperClass.isNetworkAvailable(context)) {
+            Toast.makeText(context, R.string.firebaseStorageMgr_install_userlibrary_defaultdata, Toast.LENGTH_SHORT).show();
+
             //By default only following data (so users have to download desired firebase libs)
             //FirebaseStorageMgr.downloadNewPackage(context, "quotes_en." + IConstants_FirebaseStorageMgr.LIB_FILEEXTENSION);
-            FirebaseStorageMgr.downloadNewPackage(context, "quotes_de." + IConstants_FirebaseStorageMgr.LIB_FILEEXTENSION);
+
+            FirebaseStorageMgr.downloadNewPackage(context, IConstants_FirebaseStorageMgr.LIB_JSON_VERSION_FOLDER + "quotes/quotes_de." + IConstants_FirebaseStorageMgr.LIB_FILEEXTENSION);
             //TODO (BUG): We cannot download here multiple packages at the same time (maybe because of the thread in saveNewPackage() --> but necessary [networkonmainthreadexception])
             //TODO (BUG-Explanation): Both packages are successfully saved, but the second one does not contain any libraryLines :(
 
