@@ -1,6 +1,8 @@
 package kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -24,6 +26,7 @@ import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.annotations.Test;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.UserLibrary;
+import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_FirebaseStorageMgr;
 import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
 
@@ -45,7 +48,7 @@ public class FirebaseStorageMgr {
 
     /** IMPORTANT: This method should be uptodate, with the current used json version code!
      * Json-Versioncode (/v1/ or /v2/ as folder on Firebase, which can have completely different structures). */
-    @Test (developer = IConstants_Global.DEVELOPERS.WSDT,
+    @Test (byDeveloper = IConstants_Global.DEVELOPERS.WSDT,
             message = "first test", priority = Test.Priority.MEDIUM)
     private static JSONObject mapUserLibraryObjToJson(@NonNull UserLibrary userLibrary) {
         Log.d(TAG, "mapUserLibraryObjToJson: Is current version of json correct?");
@@ -64,7 +67,7 @@ public class FirebaseStorageMgr {
      */
     @Test(message = "Verify that this works again (after changing paths)",
             priority = Test.Priority.HIGH,
-            developer = IConstants_Global.DEVELOPERS.WSDT)
+            byDeveloper = IConstants_Global.DEVELOPERS.WSDT)
     public static void downloadDefaultData(@NonNull Context context) {
         GlobalAppSettingsMgr globalAppSettingsMgr = new GlobalAppSettingsMgr(context);
         if (!globalAppSettingsMgr.isFirebaseDefaultDataAlreadyDownloaded() && HelperClass.isNetworkAvailable(context)) {
@@ -83,7 +86,7 @@ public class FirebaseStorageMgr {
     }
 
     public static void downloadNewPackage(@NonNull final Context context, @NonNull String relChildPath) {
-        StorageReference childFileReference = getStorageReference(context).child(relChildPath);
+        final StorageReference childFileReference = getStorageReference(context).child(relChildPath);
 
         childFileReference.getStream().addOnSuccessListener(new OnSuccessListener<StreamDownloadTask.TaskSnapshot>() {
             @Override
@@ -94,7 +97,19 @@ public class FirebaseStorageMgr {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Log.e(TAG, "downloadNewPackage:onFailure: Could not download new package->\n* " + e.getLocalizedMessage() + "\n* " + e.getMessage() + "\n* " + e.getCause() + "\n *" + e.getStackTrace().toString());
+                Log.e(TAG, "downloadNewPackage:onFailure: Could not download new package->\n* " + e.getLocalizedMessage() + "\n* " + e.getMessage() + "\n* " + e.getCause() + "\n *");
+                e.printStackTrace();
+
+                //Show error dialog, if context is not an activity we will only show a toast as error msg.
+                Resources res = context.getResources();
+                String failureMsgDescription = String.format(res.getString(R.string.firebaseStorageMgr_install_userlibrary_failuremsg_description),childFileReference.getName());
+                if (context instanceof Activity) {
+                    (new DialogMgr((Activity) context)).showDialog_Generic(res.getString(R.string.firebaseStorageMgr_install_userlibrary_failuremsg_title),
+                            failureMsgDescription,null,"",-1,null);
+                } else {
+                    Log.w(TAG, "downloadNewPackage:onFailure: Could not show failure dialog, because context is not an activity. Showing toast instead.");
+                    Toast.makeText(context, failureMsgDescription, Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

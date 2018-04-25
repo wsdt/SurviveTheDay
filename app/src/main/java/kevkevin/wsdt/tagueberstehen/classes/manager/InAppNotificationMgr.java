@@ -17,7 +17,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import kevkevin.wsdt.tagueberstehen.R;
+import kevkevin.wsdt.tagueberstehen.annotations.Bug;
+import kevkevin.wsdt.tagueberstehen.annotations.Enhance;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
+import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
 
 import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppNotificationMgr.*;
 
@@ -53,6 +56,14 @@ public class InAppNotificationMgr {
      * MUST NOT BE STATIC: To prevent other activities from influencing their inappnotification show behaviour (because animation is running on paused activity)
      * FOR THAT CASE HelperClass must be a member of the calling class!!
      */
+    @Enhance (message = "Efficiency, code illegible")
+    @Bug (problem = "InAppNotification-Animation starts a some px below the top screen border, so the animation (notification coming from the top" +
+            "going to the bottom), does not look smooth because of the jump. Just try clicking on a question mark symbol.",
+    possibleSolution = "Problem comes presumably from a wrong set hiddenPosition (see var below). Maybe viewHeight is not reMeasured when setting" +
+            "a new text into it. So the height and the hiddenPosition is wrong. So the possible solution would be finding a better solution of " +
+            "following line to hide the inAppNotification completely: " +
+            "########### final int hiddenPosition = ((notificationContent.getHeight()) * (-1));",
+    priority = Bug.Priority.MEDIUM, byDeveloper = IConstants_Global.DEVELOPERS.WSDT)
     public <VG extends ViewGroup> void showInAppNotification(@NonNull final Activity activity, @NonNull final String title, @NonNull final String text, final int drawableIcon, @NonNull VG rootLayout, boolean preventMultipleSimultaneousNotifications) {
         if (isNotificationShowing && preventMultipleSimultaneousNotifications) {
             //if already other inappnotifications are shown on the same activity then prevent this method call to create another one
@@ -82,6 +93,7 @@ public class InAppNotificationMgr {
                     Log.d(TAG, "showInappNotification: Tried to assign values to view. ");
 
                     //Set negative Y but assign values BEFORE (because height might change because of wrap content)
+                    //TODO: Hidden position is not correct, because size might be measured after text is added (so notification starts in the middle of the animation)
                     final int hiddenPosition = ((notificationContent.getHeight()) * (-1));
                     notificationContent.setY(hiddenPosition); //assign height*-1 so notification will get exactly behind display
                     Log.d(TAG, "showInappNotification: Tried to positionate inapp-notification outside screen: " + hiddenPosition);

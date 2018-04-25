@@ -6,7 +6,11 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.TextView;
 
-//Thanks to http://www.truiton.com/2013/03/android-pick-date-time-from-edittext-onclick-event/
+import kevkevin.wsdt.tagueberstehen.annotations.Enhance;
+
+@Enhance(message = "Code illegible, add feature to select repeat (date/time) [maybe use library from " +
+        "gradle], Efficiency etc. (This enhancement is supposed for all correlating classes (fragments))",
+    priority = Enhance.Priority.MEDIUM)
 public class DateTimePicker {
     private FragmentManager fragmentManager;
     private DatePickerFragment mainDatePicker;

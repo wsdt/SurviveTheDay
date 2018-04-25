@@ -302,6 +302,7 @@ public class CountdownActivity extends AppCompatActivity {
     }
 
 
+    //TODO: use for getSimpleShareIntent({nonNullIntent}) to avoid object allocation in loop (so we have to keep the current share intent and just change the extras)
     private void refreshShareIntent() { //call when to refresh! (because of totalSeconds e.g.)
         /*Set implicit intent with extras and actions so other apps know what to share!
         Extra method, so we can setShareIntent dynamically not only on activity creation [countdown values share etc.]*/
