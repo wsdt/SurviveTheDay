@@ -41,8 +41,6 @@ public class FirebaseStorageMgr {
     private static FirebaseStorage firebaseStorage;
     private static StorageReference storageReference;
 
-    //TODO: create method for downloading (later if it works well implement uploading (after testing downloading) --> so just upload both language packs)
-
 
     /* #########################################################################################################
      * TODO: ########## UPLOAD PROCEDURES ###########################################################################
@@ -67,9 +65,6 @@ public class FirebaseStorageMgr {
      * Download default userLibs (e.g.), but do this only once at the first time the app is called (versionized)
      * Could be also called, if lastEditOn is not the same as the downloadedLibs. (do not use a separate version in Json!)
      */
-    @Test(message = "Verify that this works again (after changing paths)",
-            priority = Test.Priority.HIGH,
-            byDeveloper = IConstants_Global.DEVELOPERS.WSDT)
     @Bug(problem = "We cannot download here multiple packages at the same time (maybe because of the thread " +
             "in saveNewPackage() --> but necessary [networkonmainthreadexception]). Both packages are successfully " +
             "saved, but the second one does not contain any libraryLines :(",
