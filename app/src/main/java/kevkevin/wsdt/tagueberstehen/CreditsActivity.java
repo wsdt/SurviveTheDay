@@ -16,8 +16,10 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import kevkevin.wsdt.tagueberstehen.annotations.Enhance;
 import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
 
+@Enhance (message = "XML looks terrible, create a nicer UI for this activity.")
 public class CreditsActivity extends AppCompatActivity {
 
     @Override

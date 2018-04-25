@@ -124,22 +124,16 @@ public class CountdownCounter {
         Log.d("craftBigCountdownString", "Total seconds: " + totalSeconds);
         Long years = totalSeconds / (365 * 24 * 60 * 60);
         totalSeconds -= (years > 0) ? (365 * 24 * 60 * 60) * years : 0; //only subtract if years occurs at least 1 time
-        Log.d("craftBigCountdownString", "Years: " + years + " // Left seconds: " + totalSeconds);
         Long months = totalSeconds / (30 * 24 * 60 * 60);
         totalSeconds -= (months > 0) ? (30 * 24 * 60 * 60) * months : 0;  // * with months e.g. because there might be more than one month to substract
-        Log.d("craftBigCountdownString", "Months: " + months + " // Left seconds: " + totalSeconds);
         Long weeks = totalSeconds / (7 * 24 * 60 * 60);
         totalSeconds -= (weeks > 0) ? (7 * 24 * 60 * 60) * weeks : 0;
-        Log.d("craftBigCountdownString", "Weeks: " + weeks + " // Left seconds: " + totalSeconds);
         Long days = totalSeconds / (24 * 60 * 60);
         totalSeconds -= (days > 0) ? (24 * 60 * 60) * days : 0;
-        Log.d("craftBigCountdownString", "Days: " + days + " // Left seconds: " + totalSeconds);
         Long hours = totalSeconds / (60 * 60);
         totalSeconds -= (hours > 0) ? (60 * 60) * hours : 0;
-        Log.d("craftBigCountdownString", "Hours: " + hours + " // Left seconds: " + totalSeconds);
         Long minutes = totalSeconds / 60;
         totalSeconds -= (minutes > 0) ? (60) * minutes : 0;
-        Log.d("craftBigCountdownString", "Minutes: " + minutes + " // Left seconds: " + totalSeconds);
         //Seconds has the rest!
 
         String separator = ":"; //must not be a char (=number) or generally a number, because we use +! (polymorphism)

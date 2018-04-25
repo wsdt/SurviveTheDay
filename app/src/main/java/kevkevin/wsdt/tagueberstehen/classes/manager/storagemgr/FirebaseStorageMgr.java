@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -23,6 +24,7 @@ import java.util.GregorianCalendar;
 import java.util.Scanner;
 
 import kevkevin.wsdt.tagueberstehen.R;
+import kevkevin.wsdt.tagueberstehen.annotations.Bug;
 import kevkevin.wsdt.tagueberstehen.annotations.Test;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.UserLibrary;
@@ -68,24 +70,35 @@ public class FirebaseStorageMgr {
     @Test(message = "Verify that this works again (after changing paths)",
             priority = Test.Priority.HIGH,
             byDeveloper = IConstants_Global.DEVELOPERS.WSDT)
+    @Bug(problem = "We cannot download here multiple packages at the same time (maybe because of the thread " +
+            "in saveNewPackage() --> but necessary [networkonmainthreadexception]). Both packages are successfully " +
+            "saved, but the second one does not contain any libraryLines :(",
+            priority = Bug.Priority.HIGH, byDeveloper = IConstants_Global.DEVELOPERS.WSDT)
     public static void downloadDefaultData(@NonNull Context context) {
-        GlobalAppSettingsMgr globalAppSettingsMgr = new GlobalAppSettingsMgr(context);
+        final GlobalAppSettingsMgr globalAppSettingsMgr = new GlobalAppSettingsMgr(context);
         if (!globalAppSettingsMgr.isFirebaseDefaultDataAlreadyDownloaded() && HelperClass.isNetworkAvailable(context)) {
             Toast.makeText(context, R.string.firebaseStorageMgr_install_userlibrary_defaultdata, Toast.LENGTH_SHORT).show();
 
             //By default only following data (so users have to download desired firebase libs)
             //FirebaseStorageMgr.downloadNewPackage(context, "quotes_en." + IConstants_FirebaseStorageMgr.LIB_FILEEXTENSION);
 
-            FirebaseStorageMgr.downloadNewPackage(context, IConstants_FirebaseStorageMgr.LIB_JSON_VERSION_FOLDER + "quotes/quotes_de." + IConstants_FirebaseStorageMgr.LIB_FILEEXTENSION);
-            //TODO (BUG): We cannot download here multiple packages at the same time (maybe because of the thread in saveNewPackage() --> but necessary [networkonmainthreadexception])
-            //TODO (BUG-Explanation): Both packages are successfully saved, but the second one does not contain any libraryLines :(
+            FirebaseStorageMgr.downloadNewPackage(context, IConstants_FirebaseStorageMgr.LIB_JSON_VERSION_FOLDER + "/en/quotes/quotes." + IConstants_FirebaseStorageMgr.LIB_FILEEXTENSION, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                @Override
+                public void success_is_true() {
+                    //do this only if it was really successful (so also real failure did not happen)
+                    globalAppSettingsMgr.setFirebaseDefaultDataAlreadyDownloaded(true); //is only set if internet was available and not already set
+                    Log.d(TAG, "downloadDefaultData: Downloaded default data.");
+                }
 
-            globalAppSettingsMgr.setFirebaseDefaultDataAlreadyDownloaded(true); //is only set if internet was available and not already set
-            Log.d(TAG, "downloadDefaultData: Downloaded default data.");
+                @Override
+                public void failure_is_false() {
+                    Log.e(TAG, "downloadDefaultData: Could not download default data!");
+                }
+            });
         }
     }
 
-    public static void downloadNewPackage(@NonNull final Context context, @NonNull String relChildPath) {
+    public static void downloadNewPackage(@NonNull final Context context, @NonNull String relChildPath, @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
         final StorageReference childFileReference = getStorageReference(context).child(relChildPath);
 
         childFileReference.getStream().addOnSuccessListener(new OnSuccessListener<StreamDownloadTask.TaskSnapshot>() {
@@ -93,16 +106,17 @@ public class FirebaseStorageMgr {
             public void onSuccess(StreamDownloadTask.TaskSnapshot taskSnapshot) {
                 Log.d(TAG, "downloadNewPackage:onSuccess: Got valid stream from firebase.");
                 saveNewPackage(context, taskSnapshot.getStream());
+                if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true();}
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Log.e(TAG, "downloadNewPackage:onFailure: Could not download new package->\n* " + e.getLocalizedMessage() + "\n* " + e.getMessage() + "\n* " + e.getCause() + "\n *");
+                Log.e(TAG, "downloadNewPackage:onFailure: Could not download new package->\n* " + e.getLocalizedMessage() + "\n* " + e.getMessage() + "\n* " + e.getCause() + "\n * Library: "+childFileReference.getPath());
                 e.printStackTrace();
 
                 //Show error dialog, if context is not an activity we will only show a toast as error msg.
                 Resources res = context.getResources();
-                String failureMsgDescription = String.format(res.getString(R.string.firebaseStorageMgr_install_userlibrary_failuremsg_description),childFileReference.getName());
+                String failureMsgDescription = String.format(res.getString(R.string.firebaseStorageMgr_install_userlibrary_failuremsg_description),childFileReference.getName())+" \n\nFehlerbeschreibung: \n'"+e.getLocalizedMessage()+"'";
                 if (context instanceof Activity) {
                     (new DialogMgr((Activity) context)).showDialog_Generic(res.getString(R.string.firebaseStorageMgr_install_userlibrary_failuremsg_title),
                             failureMsgDescription,null,"",-1,null);
@@ -110,6 +124,7 @@ public class FirebaseStorageMgr {
                     Log.w(TAG, "downloadNewPackage:onFailure: Could not show failure dialog, because context is not an activity. Showing toast instead.");
                     Toast.makeText(context, failureMsgDescription, Toast.LENGTH_SHORT).show();
                 }
+                if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();}
             }
         });
     }
@@ -120,7 +135,7 @@ public class FirebaseStorageMgr {
 
         try {
             userLibrary = new UserLibrary(
-                    userLibraryJSONObject.getInt("libId"),
+                    userLibraryJSONObject.getString("libId"),
                     userLibraryJSONObject.getString("libName"),
                     userLibraryJSONObject.getString("libLanguageCode"),
                     userLibraryJSONObject.getString("createdBy"),

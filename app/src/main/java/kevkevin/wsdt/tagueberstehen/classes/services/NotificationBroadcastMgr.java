@@ -20,8 +20,6 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_NotificationMgr.IDENTIFIER_COUNTDOWN_ID;
 
 public class NotificationBroadcastMgr extends BroadcastReceiver {
-    /*For short intervals the background service might be more performant (so this should be selectable)*/
-
     private static final String TAG = "AlarmBroadcastReceiver";
 
     @Override

@@ -167,9 +167,9 @@ public class DatabaseMgr {
     /**
      * Extracts library lines of one specific userLibrary.
      */
-    private List<String> getUserLibraryLines(@NonNull Context context, int userLibraryId) {
+    private List<String> getUserLibraryLines(@NonNull Context context, String userLibraryId) {
         Cursor cursorUserLibraryLines = getDb(context).rawQuery("SELECT * FROM " + TABLES.USERLIBRARY_LINE.TABLE_NAME + " WHERE " +
-                TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + "=" + userLibraryId + ";", null);
+                TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + "= '" + userLibraryId + "';", null);
 
         List<String> userLibraryLines = new ArrayList<>();
         while (cursorUserLibraryLines.moveToNext()) {
@@ -181,7 +181,7 @@ public class DatabaseMgr {
     }
 
     private UserLibrary getUserLibraryFromCursor(@NonNull Context context, @NonNull Cursor userLibraryCursor) {
-        int userLibraryId = userLibraryCursor.getInt(userLibraryCursor.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID));
+        String userLibraryId = userLibraryCursor.getString(userLibraryCursor.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID));
         return new UserLibrary(
                 userLibraryId,
                 userLibraryCursor.getString(userLibraryCursor.getColumnIndex(TABLES.USERLIBRARY.ATTRIBUTES.LIB_NAME)),

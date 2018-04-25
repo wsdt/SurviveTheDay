@@ -74,7 +74,7 @@ public interface IConstants_DatabaseMgr {
         String[] DATABASE_CREATE_SQL = new String[]{ //MUST be a string array for each statement! (because we cannot execute multiple statements at once!
                 "PRAGMA foreign_keys = ON;",
                 "CREATE TABLE IF NOT EXISTS " + TABLES.USERLIBRARY.TABLE_NAME + " (\n" +
-                        TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + " INTEGER PRIMARY KEY,\n" +
+                        TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + " TEXT PRIMARY KEY,\n" +
                         TABLES.USERLIBRARY.ATTRIBUTES.LIB_NAME + " TEXT,\n" +
                         TABLES.USERLIBRARY.ATTRIBUTES.LIB_LANGUAGE_CODE + " TEXT,\n" +
                         TABLES.USERLIBRARY.ATTRIBUTES.CREATED_BY + " TEXT,\n" +
@@ -108,7 +108,7 @@ public interface IConstants_DatabaseMgr {
                 "CREATE TABLE IF NOT EXISTS " + TABLES.USERLIBRARY_LINE.TABLE_NAME + " (\n" +
                         TABLES.USERLIBRARY_LINE.ATTRIBUTES.LINE_ID + " INTEGER PRIMARY KEY,\n" + //in sqllite this is automatically auto_increment! (don't use the keyword)
                         TABLES.USERLIBRARY_LINE.ATTRIBUTES.LINE_TEXT + " TEXT NOT NULL,\n" +
-                        TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + " INTEGER,\n" +
+                        TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + " TEXT,\n" +
                         "FOREIGN KEY (" + TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + ") REFERENCES " + TABLES.USERLIBRARY.TABLE_NAME + "(" + TABLES.USERLIBRARY.ATTRIBUTES.LIB_ID + ")\n" +
                         "ON UPDATE CASCADE\n" +
                         "ON DELETE CASCADE\n" +
