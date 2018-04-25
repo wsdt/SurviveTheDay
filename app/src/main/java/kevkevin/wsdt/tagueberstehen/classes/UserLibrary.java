@@ -16,7 +16,7 @@ import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 public class UserLibrary {
     private static final String TAG = "UserLibrary";
 
-    private int libId;
+    private String libId; //hashwert etc.
     private String libName;
     private String libLanguageCode;
     private String createdBy;
@@ -28,7 +28,7 @@ public class UserLibrary {
 
 
     //For mapping from FirebaseStorMgr to Obj
-    public UserLibrary(int libId, String libName, String libLanguageCode, String createdBy, String createdOn, String lastEditOn, JSONArray lines) {
+    public UserLibrary(String libId, String libName, String libLanguageCode, String createdBy, String createdOn, String lastEditOn, JSONArray lines) {
         this.setLibId(libId);
         this.setLibName(libName);
         this.setLibLanguageCode(libLanguageCode);
@@ -38,7 +38,7 @@ public class UserLibrary {
         this.setLines(HelperClass.convertJsonArrayToList(lines));
     }
 
-    public UserLibrary(int libId, String libName, String libLanguageCode, String createdBy, String createdOn, String lastEditOn, List<String> lines) {
+    public UserLibrary(String libId, String libName, String libLanguageCode, String createdBy, String createdOn, String lastEditOn, List<String> lines) {
         this.setLibId(libId);
         this.setLibName(libName);
         this.setLibLanguageCode(libLanguageCode);
@@ -98,11 +98,11 @@ public class UserLibrary {
         this.lines = lines;
     }
 
-    public int getLibId() {
+    public String getLibId() {
         return libId;
     }
 
-    public void setLibId(int libId) {
+    public void setLibId(String libId) {
         this.libId = libId;
     }
 }

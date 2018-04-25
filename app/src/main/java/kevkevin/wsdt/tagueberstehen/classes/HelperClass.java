@@ -132,5 +132,4 @@ public class HelperClass {
         void success_is_true();
         void failure_is_false();
     }
-
 }
