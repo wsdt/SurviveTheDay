@@ -13,15 +13,33 @@ import android.util.SparseArray;
 import java.util.ArrayList;
 
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
+import kevkevin.wsdt.tagueberstehen.annotations.Bug;
+import kevkevin.wsdt.tagueberstehen.annotations.Enhance;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.manager.NotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
 import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppPurchaseMgr.*;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
+import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
 
 import static kevkevin.wsdt.tagueberstehen.classes.services.interfaces.IConstants_LiveCountdown_ForegroundService.NOTIFICATION_ID;
 
+@Enhance (message = "Because of the separate process of this service (which is needed to keep the service running regardless whether the app is" +
+        "closed or not), we have another memory range and have no access to current objects. So we have to get all countdowns from the sql table" +
+        "directly regardless whether the objects are already extracted in our mainprocess or not. When a user deletes/modifies/creates a countdown" +
+        "and this service is still running (and as mentioned we have no access to current objects from the other process) we need to constantly get" +
+        "all countdowns from our sql tables which is very inefficient (which is done every second!!). For sure the whole service here needs to be more" +
+        "legible and more efficient, but the described issue might be the most relevant here.", priority = Enhance.Priority.MEDIUM)
+@Bug (problem = "When multiple (>1) countdowns have enabled the liveCountdown feature (this service) then both live countdowns show" +
+        "up as expected. But because the specific shown notifications get edited by this service every second the last edited notification" +
+        "jumps to the top of the navigationListing of every android smartphone. So if we just have one liveCountdown running at the same" +
+        "time this issue might not come around, but if we have two liveCountdowns they constantly jump to the top and change their positions" +
+        "which might be really annoying to users!",
+        possibleSolution = "Not a good solution but maybe a working one might be deleting both notifications instead of editing them, and then" +
+                "just recreating them in the same order, so the user might not recognize any issues. As the notifications are rebuild regardless" +
+                "of this solution this might be eventually a not too inefficient solution. ", byDeveloper = IConstants_Global.DEVELOPERS.WSDT,
+        priority = Bug.Priority.HIGH)
 public class LiveCountdown_ForegroundService extends Service {
     /**
      * GENERATES FOR ALL SAVED COUNTDOWN WITH ACTIVATED FOREGROUND SERVICE an own notification "foreground service"

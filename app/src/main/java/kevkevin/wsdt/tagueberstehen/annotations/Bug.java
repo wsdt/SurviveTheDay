@@ -7,20 +7,22 @@ import java.lang.annotation.Target;
 
 import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
 
-/** This annotation should be used to indicate that the method, variable, class etc. should
- * be tested carefully. */
+/** This annotation should be used to indicate that the method, class or other members should be
+ * reviewed, because they contain a bug.*/
 
 @Target({ElementType.METHOD,ElementType.CONSTRUCTOR,
         ElementType.FIELD,ElementType.PARAMETER,
-        ElementType.LOCAL_VARIABLE,ElementType.TYPE})
+        ElementType.LOCAL_VARIABLE,ElementType.TYPE,ElementType.ANNOTATION_TYPE,ElementType.PACKAGE})
 @Retention(RetentionPolicy.CLASS)
-public @interface Test {
+public @interface Bug {
     enum Priority {
         NOT_DETERMINED, LOW, MEDIUM, HIGH
     }
 
-    //Default params (as array to allow multiple)
+    //Default params (as Arrays to allow multiple bugs)
     Priority[] priority() default Priority.NOT_DETERMINED;
-    String[] message() default "No message provided";
+    String[] problem() default "Problem/Bug not defined.";
+    String[] possibleSolution() default "No solution recommendation set.";
+    String[] message() default "No message provided"; //for setting additional information
     String[] byDeveloper() default "No developer specified.";
 }

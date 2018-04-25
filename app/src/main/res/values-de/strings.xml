@@ -314,5 +314,7 @@
 
     <!-- FirebaseStorageMgr -->
     <string name="firebaseStorageMgr_install_userlibrary_defaultdata">Installiere Standarddaten. Dein Smartphone benötigt dafür eine aktive Netzwerkverbindung.</string>
+    <string name="firebaseStorageMgr_install_userlibrary_failuremsg_title">Downloadfehler</string>
+    <string name="firebaseStorageMgr_install_userlibrary_failuremsg_description">Neue Bibliothek (%1$s) konnte nicht heruntergeladen werden.</string>
 
 </resources>

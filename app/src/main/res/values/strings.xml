@@ -321,5 +321,7 @@
 
     <!-- FirebaseStorageMgr -->
     <string name="firebaseStorageMgr_install_userlibrary_defaultdata">Installing default data. Please keep your phone connected to the internet.</string>
+    <string name="firebaseStorageMgr_install_userlibrary_failuremsg_title">Download failed</string>
+    <string name="firebaseStorageMgr_install_userlibrary_failuremsg_description">New userlibrary (%1$s) could not be downloaded.</string>
 
 </resources>
