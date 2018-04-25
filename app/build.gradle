@@ -1,21 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
-        SurviveTheDayKey {
-            keyAlias 'SurviveTheDayKey'
-            keyPassword 'Ad12VK1A'
-            storeFile file('C:/Users/kevin/Desktop/Android_PUBLICPRIVATE_KEYS/survivetheday.jks')
-            storePassword '459145914591'
-        }
-    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "kevkevin.wsdt.tagueberstehen"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 26
-        versionName "2.0.0" //{major}.{minor}.{bugfixes} auch mehrstellig
+        versionCode 27
+        versionName "2.0.1" //{major}.{minor}.{bugfixes} auch mehrstellig
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -28,7 +20,7 @@ android {
             /*productFlavors.free.signingConfig signingConfigs.freeRelease
             productFlavors.paid.signingConfig signingConfigs.paidRelease*/
 
-            signingConfig signingConfigs.SurviveTheDayKey
+
         }
     }
     lintOptions {
