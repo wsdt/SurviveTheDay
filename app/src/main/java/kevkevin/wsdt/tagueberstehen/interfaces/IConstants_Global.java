@@ -13,10 +13,6 @@ public interface IConstants_Global {
 
     interface DEVELOPERS {
         String WSDT = "WSDT (Kevin Riedl)";
-    }
-
-    //TODO: Instead of language pack lib packs etc.!! (one installed by default)
-    interface LANGUAGE_PACK {
-        //String DEFAULT_LANGUAGE_PACK = STORAGE_MANAGERS.DATABASE_STR_MGR.TABLES.QUOTELANGUAGEPACKAGES.LANGUAGE_PACKS[0];
+        String SOLUTION = "SOLUTION (Christof Jori)";
     }
 }
