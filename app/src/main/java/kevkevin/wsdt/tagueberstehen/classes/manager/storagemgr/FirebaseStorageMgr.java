@@ -48,8 +48,6 @@ public class FirebaseStorageMgr {
 
     /** IMPORTANT: This method should be uptodate, with the current used json version code!
      * Json-Versioncode (/v1/ or /v2/ as folder on Firebase, which can have completely different structures). */
-    @Test (byDeveloper = IConstants_Global.DEVELOPERS.WSDT,
-            message = "first test", priority = Test.Priority.MEDIUM)
     private static JSONObject mapUserLibraryObjToJson(@NonNull UserLibrary userLibrary) {
         Log.d(TAG, "mapUserLibraryObjToJson: Is current version of json correct?");
         //TODO:
@@ -60,6 +58,19 @@ public class FirebaseStorageMgr {
     /* #########################################################################################################
     * ########## DOWNLOAD PROCEDURES ###########################################################################
     * ##########################################################################################################*/
+    /** For listing multiple packages without downloading huge files, we need to craft some index-files.
+     * I decided to make for each language one specific index file, so they also don't get too big. So
+     * users can the language filtering causes also a performance improvement bc. less index-files need
+     * to be downloaded.
+     *
+     * @param languageCode: e.g. "en", "de" or similar [needs to be equal to the folder-name on Firebase!
+     * */
+    private static void downloadIndexFile(@NonNull String languageCode) {
+        //TODO: maybe reuse downloadNewPackage()
+        //TODO: Before making the upload or index methods, please solve bug of downloadDefaultData()!
+    }
+
+
 
     /**
      * Download default userLibs (e.g.), but do this only once at the first time the app is called (versionized)
