@@ -28,6 +28,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
+import kevkevin.wsdt.tagueberstehen.annotations.Bug;
+import kevkevin.wsdt.tagueberstehen.annotations.Test;
 import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
 import kevkevin.wsdt.tagueberstehen.R;
 
@@ -138,6 +140,8 @@ public class Countdown {
     }
 
 
+    @Test (message = "Not sure if method returns it correctly. When receiving different booleans.")
+    @Bug (message = "possible bug here. IF YES: Then I did it on all places wrong, so just rename boolean and method :P")
     /** Method calculates Remaining or passedPercentage (this method does not format percentage --> use helper method */
     public double getRemainingPercentage(boolean getRemainingOtherwisePassedPercentage) { //min is 1, if 0 then it will be still min 1 nachkommastelle (but always 0!) because of double format itself
         try {
@@ -201,7 +205,6 @@ public class Countdown {
                 }
             } else {
                 //untildateinpast (expired
-                Toast.makeText(this.getContext(), String.format(res.getString(R.string.countdown_info_untilDateInPast), this.getUntilDateTime()), Toast.LENGTH_SHORT).show();
                 totalSeconds = 0D; //prevent from counting to infinity (because negative)
                 Log.d(TAG, "getTotalSeconds: Countdown has expired.");
             }

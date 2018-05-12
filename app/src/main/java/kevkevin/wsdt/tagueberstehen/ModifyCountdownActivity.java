@@ -34,7 +34,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Map;
 
 import kevkevin.wsdt.tagueberstehen.classes.ColorPicker;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
@@ -46,13 +45,13 @@ import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppNotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
-import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppPurchaseMgr.*;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.FirebaseStorageMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
 
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppPurchaseMgr.INAPP_PRODUCTS;
 import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_NotificationMgr.IDENTIFIER_COUNTDOWN_ID;
-import static kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_DatabaseMgr.*;
 
 public class ModifyCountdownActivity extends AppCompatActivity {
     private Countdown newEditedCountdown;
@@ -100,7 +99,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
         if (this.existingCountdownId >= 0) {
             Log.d(TAG, "onCreate: Being in EditMode, because countdown already exists.");
-            setFormValues(DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this,false).get(this.existingCountdownId));
+            setFormValues(DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this, false).get(this.existingCountdownId));
         }
 
         onMotivateMeToggleClick(findViewById(R.id.isActive)); //simulate click so it is always at its correct state (enabled/disabled)
@@ -332,9 +331,9 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             return false;
         }
 
-        if (this.userLibraryCheckboxes.size() <= 0) {
+        if (this.getNewEditedCountdown().getUserSelectedUserLibraries().size() <= 0) {
             //Toast is done somewhere else so just block user from saving
-            Log.w(TAG, "areFormValuesValid: User has no userLibraries installed.");
+            Log.w(TAG, "areFormValuesValid: User has no userLibraries selected and installed.");
             return false;
         }
 
@@ -358,7 +357,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             for (int i = 0; i < languagePackList.getChildCount(); i++) {
                 if (languagePackList.getChildAt(i).getTag() != null) {
                     CheckBox tmpCheckbox = ((CheckBox) languagePackList.getChildAt(i));
-                    if (languagePackList.getChildAt(i).getTag().toString().equals(languagePack.getLibId()+"")) {
+                    if (languagePackList.getChildAt(i).getTag().toString().equals(languagePack.getLibId() + "")) {
                         tmpCheckbox.setChecked(true);
                     }
                 }
@@ -437,36 +436,42 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         for (CheckBox userLibraryCheckbox : this.userLibraryCheckboxes) {
             if (userLibraryCheckbox.isChecked()) {
                 String libId = userLibraryCheckbox.getTag().toString();
-                selectedUserLibraries.put(libId, DatabaseMgr.getSingletonInstance(this).getAllUserLibraries(this,false).get(libId));
+                selectedUserLibraries.put(libId, DatabaseMgr.getSingletonInstance(this).getAllUserLibraries(this, false).get(libId));
             }
         }
 
         if (selectedUserLibraries.size() <= 0) {
             Log.d(TAG, "loadSelectedUserLibrariesFromCheckboxes: User did not select any user libs. Selecting default one.");
-            try {
+
+            //Now check whether userLibs are installed if not install local default one and select it.
+            if (this.userLibraryCheckboxes.size() > 0) {
                 String libId = this.userLibraryCheckboxes.get(0).getTag().toString(); //assumes that at least one userlib is installed!
-                selectedUserLibraries.put(libId, DatabaseMgr.getSingletonInstance(this).getAllUserLibraries(this,false).get(libId));
-            } catch (IndexOutOfBoundsException e) {
-                Toast.makeText(this, R.string.modifyCountdownActivity_countdown_userLibrary_noInstalled,Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "loadSelectedUserLibrariesFromCheckboxes: No user libs installed.");
-                e.printStackTrace();
+                selectedUserLibraries.put(libId, DatabaseMgr.getSingletonInstance(this).getAllUserLibraries(this, false).get(libId));
+            } else {
+                Toast.makeText(this, R.string.modifyCountdownActivity_countdown_userLibrary_noInstalled, Toast.LENGTH_SHORT).show();
+                UserLibrary defaultUserLib = FirebaseStorageMgr.saveDefaultUserLibrary(this); //install local user lib
+                selectedUserLibraries.put(defaultUserLib.getLibId(),defaultUserLib);
+
+                //also add to ram saved map for better user experience
+                DatabaseMgr.getSingletonInstance(this).getAllUserLibraries(this, false).put(defaultUserLib.getLibId(),defaultUserLib);
+
+                Log.d(TAG, "loadSelectedUserLibrariesFromCheckboxes: Used default user lib.");
             }
         }
-
         return selectedUserLibraries;
     }
 
     private ArrayList<CheckBox> userLibraryCheckboxes = new ArrayList<>();
 
     private void loadLanguagePacksCheckboxes(@NonNull GridLayout superiorLayoutView) {
-        for (UserLibrary languagepack : DatabaseMgr.getSingletonInstance(this).getAllUserLibraries(this,false).values()) { //pre imkrement!
+        for (UserLibrary languagepack : DatabaseMgr.getSingletonInstance(this).getAllUserLibraries(this, false).values()) { //pre imkrement!
             //Print Checkboxes etc.
             CheckBox languagePackCheckbox = new CheckBox(this);
             languagePackCheckbox.setTag(languagepack.getLibId()); //en, de etc.
             this.userLibraryCheckboxes.add(languagePackCheckbox);
             superiorLayoutView.addView(languagePackCheckbox); //before text of checkbox
             TextView languagePackLbl = new TextView(this);
-            languagePackLbl.setText(String.format(getString(R.string.modifyCountdownActivity_countdown_userLibrary_lblCheckbox),languagepack.getLibName(),languagepack.getLines().size()));
+            languagePackLbl.setText(String.format(getString(R.string.modifyCountdownActivity_countdown_userLibrary_lblCheckbox), languagepack.getLibName(), languagepack.getLines().size()));
             superiorLayoutView.addView(languagePackLbl);
         }
         Log.d(TAG, "loadLanguagePacksCheckboxes: Tried to load all language packs.");

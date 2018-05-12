@@ -89,9 +89,6 @@ public class DatabaseMgr {
         dbHelper = new DatabaseHelper(context);
         setDb(dbHelper.getWritableDatabase()); //TODO: long running, should be maybe also in background thread
         Log.d(TAG, "Constructor: Created new DatabaseMgr instance.");
-
-        //Download default userlibs (e.g.) if not downloaded already
-        FirebaseStorageMgr.downloadDefaultData(context);
     }
 
     @Override
