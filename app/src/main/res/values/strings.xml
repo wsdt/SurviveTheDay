@@ -165,7 +165,7 @@
     <string name="modifyCountdownActivity_countdown_showLiveCountdown_label">Live countdown</string>
     <string name="modifyCountdownActivity_countdown_validation_UntilAfterStartDateTime">UntilDateTime needs to be AFTER StartDateTime!</string>
     <string name="modifyCountdownActivity_countdown_validation_DateTimeNotValid">DateTime is not valid! This might be an internal error.</string>
-    <string name="modifyCountdownActivity_countdown_userLibrary_noInstalled">It seems that you haven\'t installed any user libraries. Try to restart this app when you have an active internet connection.</string>
+    <string name="modifyCountdownActivity_countdown_userLibrary_noInstalled">It seems that you haven\'t installed any user libraries. I am installing now my default user library and select it.</string>
     <string name="modifyCountdownActivity_countdown_userLibrary_lblCheckbox">%1$s (%2$d)</string><!-- LibName (Libsize) -->
 
     <!-- CreditsActivity -->
@@ -265,7 +265,7 @@
 
     <!-- Countdown -->
     <string name="countdown_info_startDateInFuture">Countdown starts at: %1$s</string>
-    <string name="countdown_info_untilDateInPast">Countdown has already expired on: %1$s</string>
+    <string name="countdown_info_untilDateInPast">Countdown has expired on: %1$s</string>
 
     <!-- DateTimePicker -->
     <string name="dateTimePicker_dialog_title">Set date and time</string>

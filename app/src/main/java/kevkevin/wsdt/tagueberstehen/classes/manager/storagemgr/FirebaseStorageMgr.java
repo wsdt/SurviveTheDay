@@ -25,6 +25,7 @@ import java.util.Scanner;
 
 import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.annotations.Bug;
+import kevkevin.wsdt.tagueberstehen.annotations.Enhance;
 import kevkevin.wsdt.tagueberstehen.annotations.Test;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.UserLibrary;
@@ -80,7 +81,10 @@ public class FirebaseStorageMgr {
             "in saveNewPackage() --> but necessary [networkonmainthreadexception]). Both packages are successfully " +
             "saved, but the second one does not contain any libraryLines :(",
             priority = Bug.Priority.HIGH, byDeveloper = IConstants_Global.DEVELOPERS.WSDT)
-    public static void downloadDefaultData(@NonNull Context context) {
+    @Enhance (message = "To prevent unneccessary errors bc. NO userlibrary is installed (bad usability), just keep" +
+            "a local copy of one default library, so the app can work and then SAVE IT AS JSON HERE INTO Db INSTEAD OF " +
+            "DOWNLOADING.")
+    /*public static void downloadDefaultData(@NonNull Context context) {
         final GlobalAppSettingsMgr globalAppSettingsMgr = new GlobalAppSettingsMgr(context);
         if (!globalAppSettingsMgr.isFirebaseDefaultDataAlreadyDownloaded() && HelperClass.isNetworkAvailable(context)) {
             Toast.makeText(context, R.string.firebaseStorageMgr_install_userlibrary_defaultdata, Toast.LENGTH_SHORT).show();
@@ -102,6 +106,21 @@ public class FirebaseStorageMgr {
                 }
             });
         }
+    }*/
+    public static UserLibrary saveDefaultUserLibrary(@NonNull Context context) {
+        //This method has no validation whether default user lib was already downloaded!
+        UserLibrary userLibrary = null;
+        try {
+            userLibrary = FirebaseStorageMgr.mapJsonToUserLibraryObj(new JSONObject(IConstants_FirebaseStorageMgr.DEFAULT.LIB_JSON_DEFAULT));
+            DatabaseMgr.getSingletonInstance(context).saveUserLibrary(context,userLibrary);
+            Log.d(TAG, "saveDefaultUserLibrary: Tried to save default user lib.");
+        } catch (JSONException e) {
+            //THIS SHOULD NEVER HAPPEN
+            //TODO: Maybe inform user
+            Log.e(TAG, "saveDefaultUserLibrary: Could not save default user library.");
+            e.printStackTrace();
+        }
+        return userLibrary;
     }
 
     public static void downloadNewPackage(@NonNull final Context context, @NonNull String relChildPath, @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {

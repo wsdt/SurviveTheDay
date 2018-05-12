@@ -161,7 +161,7 @@
     <string name="modifyCountdownActivity_countdown_showLiveCountdown_label">Echtzeit-Countdown</string>
     <string name="modifyCountdownActivity_countdown_validation_UntilAfterStartDateTime">Das Bis-Datum muss NACH dem Von-Datum sein!</string>
     <string name="modifyCountdownActivity_countdown_validation_DateTimeNotValid">Zeitwert nicht gültig! Dies könnte ein interner Fehler sein.</string>
-    <string name="modifyCountdownActivity_countdown_userLibrary_noInstalled">Es scheint so, als hättest du keine Userpakete installiert. Verbinde dein Smartphone bitte mit dem Internet und starte diese App neu.</string>
+    <string name="modifyCountdownActivity_countdown_userLibrary_noInstalled">Es scheint so, als hättest du keine Userpakete installiert. Ich installiere nun meine lokale Beispielbibliothek.</string>
 
     <!-- CreditsActivity -->
     <string name="creditsActivity_floatingButton_contactAppOwnerMailIntent_mail_subject">SurviveTheDay: Rezension</string>
@@ -258,7 +258,7 @@
 
     <!-- Countdown -->
     <string name="countdown_info_startDateInFuture">Countdown startet um: %1$s</string>
-    <string name="countdown_info_untilDateInPast">Countdown bereits abgelaufen: %1$s</string>
+    <string name="countdown_info_untilDateInPast">Countdown abgelaufen: %1$s</string>
 
     <!-- DateTimePicker -->
     <string name="dateTimePicker_dialog_title">Zeitpunkt wählen</string>
