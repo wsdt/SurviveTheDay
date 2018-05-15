@@ -1,12 +1,11 @@
 package kevkevin.wsdt.tagueberstehen.classes.manager;
 
-import android.app.Activity;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.ViewGroup;
 
-import kevkevin.wsdt.tagueberstehen.classes.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.entities.Countdown;
 import nl.dionsegijn.konfetti.models.Size;
 import nl.dionsegijn.konfetti.KonfettiView;
 import nl.dionsegijn.konfetti.models.Shape;
@@ -24,7 +23,7 @@ public class GamificationMgr {
         viewGroup.addView(konfettiView);
 
         /** Calculate corresponding colors (to use category color, but multiple variations of it)*/
-        int hexCategoryColor = Color.parseColor(countdown.getCategory());
+        int hexCategoryColor = Color.parseColor(countdown.getCouCategoryColor());
 
         konfettiView.build()
                 .addColors(hexCategoryColor,hexCategoryColor+0xFFFFFFFF,hexCategoryColor-0xFFAAAAAA,hexCategoryColor-0xAA222222) //KonfettiColors are dependent from CategoryColor :)

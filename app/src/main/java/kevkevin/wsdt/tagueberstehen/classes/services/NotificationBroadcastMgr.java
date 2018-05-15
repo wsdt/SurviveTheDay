@@ -12,7 +12,7 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
-import kevkevin.wsdt.tagueberstehen.classes.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.entities.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.manager.NotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 
@@ -39,11 +39,11 @@ public class NotificationBroadcastMgr extends BroadcastReceiver {
 
         if (currCountdown != null) {
             //If countdown found, then show random generated notification of loaded countdown (this function gets only called on its interval)
-            if (currCountdown.isActive() && currCountdown.isUntilDateInTheFuture() && currCountdown.isStartDateInThePast()) {
+            if (currCountdown.isCouIsMotivationOn() && currCountdown.isUntilDateInTheFuture() && currCountdown.isStartDateInThePast()) {
                 NotificationMgr notificationMgrManager = new NotificationMgr(context, CountdownActivity.class, (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE));
 
                 notificationMgrManager.issueNotification(notificationMgrManager.createRandomNotification(currCountdown));
-                Log.d(TAG, "onReceive: Have shown countdown notification for ID: " + currCountdown.getCountdownId());
+                Log.d(TAG, "onReceive: Have shown countdown notification for ID: " + currCountdown.getCouId());
             } else {
                 Log.d(TAG, "onReceive: Countdown is not active, startDateTime is in the future or UntilDateTime is in the past. Deleted it from broadcast receiver (not deleted in SharedPreferences.");
                 deleteAlarmService(context, alarmId);
@@ -73,10 +73,10 @@ public class NotificationBroadcastMgr extends BroadcastReceiver {
         SparseArray<Countdown> allCountdowns = DatabaseMgr.getSingletonInstance(context).getAllCountdowns(context,false,true,false);
         for (int i=0;i<allCountdowns.size();i++) {
             try {
-                deleteAlarmService(context,allCountdowns.valueAt(i).getCountdownId());
-                Log.d(TAG, "deleteAllAlarmServices: Deleted broadcast for countdown: "+allCountdowns.valueAt(i).getCountdownId());
+                deleteAlarmService(context,(int) allCountdowns.valueAt(i).getCouId());
+                Log.d(TAG, "deleteAllAlarmServices: Deleted broadcast for countdown: "+allCountdowns.valueAt(i).getCouId());
             } catch (NullPointerException e) {
-                Log.e(TAG, "deleteAllAlarmServices: Could not delete alarmservice of countdown: "+allCountdowns.valueAt(i).getCountdownId());
+                Log.e(TAG, "deleteAllAlarmServices: Could not delete alarmservice of countdown: "+allCountdowns.valueAt(i).getCouId());
                 e.printStackTrace();
             }
         }

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.annotations.Bug;
 import kevkevin.wsdt.tagueberstehen.annotations.Enhance;
-import kevkevin.wsdt.tagueberstehen.classes.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.entities.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.manager.NotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
@@ -109,7 +109,7 @@ public class LiveCountdown_ForegroundService extends Service {
             //IMPORTANT: 999999950 - 999999999 reserved for FOREGROUNDCOUNTERSERVICE [999999950+countdownId = foregroundNotificationID, etc.]
             //only show if setting set for that countdown
             //NO FURTHER VALIDATION NECESSARY [untilStartDateTime Value constraints AND onlyLiveCountdowns are all validated in getAllCountdowns]
-            int foregroundServiceNotificationId = NOTIFICATION_ID + currCountdown.getCountdownId();
+            int foregroundServiceNotificationId = NOTIFICATION_ID + (int) currCountdown.getCouId();
             Log.d(TAG, "startRefreshAll: foregroundServiceNotification-Id: " + foregroundServiceNotificationId + " (foregroundCount: " + foregroundNotificationCount + ")");
             if ((foregroundNotificationCount++) <= 0) {
                 //only make foreground notification for first countdown, others just get a non-removable notification
@@ -122,7 +122,7 @@ public class LiveCountdown_ForegroundService extends Service {
                     public void success_is_true() {
                         Log.d(TAG, "startRefreshAll: UseMoreCountdownNodes-Package bought. Loaded more live countdowns.");
                         //do not use issueNotification at this moment, because we would send a normal notification and not a countdown counter one btw. a null notification, because livecountdowns have another id range
-                        notificationMgrMgr.getmNotifyMgr().notify(NOTIFICATION_ID + currCountdown.getCountdownId(), notificationMgrMgr.createCounterServiceNotification(currCountdown));
+                        notificationMgrMgr.getmNotifyMgr().notify(NOTIFICATION_ID + (int) currCountdown.getCouId(), notificationMgrMgr.createCounterServiceNotification(currCountdown));
                     }
 
                     @Override
@@ -172,7 +172,7 @@ public class LiveCountdown_ForegroundService extends Service {
             //Only add here running live countdowns and not expired ones, because we want to show expired msg also when service is off
             Countdown tmpCountdown = this.getLoadedCountdownsForLiveCountdown().valueAt(i);
             if (tmpCountdown.isUntilDateInTheFuture()) { //if in past, then just do not remove it
-                allLiveCountdownNotificationIds.add(NOTIFICATION_ID + tmpCountdown.getCountdownId());
+                allLiveCountdownNotificationIds.add(NOTIFICATION_ID + (int) tmpCountdown.getCouId());
             } //Important: We have to ensure that expired countdowns are already removeable!
         }
 
