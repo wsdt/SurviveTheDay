@@ -8,6 +8,14 @@
     android:layout_height="match_parent"
     tools:context="kevkevin.wsdt.tagueberstehen.MainActivity">
 
+    <Button
+        android:id="@+id/testbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/swipeRefreshLayout"
+        android:layout_alignParentEnd="true"
+        android:text="Button" />
+
     <TextView
         android:id="@+id/MainActivity_TextView_NoCountdownsFound"
         android:layout_width="match_parent"
@@ -21,9 +29,10 @@
     <!-- MarginBottom so BannerAd does not hide anything -->
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
-        android:layout_marginBottom="50dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginBottom="50dp">
+
         <ScrollView
             android:id="@+id/scrollView"
             android:layout_width="match_parent"
@@ -39,4 +48,5 @@
             </LinearLayout>
         </ScrollView>
     </android.support.v4.widget.SwipeRefreshLayout>
+
 </RelativeLayout>

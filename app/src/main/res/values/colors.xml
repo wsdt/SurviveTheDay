@@ -22,4 +22,14 @@
     <!-- Extra colours: Also used for drawables! (so do not change) -->
     <color name="colorRed">#bf0000</color>
     <color name="colorBlue">#000c9f</color>
+
+    <!-- feelings, from blue (which is our main-color, happy) to dark red, angry, feeling horrible -->
+    <color name="colorState01">#00c8ff</color>
+    <color name="colorState02">#3647ff</color>
+    <color name="colorState03">#1500ff</color>
+    <color name="colorState04">#ff006a</color>
+    <color name="colorState05">#ff000d</color>
+    <color name="colorState06">#7b0006</color>
+
+
 </resources>

@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -21,6 +22,7 @@ import com.daimajia.swipe.SwipeLayout;
 
 import java.util.ArrayList;
 
+import kevkevin.wsdt.tagueberstehen.annotations.Test;
 import kevkevin.wsdt.tagueberstehen.classes.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
@@ -31,6 +33,7 @@ import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.FirebaseStorageMg
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_FirebaseStorageMgr;
 import kevkevin.wsdt.tagueberstehen.classes.services.LiveCountdown_ForegroundService;
+import kevkevin.wsdt.tagueberstehen.util.TodaysFeelingsActivity;
 
 import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppPurchaseMgr.*;
 import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_NotificationMgr.*;
@@ -76,8 +79,21 @@ public class MainActivity extends AppCompatActivity {
         //Start foreground service
         startService(new Intent(this, LiveCountdown_ForegroundService.class));
 
+        Button testbutton = findViewById(R.id.testbutton);
+        testbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFeelingActivity();
+            }
+        });
+
+
         //Set up onRefresh for pulling down
         initializePullForRefresh();
+    }
+
+    public void openFeelingActivity(){
+        startActivity(new Intent(MainActivity.this, TodaysFeelingsActivity.class));
     }
 
 
