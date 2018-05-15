@@ -81,7 +81,6 @@ public class GlobalAppSettingsMgr {
             }
         }
 
-
         return isRemoveAdsTemporarlyInMinutesActiveValid;
     }
 
