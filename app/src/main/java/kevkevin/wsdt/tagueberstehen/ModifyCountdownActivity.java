@@ -45,7 +45,6 @@ import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppNotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
-import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.FirebaseStorageMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
@@ -99,7 +98,10 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
         if (this.existingCountdownId >= 0) {
             Log.d(TAG, "onCreate: Being in EditMode, because countdown already exists.");
-            setFormValues(DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this, false).get((int) this.existingCountdownId));
+            Countdown countdown = Countdown.query(this, (int) this.existingCountdownId);
+            if (countdown != null) {
+                setFormValues(countdown);
+            }
         }
 
         onMotivateMeToggleClick(findViewById(R.id.couIsMotivationOn)); //simulate click so it is always at its correct state (enabled/disabled)
@@ -265,7 +267,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             @Override
             public void failure_is_false() {
                 Log.d(TAG, "onCreate:executeIfProductIsBought: UseMoreCountdownNodes is NOT bought. Blocking save-Button IF already one node saved AND NOT in editing mode.");
-                if (DatabaseMgr.getSingletonInstance(ModifyCountdownActivity.this).getAllCountdowns(ModifyCountdownActivity.this, false).size() > 0 && (existingCountdownId < 0)) {
+                if (Countdown.queryAll(ModifyCountdownActivity.this).size() > 0 && (existingCountdownId < 0)) {
                     Log.d(TAG, "onCreate:executeIfProductIsBought:OnClick: Did not save countdown, because inapp product not bought and more than one node already saved. EditMode disabled, Countdown-Id: " + existingCountdownId);
                     getDialogMgr().showDialog_InAppProductPromotion(INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString());
                     //also show toast for additional clarification
@@ -282,7 +284,8 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         //Helper method because needed twice (in onSaveClick())
         loadFormValues();
         if (areFormValuesValid()) {
-            DatabaseMgr.getSingletonInstance(this).saveCountdown(this, this.getNewEditedCountdown());
+            this.getNewEditedCountdown().save(this);
+
             Log.d(TAG, "onSaveClick: Tried to save new countdown.");
             ModifyCountdownActivity.this.finish(); //go back to main
         } else {
@@ -366,7 +369,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     }
 
     private void loadFormValues() {
-        this.setNewEditedCountdown(new Countdown(this,
+        this.setNewEditedCountdown(new Countdown(
                 ((CustomEdittext) findViewById(R.id.countdownTitleValue)).getText().toString(),
                 ((CustomEdittext) findViewById(R.id.countdownDescriptionValue)).getText().toString(),
                 ((TextView) findViewById(R.id.startDateTimeValue)).getText().toString(),
@@ -435,8 +438,8 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
         for (CheckBox userLibraryCheckbox : this.userLibraryCheckboxes) {
             if (userLibraryCheckbox.isChecked()) {
-                int libId = Integer.parseInt(userLibraryCheckbox.getTag().toString());
-                selectedUserLibraries.add(DatabaseMgr.getSingletonInstance(this).getAllUserLibraries(this, false).get(libId));
+                String libId = userLibraryCheckbox.getTag().toString();
+                selectedUserLibraries.add(UserLibrary.query(this,libId));
             }
         }
 
@@ -446,14 +449,11 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             //Now check whether userLibs are installed if not install local default one and select it.
             if (this.userLibraryCheckboxes.size() > 0) {
                 String libId = this.userLibraryCheckboxes.get(0).getTag().toString(); //assumes that at least one userlib is installed!
-                selectedUserLibraries.add(DatabaseMgr.getSingletonInstance(this).getAllUserLibraries(this, false).get(libId));
+                selectedUserLibraries.add(UserLibrary.query(this,libId));
             } else {
                 Toast.makeText(this, R.string.modifyCountdownActivity_countdown_userLibrary_noInstalled, Toast.LENGTH_SHORT).show();
                 UserLibrary defaultUserLib = FirebaseStorageMgr.saveDefaultUserLibrary(this);
                 selectedUserLibraries.add(defaultUserLib); //install local user lib
-
-                //also add to ram saved map for better user experience
-                DatabaseMgr.getSingletonInstance(this).getAllUserLibraries(this, false).put(defaultUserLib.getLibId(),defaultUserLib);
 
                 Log.d(TAG, "loadSelectedUserLibrariesFromCheckboxes: Used default user lib.");
             }
@@ -464,7 +464,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     private ArrayList<CheckBox> userLibraryCheckboxes = new ArrayList<>();
 
     private void loadLanguagePacksCheckboxes(@NonNull GridLayout superiorLayoutView) {
-        for (UserLibrary languagepack : DatabaseMgr.getSingletonInstance(this).getAllUserLibraries(this, false).values()) { //pre imkrement!
+        for (UserLibrary languagepack : UserLibrary.queryAll(this)) { //pre imkrement!
             //Print Checkboxes etc.
             CheckBox languagePackCheckbox = new CheckBox(this);
             languagePackCheckbox.setTag(languagepack.getLibId()); //en, de etc.

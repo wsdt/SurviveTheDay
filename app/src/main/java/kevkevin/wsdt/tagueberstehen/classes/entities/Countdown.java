@@ -1,6 +1,9 @@
 package kevkevin.wsdt.tagueberstehen.classes.entities;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
@@ -11,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
@@ -32,24 +36,24 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
+import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.annotations.Bug;
 import kevkevin.wsdt.tagueberstehen.annotations.Test;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.greendao_orm.DaoApp;
+import kevkevin.wsdt.tagueberstehen.classes.services.Kickstarter_BootAndGeneralReceiver;
+import kevkevin.wsdt.tagueberstehen.classes.services.ServiceMgr;
 import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
-import kevkevin.wsdt.tagueberstehen.R;
 
-import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
-import static kevkevin.wsdt.tagueberstehen.classes.interfaces.IConstants_Countdown.*;
-import org.greenrobot.greendao.DaoException;
+import static kevkevin.wsdt.tagueberstehen.classes.interfaces.IConstants_Countdown.ESCAPE;
+import static kevkevin.wsdt.tagueberstehen.classes.services.interfaces.IConstants_Kickstart_BootAndGeneralReceiver.BROADCASTRECEIVER_ACTION_RESTART_ALL_SERVICES;
 
 @Entity
 public class Countdown {
     @Transient
     private static final String TAG = "Countdown";
-    @Transient
-    private Context context;
-    @Id (autoincrement = true)
-    private long couId; //unique id of countdown
+    @Id(autoincrement = true)
+    private Long couId; //unique id of countdown
     @NotNull //bc. user has to put in at least one char
     private String couTitle; //name of countdown
     private String couDescription; //description for countdown
@@ -63,20 +67,22 @@ public class Countdown {
     private boolean couIsLiveCountdownOn; //show Foreground service live countdown if countdown until start date constraints true
     @ToMany
     @JoinEntity(entity = ZT_CountdownUserlibrary.class,
-        sourceProperty = "couId",targetProperty = "libId") //for N:M
+            sourceProperty = "couId", targetProperty = "libId") //for N:M
     private List<UserLibrary> couSelectedUserLibraries; //by default local language will be chosen
-    /** Used to resolve relations */
+    /**
+     * Used to resolve relations
+     */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
-    /** Used for active entity operations. */
+    /**
+     * Used for active entity operations.
+     */
     @Generated(hash = 2105327365)
     private transient CountdownDao myDao;
 
 
     //Constructor for lastEdit/couCreatedDateTime automatically
-    public Countdown(Context context, String couTitle, String couDescription, String couStartDateTime, String couUntilDateTime, String couCategoryColor, boolean couIsMotivationOn, int couMotivationIntervalSeconds, boolean couIsLiveCountdownOn, List<UserLibrary> couSelectedUserLibraries) {
-        this.setContext(context);
-        //this.setCouId(DatabaseMgr.getSingletonInstance(context).getNextCountdownId(context)); //get next countdown id (fill gap from deleted countdown or just increment)
+    public Countdown(String couTitle, String couDescription, String couStartDateTime, String couUntilDateTime, String couCategoryColor, boolean couIsMotivationOn, int couMotivationIntervalSeconds, boolean couIsLiveCountdownOn, List<UserLibrary> couSelectedUserLibraries) {
         this.setCouTitle(couTitle);
         this.setCouDescription(couDescription);
         this.setCouStartDateTime(couStartDateTime);
@@ -91,8 +97,7 @@ public class Countdown {
     }
 
     //Constructor for all fields
-    public Countdown(Context context, int couId, String couTitle, String couDescription, String couStartDateTime, String couUntilDateTime, String couCreatedDateTime, String couLastEditDateTime, String couCategoryColor, boolean couIsMotivationOn, int couMotivationIntervalSeconds, boolean couIsLiveCountdownOn, List<UserLibrary> couSelectedUserLibraries) {
-        this.setContext(context);
+    public Countdown(Long couId, String couTitle, String couDescription, String couStartDateTime, String couUntilDateTime, String couCreatedDateTime, String couLastEditDateTime, String couCategoryColor, boolean couIsMotivationOn, int couMotivationIntervalSeconds, boolean couIsLiveCountdownOn, List<UserLibrary> couSelectedUserLibraries) {
         this.setCouId(couId);
         this.setCouTitle(couTitle);
         this.setCouDescription(couDescription);
@@ -107,8 +112,8 @@ public class Countdown {
         this.setCouSelectedUserLibraries(couSelectedUserLibraries);
     }
 
-    @Generated(hash = 684191569)
-    public Countdown(long couId, @NotNull String couTitle, String couDescription, String couStartDateTime, String couUntilDateTime, String couCreatedDateTime, String couLastEditDateTime, String couCategoryColor, boolean couIsMotivationOn, int couMotivationIntervalSeconds, boolean couIsLiveCountdownOn) {
+    @Generated(hash = 25718236)
+    public Countdown(Long couId, @NotNull String couTitle, String couDescription, String couStartDateTime, String couUntilDateTime, String couCreatedDateTime, String couLastEditDateTime, String couCategoryColor, boolean couIsMotivationOn, int couMotivationIntervalSeconds, boolean couIsLiveCountdownOn) {
         this.couId = couId;
         this.couTitle = couTitle;
         this.couDescription = couDescription;
@@ -131,7 +136,7 @@ public class Countdown {
      *
      * @param eventMessageLinearLayout: If linearlayout is null, then method returns eventMsg as string, otherwise it sets the text of the view etc.
      */
-    public String getEventMsgOrAndSetView(@Nullable LinearLayout eventMessageLinearLayout) { //Only one msg (most relevant one) e.g. Expired, Starts on x, Expires on ..
+    public String getEventMsgOrAndSetView(@NonNull Context context, @Nullable LinearLayout eventMessageLinearLayout) { //Only one msg (most relevant one) e.g. Expired, Starts on x, Expires on ..
         //Craft event messages for countdown nodes (e.g.)
         String eventMsgStr;
         int textColor; //is only used when textView is not null
@@ -139,18 +144,18 @@ public class Countdown {
 
         if (!this.isStartDateInThePast()) {
             //startdate in future (starts on x)
-            eventMsgStr = String.format(this.getContext().getResources().getString(R.string.node_countdownEventMsg_countdownNotStartedYet), this.getCouStartDateTime());
+            eventMsgStr = String.format(context.getResources().getString(R.string.node_countdownEventMsg_countdownNotStartedYet), this.getCouStartDateTime());
             textColor = R.color.colorPrimaryDark;
             eventIcon = R.drawable.colorblue_eventmsg_startdateinfuture;
         } else if (this.isUntilDateInTheFuture()) {
             //because of else if startdate in past and untildateinfuture (= running)
-            eventMsgStr = String.format(this.getContext().getResources().getString(R.string.node_countdownEventMsg_countdownRunning),
-                    (this.isCouIsMotivationOn() || this.isCouIsLiveCountdownOn()) ? this.getContext().getResources().getString(R.string.node_countdownEventMsg_countdownRunning_MotivationStatus_active) : this.getContext().getResources().getString(R.string.node_countdownEventMsg_countdownRunning_MotivationStatus_inactive));
+            eventMsgStr = String.format(context.getResources().getString(R.string.node_countdownEventMsg_countdownRunning),
+                    (this.isCouIsMotivationOn() || this.isCouIsLiveCountdownOn()) ? context.getResources().getString(R.string.node_countdownEventMsg_countdownRunning_MotivationStatus_active) : context.getResources().getString(R.string.node_countdownEventMsg_countdownRunning_MotivationStatus_inactive));
             textColor = R.color.colorGreen;
             eventIcon = R.drawable.primarygreen_eventmsg_motivationon;
         } else {
             //because of else if startdate in past, untildate in past --> expired
-            eventMsgStr = String.format(this.getContext().getResources().getString(R.string.node_countdownEventMsg_countdownExpired), this.getCouUntilDateTime());
+            eventMsgStr = String.format(context.getResources().getString(R.string.node_countdownEventMsg_countdownExpired), this.getCouUntilDateTime());
             textColor = R.color.colorRed;
             eventIcon = R.drawable.colorred_eventmsg_countdownexpired;
         }
@@ -160,10 +165,10 @@ public class Countdown {
             ImageView eventMsgImageView = eventMessageLinearLayout.findViewById(R.id.countdownEventMsgIcon);
             if (eventMsgTextView != null) {
                 eventMsgTextView.setText(eventMsgStr);
-                eventMsgTextView.setTextColor(this.getContext().getResources().getColor(textColor));
+                eventMsgTextView.setTextColor(context.getResources().getColor(textColor));
             } //not else if!
             if (eventMsgImageView != null) {
-                eventMsgImageView.setImageBitmap(BitmapFactory.decodeResource(this.getContext().getResources(), eventIcon)); // when textview found there must be also imageview
+                eventMsgImageView.setImageBitmap(BitmapFactory.decodeResource(context.getResources(), eventIcon)); // when textview found there must be also imageview
             }
             Log.d(TAG, "getEventMsg: Tried to set message and color etc. to view. Color: " + textColor);
         }
@@ -171,19 +176,15 @@ public class Countdown {
         return eventMsgStr;
     }
 
-    public void savePersistently() {
-        DatabaseMgr.getSingletonInstance(this.getContext()).saveCountdown(this.getContext(),this);
-    }
 
-
-    @Test (message = "Not sure if method returns it correctly. When receiving different booleans.")
-    @Bug (message = "possible bug here. IF YES: Then I did it on all places wrong, so just rename boolean and method :P")
+    @Test(message = "Not sure if method returns it correctly. When receiving different booleans.")
+    @Bug(message = "possible bug here. IF YES: Then I did it on all places wrong, so just rename boolean and method :P")
     /** Method calculates Remaining or passedPercentage (this method does not format percentage --> use helper method */
     public double getRemainingPercentage(boolean getRemainingOtherwisePassedPercentage) { //min is 1, if 0 then it will be still min 1 nachkommastelle (but always 0!) because of double format itself
         try {
             double all100percentSeconds = Long.valueOf((getDateTime(getCouUntilDateTime()).getTimeInMillis() - getDateTime(getCouStartDateTime()).getTimeInMillis()) / 1000).doubleValue();
             double leftXpercentSeconds = Long.valueOf((getDateTime(getCouUntilDateTime()).getTimeInMillis() - getCurrentDateTime().getTimeInMillis()) / 1000).doubleValue();
-            Log.d(TAG, "getRemainingPercentage: "+all100percentSeconds+" // "+leftXpercentSeconds);
+            Log.d(TAG, "getRemainingPercentage: " + all100percentSeconds + " // " + leftXpercentSeconds);
 
             double percentageValueUnformatted;
             if (getRemainingOtherwisePassedPercentage) {
@@ -192,7 +193,7 @@ public class Countdown {
                 percentageValueUnformatted = 100 - ((leftXpercentSeconds / all100percentSeconds) * 100); //get passed percentage if false
             }
 
-            Log.d(TAG, "getRemainingPercentage:Unformatted: "+percentageValueUnformatted);
+            Log.d(TAG, "getRemainingPercentage:Unformatted: " + percentageValueUnformatted);
 
             //Double result = Double.parseDouble((new DecimalFormat("##,"+nachkommaStellen)).format((leftXpercentSeconds / all100percentSeconds) * 100)); //formatting percentage to 2 nachkommastellen
             return (percentageValueUnformatted >= 0) ? ((percentageValueUnformatted <= 100) ? percentageValueUnformatted : 100) : 0; //always return 0-100
@@ -203,12 +204,12 @@ public class Countdown {
         return (-1); //to show error
     }
 
-    public String getTotalSecondsNoScientificNotation() {
+    public String getTotalSecondsNoScientificNotation(@NonNull Context context) {
         DecimalFormat decimalFormat = (DecimalFormat) NumberFormat.getInstance(Locale.US);
         DecimalFormatSymbols decimalFormatSymbols = decimalFormat.getDecimalFormatSymbols();
         decimalFormatSymbols.setGroupingSeparator(IConstants_Global.GLOBAL.THOUSAND_GROUPING_SEPERATOR); //set separator
         decimalFormat.setDecimalFormatSymbols(decimalFormatSymbols);
-        return decimalFormat.format(this.getTotalSeconds());
+        return decimalFormat.format(this.getTotalSeconds(context));
     }
 
     public boolean isStartDateInThePast() {
@@ -221,21 +222,21 @@ public class Countdown {
         //Works but time comparison does not work properly: return (getDateTime(getCouUntilDateTime()).compareTo(getCurrentDateTime()) > 0); //only if in the future
     }
 
-    public Double getTotalSeconds() {
-        Resources res = this.getContext().getResources();
+    public Double getTotalSeconds(@NonNull Context context) {
+        Resources res = context.getResources();
         Double totalSeconds = 0D;
         try {
             if (isUntilDateInTheFuture()) {
                 if (isStartDateInThePast()) {
                     //untildateinfuture and startdate in past (running)
                     totalSeconds = Long.valueOf((getDateTime(getCouUntilDateTime()).getTimeInMillis() - getCurrentDateTime().getTimeInMillis()) / 1000).doubleValue();
-                    Log.d(TAG, "getTotalSeconds: Countdown running->Seconds: "+totalSeconds);
+                    Log.d(TAG, "getTotalSeconds: Countdown running->Seconds: " + totalSeconds);
                     if (totalSeconds < 0D) {
                         Log.e(TAG, "getTotalSeconds: TotalSeconds negative. This should not be possible.");
                     }
                 } else {
                     //untildateinfuture but startdate also in future (not started yet)
-                    Toast.makeText(this.getContext(), String.format(res.getString(R.string.countdown_info_startDateInFuture), this.getCouStartDateTime()), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, String.format(res.getString(R.string.countdown_info_startDateInFuture), this.getCouStartDateTime()), Toast.LENGTH_SHORT).show();
                     totalSeconds = 0D;
                     Log.d(TAG, "getTotalSeconds: Countdown not started yet.");
                 }
@@ -298,19 +299,11 @@ public class Countdown {
 
 
     // GETTER / SETTER ++++++++++++++++++++++++++++++++++++++++++++
-    public Context getContext() {
-        return context;
-    }
-
-    public void setContext(Context context) {
-        this.context = context;
-    }
-
-    public long getCouId() {
+    public Long getCouId() {
         return couId;
     }
 
-    public void setCouId(long couId) {
+    public void setCouId(Long couId) {
         this.couId = couId;
     }
 
@@ -319,7 +312,7 @@ public class Countdown {
     }
 
     public void setCouTitle(String couTitle) { //also escape enter here, because we have a customedittext, which blocks enter (do not call this escapeEnter-method on other values [error preventing])
-        this.couTitle = escapeEnter(DatabaseMgr.escapeString(couTitle));
+        this.couTitle = escapeEnter(couTitle);
     }
 
     public String getCouDescription() {
@@ -327,7 +320,7 @@ public class Countdown {
     }
 
     public void setCouDescription(String couDescription) { //also escape enter here, because we have a customedittext, which blocks enter
-        this.couDescription = escapeEnter(DatabaseMgr.escapeString(couDescription));
+        this.couDescription = escapeEnter(couDescription);
     }
 
     public String getCouUntilDateTime() {
@@ -335,7 +328,7 @@ public class Countdown {
     }
 
     public void setCouUntilDateTime(String couUntilDateTime) {
-        this.couUntilDateTime = DatabaseMgr.escapeString(couUntilDateTime);
+        this.couUntilDateTime = couUntilDateTime;
     }
 
     public String getCouCreatedDateTime() {
@@ -343,7 +336,7 @@ public class Countdown {
     }
 
     public void setCouCreatedDateTime(String couCreatedDateTime) {
-        this.couCreatedDateTime = DatabaseMgr.escapeString(couCreatedDateTime);
+        this.couCreatedDateTime = couCreatedDateTime;
     }
 
     public String getCouLastEditDateTime() {
@@ -351,7 +344,7 @@ public class Countdown {
     }
 
     public void setCouLastEditDateTime(String couLastEditDateTime) {
-        this.couLastEditDateTime = DatabaseMgr.escapeString(couLastEditDateTime);
+        this.couLastEditDateTime = couLastEditDateTime;
     }
 
     public String getCouCategoryColor() {
@@ -359,7 +352,7 @@ public class Countdown {
     }
 
     public void setCouCategoryColor(String couCategoryColor) { //#000000
-        this.couCategoryColor = DatabaseMgr.escapeString(couCategoryColor);
+        this.couCategoryColor = couCategoryColor;
     }
 
     public boolean isCouIsMotivationOn() {
@@ -375,7 +368,7 @@ public class Countdown {
     }
 
     public void setCouStartDateTime(String couStartDateTime) {
-        this.couStartDateTime = DatabaseMgr.escapeString(couStartDateTime);
+        this.couStartDateTime = couStartDateTime;
     }
 
     public int getCouMotivationIntervalSeconds() {
@@ -399,34 +392,36 @@ public class Countdown {
     public String toString() {
         // couUntilDateTime, String couCategoryColor, boolean couIsMotivationOn, int couMotivationIntervalSeconds, boolean couIsLiveCountdownOn) {
         String separator = ";"; //do not use character or number for separator (because of + polymorphism)
-        return getCouId()+separator+
-                getCouTitle()+separator +
-                getCouDescription()+separator +
-                getCouStartDateTime()+separator +
-                getCouUntilDateTime()+separator +
-                getCouCreatedDateTime()+separator +
-                getCouLastEditDateTime()+separator +
-                getCouCategoryColor()+separator +
-                isCouIsMotivationOn()+separator +
-                getCouMotivationIntervalSeconds()+separator +
-                isCouIsLiveCountdownOn()+separator +
+        return getCouId() + separator +
+                getCouTitle() + separator +
+                getCouDescription() + separator +
+                getCouStartDateTime() + separator +
+                getCouUntilDateTime() + separator +
+                getCouCreatedDateTime() + separator +
+                getCouLastEditDateTime() + separator +
+                getCouCategoryColor() + separator +
+                isCouIsMotivationOn() + separator +
+                getCouMotivationIntervalSeconds() + separator +
+                isCouIsLiveCountdownOn() + separator +
                 getCouSelectedUserLibraries();
     }
 
-    /** Necessary to determine which languagepacks are used for this countdown. (MIGHT RETURN NULL!)*/
-    public String getRandomQuoteSuitableForCountdown() {
+    /**
+     * Necessary to determine which languagepacks are used for this countdown. (MIGHT RETURN NULL!)
+     */
+    public String getRandomQuoteSuitableForCountdown(@NonNull Context context) {
         List<UserLibrary> userLibraries = this.getCouSelectedUserLibraries();
 
         if (userLibraries.size() <= 0) { //no userlibs defined!
             Log.w(TAG, "getRandomQuoteSuitableForCountdown: No userLibs for countdown defined! Returned fallbackNotification.");
-            return this.getContext().getResources().getString(R.string.error_contactAdministrator);
+            return context.getResources().getString(R.string.error_contactAdministrator);
         }
 
         //Get random userLibrary of countdownUserLibs (transform to arraylist before, because libId might not be inkrementally!! (rather arbitrary)
-        UserLibrary randomUserLibrary = this.getCouSelectedUserLibraries().get(HelperClass.getRandomInt(0,this.getCouSelectedUserLibraries().size()-1));
+        UserLibrary randomUserLibrary = this.getCouSelectedUserLibraries().get(HelperClass.getRandomInt(0, this.getCouSelectedUserLibraries().size() - 1));
 
         //get random userLibraryLine of userLib
-        return randomUserLibrary.getLines().get(HelperClass.getRandomInt(0,randomUserLibrary.getLines().size()-1));
+        return randomUserLibrary.getLines().get(HelperClass.getRandomInt(0, randomUserLibrary.getLines().size() - 1));
     }
 
     /**
@@ -441,7 +436,7 @@ public class Countdown {
                 throw new DaoException("Entity is detached from DAO context");
             }
             UserLibraryDao targetDao = daoSession.getUserLibraryDao();
-            List<UserLibrary> couSelectedUserLibrariesNew = targetDao._queryCountdown_CouSelectedUserLibraries((int) this.getCouId());
+            List<UserLibrary> couSelectedUserLibrariesNew = targetDao._queryCountdown_CouSelectedUserLibraries(this.getCouId().intValue());
             synchronized (this) {
                 if (couSelectedUserLibraries == null) {
                     couSelectedUserLibraries = couSelectedUserLibrariesNew;
@@ -464,22 +459,22 @@ public class Countdown {
         return this.couIsLiveCountdownOn;
     }
 
-    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+    // ############################# GREEN DAO METHODS ##################################
+
+    /**
+     * Resets a to-many relationship, making the next get call to query for a fresh result.
+     */
     @Generated(hash = 1601497361)
     public synchronized void resetCouSelectedUserLibraries() {
         couSelectedUserLibraries = null;
     }
 
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 128553479)
-    public void delete() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.delete(this);
+    /** Delete countdown */
+    public void delete(@NonNull Context context) {
+        ((DaoApp) context.getApplicationContext()).getDaoSession().delete(this);
+
+        //Restart notification service
+        ServiceMgr.restartNotificationService(context);
     }
 
     /**
@@ -492,6 +487,114 @@ public class Countdown {
             throw new DaoException("Entity is detached from DAO context");
         }
         myDao.refresh(this);
+    }
+
+    /** Updates countdown */
+    public void update(@NonNull Context context) {
+        ((DaoApp) context.getApplicationContext()).getDaoSession().update(this);
+
+        //Restart notification service
+        ServiceMgr.restartNotificationService(context);
+    }
+
+    /**
+     * Saves new userLib
+     */
+    public void save(@NonNull Context context) {
+        ((DaoApp) context.getApplicationContext()).getDaoSession().getCountdownDao().save(this);
+
+        //TODO: Maybe this block should be in future sth else (separation of concerns), so we might be able to ensure that this is also checked on device start etc.
+        //When saved then validate whether startDate is in future and if so, then schedule broadcast receiver for restarting all services so countdown gets started without opening app
+        if (!this.isStartDateInThePast()) {
+            Log.d(TAG, "setSaveCountdown: New saved countdown's StartDate is in the future! Scheduling broadcast receiver for restarting services.");
+            AlarmManager alarmManager = ((AlarmManager) context.getSystemService(Context.ALARM_SERVICE));
+            if (alarmManager != null) {
+                Intent intent = new Intent(context, Kickstarter_BootAndGeneralReceiver.class);
+                intent.setAction(BROADCASTRECEIVER_ACTION_RESTART_ALL_SERVICES);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, intent, 0);
+                alarmManager.set(AlarmManager.RTC_WAKEUP, this.getDateTime(this.getCouStartDateTime()).getTimeInMillis(), pendingIntent);
+                Log.d(TAG, "save: Tried setting alarm for restarting all services when startdate gets into past.");
+            } else {
+                Log.e(TAG, "save: Could not set alarm for future start date. Alarmmanager is null!");
+            }
+        }
+
+        //Restart notification service
+        ServiceMgr.restartNotificationService(context);
+    }
+
+    /**
+     * Queries all userLibs in Db.
+     */
+    public static List<Countdown> queryAll(@NonNull Context context) {
+        return ((DaoApp) context.getApplicationContext()).getDaoSession().getCountdownDao().queryBuilder().list();
+    }
+
+    /**
+     * Queries countdowns which have the notification service activated.
+     */
+    public static List<Countdown> queryMotivationOn(@NonNull Context context) {
+        CountdownDao countdownDao = ((DaoApp) context.getApplicationContext()).getDaoSession().getCountdownDao();
+        return countdownDao.queryBuilder()
+                .where(CountdownDao.Properties.CouIsMotivationOn.eq(true))
+                .list();
+    }
+
+    /**
+     * Queries countdowns which have the live countdown service activated.
+     */
+    public static List<Countdown> queryLiveCountdownOn(@NonNull Context context) {
+        CountdownDao countdownDao = ((DaoApp) context.getApplicationContext()).getDaoSession().getCountdownDao();
+        return countdownDao.queryBuilder()
+                .where(CountdownDao.Properties.CouIsLiveCountdownOn.eq(true))
+                .list();
+    }
+
+    /**
+     * Queries userLib.
+     */
+    public static Countdown query(@NonNull Context context, int couId) {
+        CountdownDao countdownDao = ((DaoApp) context.getApplicationContext()).getDaoSession().getCountdownDao();
+        List<Countdown> countdownList = countdownDao.queryBuilder()
+                .where(CountdownDao.Properties.CouId.eq(couId))
+                .list();
+
+        if (countdownList.size() <= 0) {
+            return null;
+        } else {
+            return countdownList.get(0); //bc. of primary key only one element
+        }
+    }
+
+    public static void deleteAll(@NonNull Context context) {
+        ((DaoApp) context.getApplicationContext()).getDaoSession().getCountdownDao().deleteAll();
+
+        //Restart notification service
+        ServiceMgr.restartNotificationService(context);
+    }
+
+    /**
+     * This method calls all countdowns from db, instead of taking
+     * it from the cache. Should be only called if e.g. userlibrary
+     * has been deleted and we would have to remove it manually from
+     * all countdownUserLibLists. So this might be easier.
+     */
+    public static void refreshAll(@NonNull Context context) {
+        for (Countdown countdown : queryAll(context)) {
+            countdown.refresh();
+        }
+    }
+
+    /**
+     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
+     * Entity must attached to an entity context.
+     */
+    @Generated(hash = 128553479)
+    public void delete() {
+        if (myDao == null) {
+            throw new DaoException("Entity is detached from DAO context");
+        }
+        myDao.delete(this);
     }
 
     /**

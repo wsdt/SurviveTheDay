@@ -19,11 +19,12 @@ import android.util.SparseArray;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
+import java.util.List;
+
 import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.classes.entities.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CountdownCounter;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
-import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.services.NotificationBroadcastMgr;
 
@@ -57,7 +58,7 @@ public class NotificationMgr { //one instance for every countdown or similar
 
     public void scheduleAllActiveCountdownNotifications() {
         Log.d(TAG, "scheduleAllActiveCountdownNotifications: Started method.");
-        SparseArray<Countdown> allCountdowns = DatabaseMgr.getSingletonInstance(this.getActivityThisTarget()).getAllCountdowns(this.getActivityThisTarget(), false,true, false);
+        List<Countdown> allCountdowns = Countdown.queryMotivationOn(this.getActivityThisTarget());
 
         int count = 0;
         //do not call purchaseWorkflow or similar when only providing context [altough we mostly give an activity to this class we should not risk it]
@@ -69,7 +70,7 @@ public class NotificationMgr { //one instance for every countdown or similar
                     @Override
                     public void success_is_true() {
                         Log.d(TAG, "scheduleAllActiveCountdownNotifications:success_is_true: Product is bought. Scheduling countdown.");
-                        scheduleNotification((int) currCountdown.getCouId(), (long) currCountdown.getCouMotivationIntervalSeconds());
+                        scheduleNotification(currCountdown.getCouId().intValue(), (long) currCountdown.getCouMotivationIntervalSeconds());
                     }
 
                     @Override
@@ -79,7 +80,7 @@ public class NotificationMgr { //one instance for every countdown or similar
                 });
             } else {
                 Log.d(TAG, "scheduleAllActiveCountdownNotifications: Scheduling first countdown (always free).");
-                scheduleNotification((int) currCountdown.getCouId(), (long) currCountdown.getCouMotivationIntervalSeconds());
+                scheduleNotification(currCountdown.getCouId().intValue(), (long) currCountdown.getCouMotivationIntervalSeconds());
             }
         }
         Log.d(TAG, "scheduleAllActiveCountdownNotifications: Ended method.");
@@ -134,7 +135,7 @@ public class NotificationMgr { //one instance for every countdown or similar
         //make this locally because of the same reason why pending intent has no getter
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this.getActivityThisTarget(),
-                (int) countdown.getCouId(),
+                countdown.getCouId().intValue(),
                 tmpIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -153,7 +154,7 @@ public class NotificationMgr { //one instance for every countdown or similar
             shareText = getRes().getString(R.string.share_livecountdown_text_expired);
         } else { //Countdown has not expired
             onGoing = true; //not removeable
-            String countdownTmpStr = CountdownCounter.craftBigCountdownString(countdown.getTotalSeconds().longValue());
+            String countdownTmpStr = CountdownCounter.craftBigCountdownString(countdown.getTotalSeconds(this.getActivityThisTarget()).longValue());
             contentText = String.format(getRes().getString(R.string.customNotification_countdownCounter_running),countdownTmpStr);
             shareText = String.format(getRes().getString(R.string.share_livecountdown_text_running),countdown.getCouTitle(),countdownTmpStr);
         }
@@ -161,7 +162,7 @@ public class NotificationMgr { //one instance for every countdown or similar
         //Also liveCountdown should be shareable
         PendingIntent sharePendingIntent = PendingIntent.getActivity(
                 this.getActivityThisTarget(),
-                (int) countdown.getCouId(), //use same request code as in other pendingintent above (really important!, otherwise not correct pendingintent used)
+                countdown.getCouId().intValue(), //use same request code as in other pendingintent above (really important!, otherwise not correct pendingintent used)
                 ShareMgr.getSimpleShareIntent(null,countdown.getCouTitle(),shareText+" "+getRes().getString(R.string.share_postfix_appreference)),
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
@@ -316,7 +317,7 @@ public class NotificationMgr { //one instance for every countdown or similar
 
         //Choose one for each arraylist by random index (max is size-1!)
         randomNotification.title = randomNotification.titleList.get(HelperClass.getRandomInt(0,randomNotification.titleList.size()-1)); //size() index does exist!
-        randomNotification.text = countdown.getRandomQuoteSuitableForCountdown();//randomNotification.textList.get(this.random.nextInt(randomNotification.textList.size()));
+        randomNotification.text = countdown.getRandomQuoteSuitableForCountdown(this.getActivityThisTarget());//randomNotification.textList.get(this.random.nextInt(randomNotification.textList.size()));
         randomNotification.icon = randomNotification.iconList.get(HelperClass.getRandomInt(0,randomNotification.iconList.size()-1));
 
         return randomNotification;
@@ -326,7 +327,7 @@ public class NotificationMgr { //one instance for every countdown or similar
         NotificationContent randomNotification = new NotificationContent(); //create custom instance (important not to use same instance for each cateogry)
 
         randomNotification.titleList.addAll(Arrays.asList(this.getRes().getStringArray(R.array.customNotification_random_timebased_titles))); //converts array to list and adds all of them
-        randomNotification.textList.addAll(Arrays.asList(String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_0_secondsToGo),countdown.getCouTitle(),countdown.getTotalSecondsNoScientificNotation()),
+        randomNotification.textList.addAll(Arrays.asList(String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_0_secondsToGo),countdown.getCouTitle(),countdown.getTotalSecondsNoScientificNotation(this.getActivityThisTarget())),
                 String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_1_percentageLeft),countdown.getCouTitle(),HelperClass.formatCommaNumber(countdown.getRemainingPercentage(true),2)),
                 String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_2_countdownEndsOn),countdown.getCouTitle(),countdown.getCouUntilDateTime()),
                 String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_3_percentageAchieved),countdown.getCouTitle(),HelperClass.formatCommaNumber(countdown.getRemainingPercentage(false),2)),

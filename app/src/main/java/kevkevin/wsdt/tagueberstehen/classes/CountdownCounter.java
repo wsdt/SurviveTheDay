@@ -177,7 +177,7 @@ public class CountdownCounter {
     }
 
     public Double getTotalSeconds_SYNCED() {
-        return this.getCountdown().getTotalSeconds(); //always return correct time
+        return this.getCountdown().getTotalSeconds(getCountdownActivityContext()); //always return correct time
     }
 
     public Double getTotalMinutes() {
