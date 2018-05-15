@@ -325,4 +325,16 @@
     <string name="firebaseStorageMgr_install_userlibrary_failuremsg_title">Download failed</string>
     <string name="firebaseStorageMgr_install_userlibrary_failuremsg_description">New userlibrary (%1$s) could not be downloaded.</string>
 
+    <!-- How's your feeling today -->
+    <string name="greetin"> Hi %1$s! How are you feeling today?</string>
+    <string name="greetin2"> Whats up %1$s? How´s your day so far?</string>
+    <string name="greeting3">Glad your´re back %1$s, feeling good? </string>
+    <!-- possibilities to choose, please add more -->
+    <string name="top"> Today is my Day!</string>
+    <string name="fine"> Feeling fine!</string>
+    <string name="good"> Can´t complain!</string>
+    <string name="mhm"> Yeah, whatever</string>
+    <string name="bad"> Not really satisfied</string>
+    <string name="worse"> Nah thanks, bring in tomorrow</string>
+
 </resources>
