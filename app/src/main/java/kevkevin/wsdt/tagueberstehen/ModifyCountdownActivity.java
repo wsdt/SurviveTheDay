@@ -36,11 +36,11 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import kevkevin.wsdt.tagueberstehen.classes.ColorPicker;
-import kevkevin.wsdt.tagueberstehen.classes.entities.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
-import kevkevin.wsdt.tagueberstehen.classes.entities.UserLibrary;
 import kevkevin.wsdt.tagueberstehen.classes.customviews.CustomEdittext;
 import kevkevin.wsdt.tagueberstehen.classes.customviews.DateTimePicker.DateTimePicker;
+import kevkevin.wsdt.tagueberstehen.classes.entities.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.entities.UserLibrary;
 import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppNotificationMgr;
@@ -53,9 +53,9 @@ import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants
 import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_NotificationMgr.IDENTIFIER_COUNTDOWN_ID;
 
 public class ModifyCountdownActivity extends AppCompatActivity {
-    private Countdown newEditedCountdown;
     private static final String TAG = "ModifyCountdownActivity";
-    private long existingCountdownId = (-1); //if edit then this value will be updated and used to overwrite existing countdown
+
+    private Countdown newEditedCountdown;
     private InAppPurchaseMgr inAppPurchaseMgr;
     private DialogMgr dialogMgr; //important that kevkevin dialogMgr gets imported and not the one of android!
     private InAppNotificationMgr inAppNotificationMgr = new InAppNotificationMgr(); //must be a member! (to prevent influencing iapnotifications of other activities)
@@ -87,21 +87,15 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         HelperClass.setIntervalSpinnerConfigurations((Spinner) findViewById(R.id.notificationIntervalSpinner), R.array.countdownIntervalSpinner_LABELS, 8);
         //setIntervalSpinnerConfigurations();
 
-        try {
-            this.existingCountdownId = getIntent().getIntExtra(IDENTIFIER_COUNTDOWN_ID, -1);
-            //say that we want to edit an existing countdown and not create a new one
-        } catch (Exception e) {
-            Log.e(TAG, "onCreate: Could not load existing countdown.");
-        }
-
         loadLanguagePacksCheckboxes((GridLayout) findViewById(R.id.modifyCountdownActivity_motivation_languagePacks)); //needs to be done before setFormValues()!
 
-        if (this.existingCountdownId >= 0) {
+
+        Long countdownId = getIntent().getLongExtra(IDENTIFIER_COUNTDOWN_ID, -1);
+        if (countdownId >= 0) {
+            //Editing countdown bc. valid Id
             Log.d(TAG, "onCreate: Being in EditMode, because countdown already exists.");
-            Countdown countdown = Countdown.query(this, (int) this.existingCountdownId);
-            if (countdown != null) {
-                setFormValues(countdown);
-            }
+            //we just assume the countdown exists (bc. activity sends us this)
+            this.setFormValues(countdownId);
         }
 
         onMotivateMeToggleClick(findViewById(R.id.couIsMotivationOn)); //simulate click so it is always at its correct state (enabled/disabled)
@@ -267,8 +261,8 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             @Override
             public void failure_is_false() {
                 Log.d(TAG, "onCreate:executeIfProductIsBought: UseMoreCountdownNodes is NOT bought. Blocking save-Button IF already one node saved AND NOT in editing mode.");
-                if (Countdown.queryAll(ModifyCountdownActivity.this).size() > 0 && (existingCountdownId < 0)) {
-                    Log.d(TAG, "onCreate:executeIfProductIsBought:OnClick: Did not save countdown, because inapp product not bought and more than one node already saved. EditMode disabled, Countdown-Id: " + existingCountdownId);
+                if (Countdown.queryAll(ModifyCountdownActivity.this).size() > 0 && ((getNewEditedCountdown().getCouId() < 0 || getNewEditedCountdown().getCouId() == null))) {
+                    Log.d(TAG, "onCreate:executeIfProductIsBought:OnClick: Did not save countdown, because inapp product not bought and more than one node already saved.");
                     getDialogMgr().showDialog_InAppProductPromotion(INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString());
                     //also show toast for additional clarification
                     Toast.makeText(ModifyCountdownActivity.this, R.string.inAppProduct_notBought_useMoreCountdownNodes, Toast.LENGTH_SHORT).show();
@@ -344,19 +338,22 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         return true;
     }
 
-    private void setFormValues(Countdown countdown) {
-        ((CustomEdittext) findViewById(R.id.countdownTitleValue)).setText(countdown.getCouTitle());
-        ((CustomEdittext) findViewById(R.id.countdownDescriptionValue)).setText(countdown.getCouDescription());
-        ((TextView) findViewById(R.id.startDateTimeValue)).setText(countdown.getCouStartDateTime());
-        ((TextView) findViewById(R.id.untilDateTimeValue)).setText(countdown.getCouUntilDateTime());
-        (findViewById(R.id.categoryValue)).setBackgroundColor(Color.parseColor(countdown.getCouCategoryColor()));
-        ((ToggleButton) findViewById(R.id.couIsMotivationOn)).setChecked(countdown.isCouIsMotivationOn());
+    private void setFormValues(Long countdownId) {
+        Log.d(TAG, "setFormValues: Trying to load countdown from db and set values.");
+        this.setNewEditedCountdown(Countdown.query(this, countdownId.intValue()));
+
+        ((CustomEdittext) findViewById(R.id.countdownTitleValue)).setText(this.getNewEditedCountdown().getCouTitle());
+        ((CustomEdittext) findViewById(R.id.countdownDescriptionValue)).setText(this.getNewEditedCountdown().getCouDescription());
+        ((TextView) findViewById(R.id.startDateTimeValue)).setText(this.getNewEditedCountdown().getCouStartDateTime());
+        ((TextView) findViewById(R.id.untilDateTimeValue)).setText(this.getNewEditedCountdown().getCouUntilDateTime());
+        (findViewById(R.id.categoryValue)).setBackgroundColor(Color.parseColor(this.getNewEditedCountdown().getCouCategoryColor()));
+        ((ToggleButton) findViewById(R.id.couIsMotivationOn)).setChecked(this.getNewEditedCountdown().isCouIsMotivationOn());
         //set associated entry of interval seconds to spinner
-        ((Spinner) findViewById(R.id.notificationIntervalSpinner)).setSelection(Arrays.asList(getResources().getStringArray(R.array.countdownIntervalSpinner_VALUES)).indexOf("" + countdown.getCouMotivationIntervalSeconds())); //reduce about 5 otherwise we would add 5 every time we edited it!
-        ((ToggleButton) findViewById(R.id.couIsLiveCountdownOn)).setChecked(countdown.isCouIsLiveCountdownOn());
+        ((Spinner) findViewById(R.id.notificationIntervalSpinner)).setSelection(Arrays.asList(getResources().getStringArray(R.array.countdownIntervalSpinner_VALUES)).indexOf("" + this.getNewEditedCountdown().getCouMotivationIntervalSeconds())); //reduce about 5 otherwise we would add 5 every time we edited it!
+        ((ToggleButton) findViewById(R.id.couIsLiveCountdownOn)).setChecked(this.getNewEditedCountdown().isCouIsLiveCountdownOn());
 
         GridLayout languagePackList = findViewById(R.id.modifyCountdownActivity_motivation_languagePacks);
-        for (UserLibrary languagePack : countdown.getCouSelectedUserLibraries()) {
+        for (UserLibrary languagePack : this.getNewEditedCountdown().getCouSelectedUserLibraries()) {
             for (int i = 0; i < languagePackList.getChildCount(); i++) {
                 if (languagePackList.getChildAt(i).getTag() != null) {
                     CheckBox tmpCheckbox = ((CheckBox) languagePackList.getChildAt(i));
@@ -369,6 +366,9 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     }
 
     private void loadFormValues() {
+        Long couId=null; //for saving old couId when edited Countdown is newly saved
+        if (this.getNewEditedCountdown() != null) {couId = this.getNewEditedCountdown().getCouId();}
+
         this.setNewEditedCountdown(new Countdown(
                 ((CustomEdittext) findViewById(R.id.countdownTitleValue)).getText().toString(),
                 ((CustomEdittext) findViewById(R.id.countdownDescriptionValue)).getText().toString(),
@@ -382,12 +382,8 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         // .getProgress()+5 for old seekbar slider +5 seconds by default (because if 0) app crashes
         //line above: gets selected spinner items position and uses this to get the associated array entry with the correct value in seconds.
 
-        //Overwrite countdown id if countdown exists already
-        if (this.existingCountdownId >= 0) {
-            this.getNewEditedCountdown().setCouId(this.existingCountdownId);
-            Log.d(TAG, "loadFormValues: Overwrote/Edited countdown.");
-        } else {
-            Log.d(TAG, "loadFormValues: New countdown created.");
+        if (couId != null && couId >= 0) {
+            this.getNewEditedCountdown().setCouId(couId); //set couId of countdown again so we can overwrite it (so we can edit the countdown)
         }
     }
 
@@ -439,7 +435,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         for (CheckBox userLibraryCheckbox : this.userLibraryCheckboxes) {
             if (userLibraryCheckbox.isChecked()) {
                 String libId = userLibraryCheckbox.getTag().toString();
-                selectedUserLibraries.add(UserLibrary.query(this,libId));
+                selectedUserLibraries.add(UserLibrary.query(this, libId));
             }
         }
 
@@ -449,7 +445,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             //Now check whether userLibs are installed if not install local default one and select it.
             if (this.userLibraryCheckboxes.size() > 0) {
                 String libId = this.userLibraryCheckboxes.get(0).getTag().toString(); //assumes that at least one userlib is installed!
-                selectedUserLibraries.add(UserLibrary.query(this,libId));
+                selectedUserLibraries.add(UserLibrary.query(this, libId));
             } else {
                 Toast.makeText(this, R.string.modifyCountdownActivity_countdown_userLibrary_noInstalled, Toast.LENGTH_SHORT).show();
                 UserLibrary defaultUserLib = FirebaseStorageMgr.saveDefaultUserLibrary(this);
