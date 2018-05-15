@@ -109,8 +109,8 @@ public class FirebaseStorageMgr {
         //This method has no validation whether default user lib was already downloaded!
         UserLibrary userLibrary = null;
         try {
-            userLibrary = FirebaseStorageMgr.mapJsonToUserLibraryObj(new JSONObject(IConstants_FirebaseStorageMgr.DEFAULT.LIB_JSON_DEFAULT));
-            DatabaseMgr.getSingletonInstance(context).saveUserLibrary(context,userLibrary);
+            userLibrary = FirebaseStorageMgr.mapJsonToUserLibraryObj(context, new JSONObject(IConstants_FirebaseStorageMgr.DEFAULT.LIB_JSON_DEFAULT));
+            userLibrary.save(context);
             Log.d(TAG, "saveDefaultUserLibrary: Tried to save default user lib.");
         } catch (JSONException e) {
             //THIS SHOULD NEVER HAPPEN
@@ -152,7 +152,7 @@ public class FirebaseStorageMgr {
         });
     }
 
-    private static UserLibrary mapJsonToUserLibraryObj(@NonNull JSONObject userLibraryJSONObject) {
+    private static UserLibrary mapJsonToUserLibraryObj(@NonNull Context context, @NonNull JSONObject userLibraryJSONObject) {
         Log.d(TAG, "mapJsonToUserLibraryObj: Trying to save userLibrary.");
         UserLibrary userLibrary = null;
 
@@ -186,8 +186,10 @@ public class FirebaseStorageMgr {
                         // convert to char and display it
                         jsonStr.append(sc.nextLine());
                     }
-                    UserLibrary userLibrary = mapJsonToUserLibraryObj(new JSONObject(jsonStr.toString()));
-                    DatabaseMgr.getSingletonInstance(context).saveUserLibrary(context, userLibrary); //save to db
+                    UserLibrary userLibrary = mapJsonToUserLibraryObj(context, new JSONObject(jsonStr.toString()));
+
+                    //save to db
+                    userLibrary.save(context);
 
                 } catch (JSONException e) {
                     Log.e(TAG, "saveNewPackage: Could not parse downloaded userLibrary to JsonObj.");

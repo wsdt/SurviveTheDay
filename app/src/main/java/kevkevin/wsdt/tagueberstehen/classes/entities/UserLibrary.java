@@ -1,16 +1,23 @@
 package kevkevin.wsdt.tagueberstehen.classes.entities;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
+
 import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.Transient;
 import org.json.JSONArray;
 
 import java.util.List;
 
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.greendao_orm.DaoApp;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.greendao_orm.GreenDaoConverter;
+import kevkevin.wsdt.tagueberstehen.classes.services.ServiceMgr;
+
 import org.greenrobot.greendao.DaoException;
 
 @Entity (active = true) //active = true for getting generated methods
@@ -61,6 +68,7 @@ public class UserLibrary {
     @Generated(hash = 559680945)
     public UserLibrary() {
     }
+    
 
     //GETTER/SETTER -------------------------
     public String getLibName() {
@@ -119,16 +127,17 @@ public class UserLibrary {
         this.libId = libId;
     }
 
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 128553479)
-    public void delete() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.delete(this);
+    // ########################## GREEN DAO METHODS ####################################
+
+    /** Deletes userLib */
+    public void delete(@NonNull Context context) {
+        ((DaoApp) context.getApplicationContext()).getDaoSession().getUserLibraryDao().delete(this);
+
+        //Reload all countdowns from db bc. userLibs are cached
+        Countdown.refreshAll(context);
+
+        //Restart notificationservice
+        ServiceMgr.restartNotificationService(context);
     }
 
     /**
@@ -141,6 +150,51 @@ public class UserLibrary {
             throw new DaoException("Entity is detached from DAO context");
         }
         myDao.refresh(this);
+    }
+
+   /** Updates userlib */
+    public void update(@NonNull Context context) {
+        ((DaoApp) context.getApplicationContext()).getDaoSession().getUserLibraryDao().update(this);
+
+        //Restart notification service
+        ServiceMgr.restartNotificationService(context);
+    }
+
+    /** Saves new userLib */
+    public void save(@NonNull Context context) {
+        ((DaoApp) context.getApplicationContext()).getDaoSession().getUserLibraryDao().save(this);
+        //don't restart notification service, bc. new userLibs are not automatically assigned to a countdown
+    }
+
+    /** Queries all userLibs in Db. */
+    public static List<UserLibrary> queryAll(@NonNull Context context) {
+        return ((DaoApp) context.getApplicationContext()).getDaoSession().getUserLibraryDao().queryBuilder().list();
+    }
+
+    /** Queries userLib. */
+    public static UserLibrary query(@NonNull Context context, @NonNull String libId) {
+        UserLibraryDao userLibraryDao = ((DaoApp) context.getApplicationContext()).getDaoSession().getUserLibraryDao();
+        List<UserLibrary> userLibraryList = userLibraryDao.queryBuilder()
+                .where(UserLibraryDao.Properties.LibId.eq(libId))
+                .list();
+
+        if (userLibraryList.size() <= 0) {
+            return null;
+        } else {
+            return userLibraryList.get(0); //bc. of primary key only one element
+        }
+    }
+
+    /**
+     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
+     * Entity must attached to an entity context.
+     */
+    @Generated(hash = 128553479)
+    public void delete() {
+        if (myDao == null) {
+            throw new DaoException("Entity is detached from DAO context");
+        }
+        myDao.delete(this);
     }
 
     /**

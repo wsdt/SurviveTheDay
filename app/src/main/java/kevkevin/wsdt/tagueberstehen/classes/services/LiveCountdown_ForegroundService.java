@@ -8,9 +8,9 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.util.SparseArray;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.annotations.Bug;
@@ -20,7 +20,7 @@ import kevkevin.wsdt.tagueberstehen.classes.manager.NotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
 import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppPurchaseMgr.*;
-import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
+
 import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
 
 import static kevkevin.wsdt.tagueberstehen.classes.services.interfaces.IConstants_LiveCountdown_ForegroundService.NOTIFICATION_ID;
@@ -47,7 +47,7 @@ public class LiveCountdown_ForegroundService extends Service {
      * BUT THE FIRST COUNTDOWN NOTIFICATION HAS TO BE SENT INTO THE STARTFOREGROUND() CALL
      */
     private static final String TAG = "LiveCountdown";
-    private SparseArray<Countdown> loadedCountdownsForLiveCountdown;
+    private List<Countdown> loadedCountdownsForLiveCountdown;
     private NotificationMgr notificationMgrMgr;
     private InAppPurchaseMgr inAppPurchaseMgr;
     public static Thread refreshAllThread;
@@ -67,7 +67,7 @@ public class LiveCountdown_ForegroundService extends Service {
         this.setInAppPurchaseMgr(new InAppPurchaseMgr(this));
 
         //Only do when null at first, because notifications would not be removed when expired! (so we will have to restart whole service for new countdowns)
-        this.setLoadedCountdownsForLiveCountdown(DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this, false, false, true)); //false because this service should be also possible when motivateMe is off
+        this.setLoadedCountdownsForLiveCountdown(Countdown.queryLiveCountdownOn(this)); //false because this service should be also possible when motivateMe is off
 
         startRefreshAll();
 
@@ -104,12 +104,12 @@ public class LiveCountdown_ForegroundService extends Service {
         int foregroundNotificationCount = 0;
 
         for (int i = 0; i<this.getLoadedCountdownsForLiveCountdown().size(); i++) {
-            final Countdown currCountdown = this.getLoadedCountdownsForLiveCountdown().valueAt(i); //because i cannot be final! (valueAt because we want index and not id)
-            Log.d(TAG, "startRefreshAll: Found entry: " + this.getLoadedCountdownsForLiveCountdown().keyAt(i));
+            final Countdown currCountdown = this.getLoadedCountdownsForLiveCountdown().get(i); //because i cannot be final! (valueAt because we want index and not id)
+
             //IMPORTANT: 999999950 - 999999999 reserved for FOREGROUNDCOUNTERSERVICE [999999950+countdownId = foregroundNotificationID, etc.]
             //only show if setting set for that countdown
             //NO FURTHER VALIDATION NECESSARY [untilStartDateTime Value constraints AND onlyLiveCountdowns are all validated in getAllCountdowns]
-            int foregroundServiceNotificationId = NOTIFICATION_ID + (int) currCountdown.getCouId();
+            int foregroundServiceNotificationId = NOTIFICATION_ID + currCountdown.getCouId().intValue();
             Log.d(TAG, "startRefreshAll: foregroundServiceNotification-Id: " + foregroundServiceNotificationId + " (foregroundCount: " + foregroundNotificationCount + ")");
             if ((foregroundNotificationCount++) <= 0) {
                 //only make foreground notification for first countdown, others just get a non-removable notification
@@ -122,7 +122,7 @@ public class LiveCountdown_ForegroundService extends Service {
                     public void success_is_true() {
                         Log.d(TAG, "startRefreshAll: UseMoreCountdownNodes-Package bought. Loaded more live countdowns.");
                         //do not use issueNotification at this moment, because we would send a normal notification and not a countdown counter one btw. a null notification, because livecountdowns have another id range
-                        notificationMgrMgr.getmNotifyMgr().notify(NOTIFICATION_ID + (int) currCountdown.getCouId(), notificationMgrMgr.createCounterServiceNotification(currCountdown));
+                        notificationMgrMgr.getmNotifyMgr().notify(NOTIFICATION_ID + currCountdown.getCouId().intValue(), notificationMgrMgr.createCounterServiceNotification(currCountdown));
                     }
 
                     @Override
@@ -142,7 +142,9 @@ public class LiveCountdown_ForegroundService extends Service {
         //Do after above lines, because so expired countdowns can be modified/removed in createCounterServiceNotification()
         // --> forceReload, because object cannot be updated by mainThread (because service has it's OWN process and so it's own addressspace!)
         //Maybe no problem because of Sqlitehelper caching: maybe forceReload only every 10th loop or so (acc. to battery saving etc.)
-        this.setLoadedCountdownsForLiveCountdown(DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this, true,false, true)); //false because this service should be also possible when motivateMe is off
+        //TODO: Maybe now with greendao not necessary anymore.
+        Countdown.refreshAll(this); //to reload from db
+        this.setLoadedCountdownsForLiveCountdown(Countdown.queryLiveCountdownOn(this)); //false because this service should be also possible when motivateMe is off
     }
 
     public static void stopRefreshAll() {
@@ -170,22 +172,13 @@ public class LiveCountdown_ForegroundService extends Service {
         for (int i=0, nsize=this.getLoadedCountdownsForLiveCountdown().size();i<nsize;i++) {
             //false because this service should be also possible when motivateMe is off
             //Only add here running live countdowns and not expired ones, because we want to show expired msg also when service is off
-            Countdown tmpCountdown = this.getLoadedCountdownsForLiveCountdown().valueAt(i);
+            Countdown tmpCountdown = this.getLoadedCountdownsForLiveCountdown().get(i);
             if (tmpCountdown.isUntilDateInTheFuture()) { //if in past, then just do not remove it
-                allLiveCountdownNotificationIds.add(NOTIFICATION_ID + (int) tmpCountdown.getCouId());
+                allLiveCountdownNotificationIds.add(NOTIFICATION_ID + tmpCountdown.getCouId().intValue());
             } //Important: We have to ensure that expired countdowns are already removeable!
         }
 
         this.getNotificationMgrMgr().removeNotifications(allLiveCountdownNotificationIds);
-    }
-
-
-    public SparseArray<Countdown> getLoadedCountdownsForLiveCountdown() {
-        return loadedCountdownsForLiveCountdown;
-    }
-
-    public void setLoadedCountdownsForLiveCountdown(SparseArray<Countdown> loadedCountdownsForLiveCountdown) {
-        this.loadedCountdownsForLiveCountdown = loadedCountdownsForLiveCountdown;
     }
 
     public NotificationMgr getNotificationMgrMgr() {
@@ -202,6 +195,14 @@ public class LiveCountdown_ForegroundService extends Service {
 
     public void setInAppPurchaseMgr(InAppPurchaseMgr inAppPurchaseMgr) {
         this.inAppPurchaseMgr = inAppPurchaseMgr;
+    }
+
+    public List<Countdown> getLoadedCountdownsForLiveCountdown() {
+        return loadedCountdownsForLiveCountdown;
+    }
+
+    public void setLoadedCountdownsForLiveCountdown(List<Countdown> loadedCountdownsForLiveCountdown) {
+        this.loadedCountdownsForLiveCountdown = loadedCountdownsForLiveCountdown;
     }
     //TODO: refresh notifications with BigCountdown_Stirng() from Countdown.class
 }

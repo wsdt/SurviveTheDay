@@ -27,7 +27,6 @@ import kevkevin.wsdt.tagueberstehen.classes.entities.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CountdownCounter;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppNotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.ShareMgr;
-import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 
 import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_NotificationMgr.*;
 
@@ -63,7 +62,7 @@ public class CountdownActivity extends AppCompatActivity {
         this.setLastIntent(getIntent());
         this.countdownId = this.getLastIntent().getIntExtra(IDENTIFIER_COUNTDOWN_ID, -1);
         //maybe by main menu or notification, but we get the same Extra: COUNTDOWN_ID with the ID
-        if (this.getCountdown() == null) {this.setCountdown(DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this,false).get(this.countdownId));} //load countdown if not already loaded by actionbar menu
+        if (this.getCountdown() == null) {this.setCountdown(Countdown.query(this, this.countdownId));} //load countdown if not already loaded by actionbar menu
         initializeCountdownDataSwipeLayout(); //to restore current bottom view if surface view would get updated (preventing it)
         startCountdownOnUI(); //0 is default value
         loadCountdownDataToUI();
@@ -162,7 +161,7 @@ public class CountdownActivity extends AppCompatActivity {
         //When used outside of onClick, then v might/will be NULL!, also use here user selected quote language packages!
         if (this.getCountdown() != null) { //might be called after countdown is already deleted.
             ((TextSwitcher) findViewById(R.id.swipeLayout_countdownActivity_randomQuotes_quote)).setText(
-                    this.getCountdown().getRandomQuoteSuitableForCountdown()); //use random quote
+                    this.getCountdown().getRandomQuoteSuitableForCountdown(this)); //use random quote
         }
     }
 
@@ -285,7 +284,7 @@ public class CountdownActivity extends AppCompatActivity {
         Log.d(TAG, "onCreateOptionsMenu: Trying to set ShareIntent.");
         if (shareActionProvider != null) {
             try {
-                this.setCountdown(DatabaseMgr.getSingletonInstance(this).getAllCountdowns(this, false).get(this.countdownId));
+                this.setCountdown(Countdown.query(this, this.countdownId));
 
                 //Provider is member so we can refresh share intent!
                 this.setShareActionProvider(shareActionProvider); //must be called before refreshShareIntent()!
@@ -311,7 +310,7 @@ public class CountdownActivity extends AppCompatActivity {
             Resources res = getResources();
             if (this.getCountdown() != null) {
                 Log.d(TAG, "refreshShareIntent: Trying to refresh message (reset extras).");
-                shareIntent = ShareMgr.getSimpleShareIntent(null, res.getString(R.string.app_name), String.format(res.getString(R.string.actionBar_countdownActivity_menu_shareCountdown_shareContent_text), this.getCountdown().getTotalSecondsNoScientificNotation(), this.getCountdown().getCouTitle(), this.getCountdown().getCouDescription()));
+                shareIntent = ShareMgr.getSimpleShareIntent(null, res.getString(R.string.app_name), String.format(res.getString(R.string.actionBar_countdownActivity_menu_shareCountdown_shareContent_text), this.getCountdown().getTotalSecondsNoScientificNotation(this), this.getCountdown().getCouTitle(), this.getCountdown().getCouDescription()));
             } else {
                 Log.e(TAG, "refreshShareIntent: ShareIntent or/and Countdown is NULL! Cannot set/refresh share content. ");
                 shareIntent = ShareMgr.getSimpleShareIntent(null, res.getString(R.string.app_name), res.getString(R.string.error_contactAdministrator));
