@@ -160,7 +160,7 @@
                     android:tag="modifyCountdownActivity_countdown_category_helptext" />
             </RelativeLayout>
 
-            <!-- isActive -->
+            <!-- isCouIsMotivationOn -->
             <TextView
                 style="@style/smallTextLabelOverInputField"
                 android:layout_marginBottom="5dp"
@@ -177,7 +177,7 @@
                 android:layout_marginStart="1dp">
 
                 <ToggleButton
-                    android:id="@+id/isActive"
+                    android:id="@+id/couIsMotivationOn"
                     style="@style/textForForm"
                     android:layout_width="172dp"
                     android:layout_height="40dp"
@@ -286,7 +286,7 @@
                 android:layout_marginStart="1dp">
 
                 <ToggleButton
-                    android:id="@+id/showLiveCountdown"
+                    android:id="@+id/couIsLiveCountdownOn"
                     style="@style/textForForm"
                     android:layout_width="172dp"
                     android:layout_height="40dp"

@@ -22,6 +22,7 @@
     <string name="title_activity_credits">Credits</string><!-- entry also used in actionBar menu-->
     <string name="title_activity_settings">Settings</string><!-- entry also used in actionBar menu-->
     <string name="title_activity_modify_countdown">Create/Edit a countdown</string>
+    <string name="title_activity_countdown_motivation">Become motivated</string>
 
     <!-- ACTIONBAR MENUS:MAINACTIVITY -->
     <string name="actionBar_mainActivity_menu_addNewCountdown">Add new</string>
@@ -269,7 +270,7 @@
 
     <!-- DateTimePicker -->
     <string name="dateTimePicker_dialog_title">Set date and time</string>
-    <string translatable="false" name="dateTimePicker_textView_format_dateTime">%1$s.%2$s.%3$s %4$s:%5$s:%6$s</string>
+    <string name="dateTimePicker_textView_format_dateTime" translatable="false">%1$s.%2$s.%3$s %4$s:%5$s:%6$s</string>
 
     <string name="dateTimePicker_format_date">%1$d.%2$d.%3$d</string>
     <string name="dateTimePicker_format_DateTime">%1$s %2$s:%3$s:%4$s</string>
@@ -291,7 +292,7 @@
     <string name="inAppPurchaseManager_userOwnsPaidAppVersion_dialog_description">You own the paid app version. Thanks for that! Considering this you already own all in-app-products.</string>
     <string name="inAppPurchaseManager_buyManagedInAppProduct_msg_ProductAlreadyBoughtORnotLoggedInOnGoogle">This item might have been already purchased by you or you need to login into your Google account.</string>
     <string name="inAppProductsNode_default_title">Product could not be loaded</string>
-    <string name="inAppProductsNode_default_description">Maybe you have no active internet connection or this is an internal error. </string>
+    <string name="inAppProductsNode_default_description">Maybe you have no couIsMotivationOn internet connection or this is an internal error. </string>
     <string name="inAppProductsNode_default_price">0.00 €</string>
 
     <!-- InApp Purchase Manager NEW (with Helper) -->

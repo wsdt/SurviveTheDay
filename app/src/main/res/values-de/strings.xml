@@ -20,6 +20,7 @@
     <string name="title_activity_credits">Danksagung</string><!-- entry also used in actionBar menu-->
     <string name="title_activity_settings">Einstellungen</string><!-- entry also used in actionBar menu-->
     <string name="title_activity_modify_countdown">Countdown erstellen/editieren</string>
+    <string name="title_activity_countdown_motivation">Werde motiviert</string>
 
     <!-- ACTIONBAR MENUS:MODIFYCOUNTDOWNACTIVITY -->
     <string name="actionBar_modifyCountdownActivity_menu_showSpotlightHelp">Hilfe</string>

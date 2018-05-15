@@ -19,17 +19,13 @@ import android.widget.Toast;
 
 import com.daimajia.swipe.SwipeLayout;
 
-import java.util.ArrayList;
-
-import kevkevin.wsdt.tagueberstehen.classes.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.entities.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
-import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.FirebaseStorageMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
-import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_FirebaseStorageMgr;
 import kevkevin.wsdt.tagueberstehen.classes.services.LiveCountdown_ForegroundService;
 
 import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppPurchaseMgr.*;
@@ -210,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void success_is_true() {
                         Log.d(TAG, "onClick_node_sl_bottomview_rightMenu_deleteNode:success_is_true: User clicked on delete. Trying to erase countdown.");
-                        DatabaseMgr.getSingletonInstance(MainActivity.this).deleteCountdown(MainActivity.this, countdown.getCountdownId());
+                        DatabaseMgr.getSingletonInstance(MainActivity.this).deleteCountdown(MainActivity.this, (int) countdown.getCouId());
                         Toast.makeText(MainActivity.this, R.string.mainActivity_deletedCountdown, Toast.LENGTH_SHORT).show();
                         try { //for better performance try removing node from view without reloading other nodes
                             ((SwipeLayout) v.getParent().getParent()).setVisibility(View.GONE);
@@ -242,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Intent modifyCountdownActivity = new Intent(this, ModifyCountdownActivity.class);
-        modifyCountdownActivity.putExtra(IDENTIFIER_COUNTDOWN_ID, countdown.getCountdownId());
+        modifyCountdownActivity.putExtra(IDENTIFIER_COUNTDOWN_ID, countdown.getCouId());
         startActivity(modifyCountdownActivity);
     }
 
@@ -254,12 +250,12 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        if (countdown.isActive()) {
-            countdown.setActive(false);
-            Log.d(TAG, "onCountdownModifyButtons: Countdown " + countdown.getCountdownId() + " does not motivate now.");
+        if (countdown.isCouIsMotivationOn()) {
+            countdown.setCouIsMotivationOn(false);
+            Log.d(TAG, "onCountdownModifyButtons: Countdown " + countdown.getCouId() + " does not motivate now.");
         } else {
-            countdown.setActive(true);
-            Log.d(TAG, "onCountdownModifyButtons: Countdown " + countdown.getCountdownId() + " does motivate now.");
+            countdown.setCouIsMotivationOn(true);
+            Log.d(TAG, "onCountdownModifyButtons: Countdown " + countdown.getCouId() + " does motivate now.");
         }
         countdown.savePersistently();
         try {
@@ -271,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "onClick_node_sl_bottomview_rightMenu_toggleMotivationNode: Could not change eventMsg. Reloading all nodes.");
             reloadEverything(); //reloadEverything because we have now eventMessages on node which might be different now!
         }
-        Toast.makeText(this, String.format(getResources().getString(R.string.mainActivity_countdownMotivationToggleOnOff), ((countdown.isActive()) ? getResources().getString(R.string.mainActivity_countdownMotivationToggleOnOff_activated) : getResources().getString(R.string.mainActivity_countdownMotivationToggleOnOff_deactivated))), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, String.format(getResources().getString(R.string.mainActivity_countdownMotivationToggleOnOff), ((countdown.isCouIsMotivationOn()) ? getResources().getString(R.string.mainActivity_countdownMotivationToggleOnOff_activated) : getResources().getString(R.string.mainActivity_countdownMotivationToggleOnOff_deactivated))), Toast.LENGTH_SHORT).show();
     }
 
     private Countdown getCountdownFromNode(View v) { //needs to be Swipelayout!
@@ -316,18 +312,18 @@ public class MainActivity extends AppCompatActivity {
 
         //[2]: extract old relativelayout from swipelayout
         RelativeLayout countdownView = swipeLayout.findViewById(R.id.node_countdown);
-        ((TextView) countdownView.findViewById(R.id.countdownTitle)).setText(countdown.getCountdownTitle());
-        ((TextView) countdownView.findViewById(R.id.countdownDescription)).setText(countdown.getCountdownDescription());
+        ((TextView) countdownView.findViewById(R.id.couTitle)).setText(countdown.getCouTitle());
+        ((TextView) countdownView.findViewById(R.id.couDescription)).setText(countdown.getCouDescription());
         //set event msg to view (with icon, color etc. in method automatically)
         countdown.getEventMsgOrAndSetView(((LinearLayout) countdownView.findViewById(R.id.countdownEventMsg_ll))); //sets text etc. (works because of reference)
 
-        //((TextView) countdownView.findViewById(R.id.startAndUntilDateTime)).setText(String.format(getResources().getString(R.string.mainActivity_countdownNode_DateTimeValues), countdown.getStartDateTime(), countdown.getUntilDateTime()));
+        //((TextView) countdownView.findViewById(R.id.startAndUntilDateTime)).setText(String.format(getResources().getString(R.string.mainActivity_countdownNode_DateTimeValues), countdown.getCouStartDateTime(), countdown.getCouUntilDateTime()));
         //Set tag to swipeLayout! so we can access it from every top/right menu etc.
-        swipeLayout.setTag(COUNTDOWN_VIEW_TAG_PREFIX + countdown.getCountdownId()); //IMPORTANT: to determine what countdown to open in CountdownActivity
+        swipeLayout.setTag(COUNTDOWN_VIEW_TAG_PREFIX + countdown.getCouId()); //IMPORTANT: to determine what countdown to open in CountdownActivity
 
         //set category color
         View categoryColor = countdownView.findViewById(R.id.categoryColorView);
-        categoryColor.setBackgroundColor(Color.parseColor(countdown.getCategory()));
+        categoryColor.setBackgroundColor(Color.parseColor(countdown.getCouCategoryColor()));
 
         //expand categorycolor to whole height of node (because of wrap content) --> HAS TO BE AFTER SETTEXT (because they change the size of the view)
         countdownView.measure(countdownView.getLayoutParams().width, countdownView.getLayoutParams().height); //remeasure because of settext etc.

@@ -20,15 +20,13 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.GregorianCalendar;
 import java.util.Scanner;
 
 import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.annotations.Bug;
 import kevkevin.wsdt.tagueberstehen.annotations.Enhance;
-import kevkevin.wsdt.tagueberstehen.annotations.Test;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
-import kevkevin.wsdt.tagueberstehen.classes.UserLibrary;
+import kevkevin.wsdt.tagueberstehen.classes.entities.UserLibrary;
 import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_FirebaseStorageMgr;
 import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;

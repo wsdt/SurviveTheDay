@@ -6,10 +6,10 @@
     <color name="colorAccent">#FF8140</color>
     -->
 
-    <!-- Main colours -->
-    <color name="colorPrimary">#2c84ff</color>
-    <color name="colorPrimaryDark">#0011ff</color>
-    <color name="colorAccent">#ff9d00</color>
+    <!-- Main colours (calculated) -->
+    <color name="colorPrimary">#0B4FD4</color>
+    <color name="colorPrimaryDark">#000c9f</color> <!-- do not change this color, bc. also used for drawables -->
+    <color name="colorAccent">#E88F00</color>
 
     <!-- Black to White -->
     <color name="colorDark_111">#111</color>
@@ -21,5 +21,5 @@
 
     <!-- Extra colours: Also used for drawables! (so do not change) -->
     <color name="colorRed">#bf0000</color>
-    <color name="colorBlue">#000c9f</color>
+    <color name="colorGreen">#006c0c</color>
 </resources>

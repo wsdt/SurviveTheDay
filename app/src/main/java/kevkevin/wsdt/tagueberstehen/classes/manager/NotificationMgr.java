@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import kevkevin.wsdt.tagueberstehen.R;
-import kevkevin.wsdt.tagueberstehen.classes.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.entities.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CountdownCounter;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
@@ -69,7 +69,7 @@ public class NotificationMgr { //one instance for every countdown or similar
                     @Override
                     public void success_is_true() {
                         Log.d(TAG, "scheduleAllActiveCountdownNotifications:success_is_true: Product is bought. Scheduling countdown.");
-                        scheduleNotification(currCountdown.getCountdownId(), (long) currCountdown.getNotificationInterval());
+                        scheduleNotification((int) currCountdown.getCouId(), (long) currCountdown.getCouMotivationIntervalSeconds());
                     }
 
                     @Override
@@ -79,7 +79,7 @@ public class NotificationMgr { //one instance for every countdown or similar
                 });
             } else {
                 Log.d(TAG, "scheduleAllActiveCountdownNotifications: Scheduling first countdown (always free).");
-                scheduleNotification(currCountdown.getCountdownId(), (long) currCountdown.getNotificationInterval());
+                scheduleNotification((int) currCountdown.getCouId(), (long) currCountdown.getCouMotivationIntervalSeconds());
             }
         }
         Log.d(TAG, "scheduleAllActiveCountdownNotifications: Ended method.");
@@ -130,16 +130,16 @@ public class NotificationMgr { //one instance for every countdown or similar
 
     public Notification createCounterServiceNotification(Countdown countdown) {
         Intent tmpIntent = new Intent(this.getActivityThisTarget(), getTargetActivityClass());
-        tmpIntent.putExtra(IDENTIFIER_COUNTDOWN_ID,countdown.getCountdownId()); //countdown to open
+        tmpIntent.putExtra(IDENTIFIER_COUNTDOWN_ID,countdown.getCouId()); //countdown to open
         //make this locally because of the same reason why pending intent has no getter
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this.getActivityThisTarget(),
-                countdown.getCountdownId(),
+                (int) countdown.getCouId(),
                 tmpIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
         //because one notification for countdown
-        //return (Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID+countdown.getCountdownId()); //e.g. 100 (high enough for collision avoidance) + countdownId (0,1,2,...) = 100,101,102 so easy to modify afterwards
+        //return (Constants.COUNTDOWNCOUNTERSERVICE.NOTIFICATION_ID+countdown.getCouId()); //e.g. 100 (high enough for collision avoidance) + countdownId (0,1,2,...) = 100,101,102 so easy to modify afterwards
         //not deprecated one requires api 16 (min is 15)
         boolean onGoing;
         String contentText;
@@ -149,20 +149,20 @@ public class NotificationMgr { //one instance for every countdown or similar
             //Remove countdown if it has expired (this method will never be called again for that countdown!
             Log.d(TAG, "createCounterServiceNotification: Countdown has expired! Making notification removable and making small changes.");
             onGoing = false; //notification is now removeable
-            contentText = String.format(getRes().getString(R.string.customNotification_countdownCounter_expired),countdown.getUntilDateTime());
+            contentText = String.format(getRes().getString(R.string.customNotification_countdownCounter_expired),countdown.getCouUntilDateTime());
             shareText = getRes().getString(R.string.share_livecountdown_text_expired);
         } else { //Countdown has not expired
             onGoing = true; //not removeable
             String countdownTmpStr = CountdownCounter.craftBigCountdownString(countdown.getTotalSeconds().longValue());
             contentText = String.format(getRes().getString(R.string.customNotification_countdownCounter_running),countdownTmpStr);
-            shareText = String.format(getRes().getString(R.string.share_livecountdown_text_running),countdown.getCountdownTitle(),countdownTmpStr);
+            shareText = String.format(getRes().getString(R.string.share_livecountdown_text_running),countdown.getCouTitle(),countdownTmpStr);
         }
 
         //Also liveCountdown should be shareable
         PendingIntent sharePendingIntent = PendingIntent.getActivity(
                 this.getActivityThisTarget(),
-                countdown.getCountdownId(), //use same request code as in other pendingintent above (really important!, otherwise not correct pendingintent used)
-                ShareMgr.getSimpleShareIntent(null,countdown.getCountdownTitle(),shareText+" "+getRes().getString(R.string.share_postfix_appreference)),
+                (int) countdown.getCouId(), //use same request code as in other pendingintent above (really important!, otherwise not correct pendingintent used)
+                ShareMgr.getSimpleShareIntent(null,countdown.getCouTitle(),shareText+" "+getRes().getString(R.string.share_postfix_appreference)),
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 
@@ -170,7 +170,7 @@ public class NotificationMgr { //one instance for every countdown or similar
                 .setSmallIcon(R.drawable.light_notification_appicon)
                 //Large icon is too small on new smartphones
                 //.setLargeIcon(BitmapFactory.decodeResource(this.getRes(),R.drawable.notification_timebased_color))
-                .setContentTitle(countdown.getCountdownTitle())
+                .setContentTitle(countdown.getCouTitle())
                 .setAutoCancel(false) //remove after clicking on it
                 .setContentIntent(pendingIntent)
                 .setOngoing(onGoing) //notification is NOT REMOVEABLE
@@ -193,7 +193,7 @@ public class NotificationMgr { //one instance for every countdown or similar
         //make this locally because of the same reason why pending intent has no getter
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this.getActivityThisTarget(),
-                this.getmNotificationId(),// instead of notificationId this was set (Problem: Always last intent was used): countdown.getCountdownId(),
+                this.getmNotificationId(),// instead of notificationId this was set (Problem: Always last intent was used): countdown.getCouId(),
                 tmpIntent,PendingIntent.FLAG_UPDATE_CURRENT);
 
         //add notification
@@ -223,7 +223,7 @@ public class NotificationMgr { //one instance for every countdown or similar
         //IMPORTANT: Make no GETTER for this method, because this class is used for multiple countdowns!! So only the last assignment would open countdown
         //Create pending intent
         Intent tmpIntent = new Intent(this.getActivityThisTarget(), getTargetActivityClass());
-        tmpIntent.putExtra(IDENTIFIER_COUNTDOWN_ID,countdown.getCountdownId()); //countdown to open
+        tmpIntent.putExtra(IDENTIFIER_COUNTDOWN_ID,countdown.getCouId()); //countdown to open
 
         //Following attributes are added to call them in countdownActivity and showing in-app-notification again.
         tmpIntent.putExtra(IDENTIFIER_CONTENT_TITLE, title);
@@ -234,7 +234,7 @@ public class NotificationMgr { //one instance for every countdown or similar
         //make this locally because of the same reason why pending intent has no getter
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this.getActivityThisTarget(),
-                this.getmNotificationId(),// instead of notificationId this was set (Problem: Always last intent was used): countdown.getCountdownId(),
+                this.getmNotificationId(),// instead of notificationId this was set (Problem: Always last intent was used): countdown.getCouId(),
                 tmpIntent,PendingIntent.FLAG_UPDATE_CURRENT);
 
         //For addAction (shareBtn)
@@ -252,7 +252,7 @@ public class NotificationMgr { //one instance for every countdown or similar
                 .setContentTitle(title)
                 //onMs = how long on / offMs = how long off (repeating, so blinking!)
                 //USE category color
-                .setLights(Color.parseColor(countdown.getCategory()), NOTIFICATION_BLINK_ON_TIME_IN_MS, NOTIFICATION_BLINK_OFF_TIME_IN_MS)
+                .setLights(Color.parseColor(countdown.getCouCategoryColor()), NOTIFICATION_BLINK_ON_TIME_IN_MS, NOTIFICATION_BLINK_OFF_TIME_IN_MS)
                 .setTicker(this.getRes().getString(R.string.customNotification_notificationTicker))
                 .setAutoCancel(false) //remove NOT after clicking on it (realizing with button instead [action below])
                 .setOngoing(false) //notification IS REMOVABLE
@@ -261,7 +261,7 @@ public class NotificationMgr { //one instance for every countdown or similar
                 .addAction(R.drawable.colorgrey555_share,this.getActivityThisTarget().getString(R.string.actionBar_countdownActivity_menu_shareCountdown_title),sharePendingIntent)
                 .setContentText(text));
 
-        Log.d(TAG, "createNotfiication: Tried to set notification color: "+countdown.getCategory());
+        Log.d(TAG, "createNotfiication: Tried to set notification color: "+countdown.getCouCategoryColor());
 
         return this.getmNotificationId(); //because randomly generated
         //return (mNotificationId-1); //saved under that id-1 because incremented
@@ -326,11 +326,11 @@ public class NotificationMgr { //one instance for every countdown or similar
         NotificationContent randomNotification = new NotificationContent(); //create custom instance (important not to use same instance for each cateogry)
 
         randomNotification.titleList.addAll(Arrays.asList(this.getRes().getStringArray(R.array.customNotification_random_timebased_titles))); //converts array to list and adds all of them
-        randomNotification.textList.addAll(Arrays.asList(String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_0_secondsToGo),countdown.getCountdownTitle(),countdown.getTotalSecondsNoScientificNotation()),
-                String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_1_percentageLeft),countdown.getCountdownTitle(),HelperClass.formatCommaNumber(countdown.getRemainingPercentage(true),2)),
-                String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_2_countdownEndsOn),countdown.getCountdownTitle(),countdown.getUntilDateTime()),
-                String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_3_percentageAchieved),countdown.getCountdownTitle(),HelperClass.formatCommaNumber(countdown.getRemainingPercentage(false),2)),
-                String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_4_notificationInterval),countdown.getCountdownTitle(),(this.getRes().getStringArray(R.array.countdownIntervalSpinner_LABELS)[(Arrays.asList(this.getRes().getStringArray(R.array.countdownIntervalSpinner_VALUES)).indexOf(""+countdown.getNotificationInterval()))])))); //get label of corresponding seconds of strings.xml
+        randomNotification.textList.addAll(Arrays.asList(String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_0_secondsToGo),countdown.getCouTitle(),countdown.getTotalSecondsNoScientificNotation()),
+                String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_1_percentageLeft),countdown.getCouTitle(),HelperClass.formatCommaNumber(countdown.getRemainingPercentage(true),2)),
+                String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_2_countdownEndsOn),countdown.getCouTitle(),countdown.getCouUntilDateTime()),
+                String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_3_percentageAchieved),countdown.getCouTitle(),HelperClass.formatCommaNumber(countdown.getRemainingPercentage(false),2)),
+                String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_4_notificationInterval),countdown.getCouTitle(),(this.getRes().getStringArray(R.array.countdownIntervalSpinner_LABELS)[(Arrays.asList(this.getRes().getStringArray(R.array.countdownIntervalSpinner_VALUES)).indexOf(""+countdown.getCouMotivationIntervalSeconds()))])))); //get label of corresponding seconds of strings.xml
         randomNotification.iconList.addAll(Arrays.asList(R.drawable.light_notification_timebased_clock,R.drawable.light_notification_timebased_clockalert));
 
         //Choose one for each arraylist by random index (max is size-1!)

@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.daimajia.numberprogressbar.NumberProgressBar;
 
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
+import kevkevin.wsdt.tagueberstehen.classes.entities.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.manager.GamificationMgr;
 import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
 import kevkevin.wsdt.tagueberstehen.R;
@@ -88,7 +89,7 @@ public class CountdownCounter {
                      * Evaluation done to be more efficient, bc. this method would also get called when user leaves activity.*/
                     if (getCountdown().getRemainingPercentage(true) <= 2) {
                         GamificationMgr.showKonfetti((ViewGroup) getCountdownActivityContext().findViewById(R.id.content_main), getCountdown());
-                        Toast.makeText(getCountdownActivityContext(), String.format(getCountdownActivityContext().getResources().getString(R.string.countdown_info_untilDateInPast), getCountdown().getUntilDateTime()), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getCountdownActivityContext(), String.format(getCountdownActivityContext().getResources().getString(R.string.countdown_info_untilDateInPast), getCountdown().getCouUntilDateTime()), Toast.LENGTH_SHORT).show();
                     }
                 }
                 //Set value for progressbar

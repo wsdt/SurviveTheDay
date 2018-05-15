@@ -10,23 +10,28 @@
 
     <!-- INTENT FILTER VIEW FOR GOOGLE INDEXING -->
     <!-- It's also possible to constraint, which files/data we want to backup! just google for fullbackupcontent! (own xml to create) -->
-    <!-- Also now just static appIcon: we could also distinguish between roundIcons etc: android:roundIcon="@mipmap/ic_launcher_round"
-                TODO: which might be optically more nice for newer phone so we should do it in future! android:roundIcon="@mipmap/ic_launcher_round"-->
-    <!-- AppIcon: For icon use not a round one, because looks terrible, for round one use round icon
+    <!--
+ Also now just static appIcon: we could also distinguish between roundIcons etc: android:roundIcon="@mipmap/ic_launcher_round"
+                TODO: which might be optically more nice for newer phone so we should do it in future! android:roundIcon="@mipmap/ic_launcher_round"
+    -->
+    <!--
+ AppIcon: For icon use not a round one, because looks terrible, for round one use round icon
 
-    LargeHeap[true]/HardwareAccelerated[false] for older phones (hashmaps outofmemoryexception etc.)-->
+    LargeHeap[true]/HardwareAccelerated[false] for older phones (hashmaps outofmemoryexception etc.)
+    -->
     <application
+        android:name=".classes.manager.storagemgr.greendao_orm.DaoApp"
         android:allowBackup="true"
-        android:hardwareAccelerated="false"
-        android:largeHeap="true"
         android:fullBackupContent="true"
+        android:hardwareAccelerated="false"
         android:icon="@mipmap/ic_launcher_square"
-        android:roundIcon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!-- IMPORTANT: Do NOT set orientation (portrait or similar) because Android 8.0 crashes because activity not fullscreen!  -->
+        <!-- IMPORTANT: Do NOT set orientation (portrait or similar) because Android 8.0 crashes because activity not fullscreen! -->
 
 
         <!-- Still necessary: Declare interstitial ad (admob) explicitely fullscreen [because Admob for Android 8.0 not uptodate enough] -->
@@ -34,7 +39,6 @@
             android:name="com.google.android.gms.ads.AdActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             tools:replace="android:theme" />
-
         <activity
             android:name=".MainActivity"
             android:theme="@style/SplashThemeWithActionBar">
@@ -45,7 +49,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
 
         <!-- Also splash theme here, so we can show appIcon while opening app from notification (BUT WITH ACTIONBAR) -->
         <activity
@@ -65,11 +68,11 @@
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
-        <!-- windowSoftInputMode:StateUnchanged>>> don't change keyboard on activity startup [prevent auto-focus keyboard] (e.g. don't show it if it isn't already shown, but if it was open when entering the activity, leave it open).-->
+        <!-- windowSoftInputMode:StateUnchanged>>> don't change keyboard on activity startup [prevent auto-focus keyboard] (e.g. don't show it if it isn't already shown, but if it was open when entering the activity, leave it open). -->
         <activity
             android:name=".ModifyCountdownActivity"
-            android:windowSoftInputMode="stateUnchanged"
-            android:label="@string/title_activity_modify_countdown">
+            android:label="@string/title_activity_modify_countdown"
+            android:windowSoftInputMode="stateUnchanged">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
@@ -112,7 +115,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
-
     </application>
 
 </manifest>

@@ -23,7 +23,7 @@ import com.daimajia.swipe.SwipeLayout;
 
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
-import kevkevin.wsdt.tagueberstehen.classes.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.entities.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.CountdownCounter;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppNotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.ShareMgr;
@@ -175,10 +175,10 @@ public class CountdownActivity extends AppCompatActivity {
         setNewRandomQuote(null);
         Log.d(TAG, "loadCountdownDataToUI: Trying to load countdown details to UI.");
         if (this.getCountdown() != null) {
-            ((TextView) findViewById(R.id.swipeLayout_countdownActivity_countdownData_title)).setText(this.getCountdown().getCountdownTitle());
-            ((TextView) findViewById(R.id.swipeLayout_countdownActivity_countdownData_description)).setText(this.getCountdown().getCountdownDescription());
-            ((TextView) findViewById(R.id.swipeLayout_countdownActivity_countdownData_fromDateTime)).setText(this.getCountdown().getStartDateTime());
-            ((TextView) findViewById(R.id.swipeLayout_countdownActivity_countdownData_untilDateTime)).setText(this.getCountdown().getUntilDateTime());
+            ((TextView) findViewById(R.id.swipeLayout_countdownActivity_countdownData_title)).setText(this.getCountdown().getCouTitle());
+            ((TextView) findViewById(R.id.swipeLayout_countdownActivity_countdownData_description)).setText(this.getCountdown().getCouDescription());
+            ((TextView) findViewById(R.id.swipeLayout_countdownActivity_countdownData_fromDateTime)).setText(this.getCountdown().getCouStartDateTime());
+            ((TextView) findViewById(R.id.swipeLayout_countdownActivity_countdownData_untilDateTime)).setText(this.getCountdown().getCouUntilDateTime());
         } else { //do not show toast or similar (because already showing in startCountdownOnUI())
             Log.e(TAG, "loadCountdownDataToUI: Countdown not found. Could not load countdown data.");
         }
@@ -311,7 +311,7 @@ public class CountdownActivity extends AppCompatActivity {
             Resources res = getResources();
             if (this.getCountdown() != null) {
                 Log.d(TAG, "refreshShareIntent: Trying to refresh message (reset extras).");
-                shareIntent = ShareMgr.getSimpleShareIntent(null, res.getString(R.string.app_name), String.format(res.getString(R.string.actionBar_countdownActivity_menu_shareCountdown_shareContent_text), this.getCountdown().getTotalSecondsNoScientificNotation(), this.getCountdown().getCountdownTitle(), this.getCountdown().getCountdownDescription()));
+                shareIntent = ShareMgr.getSimpleShareIntent(null, res.getString(R.string.app_name), String.format(res.getString(R.string.actionBar_countdownActivity_menu_shareCountdown_shareContent_text), this.getCountdown().getTotalSecondsNoScientificNotation(), this.getCountdown().getCouTitle(), this.getCountdown().getCouDescription()));
             } else {
                 Log.e(TAG, "refreshShareIntent: ShareIntent or/and Countdown is NULL! Cannot set/refresh share content. ");
                 shareIntent = ShareMgr.getSimpleShareIntent(null, res.getString(R.string.app_name), res.getString(R.string.error_contactAdministrator));

@@ -1,6 +1,5 @@
 package kevkevin.wsdt.tagueberstehen;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -11,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -19,12 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import kevkevin.wsdt.tagueberstehen.annotations.Enhance;
-import kevkevin.wsdt.tagueberstehen.annotations.Test;
-import kevkevin.wsdt.tagueberstehen.classes.Countdown;
-import kevkevin.wsdt.tagueberstehen.classes.UserLibrary;
 import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
-import kevkevin.wsdt.tagueberstehen.classes.manager.GamificationMgr;
-import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.DatabaseMgr;
 
 @Enhance (message = "XML looks terrible, create a nicer UI for this activity. You can also add yourself as developer here if you want.")
 public class CreditsActivity extends AppCompatActivity {
