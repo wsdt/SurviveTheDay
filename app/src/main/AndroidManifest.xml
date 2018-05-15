@@ -89,7 +89,10 @@
             android:noHistory="true"
             android:theme="@style/SplashTheme" />
         <activity android:name=".InAppPurchaseActivity" />
+    <activity android:name=".util.TodaysFeelingsActivity">
 
+        </activity>
+		
         <!-- BROADCAST RECEIVERS FOR REGULAR NOTIFICATIONS (maybe replacing background service in future) -->
         <receiver
             android:name=".classes.services.Kickstarter_BootAndGeneralReceiver"
@@ -115,6 +118,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
+   
     </application>
 
 </manifest>
