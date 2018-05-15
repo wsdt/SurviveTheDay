@@ -490,6 +490,7 @@ public class Countdown {
     }
 
     /** Updates countdown */
+    @Deprecated //use save
     public void update(@NonNull Context context) {
         ((DaoApp) context.getApplicationContext()).getDaoSession().update(this);
 
@@ -501,7 +502,7 @@ public class Countdown {
      * Saves new userLib
      */
     public void save(@NonNull Context context) {
-        ((DaoApp) context.getApplicationContext()).getDaoSession().getCountdownDao().save(this);
+        ((DaoApp) context.getApplicationContext()).getDaoSession().getCountdownDao().insertOrReplace(this);
 
         //TODO: Maybe this block should be in future sth else (separation of concerns), so we might be able to ensure that this is also checked on device start etc.
         //When saved then validate whether startDate is in future and if so, then schedule broadcast receiver for restarting all services so countdown gets started without opening app

@@ -153,6 +153,7 @@ public class UserLibrary {
     }
 
    /** Updates userlib */
+   @Deprecated //use save
     public void update(@NonNull Context context) {
         ((DaoApp) context.getApplicationContext()).getDaoSession().getUserLibraryDao().update(this);
 
@@ -162,7 +163,7 @@ public class UserLibrary {
 
     /** Saves new userLib */
     public void save(@NonNull Context context) {
-        ((DaoApp) context.getApplicationContext()).getDaoSession().getUserLibraryDao().save(this);
+        ((DaoApp) context.getApplicationContext()).getDaoSession().getUserLibraryDao().insertOrReplace(this);
         //don't restart notification service, bc. new userLibs are not automatically assigned to a countdown
     }
 
