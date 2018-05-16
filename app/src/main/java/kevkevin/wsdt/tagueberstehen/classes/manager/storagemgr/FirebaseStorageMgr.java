@@ -31,7 +31,7 @@ import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IFirebaseStorageMgr;
 import kevkevin.wsdt.tagueberstehen.interfaces.IGlobal;
 
-//IMPORTANT: FirebaseObjs TO JavaObjs TO SQL and reverse
+
 public class FirebaseStorageMgr {
     private static final String TAG = "FirebaseStorageMgr";
     /**
@@ -44,6 +44,10 @@ public class FirebaseStorageMgr {
     /* #########################################################################################################
      * TODO: ########## UPLOAD PROCEDURES ###########################################################################
      * ##########################################################################################################*/
+
+    /** TODO: https://stackoverflow.com/questions/33033418/android-get-user-id-without-requiring-scary-for-user-permissions
+     * --> FOR NEW USER LIBRARIES */
+
 
     /** IMPORTANT: This method should be uptodate, with the current used json version code!
      * Json-Versioncode (/v1/ or /v2/ as folder on Firebase, which can have completely different structures). */
@@ -70,41 +74,6 @@ public class FirebaseStorageMgr {
     }
 
 
-
-    /**
-     * Download default userLibs (e.g.), but do this only once at the first time the app is called (versionized)
-     * Could be also called, if lastEditOn is not the same as the downloadedLibs. (do not use a separate version in Json!)
-     */
-    @Bug(problem = "We cannot download here multiple packages at the same time (maybe because of the thread " +
-            "in saveNewPackage() --> but necessary [networkonmainthreadexception]). Both packages are successfully " +
-            "saved, but the second one does not contain any libraryLines :(",
-            priority = Bug.Priority.HIGH, byDeveloper = IGlobal.DEVELOPERS.WSDT)
-    @Enhance (message = "To prevent unneccessary errors bc. NO userlibrary is installed (bad usability), just keep" +
-            "a local copy of one default library, so the app can work and then SAVE IT AS JSON HERE INTO Db INSTEAD OF " +
-            "DOWNLOADING.")
-    /*public static void downloadDefaultData(@NonNull Context context) {
-        final GlobalAppSettingsMgr globalAppSettingsMgr = new GlobalAppSettingsMgr(context);
-        if (!globalAppSettingsMgr.isFirebaseDefaultDataAlreadyDownloaded() && HelperClass.isNetworkAvailable(context)) {
-            Toast.makeText(context, R.string.firebaseStorageMgr_install_userlibrary_defaultdata, Toast.LENGTH_SHORT).show();
-
-            //By default only following data (so users have to download desired firebase libs)
-            //FirebaseStorageMgr.downloadNewPackage(context, "quotes_en." + IConstants_FirebaseStorageMgr.LIB_FILEEXTENSION);
-
-            FirebaseStorageMgr.downloadNewPackage(context, IConstants_FirebaseStorageMgr.LIB_JSON_VERSION_FOLDER + "/en/quotes/quotes." + IConstants_FirebaseStorageMgr.LIB_FILEEXTENSION, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
-                @Override
-                public void success_is_true() {
-                    //do this only if it was really successful (so also real failure did not happen)
-                    globalAppSettingsMgr.setFirebaseDefaultDataAlreadyDownloaded(true); //is only set if internet was available and not already set
-                    Log.d(TAG, "downloadDefaultData: Downloaded default data.");
-                }
-
-                @Override
-                public void failure_is_false() {
-                    Log.e(TAG, "downloadDefaultData: Could not download default data!");
-                }
-            });
-        }
-    }*/
     public static UserLibrary saveDefaultUserLibrary(@NonNull Context context) {
         //This method has no validation whether default user lib was already downloaded!
         UserLibrary userLibrary = null;
@@ -121,6 +90,14 @@ public class FirebaseStorageMgr {
         return userLibrary;
     }
 
+
+    @Bug(problem = "We cannot download here multiple packages at the same time (maybe because of the thread " +
+            "in saveNewPackage() --> but necessary [networkonmainthreadexception]). Both packages are successfully " +
+            "saved, but the second one does not contain any libraryLines :(",
+            priority = Bug.Priority.HIGH, byDeveloper = IGlobal.DEVELOPERS.WSDT)
+    @Enhance (message = "To prevent unneccessary errors bc. NO userlibrary is installed (bad usability), just keep" +
+            "a local copy of one default library, so the app can work and then SAVE IT AS JSON HERE INTO Db INSTEAD OF " +
+            "DOWNLOADING.")
     public static void downloadNewPackage(@NonNull final Context context, @NonNull String relChildPath, @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
         final StorageReference childFileReference = getStorageReference(context).child(relChildPath);
 
@@ -159,6 +136,7 @@ public class FirebaseStorageMgr {
         try {
             userLibrary = new UserLibrary(
                     userLibraryJSONObject.getString("libId"),
+                    userLibraryJSONObject.getString("libDescription"),
                     userLibraryJSONObject.getString("libName"),
                     userLibraryJSONObject.getString("libLanguageCode"),
                     userLibraryJSONObject.getString("createdBy"),
