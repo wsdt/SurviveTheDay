@@ -23,14 +23,14 @@ import java.util.UUID;
 import kevkevin.wsdt.tagueberstehen.BuildConfig;
 import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
-import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppPurchaseMgr.*;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IInAppPurchaseMgr.*;
 import kevkevin.wsdt.tagueberstehen.util.IabHelper;
 import kevkevin.wsdt.tagueberstehen.util.IabResult;
 import kevkevin.wsdt.tagueberstehen.util.Inventory;
 import kevkevin.wsdt.tagueberstehen.util.Purchase;
 import kevkevin.wsdt.tagueberstehen.util.SkuDetails;
 
-import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppPurchaseMgr.USE_STATIC_TEST_INAPP_PRODUCTS;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IInAppPurchaseMgr.USE_STATIC_TEST_INAPP_PRODUCTS;
 
 
 //TODO IMPORTANT TO RESOLVE ######################################################################################

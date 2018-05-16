@@ -1,6 +1,6 @@
 package kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces;
 
-public interface IConstants_GlobalAppSettingsMgr {
+public interface IGlobalAppSettingsMgr {
     String SHAREDPREFERENCES_DBNAME = "APP_SETTINGS";
     String SPIDENTIFIER_SPOTLIGHTHELP_MODIFYCOUNTDOWNACTIVITY = "SPOTLIGHT_MODIFY_ACTIVITY_ALREADYSHOWN_v1"; /**if spotlight updated just increment v{nr}*/
     String SPIDENTIFIER_FIREBASESTORAGEMGR_DEFAULTDATADOWNLOADED = "FIREBASE_DEFAULTDATA_DOWNLOADED_v1"; /**if default libs (e.g.) already downloaded v{nr}*/

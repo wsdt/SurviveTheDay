@@ -19,11 +19,11 @@ import kevkevin.wsdt.tagueberstehen.classes.entities.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.manager.NotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
-import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppPurchaseMgr.*;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IInAppPurchaseMgr.*;
 
-import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
+import kevkevin.wsdt.tagueberstehen.interfaces.IGlobal;
 
-import static kevkevin.wsdt.tagueberstehen.classes.services.interfaces.IConstants_LiveCountdown_ForegroundService.NOTIFICATION_ID;
+import static kevkevin.wsdt.tagueberstehen.classes.services.interfaces.ILiveCountdown_ForegroundService.NOTIFICATION_ID;
 
 @Enhance (message = "Because of the separate process of this service (which is needed to keep the service running regardless whether the app is" +
         "closed or not), we have another memory range and have no access to current objects. So we have to get all countdowns from the sql table" +
@@ -38,7 +38,7 @@ import static kevkevin.wsdt.tagueberstehen.classes.services.interfaces.IConstant
         "which might be really annoying to users!",
         possibleSolution = "Not a good solution but maybe a working one might be deleting both notifications instead of editing them, and then" +
                 "just recreating them in the same order, so the user might not recognize any issues. As the notifications are rebuild regardless" +
-                "of this solution this might be eventually a not too inefficient solution. ", byDeveloper = IConstants_Global.DEVELOPERS.WSDT,
+                "of this solution this might be eventually a not too inefficient solution. ", byDeveloper = IGlobal.DEVELOPERS.WSDT,
         priority = Bug.Priority.HIGH)
 public class LiveCountdown_ForegroundService extends Service {
     /**

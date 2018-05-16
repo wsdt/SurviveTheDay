@@ -47,10 +47,10 @@ import kevkevin.wsdt.tagueberstehen.classes.manager.InAppNotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.FirebaseStorageMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
-import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
+import kevkevin.wsdt.tagueberstehen.interfaces.IGlobal;
 
-import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppPurchaseMgr.INAPP_PRODUCTS;
-import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_NotificationMgr.IDENTIFIER_COUNTDOWN_ID;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IInAppPurchaseMgr.INAPP_PRODUCTS;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.INotificationMgr.IDENTIFIER_COUNTDOWN_ID;
 
 public class ModifyCountdownActivity extends AppCompatActivity {
     private static final String TAG = "ModifyCountdownActivity";
@@ -295,7 +295,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
     private boolean areFormValuesValid() {
         //Validate dates ------------------------------------------------------------------
-        if (this.getNewEditedCountdown().getCouStartDateTime().matches(IConstants_Global.GLOBAL.DATETIME_FORMAT_REGEX) && this.getNewEditedCountdown().getCouUntilDateTime().matches(IConstants_Global.GLOBAL.DATETIME_FORMAT_REGEX)) {
+        if (this.getNewEditedCountdown().getCouStartDateTime().matches(IGlobal.GLOBAL.DATETIME_FORMAT_REGEX) && this.getNewEditedCountdown().getCouUntilDateTime().matches(IGlobal.GLOBAL.DATETIME_FORMAT_REGEX)) {
             // Is UntilDateTime AFTER StartDateTime? -------------------
             //getDateTime(getCouStartDateTime()).compareTo(getCurrentDateTime()) > 0
             if (getNewEditedCountdown().getDateTime(getNewEditedCountdown().getCouStartDateTime())
@@ -518,9 +518,9 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
         String currentDateTime = String.format(getString(R.string.dateTimePicker_format_DateTime),
                 String.format(getString(R.string.dateTimePicker_format_date), now.get(Calendar.DAY_OF_MONTH), (now.get(Calendar.MONTH) + 1), now.get(Calendar.YEAR))
-                , String.format(IConstants_Global.GLOBAL.LOCALE, "%02d",
+                , String.format(IGlobal.GLOBAL.LOCALE, "%02d",
                         now.get(Calendar.HOUR_OF_DAY) + addToHourUntilDateTime),
-                String.format(IConstants_Global.GLOBAL.LOCALE, "%02d", now.get(Calendar.MINUTE)), String.format(IConstants_Global.GLOBAL.LOCALE, "%02d", now.get(Calendar.SECOND)));
+                String.format(IGlobal.GLOBAL.LOCALE, "%02d", now.get(Calendar.MINUTE)), String.format(IGlobal.GLOBAL.LOCALE, "%02d", now.get(Calendar.SECOND)));
         Log.d(TAG, "setCustomOnClickListener: Current-Datetime->" + currentDateTime);
         targetTextView.setText(currentDateTime);
 

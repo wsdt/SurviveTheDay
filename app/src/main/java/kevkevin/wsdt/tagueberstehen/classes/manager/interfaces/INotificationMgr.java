@@ -1,10 +1,10 @@
 package kevkevin.wsdt.tagueberstehen.classes.manager.interfaces;
 
-import kevkevin.wsdt.tagueberstehen.classes.services.interfaces.IConstants_LiveCountdown_ForegroundService;
+import kevkevin.wsdt.tagueberstehen.classes.services.interfaces.ILiveCountdown_ForegroundService;
 
-public interface IConstants_NotificationMgr {
+public interface INotificationMgr {
     //MUST BE LOWER than NOTIFICATION_ID of COUNTDOWNCOUNTERSERVICE! Below this no. a motivational notification gets its random notification id
-    int NOTIFICATION_ID = (IConstants_LiveCountdown_ForegroundService.NOTIFICATION_ID-1); //currently 999999949
+    int NOTIFICATION_ID = (ILiveCountdown_ForegroundService.NOTIFICATION_ID-1); //currently 999999949
     String NOTIFICATION_CHANNEL_DEFAULT_ID = "SURVIVE THE_DAY_GENERAL"; //now obligatory for android o etc.
     String NOTIFICATION_CHANNEL_DEFAULT_NAME = "General Notifications";
     String NOTIFICATION_CHANNEL_LIVECOUNTDOWN_ID = "SURVIVE_THE_DAY_LIVECOUNTDOWN";

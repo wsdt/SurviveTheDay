@@ -28,7 +28,7 @@ import kevkevin.wsdt.tagueberstehen.classes.CountdownCounter;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppNotificationMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.ShareMgr;
 
-import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_NotificationMgr.*;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.INotificationMgr.*;
 
 public class CountdownActivity extends AppCompatActivity {
     private int countdownId = (-1);

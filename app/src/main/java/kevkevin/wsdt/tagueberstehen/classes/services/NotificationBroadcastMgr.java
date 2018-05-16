@@ -17,7 +17,7 @@ import kevkevin.wsdt.tagueberstehen.classes.entities.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.manager.NotificationMgr;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
-import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_NotificationMgr.IDENTIFIER_COUNTDOWN_ID;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.INotificationMgr.IDENTIFIER_COUNTDOWN_ID;
 
 public class NotificationBroadcastMgr extends BroadcastReceiver {
     private static final String TAG = "AlarmBroadcastReceiver";

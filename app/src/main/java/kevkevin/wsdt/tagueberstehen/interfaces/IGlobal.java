@@ -2,7 +2,7 @@ package kevkevin.wsdt.tagueberstehen.interfaces;
 
 import java.util.Locale;
 
-public interface IConstants_Global {
+public interface IGlobal {
     interface GLOBAL {
         //FORMATTING PERCENTAGE and BIG NUMBERS or DATES
         Locale LOCALE = Locale.ENGLISH;

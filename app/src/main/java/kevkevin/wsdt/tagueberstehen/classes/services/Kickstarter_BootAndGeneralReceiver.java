@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import static kevkevin.wsdt.tagueberstehen.classes.services.interfaces.IConstants_Kickstart_BootAndGeneralReceiver.*;
+import static kevkevin.wsdt.tagueberstehen.classes.services.interfaces.IKickstart_BootAndGeneralReceiver.*;
 
 
 /** This broadcast receiver gets called when smartphone is turned on AND when created countdown's startdate is not longer in the future (so

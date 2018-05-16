@@ -30,13 +30,13 @@ import java.io.InputStreamReader;
 
 import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
-import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_AdMgr.*;
-import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppPurchaseMgr.*;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IAdMgr.*;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IInAppPurchaseMgr.*;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
 
 import static com.google.android.gms.ads.AdRequest.ERROR_CODE_NETWORK_ERROR;
-import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_AdMgr.ADMOB_USER_ID;
-import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_AdMgr.USE_TEST_ADS;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IAdMgr.ADMOB_USER_ID;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IAdMgr.USE_TEST_ADS;
 
 public class AdMgr {
     private Activity context;

@@ -12,10 +12,10 @@ import com.daimajia.numberprogressbar.NumberProgressBar;
 import kevkevin.wsdt.tagueberstehen.CountdownActivity;
 import kevkevin.wsdt.tagueberstehen.classes.entities.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.manager.GamificationMgr;
-import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
+import kevkevin.wsdt.tagueberstehen.interfaces.IGlobal;
 import kevkevin.wsdt.tagueberstehen.R;
 
-import static kevkevin.wsdt.tagueberstehen.classes.interfaces.IConstants_CountdownCounter.*;
+import static kevkevin.wsdt.tagueberstehen.classes.interfaces.ICountdownCounter.*;
 
 public class CountdownCounter {
     //DO NOT USE ASYNCTASK (not ideal for long running operations and also stops when sth. comes) ++++++++++++++++++++++++++++++++++++++++++++++
@@ -97,13 +97,13 @@ public class CountdownCounter {
 
                 //values[0] set Progress
                 //Change CountdownActivity values
-                ((TextView) getCountdownActivityContext().findViewById(R.id.countdownCounterSeconds)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IConstants_Global.GLOBAL.LOCALE,"%.2f", getTotalSeconds_SYNCED()));
-                ((TextView) getCountdownActivityContext().findViewById(R.id.countdownCounterMinutes)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IConstants_Global.GLOBAL.LOCALE,"%.4f", getTotalMinutes()));
-                ((TextView) getCountdownActivityContext().findViewById(R.id.countdownCounterHours)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IConstants_Global.GLOBAL.LOCALE,"%.6f", getTotalHours()));
-                ((TextView) getCountdownActivityContext().findViewById(R.id.countdownCounterDays)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IConstants_Global.GLOBAL.LOCALE,"%.8f", getTotalDays()));
-                ((TextView) getCountdownActivityContext().findViewById(R.id.countdownCounterWeeks)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IConstants_Global.GLOBAL.LOCALE,"%.10f", getTotalWeeks()));
-                ((TextView) getCountdownActivityContext().findViewById(R.id.countdownCounterMonths)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IConstants_Global.GLOBAL.LOCALE,"%.12f", getTotalMonths()));
-                ((TextView) getCountdownActivityContext().findViewById(R.id.countdownCounterYears)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IConstants_Global.GLOBAL.LOCALE,"%.15f", getTotalYears()));
+                ((TextView) getCountdownActivityContext().findViewById(R.id.countdownCounterSeconds)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IGlobal.GLOBAL.LOCALE,"%.2f", getTotalSeconds_SYNCED()));
+                ((TextView) getCountdownActivityContext().findViewById(R.id.countdownCounterMinutes)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IGlobal.GLOBAL.LOCALE,"%.4f", getTotalMinutes()));
+                ((TextView) getCountdownActivityContext().findViewById(R.id.countdownCounterHours)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IGlobal.GLOBAL.LOCALE,"%.6f", getTotalHours()));
+                ((TextView) getCountdownActivityContext().findViewById(R.id.countdownCounterDays)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IGlobal.GLOBAL.LOCALE,"%.8f", getTotalDays()));
+                ((TextView) getCountdownActivityContext().findViewById(R.id.countdownCounterWeeks)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IGlobal.GLOBAL.LOCALE,"%.10f", getTotalWeeks()));
+                ((TextView) getCountdownActivityContext().findViewById(R.id.countdownCounterMonths)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IGlobal.GLOBAL.LOCALE,"%.12f", getTotalMonths()));
+                ((TextView) getCountdownActivityContext().findViewById(R.id.countdownCounterYears)).setText((setZero) ? TOTAL_TIMEUNIT_ZERO_VALUE : String.format(IGlobal.GLOBAL.LOCALE,"%.15f", getTotalYears()));
 
                 ((TextView) getCountdownActivityContext().findViewById(R.id.countdownCounter)).setText((setZero) ? BIG_COUNTDOWN_ZERO_VALUE : getBigCountdownStr()); //show previous no only, if not zero!
 

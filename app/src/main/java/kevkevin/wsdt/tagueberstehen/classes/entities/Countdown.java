@@ -43,10 +43,10 @@ import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.greendao_orm.DaoApp;
 import kevkevin.wsdt.tagueberstehen.classes.services.Kickstarter_BootAndGeneralReceiver;
 import kevkevin.wsdt.tagueberstehen.classes.services.ServiceMgr;
-import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
+import kevkevin.wsdt.tagueberstehen.interfaces.IGlobal;
 
-import static kevkevin.wsdt.tagueberstehen.classes.interfaces.IConstants_Countdown.ESCAPE;
-import static kevkevin.wsdt.tagueberstehen.classes.services.interfaces.IConstants_Kickstart_BootAndGeneralReceiver.BROADCASTRECEIVER_ACTION_RESTART_ALL_SERVICES;
+import static kevkevin.wsdt.tagueberstehen.classes.entities.interfaces.ICountdown.ESCAPE;
+import static kevkevin.wsdt.tagueberstehen.classes.services.interfaces.IKickstart_BootAndGeneralReceiver.BROADCASTRECEIVER_ACTION_RESTART_ALL_SERVICES;
 
 @Entity
 public class Countdown {
@@ -207,7 +207,7 @@ public class Countdown {
     public String getTotalSecondsNoScientificNotation(@NonNull Context context) {
         DecimalFormat decimalFormat = (DecimalFormat) NumberFormat.getInstance(Locale.US);
         DecimalFormatSymbols decimalFormatSymbols = decimalFormat.getDecimalFormatSymbols();
-        decimalFormatSymbols.setGroupingSeparator(IConstants_Global.GLOBAL.THOUSAND_GROUPING_SEPERATOR); //set separator
+        decimalFormatSymbols.setGroupingSeparator(IGlobal.GLOBAL.THOUSAND_GROUPING_SEPERATOR); //set separator
         decimalFormat.setDecimalFormatSymbols(decimalFormatSymbols);
         return decimalFormat.format(this.getTotalSeconds(context));
     }
@@ -267,7 +267,7 @@ public class Countdown {
 
     //also needed in ModifyCountdownActivity
     public GregorianCalendar getDateTime(String formattedDate) {
-        DateFormat df = new SimpleDateFormat(IConstants_Global.GLOBAL.DATETIME_FORMAT, Locale.getDefault());
+        DateFormat df = new SimpleDateFormat(IGlobal.GLOBAL.DATETIME_FORMAT, Locale.getDefault());
         GregorianCalendar result;
         try {
             Date date = df.parse(formattedDate);

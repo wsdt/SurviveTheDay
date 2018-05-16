@@ -8,10 +8,10 @@ import com.google.android.gms.ads.reward.RewardedVideoAd;
 
 import kevkevin.wsdt.tagueberstehen.annotations.Test;
 import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
-import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
+import kevkevin.wsdt.tagueberstehen.interfaces.IGlobal;
 
 @Test(message = "Worked, but I am not sure if it still works correctly [please test with/without internet connection]",
-priority = Test.Priority.LOW,byDeveloper = IConstants_Global.DEVELOPERS.WSDT)
+priority = Test.Priority.LOW,byDeveloper = IGlobal.DEVELOPERS.WSDT)
 public class RewardedVideoAdActivity extends AppCompatActivity {
     //This Activity is only used to show rewarded video ads!
     private RewardedVideoAd mRewardedVideoAd;

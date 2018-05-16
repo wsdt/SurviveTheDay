@@ -28,8 +28,8 @@ import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.services.NotificationBroadcastMgr;
 
-import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppPurchaseMgr.*;
-import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_NotificationMgr.*;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IInAppPurchaseMgr.*;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.INotificationMgr.*;
 
 public class NotificationMgr { //one instance for every countdown or similar
     private Context activityThisTarget;

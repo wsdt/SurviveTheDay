@@ -28,8 +28,8 @@ import kevkevin.wsdt.tagueberstehen.annotations.Enhance;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.entities.UserLibrary;
 import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
-import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_FirebaseStorageMgr;
-import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IFirebaseStorageMgr;
+import kevkevin.wsdt.tagueberstehen.interfaces.IGlobal;
 
 //IMPORTANT: FirebaseObjs TO JavaObjs TO SQL and reverse
 public class FirebaseStorageMgr {
@@ -78,7 +78,7 @@ public class FirebaseStorageMgr {
     @Bug(problem = "We cannot download here multiple packages at the same time (maybe because of the thread " +
             "in saveNewPackage() --> but necessary [networkonmainthreadexception]). Both packages are successfully " +
             "saved, but the second one does not contain any libraryLines :(",
-            priority = Bug.Priority.HIGH, byDeveloper = IConstants_Global.DEVELOPERS.WSDT)
+            priority = Bug.Priority.HIGH, byDeveloper = IGlobal.DEVELOPERS.WSDT)
     @Enhance (message = "To prevent unneccessary errors bc. NO userlibrary is installed (bad usability), just keep" +
             "a local copy of one default library, so the app can work and then SAVE IT AS JSON HERE INTO Db INSTEAD OF " +
             "DOWNLOADING.")
@@ -109,7 +109,7 @@ public class FirebaseStorageMgr {
         //This method has no validation whether default user lib was already downloaded!
         UserLibrary userLibrary = null;
         try {
-            userLibrary = FirebaseStorageMgr.mapJsonToUserLibraryObj(context, new JSONObject(IConstants_FirebaseStorageMgr.DEFAULT.LIB_JSON_DEFAULT));
+            userLibrary = FirebaseStorageMgr.mapJsonToUserLibraryObj(context, new JSONObject(IFirebaseStorageMgr.DEFAULT.LIB_JSON_DEFAULT));
             userLibrary.save(context);
             Log.d(TAG, "saveDefaultUserLibrary: Tried to save default user lib.");
         } catch (JSONException e) {
