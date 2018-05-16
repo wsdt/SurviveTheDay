@@ -20,7 +20,7 @@ import kevkevin.wsdt.tagueberstehen.classes.services.ServiceMgr;
 
 import org.greenrobot.greendao.DaoException;
 
-@Entity (active = true) //active = true for getting generated methods
+@Entity //active = true for getting generated methods
 public class UserLibrary {
     @Transient
     private static final String TAG = "UserLibrary";
@@ -36,14 +36,6 @@ public class UserLibrary {
     //Contains e.g. all quotes/jokes etc.
     @Convert(converter = GreenDaoConverter.class,columnType = String.class)
     private List<String> lines; //for null if in dbmgr
-    /** Used to resolve relations */
-    @Generated(hash = 2040040024)
-    private transient DaoSession daoSession;
-    /** Used for active entity operations. */
-    @Generated(hash = 1814500198)
-    private transient UserLibraryDao myDao;
-
-
     //For mapping from FirebaseStorMgr to Obj
     public UserLibrary(String libId, String libName, String libDescription, String libLanguageCode, String libCreator, String libCreatedDateTime, String libLastEditDateTime, JSONArray lines) {
         this.setLibId(libId);
@@ -144,28 +136,8 @@ public class UserLibrary {
         ServiceMgr.restartNotificationService(context);
     }
 
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 1942392019)
-    public void refresh() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.refresh(this);
-    }
 
-   /** Updates userlib */
-   @Deprecated //use save
-    public void update(@NonNull Context context) {
-        ((DaoApp) context.getApplicationContext()).getDaoSession().getUserLibraryDao().update(this);
-
-        //Restart notification service
-        ServiceMgr.restartNotificationService(context);
-    }
-
-    /** Saves new userLib */
+    /** Saves new/Updates userLib */
     public void save(@NonNull Context context) {
         ((DaoApp) context.getApplicationContext()).getDaoSession().getUserLibraryDao().insertOrReplace(this);
         //don't restart notification service, bc. new userLibs are not automatically assigned to a countdown
@@ -190,42 +162,11 @@ public class UserLibrary {
         }
     }
 
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 128553479)
-    public void delete() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.delete(this);
-    }
-
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 713229351)
-    public void update() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.update(this);
-    }
-
     public String getLibDescription() {
         return libDescription;
     }
 
     public void setLibDescription(String libDescription) {
         this.libDescription = libDescription;
-    }
-
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1654970760)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getUserLibraryDao() : null;
     }
 }
