@@ -27,6 +27,7 @@ public class UserLibrary {
     @Id
     private String libId; //hashwert etc.
     private String libName;
+    private String libDescription;
     private String libLanguageCode;
     private String libCreator;
     private String libCreatedDateTime;
@@ -44,8 +45,9 @@ public class UserLibrary {
 
 
     //For mapping from FirebaseStorMgr to Obj
-    public UserLibrary(String libId, String libName, String libLanguageCode, String libCreator, String libCreatedDateTime, String libLastEditDateTime, JSONArray lines) {
+    public UserLibrary(String libId, String libName, String libDescription, String libLanguageCode, String libCreator, String libCreatedDateTime, String libLastEditDateTime, JSONArray lines) {
         this.setLibId(libId);
+        this.setLibDescription(libDescription);
         this.setLibName(libName);
         this.setLibLanguageCode(libLanguageCode);
         this.setLibCreator(libCreator);
@@ -54,10 +56,12 @@ public class UserLibrary {
         this.setLines(HelperClass.convertJsonArrayToList(lines));
     }
 
-    @Generated(hash = 2088625479)
-    public UserLibrary(String libId, String libName, String libLanguageCode, String libCreator, String libCreatedDateTime, String libLastEditDateTime, List<String> lines) {
+    @Generated(hash = 100798753)
+    public UserLibrary(String libId, String libName, String libDescription, String libLanguageCode, String libCreator, String libCreatedDateTime, String libLastEditDateTime,
+            List<String> lines) {
         this.libId = libId;
         this.libName = libName;
+        this.libDescription = libDescription;
         this.libLanguageCode = libLanguageCode;
         this.libCreator = libCreator;
         this.libCreatedDateTime = libCreatedDateTime;
@@ -208,6 +212,14 @@ public class UserLibrary {
             throw new DaoException("Entity is detached from DAO context");
         }
         myDao.update(this);
+    }
+
+    public String getLibDescription() {
+        return libDescription;
+    }
+
+    public void setLibDescription(String libDescription) {
+        this.libDescription = libDescription;
     }
 
     /** called by internal mechanisms, do not call yourself. */
