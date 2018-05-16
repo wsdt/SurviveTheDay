@@ -31,7 +31,7 @@ import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IFirebaseStorageMgr;
 import kevkevin.wsdt.tagueberstehen.interfaces.IGlobal;
 
-
+@Enhance (message = "Make core download methods new when search activity is done.")
 public class FirebaseStorageMgr {
     private static final String TAG = "FirebaseStorageMgr";
     /**

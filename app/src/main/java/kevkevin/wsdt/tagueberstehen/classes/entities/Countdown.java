@@ -489,17 +489,9 @@ public class Countdown {
         myDao.refresh(this);
     }
 
-    /** Updates countdown */
-    @Deprecated //use save
-    public void update(@NonNull Context context) {
-        ((DaoApp) context.getApplicationContext()).getDaoSession().update(this);
-
-        //Restart notification service
-        ServiceMgr.restartNotificationService(context);
-    }
 
     /**
-     * Saves new userLib
+     * Saves new/Updates userLib
      */
     public void save(@NonNull Context context) {
         ((DaoApp) context.getApplicationContext()).getDaoSession().getCountdownDao().insertOrReplace(this);
