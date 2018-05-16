@@ -14,7 +14,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import kevkevin.wsdt.tagueberstehen.R;
-import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
+import kevkevin.wsdt.tagueberstehen.interfaces.IGlobal;
 
 
 public class TimePickerFragment extends MyTimePickerDialog implements MyTimePickerDialog.OnTimeSetListener {
@@ -43,14 +43,14 @@ public class TimePickerFragment extends MyTimePickerDialog implements MyTimePick
     private void setCurrentTime() {
         //if cancelled set current time
         GregorianCalendar now = new GregorianCalendar();
-        getResultView().setText(String.format(getRes().getString(R.string.dateTimePicker_format_DateTime),getResultView().getText(),String.format(IConstants_Global.GLOBAL.LOCALE,"%02d", now.get(Calendar.HOUR_OF_DAY)),String.format(IConstants_Global.GLOBAL.LOCALE,"%02d", now.get(Calendar.MINUTE)),String.format(IConstants_Global.GLOBAL.LOCALE,"%02d", now.get(Calendar.SECOND))));
+        getResultView().setText(String.format(getRes().getString(R.string.dateTimePicker_format_DateTime),getResultView().getText(),String.format(IGlobal.GLOBAL.LOCALE,"%02d", now.get(Calendar.HOUR_OF_DAY)),String.format(IGlobal.GLOBAL.LOCALE,"%02d", now.get(Calendar.MINUTE)),String.format(IGlobal.GLOBAL.LOCALE,"%02d", now.get(Calendar.SECOND))));
         Toast.makeText(getContext(), getRes().getString(R.string.dateTimePicker_timePicker_notify_setCurrentTime),Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onTimeSet(com.ikovac.timepickerwithseconds.TimePicker view, int hourOfDay, int minute, int seconds) {
         // Do something with the time chosen by the user
-        this.getResultView().setText(String.format(this.getRes().getString(R.string.dateTimePicker_format_DateTime),getResultView().getText(),String.format(IConstants_Global.GLOBAL.LOCALE,"%02d", hourOfDay),String.format(IConstants_Global.GLOBAL.LOCALE,"%02d", minute),String.format(IConstants_Global.GLOBAL.LOCALE,"%02d", seconds)));
+        this.getResultView().setText(String.format(this.getRes().getString(R.string.dateTimePicker_format_DateTime),getResultView().getText(),String.format(IGlobal.GLOBAL.LOCALE,"%02d", hourOfDay),String.format(IGlobal.GLOBAL.LOCALE,"%02d", minute),String.format(IGlobal.GLOBAL.LOCALE,"%02d", seconds)));
         Log.d(TAG, "onTimeSet: Assigned new time.");
     }
 

@@ -12,11 +12,11 @@ import kevkevin.wsdt.tagueberstehen.CreditsActivity;
 import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.annotations.Enhance;
 import kevkevin.wsdt.tagueberstehen.classes.manager.NotificationMgr;
-import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
+import kevkevin.wsdt.tagueberstehen.interfaces.IGlobal;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
-import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_AdMgr.NO_INTERNET_CONNECTION_MAX;
-import static kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IConstants_GlobalAppSettingsMgr.*;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IAdMgr.NO_INTERNET_CONNECTION_MAX;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IGlobalAppSettingsMgr.*;
 
 
 /**
@@ -24,7 +24,7 @@ import static kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces
  */
 @Enhance (message = "Talking for future perspectives, this class might be really illegible, because many other small settings could be added" +
         "and for every setting would be two methods according to this design paradigm! Maybe we find a better/more beautiful solution without" +
-        "making this class inconvienient to use.",priority = Enhance.Priority.LOW, byDeveloper = IConstants_Global.DEVELOPERS.WSDT)
+        "making this class inconvienient to use.",priority = Enhance.Priority.LOW, byDeveloper = IGlobal.DEVELOPERS.WSDT)
 public class GlobalAppSettingsMgr {
     private SharedPreferences globalSettings_SharedPref;
     private static final String TAG = "GlobalAppSettingsMgr";

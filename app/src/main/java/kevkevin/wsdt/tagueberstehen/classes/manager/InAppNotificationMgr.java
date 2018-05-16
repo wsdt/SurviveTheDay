@@ -20,9 +20,9 @@ import kevkevin.wsdt.tagueberstehen.R;
 import kevkevin.wsdt.tagueberstehen.annotations.Bug;
 import kevkevin.wsdt.tagueberstehen.annotations.Enhance;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
-import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
+import kevkevin.wsdt.tagueberstehen.interfaces.IGlobal;
 
-import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppNotificationMgr.*;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IInAppNotificationMgr.*;
 
 public class InAppNotificationMgr {
     private static final String TAG = "InAppNotifMgr";
@@ -63,7 +63,7 @@ public class InAppNotificationMgr {
             "a new text into it. So the height and the hiddenPosition is wrong. So the possible solution would be finding a better solution of " +
             "following line to hide the inAppNotification completely: " +
             "########### final int hiddenPosition = ((notificationContent.getHeight()) * (-1));",
-    priority = Bug.Priority.MEDIUM, byDeveloper = IConstants_Global.DEVELOPERS.WSDT)
+    priority = Bug.Priority.MEDIUM, byDeveloper = IGlobal.DEVELOPERS.WSDT)
     public <VG extends ViewGroup> void showInAppNotification(@NonNull final Activity activity, @NonNull final String title, @NonNull final String text, final int drawableIcon, @NonNull VG rootLayout, boolean preventMultipleSimultaneousNotifications) {
         if (isNotificationShowing && preventMultipleSimultaneousNotifications) {
             //if already other inappnotifications are shown on the same activity then prevent this method call to create another one

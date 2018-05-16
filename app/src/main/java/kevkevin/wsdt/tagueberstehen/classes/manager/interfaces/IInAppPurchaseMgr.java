@@ -1,6 +1,6 @@
 package kevkevin.wsdt.tagueberstehen.classes.manager.interfaces;
 
-public interface IConstants_InAppPurchaseMgr {
+public interface IInAppPurchaseMgr {
     boolean USE_STATIC_TEST_INAPP_PRODUCTS = false;
 
     interface BASE64ENCODED_PUBLICKEY {

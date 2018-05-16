@@ -31,9 +31,9 @@ import kevkevin.wsdt.tagueberstehen.classes.services.LiveCountdown_ForegroundSer
 import kevkevin.wsdt.tagueberstehen.classes.services.ServiceMgr;
 import kevkevin.wsdt.tagueberstehen.util.TodaysFeelingsActivity;
 
-import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_InAppPurchaseMgr.*;
-import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IConstants_NotificationMgr.*;
-import static kevkevin.wsdt.tagueberstehen.interfaces.IConstants_MainActivity.COUNTDOWN_VIEW_TAG_PREFIX;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IInAppPurchaseMgr.*;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.INotificationMgr.*;
+import static kevkevin.wsdt.tagueberstehen.interfaces.IMainActivity.COUNTDOWN_VIEW_TAG_PREFIX;
 
 public class MainActivity extends AppCompatActivity {
     private LinearLayout nodeList;

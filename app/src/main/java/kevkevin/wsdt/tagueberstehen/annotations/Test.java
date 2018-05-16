@@ -5,8 +5,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import kevkevin.wsdt.tagueberstehen.interfaces.IConstants_Global;
-
 /** This annotation should be used to indicate that the method, variable, class etc. should
  * be tested carefully. */
 

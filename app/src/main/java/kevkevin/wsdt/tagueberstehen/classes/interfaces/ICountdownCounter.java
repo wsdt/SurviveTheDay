@@ -1,6 +1,6 @@
 package kevkevin.wsdt.tagueberstehen.classes.interfaces;
 
-public interface IConstants_CountdownCounter {
+public interface ICountdownCounter {
     //was in early versions the asynctask (now outsourced in own class with threads etc.)
     int REFRESH_UI_EVERY_X_MS = 400;
     //TODO: maybe make multiplikator configurable (but displayed for user in seconds!)
