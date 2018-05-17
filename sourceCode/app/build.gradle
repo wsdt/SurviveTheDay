@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 
-
 android {
     compileSdkVersion 27
     defaultConfig {
@@ -21,8 +20,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             /*productFlavors.free.signingConfig signingConfigs.freeRelease
             productFlavors.paid.signingConfig signingConfigs.paidRelease*/
-
-
         }
     }
     lintOptions {
