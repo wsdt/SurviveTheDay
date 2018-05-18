@@ -37,8 +37,6 @@ import java.util.List;
 import java.util.Locale;
 
 import kevkevin.wsdt.tagueberstehen.R;
-import kevkevin.wsdt.tagueberstehen.annotations.Bug;
-import kevkevin.wsdt.tagueberstehen.annotations.Test;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.greendao_orm.DaoApp;
 import kevkevin.wsdt.tagueberstehen.classes.services.Kickstarter_BootAndGeneralReceiver;
@@ -176,29 +174,26 @@ public class Countdown {
         return eventMsgStr;
     }
 
-
-    @Test(message = "Not sure if method returns it correctly. When receiving different booleans.")
-    @Bug(message = "possible bug here. IF YES: Then I did it on all places wrong, so just rename boolean and method :P")
-    /** Method calculates Remaining or passedPercentage (this method does not format percentage --> use helper method */
-    public double getRemainingPercentage(boolean getRemainingOtherwisePassedPercentage) { //min is 1, if 0 then it will be still min 1 nachkommastelle (but always 0!) because of double format itself
+                                                  //if false show remaining, is that your intention?
+    public double getProgressInPercentage(boolean showProgress) { //min is 1, if 0 then it will be still min 1 nachkommastelle (but always 0!) because of double format itself
         try {
             double all100percentSeconds = Long.valueOf((getDateTime(getCouUntilDateTime()).getTimeInMillis() - getDateTime(getCouStartDateTime()).getTimeInMillis()) / 1000).doubleValue();
             double leftXpercentSeconds = Long.valueOf((getDateTime(getCouUntilDateTime()).getTimeInMillis() - getCurrentDateTime().getTimeInMillis()) / 1000).doubleValue();
-            Log.d(TAG, "getRemainingPercentage: " + all100percentSeconds + " // " + leftXpercentSeconds);
+            Log.d(TAG, "getProgressInPercentage: " + all100percentSeconds + " // " + leftXpercentSeconds);
 
             double percentageValueUnformatted;
-            if (getRemainingOtherwisePassedPercentage) {
+            if (showProgress) {
                 percentageValueUnformatted = (leftXpercentSeconds / all100percentSeconds) * 100;
             } else {
                 percentageValueUnformatted = 100 - ((leftXpercentSeconds / all100percentSeconds) * 100); //get passed percentage if false
             }
 
-            Log.d(TAG, "getRemainingPercentage:Unformatted: " + percentageValueUnformatted);
+            Log.d(TAG, "getProgressInPercentage:Unformatted: " + percentageValueUnformatted);
 
             //Double result = Double.parseDouble((new DecimalFormat("##,"+nachkommaStellen)).format((leftXpercentSeconds / all100percentSeconds) * 100)); //formatting percentage to 2 nachkommastellen
             return (percentageValueUnformatted >= 0) ? ((percentageValueUnformatted <= 100) ? percentageValueUnformatted : 100) : 0; //always return 0-100
         } catch (NullPointerException | NumberFormatException e) {
-            Log.e(TAG, "getRemainingPercentage: Could not calculate remaining percentage.");
+            Log.e(TAG, "getProgressInPercentage: Could not calculate remaining percentage.");
             e.printStackTrace();
         }
         return (-1); //to show error
