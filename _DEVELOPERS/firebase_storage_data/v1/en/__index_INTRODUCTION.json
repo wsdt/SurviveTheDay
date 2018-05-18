@@ -1,0 +1,17 @@
+[
+	"## PlaceholderForLibId = HASH ##" : {
+		"libName": "Default quotes - English",
+		
+		/* Following should be removed, instead make localized index files (__index_{languageCode}_userLibraries.json)
+		libLanguageCode removed, now get languageCode out of filePath (en/de etc.)
+		*/
+		
+		"createdBy": "## USE GMAIL ACCOUNT MAIL ADDRESS INSTEAD ##",
+		
+		/* Following two should be removed in future (use storageReference.lastEdit/created etc.)*/
+		"createdOn": 54456465456,
+		"lastEditOn": 4515315535
+	}
+	
+	//further uploaded libs
+]

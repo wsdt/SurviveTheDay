@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="kevkevin.wsdt.tagueberstehen">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="com.android.vending.BILLING" />
+
+    <!-- INTENT FILTER VIEW FOR GOOGLE INDEXING
+    It's also possible to constraint, which files/data we want to backup! just google for fullbackupcontent! (own xml to create)
+
+    LargeHeap[true]/HardwareAccelerated[false] for older phones (hashmaps outofmemoryexception etc.)
+    -->
+    <application
+        android:name=".classes.manager.storagemgr.greendao_orm.DaoApp"
+        android:allowBackup="true"
+        android:fullBackupContent="true"
+        android:icon="@mipmap/ic_launcher_square"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <!-- IMPORTANT: Do NOT set orientation (portrait or similar) because Android 8.0 crashes because activity not fullscreen! -->
+
+
+        <!-- Still necessary: Declare interstitial ad (admob) explicitely fullscreen [because Admob for Android 8.0 not uptodate enough] -->
+        <activity
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            tools:replace="android:theme" />
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/SplashThemeWithActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Also splash theme here, so we can show appIcon while opening app from notification (BUT WITH ACTIONBAR) -->
+        <activity
+            android:name=".CountdownActivity"
+            android:label="@string/app_name"
+            android:noHistory="true"
+            android:theme="@style/SplashThemeWithActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
+        <!-- Credits activity needs parent of splashtheme or noActionBar Theme (better: because color so primary and not black) -->
+        <activity
+            android:name=".CreditsActivity"
+            android:label="@string/title_activity_credits">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
+        <!-- windowSoftInputMode:StateUnchanged>>> don't change keyboard on activity startup [prevent auto-focus keyboard] (e.g. don't show it if it isn't already shown, but if it was open when entering the activity, leave it open). -->
+        <activity
+            android:name=".ModifyCountdownActivity"
+            android:label="@string/title_activity_modify_countdown"
+            android:windowSoftInputMode="stateUnchanged">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".AppSettingsActivity"
+            android:label="@string/title_activity_settings">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".RewardedVideoAdActivity"
+            android:noHistory="true"
+            android:theme="@style/SplashTheme" />
+        <activity android:name=".InAppPurchaseActivity" />
+    <activity android:name=".util.TodaysFeelingsActivity">
+
+        </activity>
+		
+        <!-- BROADCAST RECEIVERS FOR REGULAR NOTIFICATIONS (maybe replacing background service in future) -->
+        <receiver
+            android:name=".classes.services.Kickstarter_BootAndGeneralReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".classes.services.NotificationBroadcastMgr" />
+
+        <!--
+        FOREGROUND COUNTDOWN COUNTER SERVICE -
+        // ADDED IF EVERYTHING WORKS FINE
+        -->
+        <service
+            android:name=".classes.services.LiveCountdown_ForegroundService"
+            android:exported="false"
+            android:process=":countdowncounter"
+            android:stopWithTask="false">
+            <intent-filter>
+                <action android:name=".classes.CountdownCounterService" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+   
+    </application>
+
+</manifest>
