@@ -147,7 +147,10 @@ public class FirebaseStorageMgr {
     public static void downloadIndexFile(@NonNull Context context, @NonNull String languageCode, @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
         /** Nesting provided ExecuteIfTrueSuccess_OR_IfFalseFailure into new interface, bc. so we can merge custom indexFile-Procedures with provided ones.*/
         downloadFile(context,
-                languageCode + IFirebaseStorageMgr.INDEX_FILES.FILENAME + IFirebaseStorageMgr.RES_FILE_EXTENSION, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                IFirebaseStorageMgr.LIB_JSON_VERSION_FOLDER +"\"+ 
+				languageCode +"\"+ 
+				IFirebaseStorageMgr.INDEX_FILES.FILENAME +"\"+ 
+				IFirebaseStorageMgr.RES_FILE_EXTENSION, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
                     public void success_is_true(@Nullable Object... args) {
                         /** You can provide here a procedure for all index files. If you just want to execute procedures for specific indexFiles just
