@@ -85,7 +85,8 @@
         <item name="android:minLines">1</item>
         <item name="android:maxLines">2</item>
         <!--<item name="android:scrollHorizontally">true</item>-->
-        <item name="android:ellipsize">end</item><!-- seems to be (e.g ...) when text too long for field -->
+        <item name="android:ellipsize">end
+        </item><!-- seems to be (e.g ...) when text too long for field -->
         <!--<item name="android:drawablePadding">10dp</item>
         TODO: <item name="android:background">@drawable/customedittext</item>
         <item name="android:drawableLeft">@drawable/folder_full</item>
@@ -115,5 +116,14 @@
         <item name="android:textColor">@color/colorDark_111</item>
         <item name="android:textSize">16sp</item>
     </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

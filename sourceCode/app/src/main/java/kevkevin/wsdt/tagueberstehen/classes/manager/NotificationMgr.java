@@ -328,9 +328,9 @@ public class NotificationMgr { //one instance for every countdown or similar
 
         randomNotification.titleList.addAll(Arrays.asList(this.getRes().getStringArray(R.array.customNotification_random_timebased_titles))); //converts array to list and adds all of them
         randomNotification.textList.addAll(Arrays.asList(String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_0_secondsToGo),countdown.getCouTitle(),countdown.getTotalSecondsNoScientificNotation(this.getActivityThisTarget())),
-                String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_1_percentageLeft),countdown.getCouTitle(),HelperClass.formatCommaNumber(countdown.getProgressInPercentage(true),2)),
+                String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_1_percentageLeft),countdown.getCouTitle(),HelperClass.formatCommaNumber(countdown.getRemainingInPercentage(true),2)),
                 String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_2_countdownEndsOn),countdown.getCouTitle(),countdown.getCouUntilDateTime()),
-                String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_3_percentageAchieved),countdown.getCouTitle(),HelperClass.formatCommaNumber(countdown.getProgressInPercentage(false),2)),
+                String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_3_percentageAchieved),countdown.getCouTitle(),HelperClass.formatCommaNumber(countdown.getRemainingInPercentage(false),2)),
                 String.format(this.getRes().getString(R.string.customNotification_random_timebased_text_4_notificationInterval),countdown.getCouTitle(),(this.getRes().getStringArray(R.array.countdownIntervalSpinner_LABELS)[(Arrays.asList(this.getRes().getStringArray(R.array.countdownIntervalSpinner_VALUES)).indexOf(""+countdown.getCouMotivationIntervalSeconds()))])))); //get label of corresponding seconds of strings.xml
         randomNotification.iconList.addAll(Arrays.asList(R.drawable.light_notification_timebased_clock,R.drawable.light_notification_timebased_clockalert));
 

@@ -115,6 +115,14 @@
     <string name="setting_saveBattery_title">Save battery</string>
     <string name="setting_durationOfInAppNotifications_title">Duration of In-App-Notifications</string>
 
+    <!-- UserLibraryActivity -->
+    <string name="userLibraryActivity_title">User Libraries</string>
+    <string name="userLibraryActivity_tabs_1_title">Tab 1</string>
+    <string name="userLibraryActivity_tabs_2_title">Tab 2</string>
+    <string name="userLibraryActivity_tabs_3_title">Tab 3</string>
+    <!-- TODO: Delete section_Format when unused -->
+    <string name="section_format">Hello World from section: %1$d</string>
+
     <!-- CountdownActivity -->
     <string name="countdownActivity_countdownNotFound">Countdown not found.</string>
     <string name="countdownActivity_countdownMainCounter_zero" translatable="false">00:00:00:00</string>
