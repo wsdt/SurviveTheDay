@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="kevkevin.wsdt.tagueberstehen">
 
@@ -9,7 +8,8 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="com.android.vending.BILLING" />
 
-    <!-- INTENT FILTER VIEW FOR GOOGLE INDEXING
+    <!--
+     INTENT FILTER VIEW FOR GOOGLE INDEXING
     It's also possible to constraint, which files/data we want to backup! just google for fullbackupcontent! (own xml to create)
 
     LargeHeap[true]/HardwareAccelerated[false] for older phones (hashmaps outofmemoryexception etc.)
@@ -82,10 +82,8 @@
             android:noHistory="true"
             android:theme="@style/SplashTheme" />
         <activity android:name=".InAppPurchaseActivity" />
-    <activity android:name=".util.TodaysFeelingsActivity">
+        <activity android:name=".util.TodaysFeelingsActivity"></activity>
 
-        </activity>
-		
         <!-- BROADCAST RECEIVERS FOR REGULAR NOTIFICATIONS (maybe replacing background service in future) -->
         <receiver
             android:name=".classes.services.Kickstarter_BootAndGeneralReceiver"
@@ -111,7 +109,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
-   
+
+        <activity
+            android:name=".UserLibraryActivity"
+            android:label="@string/userLibraryActivity_title"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

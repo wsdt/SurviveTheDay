@@ -174,26 +174,26 @@ public class Countdown {
         return eventMsgStr;
     }
 
-                                                  //if false show remaining, is that your intention?
-    public double getProgressInPercentage(boolean showProgress) { //min is 1, if 0 then it will be still min 1 nachkommastelle (but always 0!) because of double format itself
+    /** @param getRemaining: If true this method returns the remaining percentage. If false, then
+     * you will receive the progress/achieved percentage. */
+    public double getRemainingInPercentage(boolean getRemaining) { //min is 1, if 0 then it will be still min 1 nachkommastelle (but always 0!) because of double format itself
         try {
             double all100percentSeconds = Long.valueOf((getDateTime(getCouUntilDateTime()).getTimeInMillis() - getDateTime(getCouStartDateTime()).getTimeInMillis()) / 1000).doubleValue();
             double leftXpercentSeconds = Long.valueOf((getDateTime(getCouUntilDateTime()).getTimeInMillis() - getCurrentDateTime().getTimeInMillis()) / 1000).doubleValue();
-            Log.d(TAG, "getProgressInPercentage: " + all100percentSeconds + " // " + leftXpercentSeconds);
+            Log.d(TAG, "getRemainingInPercentage: " + all100percentSeconds + " // " + leftXpercentSeconds);
 
-            double percentageValueUnformatted;
-            if (showProgress) {
-                percentageValueUnformatted = (leftXpercentSeconds / all100percentSeconds) * 100;
-            } else {
-                percentageValueUnformatted = 100 - ((leftXpercentSeconds / all100percentSeconds) * 100); //get passed percentage if false
+            double percentageValueUnformatted = (leftXpercentSeconds / all100percentSeconds) * 100;
+            if (!getRemaining) {
+                //get progress
+                percentageValueUnformatted = 100-percentageValueUnformatted;
             }
 
-            Log.d(TAG, "getProgressInPercentage:Unformatted: " + percentageValueUnformatted);
+            Log.d(TAG, "getRemainingInPercentage:Unformatted: " + percentageValueUnformatted);
 
             //Double result = Double.parseDouble((new DecimalFormat("##,"+nachkommaStellen)).format((leftXpercentSeconds / all100percentSeconds) * 100)); //formatting percentage to 2 nachkommastellen
             return (percentageValueUnformatted >= 0) ? ((percentageValueUnformatted <= 100) ? percentageValueUnformatted : 100) : 0; //always return 0-100
         } catch (NullPointerException | NumberFormatException e) {
-            Log.e(TAG, "getProgressInPercentage: Could not calculate remaining percentage.");
+            Log.e(TAG, "getRemainingInPercentage: Could not calculate remaining percentage.");
             e.printStackTrace();
         }
         return (-1); //to show error

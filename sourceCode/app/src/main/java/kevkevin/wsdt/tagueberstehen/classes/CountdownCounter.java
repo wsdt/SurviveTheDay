@@ -87,13 +87,13 @@ public class CountdownCounter {
 
                     /** Show konfetti and toast when countdown has ended (less than 2% left).
                      * Evaluation done to be more efficient, bc. this method would also get called when user leaves activity.*/
-                    if (getCountdown().getProgressInPercentage(true) <= 2) {
+                    if (getCountdown().getRemainingInPercentage(true) <= 2) {
                         GamificationMgr.showKonfetti((ViewGroup) getCountdownActivityContext().findViewById(R.id.content_main), getCountdown());
                         Toast.makeText(getCountdownActivityContext(), String.format(getCountdownActivityContext().getResources().getString(R.string.countdown_info_untilDateInPast), getCountdown().getCouUntilDateTime()), Toast.LENGTH_SHORT).show();
                     }
                 }
                 //Set value for progressbar
-                ((NumberProgressBar) getCountdownActivityContext().findViewById(R.id.countdownProgressBar)).setProgress((setZero) ? PROGRESS_ZERO_VALUE : (int) countdown.getProgressInPercentage( false));
+                ((NumberProgressBar) getCountdownActivityContext().findViewById(R.id.countdownProgressBar)).setProgress((setZero) ? PROGRESS_ZERO_VALUE : (int) countdown.getRemainingInPercentage( false));
 
                 //values[0] set Progress
                 //Change CountdownActivity values
