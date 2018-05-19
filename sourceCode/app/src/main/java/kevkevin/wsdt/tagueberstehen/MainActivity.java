@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -130,14 +131,14 @@ public class MainActivity extends AppCompatActivity {
                 //Already at least one node shown! Not showing more without purchasing product
                 this.getInAppPurchaseMgr().executeIfProductIsBought(INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
-                    public void success_is_true() {
+                    public void success_is_true(@Nullable Object... args) {
                         Log.d(TAG, "createAddNodeToLayout:isProductBought:is_true: Product is bought. Showing more than one node (if there are any).");
                         createAddNodeToLayout(currCountdown);
                         anzahlShowingNodes++;
                     }
 
                     @Override
-                    public void failure_is_false() {
+                    public void failure_is_false(@Nullable Object... args) {
                         Log.d(TAG, "createAddNodeToLayout:isProductBought:is_false: UseMoreCountdown-Nodes Product not bought! Not displaying more.");
                         Toast.makeText(MainActivity.this, R.string.inAppProduct_notBought_useMoreCountdownNodes, Toast.LENGTH_SHORT).show();
                     }
@@ -220,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
                 getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_noCancel),
                 R.drawable.light_delete, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
-                    public void success_is_true() {
+                    public void success_is_true(@Nullable Object... args) {
                         Log.d(TAG, "onClick_node_sl_bottomview_rightMenu_deleteNode:success_is_true: User clicked on delete. Trying to erase countdown.");
                         countdown.delete();
 
@@ -240,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void failure_is_false() {
+                    public void failure_is_false(@Nullable Object... args) {
                         Log.d(TAG, "onClick_node_sl_bottomview_rightMenu_deleteNode:failure_is_false: Countdown won't be deleted.");
                     }
                 });
@@ -415,7 +416,7 @@ public class MainActivity extends AppCompatActivity {
         //Remove menu points dynamically (not in onCreateOptionsMenu)
         this.getInAppPurchaseMgr().executeIfProductIsBought(INAPP_PRODUCTS.REMOVE_ALL_ADS.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
-            public void success_is_true() {
+            public void success_is_true(@Nullable Object... args) {
                 MenuItem rewardedAdMenuItem = menu.findItem(R.id.action_removeAdsTemporary);
                 if (rewardedAdMenuItem != null) {
                     Log.d(TAG, "onPrepareOptionsMenu: Tried to hide rewarded Ad menu point, because all ads are already hidden because of buying package.");
@@ -426,7 +427,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void failure_is_false() {
+            public void failure_is_false(@Nullable Object... args) {
                 Log.d(TAG, "onPrepareOptionsMenu: Not hiding rewardedAd menu button, because failure happened or product not bought!");
             }
         });
@@ -447,7 +448,7 @@ public class MainActivity extends AppCompatActivity {
                         getResources().getString(R.string.mainActivity_countdownNode_delete_warningDialog_noCancel),
                         R.drawable.light_delete, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                             @Override
-                            public void success_is_true() {
+                            public void success_is_true(@Nullable Object... args) {
                                 Log.d(TAG, "onOptionsItemSelected:removeAllCountdowns:success_is_true: User clicked on delete. Trying to erase all countdowns.");
                                 Countdown.deleteAll(MainActivity.this);
                                 reloadEverything(); //because onResume gets not called
@@ -455,7 +456,7 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             @Override
-                            public void failure_is_false() {
+                            public void failure_is_false(@Nullable Object... args) {
                                 Log.d(TAG, "onOptionsItemSelected:removeAllCountdowns:failure_is_false: Countdowns won't be deleted.");
                             }
                         });

@@ -119,14 +119,14 @@ public class LiveCountdown_ForegroundService extends Service {
                 //non-removable notifications
                 this.getInAppPurchaseMgr().executeIfProductIsBought(INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
-                    public void success_is_true() {
+                    public void success_is_true(@Nullable Object... args) {
                         Log.d(TAG, "startRefreshAll: UseMoreCountdownNodes-Package bought. Loaded more live countdowns.");
                         //do not use issueNotification at this moment, because we would send a normal notification and not a countdown counter one btw. a null notification, because livecountdowns have another id range
                         notificationMgrMgr.getmNotifyMgr().notify(NOTIFICATION_ID + currCountdown.getCouId().intValue(), notificationMgrMgr.createCounterServiceNotification(currCountdown));
                     }
 
                     @Override
-                    public void failure_is_false() {
+                    public void failure_is_false(@Nullable Object... args) {
                         Log.d(TAG, "startRefreshAll: UseMoreCountdownNodes-Package NOT bought. Will not load any more.");
                     }
                 });

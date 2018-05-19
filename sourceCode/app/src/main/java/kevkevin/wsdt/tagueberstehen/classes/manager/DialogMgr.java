@@ -34,7 +34,7 @@ public class DialogMgr {
         //Download skuDetails and put them into the dialog (skudetails method is not necessary we can do it manually by query method)
         this.getInAppPurchaseMgr().queryAllProducts_ASYNC(false, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
-            public void success_is_true() {
+            public void success_is_true(@Nullable Object... args) {
                 //resultcode 0 for inapppurchaseactivity and 1 for dialogs
                 //getInAppPurchaseMgr().purchaseProduct(skuProductId, 1, null);
                 Inventory inventory = InAppPurchaseMgr.getAllInAppProducts();
@@ -49,14 +49,14 @@ public class DialogMgr {
                     } else {
                         showDialog_Generic(skuDetails.getTitle(), skuDetails.getDescription(), getRes().getString(R.string.dialog_inAppProduct_button_positive_buy), getRes().getString(R.string.dialog_inAppProduct_button_negative_buy), R.drawable.light_appicon_48dp, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                             @Override
-                            public void success_is_true() {
+                            public void success_is_true(@Nullable Object... args) {
                                 //resultcode 0 for inapppurchaseactivity and 1 for dialogs
                                 Log.d(TAG, "showDialog_InAppProductPromotion: Trying to launch purchase flow by Dialog buy button.");
                                 getInAppPurchaseMgr().purchaseProduct(skuProductId, 1, null);
                             }
 
                             @Override
-                            public void failure_is_false() {
+                            public void failure_is_false(@Nullable Object... args) {
                                 Log.d(TAG, "showDialog_InAppProductPromotion: Dialog buy cancel btn clicked. Aborting purchase flow.");
                             }
                         });
@@ -65,7 +65,7 @@ public class DialogMgr {
             }
 
             @Override
-            public void failure_is_false() {
+            public void failure_is_false(@Nullable Object... args) {
                 //if failure downloading all products (not showing dialog for usability)
                 Log.e(TAG, "showDialog_InAppProductPromotion: Could not download inventory. Not showing product dialog.");
                 Toast.makeText(getContext(), R.string.inAppPurchaseManager_error_queryAllProductsFailure + " (2)", Toast.LENGTH_SHORT).show();
