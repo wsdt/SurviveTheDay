@@ -6,6 +6,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -128,8 +129,10 @@ public class HelperClass {
 
     //inner class
     public interface ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation {
-        //New interface for newest inappPurchaseHelper and maybe other classes
-        void success_is_true();
-        void failure_is_false();
+        /** Universal useable interface methods for async operations.
+         * With @param args you can provide arbitrary arguments (but you don't have to.
+         * @param args*/
+        void success_is_true(@Nullable Object... args);
+        void failure_is_false(@Nullable Object... args);
     }
 }

@@ -197,7 +197,7 @@ public class AdMgr {
 
         this.getInAppPurchaseMgr().executeIfProductIsBought(INAPP_PRODUCTS.REMOVE_ALL_ADS.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
-            public void success_is_true() {
+            public void success_is_true(@Nullable Object... args) {
                 Log.d(TAG, "executeIfProductIsBought:is_true: App is ad-free! Not showing ad.");
                 if (goToActivityAfterShown != null) {
                     Log.d(TAG, "loadFullPageAd: Hid ad, redirecting to next activity.");
@@ -206,7 +206,7 @@ public class AdMgr {
             }
 
             @Override
-            public void failure_is_false() {
+            public void failure_is_false(@Nullable Object... args) {
                 Log.d(TAG, "executeIfProductIsBought:is_false: App is NOT ad-free, so full page ad will be loaded.");
 
                 //IMPORTANT: ADMOB-GUIDELINE only place interestials between activities with contents and not too much!! Showing Fullpage Ad only allowed if loadingActivity shows BEFORE ad! (see: https://support.google.com/admob/answer/6201362?hl=de&ref_topic=2745287)
@@ -286,13 +286,13 @@ public class AdMgr {
 
         this.getInAppPurchaseMgr().executeIfProductIsBought(INAPP_PRODUCTS.REMOVE_ALL_ADS.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
-            public void success_is_true() {
+            public void success_is_true(@Nullable Object... args) {
                 Log.d(TAG, "loadBannerAd:executeIfProductIsBought:is_true: App is ad-free! Not showing ad.");
                 removeBannerAd(viewGroup); //also remove here banner ad if already showing
             }
 
             @Override
-            public void failure_is_false() {
+            public void failure_is_false(@Nullable Object... args) {
                 final String BANNER_ID = USE_TEST_ADS ? TEST.BANNER_AD_ID : REAL.BANNER_AD_ID;
 
                 final AdView adView = new AdView(getContext());

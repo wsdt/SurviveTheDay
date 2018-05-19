@@ -12,6 +12,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.util.SparseArray;
@@ -68,13 +69,13 @@ public class NotificationMgr { //one instance for every countdown or similar
             if ((count++) > 0) {
                 inAppPurchaseMgr.executeIfProductIsBought(INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
-                    public void success_is_true() {
+                    public void success_is_true(@Nullable Object... args) {
                         Log.d(TAG, "scheduleAllActiveCountdownNotifications:success_is_true: Product is bought. Scheduling countdown.");
                         scheduleNotification(currCountdown.getCouId().intValue(), (long) currCountdown.getCouMotivationIntervalSeconds());
                     }
 
                     @Override
-                    public void failure_is_false() {
+                    public void failure_is_false(@Nullable Object... args) {
                         Log.d(TAG, "scheduleAllActiveCountdownNotifications:failure_is_false: Product not bought. Not scheduling countdown.");
                     }
                 });

@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -252,14 +253,14 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         //Is use-more-nodes package bought? (here in onclick, so it gets refreshed!) --------------------------------------------------------------
         this.getInAppPurchaseMgr().executeIfProductIsBought(INAPP_PRODUCTS.USE_MORE_COUNTDOWN_NODES.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
-            public void success_is_true() {
+            public void success_is_true(@Nullable Object... args) {
                 Log.d(TAG, "onCreate:executeIfProductIsBought: UseMoreCountdownNodes is bought. Not blocking anything.");
                 //Get values from form
                 saveCountdownOfForm();
             }
 
             @Override
-            public void failure_is_false() {
+            public void failure_is_false(@Nullable Object... args) {
                 Log.d(TAG, "onCreate:executeIfProductIsBought: UseMoreCountdownNodes is NOT bought. Blocking save-Button IF already one node saved AND NOT in editing mode.");
                 if (Countdown.queryAll(ModifyCountdownActivity.this).size() > 0 && ((getNewEditedCountdown().getCouId() < 0 || getNewEditedCountdown().getCouId() == null))) {
                     Log.d(TAG, "onCreate:executeIfProductIsBought:OnClick: Did not save countdown, because inapp product not bought and more than one node already saved.");
@@ -391,13 +392,13 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     public void onClickOpenColorPicker(final View view) {
         this.getInAppPurchaseMgr().executeIfProductIsBought(INAPP_PRODUCTS.CHANGE_NOTIFICATION_COLOR.toString(), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
-            public void success_is_true() {
+            public void success_is_true(@Nullable Object... args) {
                 Log.d(TAG, "onClickOpenColorPicker:executeIfProductIsBought: ChangeNotification is bought. Tried to open color picker");
                 ColorPicker.openColorPickerDialog(ModifyCountdownActivity.this, view, Color.parseColor(ColorPicker.getBackgroundColorHexString(findViewById(R.id.categoryValue))), false);
             }
 
             @Override
-            public void failure_is_false() {
+            public void failure_is_false(@Nullable Object... args) {
                 Log.d(TAG, "onClickOpenColorPicker:executeIfProductIsBought: ChangeNotification is NOT bought. Blocking color-Button.");
                 getDialogMgr().showDialog_InAppProductPromotion(INAPP_PRODUCTS.CHANGE_NOTIFICATION_COLOR.toString());
                 Toast.makeText(ModifyCountdownActivity.this, R.string.inAppProduct_notBought_changeNotificationColor, Toast.LENGTH_SHORT).show();

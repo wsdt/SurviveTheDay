@@ -190,13 +190,13 @@ public class CountdownActivity extends AppCompatActivity {
             this.getCountdownCounter().runOnUI();
             HelperClass.doPeriodically(this, 1000, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                 @Override
-                public void success_is_true() {
+                public void success_is_true(@Nullable Object... args) {
                     refreshShareIntent();
                     Log.d(TAG, "startCountdownOnUI:doPeriodically: Refreshed share intent.");
                 }
 
                 @Override
-                public void failure_is_false() {
+                public void failure_is_false(@Nullable Object... args) {
                     Log.d(TAG, "startCountdownOnUI:doPeriodically: Stopped refreshing share intent.");
                 }
             });

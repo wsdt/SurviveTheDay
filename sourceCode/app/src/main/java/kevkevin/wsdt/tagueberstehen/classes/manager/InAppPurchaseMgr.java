@@ -72,7 +72,7 @@ public class InAppPurchaseMgr {
                     res.getString(R.string.inAppPurchaseManager_userOwnsPaidAppVersion_dialog_description),
                     null, "", (-1), new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                         @Override
-                        public void success_is_true() {
+                        public void success_is_true(@Nullable Object... args) {
                             //Close activity when clicking on ok btn (used e.g. in inappproducts activity)
                             if (activity != null) {
                                 activity.finish();
@@ -80,7 +80,7 @@ public class InAppPurchaseMgr {
                         }
 
                         @Override
-                        public void failure_is_false() {
+                        public void failure_is_false(@Nullable Object... args) {
                             //This dialog has no cancel btn
                         }
                     });
@@ -184,7 +184,7 @@ public class InAppPurchaseMgr {
             //no iabsetupcompleted listener here necessary (is in queryallproducts)
             this.queryAllProducts_ASYNC(false, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                 @Override
-                public void success_is_true() {
+                public void success_is_true(@Nullable Object... args) {
                     //NodeContainer should have a vertical orientation and maybe be scrollable (so nodeContainer should be within a Scrollview)
                     //validate whether relativelayout of craft function is null otherwise do not add it
                     if (getAllInAppProducts() != null) {
@@ -197,7 +197,7 @@ public class InAppPurchaseMgr {
                 }
 
                 @Override
-                public void failure_is_false() {
+                public void failure_is_false(@Nullable Object... args) {
                     Log.e(TAG, "printAllInAppProductsAsNode: Could not query products!");
                 }
             });
@@ -336,7 +336,7 @@ public class InAppPurchaseMgr {
             //forceReload:true necessary (when false you would buy sth and you would need to restart app to see changes!)
             this.queryAllProducts_ASYNC(true, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                 @Override
-                public void success_is_true() {
+                public void success_is_true(@Nullable Object... args) {
                     //Querying and setup successfull then verify purchase and execute again different interface methods
                     try {
                         if (getAllInAppProducts().hasPurchase(productSkuId)) {
@@ -354,7 +354,7 @@ public class InAppPurchaseMgr {
                 }
 
                 @Override
-                public void failure_is_false() { //querying/setup failure then do failure-method of bought interface
+                public void failure_is_false(@Nullable Object... args) { //querying/setup failure then do failure-method of bought interface
                     executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
                     Log.e(TAG, "isProductBought:querySetupHelper: Could not setup helper or could not fetch inventory.");
                 }
