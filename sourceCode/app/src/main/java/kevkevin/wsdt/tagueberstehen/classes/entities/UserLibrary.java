@@ -30,14 +30,14 @@ public class UserLibrary {
     private String libDescription;
     private String libLanguageCode;
     private String libCreator;
-    private String libCreatedDateTime;
-    private String libLastEditDateTime;
+    private long libCreatedDateTime;
+    private long libLastEditDateTime;
 
     //Contains e.g. all quotes/jokes etc.
     @Convert(converter = GreenDaoConverter.class,columnType = String.class)
     private List<String> lines; //for null if in dbmgr
     //For mapping from FirebaseStorMgr to Obj
-    public UserLibrary(String libId, String libName, String libDescription, String libLanguageCode, String libCreator, String libCreatedDateTime, String libLastEditDateTime, JSONArray lines) {
+    public UserLibrary(String libId, String libName, String libDescription, String libLanguageCode, String libCreator, long libCreatedDateTime, long libLastEditDateTime, JSONArray lines) {
         this.setLibId(libId);
         this.setLibDescription(libDescription);
         this.setLibName(libName);
@@ -48,9 +48,16 @@ public class UserLibrary {
         this.setLines(HelperClass.convertJsonArrayToList(lines));
     }
 
-    @Generated(hash = 100798753)
-    public UserLibrary(String libId, String libName, String libDescription, String libLanguageCode, String libCreator, String libCreatedDateTime, String libLastEditDateTime,
-            List<String> lines) {
+   
+
+    @Generated(hash = 559680945)
+    public UserLibrary() {
+    }
+
+
+
+    @Generated(hash = 1721756460)
+    public UserLibrary(String libId, String libName, String libDescription, String libLanguageCode, String libCreator, long libCreatedDateTime, long libLastEditDateTime, List<String> lines) {
         this.libId = libId;
         this.libName = libName;
         this.libDescription = libDescription;
@@ -59,10 +66,6 @@ public class UserLibrary {
         this.libCreatedDateTime = libCreatedDateTime;
         this.libLastEditDateTime = libLastEditDateTime;
         this.lines = lines;
-    }
-
-    @Generated(hash = 559680945)
-    public UserLibrary() {
     }
     
 
@@ -91,19 +94,19 @@ public class UserLibrary {
         this.libCreator = libCreator;
     }
 
-    public String getLibCreatedDateTime() {
+    public long getLibCreatedDateTime() {
         return libCreatedDateTime;
     }
 
-    public void setLibCreatedDateTime(String libCreatedDateTime) {
+    public void setLibCreatedDateTime(long libCreatedDateTime) {
         this.libCreatedDateTime = libCreatedDateTime;
     }
 
-    public String getLibLastEditDateTime() {
+    public long getLibLastEditDateTime() {
         return libLastEditDateTime;
     }
 
-    public void setLibLastEditDateTime(String libLastEditDateTime) {
+    public void setLibLastEditDateTime(long libLastEditDateTime) {
         this.libLastEditDateTime = libLastEditDateTime;
     }
 

@@ -205,6 +205,9 @@ public class FirebaseStorageMgr {
                     @Override
                     public void failure_is_false(@Nullable Object... args) {
                         Log.e(TAG, "downloadUserLibrary: Could not download userLibrary: "+userLibraryToDownload);
+                        if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
+                            executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
+                        }
                     }
                 });
             }
@@ -272,13 +275,15 @@ public class FirebaseStorageMgr {
 
         try {
             userLibrary = new UserLibrary(
-                    indexFile.getString("libId"),
+                    storageReferenceUserLibraryFile.getName(),
                     indexFile.getString("libDescription"),
                     indexFile.getString("libName"),
-                    userLibraryJSONObject.getString("libLanguageCode"),
+                    storageReferenceUserLibraryFile.getPath().substring(
+                            (IFirebaseStorageMgr.LIB_JSON_VERSION_FOLDER+"\\").length()-1,
+                            (IFirebaseStorageMgr.LIB_JSON_VERSION_FOLDER+"\\").length()+1),
                     indexFile.getString("createdBy"),
-                    userLibraryJSONObject.getString("createdOn"),
-                    userLibraryJSONObject.getString("lastEditOn"),
+                    storageReferenceUserLibraryFile.getMetadata().getResult().getCreationTimeMillis(),
+                    storageReferenceUserLibraryFile.getMetadata().getResult().getUpdatedTimeMillis(),
                     userLibraryFile.getJSONArray("lines"));
         } catch (JSONException e) {
             Log.e(TAG, "mapJsonToUserLibraryObj: Could not extract Userlibrary from json. Json malformed!");
@@ -294,7 +299,7 @@ public class FirebaseStorageMgr {
         //This method has no validation whether default user lib was already downloaded!
         UserLibrary userLibrary = null;
         try {
-            userLibrary = FirebaseStorageMgr.mapJsonToUserLibraryObj(new JSONObject(IFirebaseStorageMgr.DEFAULT.LIB_JSON_DEFAULT));
+            //TODO: userLibrary = FirebaseStorageMgr.mapJsonToUserLibraryObj(new JSONObject(IFirebaseStorageMgr.DEFAULT.LIB_JSON_DEFAULT));
             if (userLibrary != null) {
                 userLibrary.save(context);
             } else {
@@ -302,7 +307,7 @@ public class FirebaseStorageMgr {
                 Log.e(TAG, "saveDefaultUserLibrary: Could not save default user library, bc. library is null.");
             }
             Log.d(TAG, "saveDefaultUserLibrary: Tried to save default user lib.");
-        } catch (JSONException e) {
+        } catch (Exception e) {
             //THIS SHOULD NEVER HAPPEN
             //TODO: Maybe inform user
             Log.e(TAG, "saveDefaultUserLibrary: Could not save default user library.");
