@@ -233,7 +233,7 @@ public class FirebaseStorageMgr {
         downloadUserLibrary(context,languageCode,supFolder,fileName, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
             public void success_is_true(@Nullable Object... args) {
-                UserLibrary userLibrary = mapJsonToUserLibraryObj(args);
+                UserLibrary userLibrary = null; //TODO: mapJsonToUserLibraryObj(args);
                 if (userLibrary != null) {
                     userLibrary.save(context);
                     Log.d(TAG, "saveUserLibrary: Library has been saved.");
@@ -293,13 +293,43 @@ public class FirebaseStorageMgr {
         return userLibrary;
     }
 
+    /** Following deprecated method only here for saving default userLib for following alphaReleases until everything works. */
+    @Deprecated
+    private static UserLibrary mapJsonToUserLibDEPRECATED(@Nullable JSONObject userLibraryFile) {
+        Log.d(TAG, "mapJsonToUserLibraryObj: Trying to save userLibrary.");
+
+        /** Abort method if one is null. */
+        if (userLibraryFile == null) {
+            return null;
+        }
+
+        UserLibrary userLibrary = null;
+
+        try {
+            userLibrary = new UserLibrary(
+                    userLibraryFile.getString("libId"),
+                    userLibraryFile.getString("libDescription"),
+                    userLibraryFile.getString("libName"),
+                    userLibraryFile.getString("libLanguageCode"),
+                    userLibraryFile.getString("createdBy"),
+                    userLibraryFile.getLong("createdOn"),
+                    userLibraryFile.getLong("lastEditOn"),
+                    userLibraryFile.getJSONArray("lines"));
+        } catch (JSONException e) {
+            Log.e(TAG, "mapJsonToUserLibraryObj: Could not extract Userlibrary from json. Json malformed!");
+            e.printStackTrace();
+        }
+
+        return userLibrary;
+    }
+
 
     @Deprecated
     public static UserLibrary saveDefaultUserLibrary(@NonNull Context context) {
         //This method has no validation whether default user lib was already downloaded!
         UserLibrary userLibrary = null;
         try {
-            //TODO: userLibrary = FirebaseStorageMgr.mapJsonToUserLibraryObj(new JSONObject(IFirebaseStorageMgr.DEFAULT.LIB_JSON_DEFAULT));
+            userLibrary = FirebaseStorageMgr.mapJsonToUserLibDEPRECATED(new JSONObject(IFirebaseStorageMgr.DEFAULT.LIB_JSON_DEFAULT));
             if (userLibrary != null) {
                 userLibrary.save(context);
             } else {
