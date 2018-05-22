@@ -22,6 +22,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
@@ -331,23 +332,13 @@ public class FirebaseStorageMgr {
 
     private static ZT_UserLibraryLanguagePack extractULibLanguagePackFromLibJsonObj(@Nullable String languageCode, @Nullable StorageReference storageReferenceOfLibFile, @Nullable JSONArray libLanguageLines) {
         if (storageReferenceOfLibFile != null && libLanguageLines != null && languageCode != null) {
-            try {
-                List<String> lpLines = new ArrayList<>();
-                for (int i = 0; i < libLanguageLines.length(); i++) {
-                    lpLines.add(libLanguageLines.get(i).toString());
-                }
-
-                return new ZT_UserLibraryLanguagePack(
-                        storageReferenceOfLibFile.getName(),
-                        languageCode,
-                        lpLines,
-                        storageReferenceOfLibFile.getMetadata().getResult().getCreationTimeMillis(),
-                        storageReferenceOfLibFile.getMetadata().getResult().getUpdatedTimeMillis()
-                );
-            } catch (JSONException e) {
-                Log.e(TAG, "extractULibLanguagePackFromLibJsonObj: Could not extract Userlibrary-LanguagePack from json. Json malformed!");
-                e.printStackTrace();
-            }
+            return new ZT_UserLibraryLanguagePack(
+                    storageReferenceOfLibFile.getName(),
+                    languageCode,
+                    libLanguageLines,
+                    storageReferenceOfLibFile.getMetadata().getResult().getCreationTimeMillis(),
+                    storageReferenceOfLibFile.getMetadata().getResult().getUpdatedTimeMillis()
+            );
         }
         return null;
     }
@@ -389,27 +380,45 @@ public class FirebaseStorageMgr {
         return null;
     }
 
+    /**
+     * Install default userLibrary with default languagePacks.
+     */
+    public static UserLibrary installDefaultData(@NonNull Context context) {
+        final String EN = "en", DE = "de";
 
-    @Deprecated
-    public static UserLibrary saveDefaultUserLibrary(@NonNull Context context) {
-        //This method has no validation whether default user lib was already downloaded!
-        UserLibrary userLibrary = null;
+        //Save language packs
+        new LanguagePack(DE).save(context);
+        new LanguagePack(EN).save(context);
+
+        //TODO: In future also save default library with Locale-Language (not only english like here and in IGlobal defined)
+        UserLibrary installedUserLib = new UserLibrary(
+                IFirebaseStorageMgr.DEFAULT.DEFAULT_LIB_ID, /*Normally a hash, but for default library we can make an exception. */
+                "Default quotes",
+                "This library contains motivating quotes in different languages.",
+                new ArrayList<>(Arrays.asList(new LanguagePack("en"), new LanguagePack("de"))),
+                IGlobal.DEVELOPERS.WSDT);
+        installedUserLib.save(context);
+
+        //Save also Lines of languagePacks into ZT
         try {
-            userLibrary = null; //TODO: FirebaseStorageMgr.mapJsonToUserLibDEPRECATED(new JSONObject(IFirebaseStorageMgr.DEFAULT.LIB_JSON_DEFAULT));
-            if (userLibrary != null) {
-                userLibrary.save(context);
-            } else {
-                //TODO: Maybe inform user
-                Log.e(TAG, "saveDefaultUserLibrary: Could not save default user library, bc. library is null.");
-            }
-            Log.d(TAG, "saveDefaultUserLibrary: Tried to save default user lib.");
-        } catch (Exception e) {
-            //THIS SHOULD NEVER HAPPEN
-            //TODO: Maybe inform user
-            Log.e(TAG, "saveDefaultUserLibrary: Could not save default user library.");
+            new ZT_UserLibraryLanguagePack(
+                    IFirebaseStorageMgr.DEFAULT.DEFAULT_LIB_ID, DE,
+                    new JSONArray(IFirebaseStorageMgr.DEFAULT.JSONARR_DE_LINES),
+                    0, 0
+            ).save(context);
+
+            new ZT_UserLibraryLanguagePack(
+                    IFirebaseStorageMgr.DEFAULT.DEFAULT_LIB_ID, EN,
+                    new JSONArray(IFirebaseStorageMgr.DEFAULT.JSONARR_EN_LINES),
+                    0, 0
+            ).save(context);
+        } catch (JSONException e) {
+            Log.e(TAG, "installDefaultData: Could not parse lines.");
             e.printStackTrace();
         }
-        return userLibrary;
+
+        Log.d(TAG, "installDefaultData: Tried to install default data.");
+        return installedUserLib;
     }
 
 

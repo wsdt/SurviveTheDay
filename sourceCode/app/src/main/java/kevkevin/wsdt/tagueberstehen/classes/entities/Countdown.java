@@ -421,7 +421,7 @@ public class Countdown {
         if (randomUserLibrary != null) {
             return randomUserLibrary.getAllLines(context).get(HelperClass.getRandomInt(0, randomUserLibrary.getAllLines(context).size() - 1));
         } else {
-            return context.getResources().getString(R.string.error_contactAdministrator);
+            return context.getResources().getString(R.string.error_missingData_noUserLibraryLanguagePacksInstalled);
         }
     }
 

@@ -332,7 +332,13 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         if (this.getNewEditedCountdown().getCouSelectedUserLibraries().size() <= 0) {
             //Toast is done somewhere else so just block user from saving
             Log.w(TAG, "areFormValuesValid: User has no userLibraries selected and installed.");
-            return false;
+            //install has to be currently here :( otherwise it could be executed twice when countdown was not valid.
+            Toast.makeText(this, R.string.modifyCountdownActivity_countdown_userLibrary_noInstalled, Toast.LENGTH_SHORT).show();
+            UserLibrary defaultUserLib = FirebaseStorageMgr.installDefaultData(this);
+            this.getNewEditedCountdown().getCouSelectedUserLibraries().add(defaultUserLib); //install local user lib
+
+            Log.d(TAG, "loadSelectedUserLibrariesFromCheckboxes: Used default user lib.");
+            //return false; --> we install it now so we don't have to return false (remove this later if userLibs are in an own activity)
         }
 
         //TODO: ADD HERE FURTHER VALIDATIONS (also make them seeable in CustomEdittext (if one used))
@@ -447,13 +453,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
             if (this.userLibraryCheckboxes.size() > 0) {
                 String libId = this.userLibraryCheckboxes.get(0).getTag().toString(); //assumes that at least one userlib is installed!
                 selectedUserLibraries.add(UserLibrary.query(this, libId));
-            } else {
-                Toast.makeText(this, R.string.modifyCountdownActivity_countdown_userLibrary_noInstalled, Toast.LENGTH_SHORT).show();
-                UserLibrary defaultUserLib = FirebaseStorageMgr.saveDefaultUserLibrary(this);
-                selectedUserLibraries.add(defaultUserLib); //install local user lib
-
-                Log.d(TAG, "loadSelectedUserLibrariesFromCheckboxes: Used default user lib.");
-            }
+            } //Default lib is now installed in validation
         }
         return selectedUserLibraries;
     }
