@@ -185,7 +185,7 @@
     <string name="creditsActivity_drawableCreditTemplate_app">App</string>
     <string name="creditsActivity_drawableCreditTemplate_conversationMark">Conversation mark</string>
     <string name="creditsActivity_drawableCreditTemplate_stopTimer">Stoptimer</string>
-    <string name="creditsActivity_creditsIntroductionText">
+    <string name="creditsActivity_creditProgrammers">
         <!-- CDATA FOR HTML SUPPORT -->
         <![CDATA[
         "<h4>SurviveTheDay</h4>"
