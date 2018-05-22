@@ -19,21 +19,27 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.daimajia.swipe.SwipeLayout;
+import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import kevkevin.wsdt.tagueberstehen.classes.entities.Countdown;
+import kevkevin.wsdt.tagueberstehen.annotations.Test;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
+import kevkevin.wsdt.tagueberstehen.classes.entities.Countdown;
+import kevkevin.wsdt.tagueberstehen.classes.entities.LanguagePack;
 import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.FirebaseAuthMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppPurchaseMgr;
+import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.FirebaseStorageMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.services.LiveCountdown_ForegroundService;
 import kevkevin.wsdt.tagueberstehen.classes.services.ServiceMgr;
 import kevkevin.wsdt.tagueberstehen.util.TodaysFeelingsActivity;
 
-import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IInAppPurchaseMgr.*;
-import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.INotificationMgr.*;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IInAppPurchaseMgr.INAPP_PRODUCTS;
+import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.INotificationMgr.IDENTIFIER_COUNTDOWN_ID;
 import static kevkevin.wsdt.tagueberstehen.interfaces.IMainActivity.COUNTDOWN_VIEW_TAG_PREFIX;
 
 public class MainActivity extends AppCompatActivity {
@@ -45,6 +51,30 @@ public class MainActivity extends AppCompatActivity {
     private RelativeLayout mainActivityPage;
     private DialogMgr dialogMgr;
     private SwipeRefreshLayout swipeRefreshLayout;
+
+
+    @Test(message = "REMOVE AFTER TESTED")
+    public void runDownload(View v) {
+        FirebaseAuthMgr.anonymousLogin(this);
+
+        List<LanguagePack> lpList = new ArrayList<>();
+        lpList.add(new LanguagePack("de"));
+
+        FirebaseStorageMgr.saveUserLibrary(this,
+                "25549D349C057A7F8049FBC892BBFF46B708F0D42570E55957B5C74C1909FD05",
+                "05_2018", lpList, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                    @Override
+                    public void success_is_true(@Nullable Object... args) {
+                        Log.d(TAG, "RUNDOWNLOAD->SUCCESS");
+                    }
+
+                    @Override
+                    public void failure_is_false(@Nullable Object... args) {
+                        Log.d(TAG, "RUNDOWNLOAD->FAILURE");
+                    }
+                });
+        Log.d(TAG, "RUNDOWNLOAD->Tried to start");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         initializePullForRefresh();
     }
 
-    public void openFeelingActivity(){
+    public void openFeelingActivity() {
         startActivity(new Intent(MainActivity.this, TodaysFeelingsActivity.class));
     }
 
@@ -291,7 +321,7 @@ public class MainActivity extends AppCompatActivity {
     private Countdown getCountdownFromNode(View v) { //needs to be Swipelayout!
         Countdown countdown;
         try {
-            countdown = Countdown.query(this,getCountdownIdFromNodeTag((SwipeLayout) v.getParent().getParent())); //2 getparent() because right Menu consists of more buttons
+            countdown = Countdown.query(this, getCountdownIdFromNodeTag((SwipeLayout) v.getParent().getParent())); //2 getparent() because right Menu consists of more buttons
         } catch (ClassCastException e) {
             Log.e(TAG, "onClick_node_sl_bottomview_rightMenu_editNode: Could not cast parent view to SwipeLayout. Maybe it is not a node.");
             return null;
@@ -304,7 +334,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "getCountdownIdFromNodeTag: Nodetag of countdown is: " + ((nodeTag == null) ? "null" : nodeTag));
         Long nodeId = (-1L);
         try {
-            if (nodeTag.length() >= (COUNTDOWN_VIEW_TAG_PREFIX.length()+1)) { //+1 so we know that at least a no. between 0 and 9 is given
+            if (nodeTag.length() >= (COUNTDOWN_VIEW_TAG_PREFIX.length() + 1)) { //+1 so we know that at least a no. between 0 and 9 is given
                 try {
                     nodeId = Long.parseLong(nodeTag.substring(COUNTDOWN_VIEW_TAG_PREFIX.length()));
                 } catch (NumberFormatException e) {
