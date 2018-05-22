@@ -7,7 +7,9 @@ import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.JoinEntity;
 import org.greenrobot.greendao.annotation.Keep;
+import org.greenrobot.greendao.annotation.ToMany;
 import org.greenrobot.greendao.annotation.Transient;
 import org.json.JSONArray;
 
@@ -26,26 +28,33 @@ public class UserLibrary {
     private static final String TAG = "UserLibrary";
     @Id
     private String libId; //hashwert etc.
+    /** Important for libName, libDescription*/
     private String libName;
     private String libDescription;
-    private String libLanguageCode;
+    @ToMany
+    @JoinEntity(entity = ZT_UserLibraryLanguageCode.class,
+            sourceProperty = "libId", targetProperty = "lcKuerzel") //for N:M
+    private List<LanguageCode> libLanguageCodes;
     private String libCreator;
     private long libCreatedDateTime;
     private long libLastEditDateTime;
+    /** Used to resolve relations */
+    @Generated(hash = 2040040024)
+    private transient DaoSession daoSession;
+    /** Used for active entity operations. */
+    @Generated(hash = 1814500198)
+    private transient UserLibraryDao myDao;
 
-    //Contains e.g. all quotes/jokes etc.
-    @Convert(converter = GreenDaoConverter.class,columnType = String.class)
-    private List<String> lines; //for null if in dbmgr
+
     //For mapping from FirebaseStorMgr to Obj
-    public UserLibrary(String libId, String libName, String libDescription, String libLanguageCode, String libCreator, long libCreatedDateTime, long libLastEditDateTime, JSONArray lines) {
+    public UserLibrary(String libId, String libName, String libDescription, List<LanguageCode> libLanguageCodes, String libCreator, long libCreatedDateTime, long libLastEditDateTime, JSONArray lines) {
         this.setLibId(libId);
         this.setLibDescription(libDescription);
         this.setLibName(libName);
-        this.setLibLanguageCode(libLanguageCode);
+        this.setLibLanguageCode(libLanguageCodes);
         this.setLibCreator(libCreator);
         this.setLibCreatedDateTime(libCreatedDateTime);
         this.setLibLastEditDateTime(libLastEditDateTime);
-        this.setLines(HelperClass.convertJsonArrayToList(lines));
     }
 
    
@@ -56,17 +65,16 @@ public class UserLibrary {
 
 
 
-    @Generated(hash = 1721756460)
-    public UserLibrary(String libId, String libName, String libDescription, String libLanguageCode, String libCreator, long libCreatedDateTime, long libLastEditDateTime, List<String> lines) {
+    @Generated(hash = 798238638)
+    public UserLibrary(String libId, String libName, String libDescription, String libCreator, long libCreatedDateTime, long libLastEditDateTime) {
         this.libId = libId;
         this.libName = libName;
         this.libDescription = libDescription;
-        this.libLanguageCode = libLanguageCode;
         this.libCreator = libCreator;
         this.libCreatedDateTime = libCreatedDateTime;
         this.libLastEditDateTime = libLastEditDateTime;
-        this.lines = lines;
     }
+
     
 
     //GETTER/SETTER -------------------------
@@ -78,12 +86,32 @@ public class UserLibrary {
         this.libName = libName;
     }
 
-    public String getLibLanguageCode() {
-        return libLanguageCode;
+    /**
+     * To-many relationship, resolved on first access (and after reset).
+     * Changes to to-many relations are not persisted, make changes to the target entity.
+     */
+    @Generated(hash = 569254064)
+    public List<LanguageCode> getLibLanguageCodes() {
+        if (libLanguageCodes == null) {
+            final DaoSession daoSession = this.daoSession;
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            LanguageCodeDao targetDao = daoSession.getLanguageCodeDao();
+            List<LanguageCode> libLanguageCodesNew = targetDao._queryUserLibrary_LibLanguageCodes(libId);
+            synchronized (this) {
+                if (libLanguageCodes == null) {
+                    libLanguageCodes = libLanguageCodesNew;
+                }
+            }
+        }
+        return libLanguageCodes;
     }
 
-    public void setLibLanguageCode(String libLanguageCode) {
-        this.libLanguageCode = libLanguageCode;
+
+
+    public void setLibLanguageCode(List<LanguageCode> libLanguageCodes) {
+        this.libLanguageCodes = libLanguageCodes;
     }
 
     public String getLibCreator() {
@@ -108,14 +136,6 @@ public class UserLibrary {
 
     public void setLibLastEditDateTime(long libLastEditDateTime) {
         this.libLastEditDateTime = libLastEditDateTime;
-    }
-
-    public List<String> getLines() {
-        return lines;
-    }
-
-    public void setLines(List<String> lines) {
-        this.lines = lines;
     }
 
     public String getLibId() {
@@ -171,5 +191,64 @@ public class UserLibrary {
 
     public void setLibDescription(String libDescription) {
         this.libDescription = libDescription;
+    }
+
+
+
+    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+    @Generated(hash = 761314390)
+    public synchronized void resetLibLanguageCodes() {
+        libLanguageCodes = null;
+    }
+
+
+
+    /**
+     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
+     * Entity must attached to an entity context.
+     */
+    @Generated(hash = 128553479)
+    public void delete() {
+        if (myDao == null) {
+            throw new DaoException("Entity is detached from DAO context");
+        }
+        myDao.delete(this);
+    }
+
+
+
+    /**
+     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
+     * Entity must attached to an entity context.
+     */
+    @Generated(hash = 1942392019)
+    public void refresh() {
+        if (myDao == null) {
+            throw new DaoException("Entity is detached from DAO context");
+        }
+        myDao.refresh(this);
+    }
+
+
+
+    /**
+     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
+     * Entity must attached to an entity context.
+     */
+    @Generated(hash = 713229351)
+    public void update() {
+        if (myDao == null) {
+            throw new DaoException("Entity is detached from DAO context");
+        }
+        myDao.update(this);
+    }
+
+
+
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 1654970760)
+    public void __setDaoSession(DaoSession daoSession) {
+        this.daoSession = daoSession;
+        myDao = daoSession != null ? daoSession.getUserLibraryDao() : null;
     }
 }

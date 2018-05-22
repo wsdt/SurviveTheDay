@@ -8,7 +8,13 @@ public interface IFirebaseStorageMgr {
     String RES_FILE_EXTENSION = "json";
 
     interface INDEX_FILES {
-        String FILENAME = "__index"; //all index files on Firebase need to be named like this!
+        /** Name of each index file (in root folder). Foreach year an indexFile which contains
+         * all UserLibraryMetadata of Libs which were created in this year (not modified, would be confusing).
+         *
+         * E.g. __index_05_2017.json or __index_01_2018.json
+         *
+         * Format also: __index_MM_YYYY.json */
+        String FILENAME = "__index_";
     }
 
     interface DEFAULT {
