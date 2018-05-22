@@ -187,23 +187,37 @@
         <![CDATA[
             "<div><b>%1$s Icon</b><br />Icons made by <a href=\"%2$s\" title=\"%3$s\">%3$s</a> from <br /><a href=\"%4$s\" title=\"%5$s\">%4$s</a> is licensed by <br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\" target=\"_blank\">CC 3.0 BY</a></div></string>"
             ]]></string>
+    <string name="developer_kevin"> Kevin Riedl</string>
+    <string name="developer_chris"> Christof Jori</string>
+    <string name="creditsActivity_writeUs"> Got something on your mind? \n
+                                            Just Write us!</string>
     <string name="creditsActivity_drawableCreditTemplate_app">App</string>
     <string name="creditsActivity_drawableCreditTemplate_conversationMark">Conversation mark</string>
     <string name="creditsActivity_drawableCreditTemplate_stopTimer">Stoptimer</string>
-    <string name="creditsActivity_creditsIntroductionText">
-        <!-- CDATA FOR HTML SUPPORT -->
-        <![CDATA[
-        "<h4>SurviveTheDay</h4>"
-        "<p><b>© Riedl Kevin, 2018</b><br />"
-        "Business: <a href='mailto:kevin.riedl.privat@gmail.com'>kevin.riedl.privat@gmail.com</a></p>"
-        "<p>Special thanks to following external authors:</p>"
-        "[1]: Generic quotes from <a href="https://www.briantracy.com/blog/personal-success/26-motivational-quotes-for-success/">Briantracy.com, Motivational quotes</a> (last seen: 2018-01-06)<br />"
-        "[2]: Generic quotes from <a href="https://www.brainyquote.com/topics/inspirational">Brainyquote.com, Inspirational Quotes</a> (last seen: 2018-01-06)<br />"
-        "[3]: German proverbs from <a href="https://www.fluentu.com/blog/german/learn-german-proverbs/">Fluentu.com, German proverbs</a> (last seen: 2018-02-18)<br />"
-        "[4]: Generic quotes from <a href="http://zitate.net">Zitate.net</a> (last seen: 2018-02-18)<br /><br />"
-        "<b>Searching contributors!</b> <br />Contact me if you want to help translating <br />this app into other languages or when <br />you want to program with me :)"
-        ]]>
+
+    <!-- Place 01 in CreditsActivityView - the Programmers -->
+    <string name="creditsActivity_creditProgrammersAndAllOthers">
+        <b>Programming \n\n</b>
+        "© Riedl Kevin, 2018 \n"
+        "Business: <a href='mailto:kevin.riedl.privat@gmail.com'>kevin.riedl.privat@gmail.com</a>\n"
+        "© Jori Christof, 2018 \n"
+        "Business: <a href='mailto:cjori49@gmail.com'>cjori49@gmail.com</a>\n\n"
     </string>
+    <!-- Place 02 in CreditsActivityView - the Authors & Sources -->
+    <string name="creditsActivity_creditSourcesAndAuthors">
+        <b>Special thanks to following external authors: </b>\n"
+        "1.: Generic quotes from <a href="https://www.briantracy.com/blog/personal-success/26-motivational-quotes-for-success/"><b>Briantracy.com, Motivational quotes</b></a> (last seen: 2018/01/06)<br />"
+        "2.: Generic quotes from <a href="https://www.brainyquote.com/topics/inspirational"><b>Brainyquote.com, Inspirational Quotes</b></a> (last seen: 2018/01/06)<br />"
+        "3.: German proverbs from <a href="https://www.fluentu.com/blog/german/learn-german-proverbs/"><b>Fluentu.com, German proverbs</b></a> (last seen: 2018/02/18)<br />"
+        "4.: Generic quotes from <a href="http://zitate.net">Zitate.net</a> (last seen: 2018/02/18)<br /><br />"
+    </string>
+    <!-- Place 03 in CreditsActivityView - some other helpers (empty yet) -->
+    <string name="creditsActivity_creditOther">..</string>
+    <!-- Place 04 in CreditsActivityView - engagement? -->
+    <string name ="creditsActivity_engagement">
+        "<b>Searching contributors!</b>\n\n"
+        "We're still seeking for members, if you're interested don't hesitate contacting us! :-)</string>
+
     <!-- IMPORTANT: Following two arrays must be the same size and order!! -->
     <string-array name="countdownIntervalSpinner_LABELS">
         <item>5 Seconds</item>
@@ -346,5 +360,7 @@
     <string name="mhm"> Yeah, whatever</string>
     <string name="bad"> Not really satisfied</string>
     <string name="worse"> Nah thanks, bring in tomorrow</string>
+
+
 
 </resources>

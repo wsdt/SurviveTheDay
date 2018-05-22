@@ -1,56 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.widget.RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorWhite_fff"
     android:fitsSystemWindows="true"
-    tools:context="kevkevin.wsdt.tagueberstehen.CreditsActivity"
-    android:background="@color/colorWhite_fff">
+    tools:context="kevkevin.wsdt.tagueberstehen.CreditsActivity">
 
-    <RelativeLayout
-        android:id="@+id/wrappingRLForAds"
-        android:layout_width="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_height="match_parent">
+    <!-- TODO: Use google msg icon instead of android icon here -->
 
-        <android.support.v4.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_marginBottom="50dp"
-            android:layout_height="match_parent">
-
-            <LinearLayout
-                android:id="@+id/contentView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/creditsText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/colorDark_111"
-                    android:layout_margin="@dimen/text_margin"
-                    android:text="@string/creditsActivity_creditsIntroductionText" />
-
-                <!-- für jedes icon hier eigenen eintrag im xml machen -->
-                <GridLayout
-                    android:id="@+id/creditList"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:columnCount="2"/>
-            </LinearLayout>
-        </android.support.v4.widget.NestedScrollView>
-    </RelativeLayout>
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="12dp"
+        android:text="@string/app_name"
+        android:textColorLink="@color/color_for_links"
+        android:textSize="40sp"
+        tools:layout_editor_absoluteX="162dp"
+        tools:layout_editor_absoluteY="16dp" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/contactMe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        app:layout_anchor="@id/wrappingRLForAds"
-        app:layout_anchorGravity="center_vertical|end"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
-    <!-- TODO: Use google msg icon instead of android icon here -->
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:clickable="true"
+        app:srcCompat="@android:drawable/sym_action_email" />
 
-</android.support.design.widget.CoordinatorLayout>
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/contactMe"
+        android:layout_alignParentStart="true"
+        android:gravity="center_horizontal"
+        android:text="@string/creditsActivity_writeUs"
+        android:textColorLink="@android:color/holo_blue_light"
+        android:textSize="20sp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="372dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/quotesField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/creditsActivity_creditProgrammersAndAllOthers"
+                android:textColorLink="@color/color_for_links" />
+
+            <TextView
+                android:id="@+id/quotesField2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/creditsActivity_creditSourcesAndAuthors"
+                android:textColorLink="@color/color_for_links" />
+
+            <TextView
+                android:id="@+id/quotesField3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/creditsActivity_creditOther"
+                android:textColorLink="@color/color_for_links" />
+
+            <TextView
+                android:id="@+id/quotesField4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/creditsActivity_engagement"
+                android:textColorLink="@color/color_for_links" />
+
+            <android.support.v7.widget.GridLayout
+                android:id="@+id/creditList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="109dp"
+                android:foregroundGravity="center_horizontal">
+
+            </android.support.v7.widget.GridLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</android.widget.RelativeLayout>
