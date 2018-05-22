@@ -12,6 +12,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StreamDownloadTask;
 
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import kevkevin.wsdt.tagueberstehen.R;
+import kevkevin.wsdt.tagueberstehen.annotations.Enhance;
 import kevkevin.wsdt.tagueberstehen.annotations.Test;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.entities.LanguagePack;
@@ -49,36 +51,32 @@ public class FirebaseStorageMgr {
     /**
      * Helpermethod for extracting downloadedJsonObj from var args.
      * When you want to extract multiple indizes, then write one by yourself.
-     * <p>
+     *
      * DownloadFile() typically returns StorageReference in args[0] and JsonObj in args[1]
+     *
+     * @param jsonClass: Should be either JsonArray.class or JsonObject.class to tell the method
+     *      how the string is formatted.
      */
-    private static JSONObject parseJsonObjFromArgs(@Nullable Object arg) {
-        JSONObject dowloadedIndexFile = null;
-        if (arg != null && arg instanceof JSONObject) {
-            //if not null at least one param has to be supplied, so no length validation
-            dowloadedIndexFile = (JSONObject) arg; //if you want to use indexFile then you can do it here (otherwise it will be used in nested successTrue().
+    private static JSONArray parseJsonArrFromArg(@Nullable Object arg, @NonNull Class jsonClass) {
+        JSONArray dowloadedFile = new JSONArray();
+        if (arg != null) {
+            try {
+                if (jsonClass == JSONObject.class) {
+                    //Just nest jsonObj into JsonArray [{}] so we can use it
+                    dowloadedFile.put(new JSONObject(arg.toString())); //if you want to use indexFile then you can do it here (otherwise it will be used in nested successTrue().
+                } else if (jsonClass == JSONArray.class) {
+                    dowloadedFile = new JSONArray(arg.toString());
+                } else {
+                    Log.d(TAG, "parseJsonArrFromArg: Provided class is not json. ->" + arg.toString()+"/ Desired Class: "+jsonClass);
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "parseJsonArrFromArg: Could not parse json-> "+arg.toString());
+                e.printStackTrace();
+            }
         } else {
-            Log.e(TAG, "downloadIndexFile: Provided args might be null or wrong parsed-->" + arg); //Implicit toString call to avoid nullPointer
+            Log.e(TAG, "parseJsonArrFromArg: Provided arg is null."); //Implicit toString call to avoid nullPointer
         }
-        return dowloadedIndexFile;
-    }
-
-    /* #########################################################################################################
-     * TODO: ########## UPLOAD PROCEDURES ###########################################################################
-     * ##########################################################################################################*/
-
-    /** TODO: https://stackoverflow.com/questions/33033418/android-get-user-id-without-requiring-scary-for-user-permissions
-     * --> FOR NEW USER LIBRARIES */
-
-
-    /**
-     * IMPORTANT: This method should be uptodate, with the current used json version code!
-     * Json-Versioncode (/v1/ or /v2/ as folder on Firebase, which can have completely different structures).
-     */
-    private static JSONObject mapUserLibraryObjToJson(@NonNull UserLibrary userLibrary) {
-        Log.d(TAG, "mapUserLibraryObjToJson: Is current version of json correct?");
-        //TODO:
-        return null;
+        return dowloadedFile;
     }
 
 
@@ -91,6 +89,7 @@ public class FirebaseStorageMgr {
      */
     private static void downloadFile(@NonNull Context context, @NonNull String strStorageReference, @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
         final StorageReference storageReference = getStorageReference(context);
+        Log.d(TAG, "downloadFile: Trying to download file -> "+strStorageReference);
 
         storageReference.child(strStorageReference)
                 .getStream().addOnSuccessListener(new OnSuccessListener<StreamDownloadTask.TaskSnapshot>() {
@@ -114,12 +113,8 @@ public class FirebaseStorageMgr {
 
                             /** Execute successMethod with downloadedJson. (don't forget to validate whether it is null or valid) */
                             if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
-                                executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true(storageReference, new JSONObject(jsonStr.toString()));
+                                executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true(storageReference, jsonStr.toString());
                             }
-
-                        } catch (JSONException e) {
-                            Log.e(TAG, "saveNewPackage: Could not parse downloaded userLibrary to JsonObj.");
-                            e.printStackTrace();
                         } finally {
                             try {
                                 if (fis != null) {
@@ -160,8 +155,8 @@ public class FirebaseStorageMgr {
     public static void downloadIndexFile(@NonNull Context context, @NonNull String creationMM_YYYY, @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
         /** Nesting provided ExecuteIfTrueSuccess_OR_IfFalseFailure into new interface, bc. so we can merge custom indexFile-Procedures with provided ones.*/
         downloadFile(context,
-                IFirebaseStorageMgr.LIB_JSON_VERSION_FOLDER + "\\" +
-                        IFirebaseStorageMgr.INDEX_FILES.FILENAME + creationMM_YYYY + "\\" + /* e.g. __index_02_2018 */
+                IFirebaseStorageMgr.LIB_JSON_VERSION_FOLDER + "/" +
+                        IFirebaseStorageMgr.INDEX_FILES.FILENAME + creationMM_YYYY + "." + /* e.g. __index_02_2018 */
                         IFirebaseStorageMgr.RES_FILE_EXTENSION, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
                     public void success_is_true(@Nullable Object... args) {
@@ -173,7 +168,7 @@ public class FirebaseStorageMgr {
                             /** Get jsonObj from args [args[0] = StorageReference; args[1] = downloadedFile]
                              * Do not supply StorageReference of IndexFile as it is not needed. */
                             executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true(
-                                    parseJsonObjFromArgs((args != null && args.length > 1) ? args[1] : null) //IndexFile as JsonObj
+                                    parseJsonArrFromArg((args != null && args.length > 1) ? args[1] : null, JSONObject.class) //IndexFile as JsonStr
                             );
                         }
                     }
@@ -211,20 +206,23 @@ public class FirebaseStorageMgr {
                     saveUserLibrary.success_is_true(args);
                 }
 
-                //TODO: Currently we just download all LanguagePacks (maybe user does not want this!)
+                //LanguagePacks are provided by saveUserLib() so user can decide which ones to download
                 for (final LanguagePack languagePack : languagePacks) {
                     downloadFile(context,
                             /** e.g. v1/en/4sd65fs45df45sdf465s.json */
-                            IFirebaseStorageMgr.LIB_JSON_VERSION_FOLDER + "\\" + languagePack.toString() + "\\" + libId + "." + IFirebaseStorageMgr.RES_FILE_EXTENSION,
+                            IFirebaseStorageMgr.LIB_JSON_VERSION_FOLDER + "/" + languagePack.toString() + "/" + libId + "." + IFirebaseStorageMgr.RES_FILE_EXTENSION,
                             new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                                 @Override
                                 public void success_is_true(@Nullable final Object... args) {
                                     /** Args[0] = StorageReference of File
-                                     * Args[1] = JsonArray of UserLibrary of languageCode */
+                                     * Args[1] = JsonStr of UserLibrary of languageCode */
 
                                     //Save languagepackLines to UserLibrary
                                     if (saveLanguagePack != null) {
-                                        saveLanguagePack.success_is_true(languagePack, args);
+                                        saveLanguagePack.success_is_true(
+                                                languagePack,
+                                                (args != null && args.length > 0) ? args[0] : null,
+                                                (args != null && args.length > 1) ? args[1] : null);
                                     }
                                 }
 
@@ -253,24 +251,30 @@ public class FirebaseStorageMgr {
     }
 
     /**
-     * Save already downloaded Userlibrary.
+     * Save a new userLibrary by downloading it from Firebase.
+     * @param libId: Hash of desired userLibrary.
+     * @param creationMM_YYYY: e.g. 08_2018 for determining which index file to download (has to be correct).
+     * @param languageCodes: Which languagePacks does the user want to download. They have to exist!
      */
+    @Enhance (message = {"Add exception handling for non-existing language codes.",
+        "Add exception handling for providing a malformed, non-existing creationMM_YYYY OR add handling " +
+                "when index file does not contain preferred userLibrary."})
     public static void saveUserLibrary(@NonNull final Context context,
+                                       @NonNull final String libId,
                                        @NonNull final String creationMM_YYYY,
                                        @NonNull final List<LanguagePack> languageCodes,
-                                       @NonNull final String libId,
                                        @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
         downloadUserLibrary(context, creationMM_YYYY, languageCodes, libId,
                 /** Will be executed once for this UserLibrary. */
                 new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
                     public void success_is_true(@Nullable Object... args) {
-                        /** args[0]: JsonObj of indexFile
+                        /** args[0]: JsonStr of indexFile
                          *
                          * IMPORTANT: This success_is_true() is called only once for saving the userLibrary. */
 
                         /***/
-                        UserLibrary userLibrary = extractUserLibraryFromIndexJsonObj(libId, parseJsonObjFromArgs((args != null && args.length > 0) ? args[0] : null));
+                        UserLibrary userLibrary = extractUserLibraryFromIndexJsonArr(libId, parseJsonArrFromArg((args != null && args.length > 0) ? args[0] : null, JSONArray.class));
                         if (userLibrary != null) {
                             userLibrary.save(context);
                             Log.d(TAG, "saveUserLibrary: Library has been saved.");
@@ -305,21 +309,11 @@ public class FirebaseStorageMgr {
                          * Args[1] = JsonArray of UserLibrary of languageCode */
 
                         /* When this method is called a new languagePack should be inserted into db. */
-                        ZT_UserLibraryLanguagePack libLanguagePackLines = extractULibLanguagePackFromLibJsonObj(
-                                (String) ((args != null && args.length > 0) ? args[0] : null),
+                        extractULibLanguagePackFromLibJsonObj(context,
+                                (LanguagePack) ((args != null && args.length > 0) ? args[0] : null),
                                 (StorageReference) ((args != null && args.length > 1) ? args[1] : null),
-                                (JSONArray) ((args != null && args.length > 2) ? args[2] : null)
+                                parseJsonArrFromArg((args != null && args.length > 2) ? args[2] : null,JSONArray.class)
                         );
-
-                        if (libLanguagePackLines != null) {
-                            libLanguagePackLines.save(context);
-                            Log.d(TAG, "saveUserLibrary: LanguagePack has been saved.");
-                        } else {
-                            /** Download failed */
-                            if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
-                                executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
-                            }
-                        }
                     }
 
                     @Override
@@ -330,29 +324,39 @@ public class FirebaseStorageMgr {
                 });
     }
 
-    private static ZT_UserLibraryLanguagePack extractULibLanguagePackFromLibJsonObj(@Nullable String languageCode, @Nullable StorageReference storageReferenceOfLibFile, @Nullable JSONArray libLanguageLines) {
+    private static void extractULibLanguagePackFromLibJsonObj(@NonNull final Context context, @Nullable final LanguagePack languageCode, @Nullable final StorageReference storageReferenceOfLibFile, @Nullable final JSONArray libLanguageLines) {
         if (storageReferenceOfLibFile != null && libLanguageLines != null && languageCode != null) {
-            return new ZT_UserLibraryLanguagePack(
-                    storageReferenceOfLibFile.getName(),
-                    languageCode,
-                    libLanguageLines,
-                    storageReferenceOfLibFile.getMetadata().getResult().getCreationTimeMillis(),
-                    storageReferenceOfLibFile.getMetadata().getResult().getUpdatedTimeMillis()
-            );
+            storageReferenceOfLibFile.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
+                @Override
+                public void onSuccess(StorageMetadata storageMetadata) {
+                    new ZT_UserLibraryLanguagePack(
+                            storageReferenceOfLibFile.getName(),
+                            languageCode.getLpKuerzel(),
+                            libLanguageLines,
+                            storageMetadata.getCreationTimeMillis(),
+                            storageMetadata.getUpdatedTimeMillis()
+                    ).save(context);
+                }
+            });
+        } else {
+            Log.e(TAG, "extractULibLanguagePackFromLibJsonObj: A provided value is null! Could not map Languagepack");
         }
-        return null;
     }
 
     /**
      * Maps downloaded indexFile onto a UserLibrary by using the provided libId, otherwise we would have to map
      * all downloaded UserLibs.
      */
-    private static UserLibrary extractUserLibraryFromIndexJsonObj(@NonNull String libId, @Nullable JSONObject indexFile) {
+    private static UserLibrary extractUserLibraryFromIndexJsonArr(@NonNull String libId, @Nullable JSONArray indexFile) {
         if (indexFile != null) {
             try {
                 /* Extract available languageCodes from indexFile (which does not mean that they
-                 * are installed!!) */
-                Iterator<?> languageCodes = indexFile.getJSONObject(libId).keys();
+                 * are installed!!)
+                 *
+                 * We have to get Index 0 before, bc. we parsed our JsonObj to a JsonArr (bc. of the
+                 * userLibFile which is a JsonArr. So we have the same objects. So there should/is
+                 * never another index than 0 :)*/
+                Iterator<?> languageCodes = indexFile.getJSONObject(0).getJSONObject(libId).keys();
                 List<LanguagePack> languageCodeList = new ArrayList<>();
                 while (languageCodes.hasNext()) {
                     languageCodeList.add(new LanguagePack(languageCodes.next().toString()));
@@ -364,16 +368,16 @@ public class FirebaseStorageMgr {
                  * additionally we use our standard configured language (IGlobal) to decide in which language
                  *
                  * TODO: What if language does not exist? Currently we have English by default. */
-                JSONObject userLibEntry = indexFile.getJSONObject(libId).getJSONObject(IGlobal.GLOBAL.LOCALE.getLanguage());
+                JSONObject userLibEntry = indexFile.getJSONObject(0).getJSONObject(libId).getJSONObject(IGlobal.GLOBAL.LOCALE.getLanguage());
                 return new UserLibrary(
                         libId,
                         userLibEntry.getString("libName"),
                         userLibEntry.getString("libDescription"),
                         languageCodeList,
-                        userLibEntry.getString("libCreator")
+                        indexFile.getJSONObject(0).getJSONObject(libId).getString("libCreator")
                 );
             } catch (JSONException e) {
-                Log.e(TAG, "extractUserLibraryFromIndexJsonObj: Could not extract Userlibrary from json. Json malformed!");
+                Log.e(TAG, "extractUserLibraryFromIndexJsonArr: Could not extract Userlibrary from json. Json malformed!");
                 e.printStackTrace();
             }
         }
