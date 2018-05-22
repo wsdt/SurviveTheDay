@@ -545,7 +545,7 @@ public class Countdown {
     /**
      * Queries userLib.
      */
-    public static Countdown query(@NonNull Context context, int couId) {
+    public static Countdown query(@NonNull Context context, Long couId) {
         CountdownDao countdownDao = ((DaoApp) context.getApplicationContext()).getDaoSession().getCountdownDao();
         List<Countdown> countdownList = countdownDao.queryBuilder()
                 .where(CountdownDao.Properties.CouId.eq(couId))

@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClick_node_sl_bottomview_leftMenu_openCountdown(View v) {
         Intent tmpintent = new Intent(this, CountdownActivity.class);
-        int countdownId;
+        Long countdownId;
         try {
             countdownId = getCountdownIdFromNodeTag((SwipeLayout) v.getParent());
         } catch (ClassCastException e) {
@@ -299,14 +299,14 @@ public class MainActivity extends AppCompatActivity {
         return countdown;
     }
 
-    private int getCountdownIdFromNodeTag(@NonNull SwipeLayout v) { //used from onCountdownModifyButtons and onClick()
+    private Long getCountdownIdFromNodeTag(@NonNull SwipeLayout v) { //used from onCountdownModifyButtons and onClick()
         String nodeTag = (String) v.getTag(); //COUNTDOWN_N  --> N = CountdownActivity ID
         Log.d(TAG, "getCountdownIdFromNodeTag: Nodetag of countdown is: " + ((nodeTag == null) ? "null" : nodeTag));
-        int nodeId = (-1);
+        Long nodeId = (-1L);
         try {
             if (nodeTag.length() >= (COUNTDOWN_VIEW_TAG_PREFIX.length()+1)) { //+1 so we know that at least a no. between 0 and 9 is given
                 try {
-                    nodeId = Integer.parseInt(nodeTag.substring(COUNTDOWN_VIEW_TAG_PREFIX.length()));
+                    nodeId = Long.parseLong(nodeTag.substring(COUNTDOWN_VIEW_TAG_PREFIX.length()));
                 } catch (NumberFormatException e) {
                     Log.e(TAG, "getCountdownIdFromNodeTag: Node-Id could not be parsed to Integer. Wrong Tag: " + nodeTag);
                     Toast.makeText(this, "Could not identify Countdown ID.", Toast.LENGTH_SHORT).show();

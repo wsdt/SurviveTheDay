@@ -71,7 +71,7 @@ public class NotificationMgr { //one instance for every countdown or similar
                     @Override
                     public void success_is_true(@Nullable Object... args) {
                         Log.d(TAG, "scheduleAllActiveCountdownNotifications:success_is_true: Product is bought. Scheduling countdown.");
-                        scheduleNotification(currCountdown.getCouId().intValue(), (long) currCountdown.getCouMotivationIntervalSeconds());
+                        scheduleNotification(currCountdown.getCouId(), (long) currCountdown.getCouMotivationIntervalSeconds());
                     }
 
                     @Override
@@ -81,21 +81,21 @@ public class NotificationMgr { //one instance for every countdown or similar
                 });
             } else {
                 Log.d(TAG, "scheduleAllActiveCountdownNotifications: Scheduling first countdown (always free).");
-                scheduleNotification(currCountdown.getCouId().intValue(), (long) currCountdown.getCouMotivationIntervalSeconds());
+                scheduleNotification(currCountdown.getCouId(), (long) currCountdown.getCouMotivationIntervalSeconds());
             }
         }
         Log.d(TAG, "scheduleAllActiveCountdownNotifications: Ended method.");
     }
 
     //broadcast receiver setting
-    private void scheduleNotification(int countdownId, Long intervalInSeconds) {
+    private void scheduleNotification(Long countdownId, Long intervalInSeconds) {
         //Important: inexactRepeating to save battery!
         AlarmManager alarmManager = (AlarmManager) this.getActivityThisTarget().getSystemService(Context.ALARM_SERVICE);
         Intent tmpIntent = new Intent(this.getActivityThisTarget(), NotificationBroadcastMgr.class);
         tmpIntent.putExtra(IDENTIFIER_COUNTDOWN_ID,countdownId);
 
         //PendingIntent ID = Countdown ID (important so reload overwrites old one! AND we can show different notifications because different pendingIntent IDs!!
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(this.getActivityThisTarget(), countdownId, tmpIntent,0);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(this.getActivityThisTarget(), countdownId.intValue(), tmpIntent,0);
         if (alarmManager != null) {
             //save Battery is a global setting (default false)
             if ((new GlobalAppSettingsMgr(this.getActivityThisTarget()).saveBattery())) {
