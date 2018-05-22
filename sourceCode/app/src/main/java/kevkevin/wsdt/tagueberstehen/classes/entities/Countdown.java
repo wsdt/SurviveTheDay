@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Locale;
 
 import kevkevin.wsdt.tagueberstehen.R;
+import kevkevin.wsdt.tagueberstehen.annotations.Enhance;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.greendao_orm.DaoApp;
 import kevkevin.wsdt.tagueberstehen.classes.services.Kickstarter_BootAndGeneralReceiver;
@@ -174,8 +175,10 @@ public class Countdown {
         return eventMsgStr;
     }
 
-    /** @param getRemaining: If true this method returns the remaining percentage. If false, then
-     * you will receive the progress/achieved percentage. */
+    /**
+     * @param getRemaining: If true this method returns the remaining percentage. If false, then
+     *                      you will receive the progress/achieved percentage.
+     */
     public double getRemainingInPercentage(boolean getRemaining) { //min is 1, if 0 then it will be still min 1 nachkommastelle (but always 0!) because of double format itself
         try {
             double all100percentSeconds = Long.valueOf((getDateTime(getCouUntilDateTime()).getTimeInMillis() - getDateTime(getCouStartDateTime()).getTimeInMillis()) / 1000).doubleValue();
@@ -185,7 +188,7 @@ public class Countdown {
             double percentageValueUnformatted = (leftXpercentSeconds / all100percentSeconds) * 100;
             if (!getRemaining) {
                 //get progress
-                percentageValueUnformatted = 100-percentageValueUnformatted;
+                percentageValueUnformatted = 100 - percentageValueUnformatted;
             }
 
             Log.d(TAG, "getRemainingInPercentage:Unformatted: " + percentageValueUnformatted);
@@ -405,11 +408,9 @@ public class Countdown {
      * Necessary to determine which languagepacks are used for this countdown. (MIGHT RETURN NULL!)
      */
     public String getRandomQuoteSuitableForCountdown(@NonNull Context context) {
-        List<UserLibrary> userLibraries = this.getCouSelectedUserLibraries();
-
-        if (userLibraries.size() <= 0) { //no userlibs defined!
+        if (this.getCouSelectedUserLibraries().size() <= 0) { //no userlibs defined!
             Log.w(TAG, "getRandomQuoteSuitableForCountdown: No userLibs for countdown defined! Returned fallbackNotification.");
-            return context.getResources().getString(R.string.error_contactAdministrator);
+            return context.getResources().getString(R.string.error_missingData_noUserLibraryLanguagePacksInstalled);
         }
 
         //Get random userLibrary of countdownUserLibs (transform to arraylist before, because libId might not be inkrementally!! (rather arbitrary)
@@ -417,19 +418,14 @@ public class Countdown {
 
         //get random userLibraryLine of userLib
         //TODO: We don't want simply return all languagepacks (make configurable)
-
-        if (randomUserLibrary != null) {
-            return randomUserLibrary.getAllLines(context).get(HelperClass.getRandomInt(0, randomUserLibrary.getAllLines(context).size() - 1));
-        } else {
-            return context.getResources().getString(R.string.error_missingData_noUserLibraryLanguagePacksInstalled);
-        }
+        return randomUserLibrary.getAllLines(context).get(HelperClass.getRandomInt(0, randomUserLibrary.getAllLines(context).size() - 1));
     }
 
     /**
      * To-many relationship, resolved on first access (and after reset).
      * Changes to to-many relations are not persisted, make changes to the target entity.
      */
-    @Keep //Keep bc. long here not possible and greendao is too stupid for this
+    @Generated(hash = 1152324645)
     public List<UserLibrary> getCouSelectedUserLibraries() {
         if (couSelectedUserLibraries == null) {
             final DaoSession daoSession = this.daoSession;
@@ -437,7 +433,7 @@ public class Countdown {
                 throw new DaoException("Entity is detached from DAO context");
             }
             UserLibraryDao targetDao = daoSession.getUserLibraryDao();
-            List<UserLibrary> couSelectedUserLibrariesNew = targetDao._queryCountdown_CouSelectedUserLibraries(this.getCouId().intValue());
+            List<UserLibrary> couSelectedUserLibrariesNew = targetDao._queryCountdown_CouSelectedUserLibraries(couId);
             synchronized (this) {
                 if (couSelectedUserLibraries == null) {
                     couSelectedUserLibraries = couSelectedUserLibrariesNew;
@@ -470,7 +466,9 @@ public class Countdown {
         couSelectedUserLibraries = null;
     }
 
-    /** Delete countdown */
+    /**
+     * Delete countdown
+     */
     public void delete(@NonNull Context context) {
         ((DaoApp) context.getApplicationContext()).getDaoSession().delete(this);
 
