@@ -110,10 +110,6 @@
             </intent-filter>
         </service>
 
-        <activity
-            android:name=".UserLibraryActivity"
-            android:label="@string/userLibraryActivity_title"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
