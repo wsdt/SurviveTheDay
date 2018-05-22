@@ -1,5 +1,7 @@
 package kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces;
 
+import org.json.JSONArray;
+
 public interface IFirebaseStorageMgr {
     /** Important: By changing the versionCode folder you should also UPDATE the upload-procedure Json of
      * the FirebaseStorageMgr.class, so the newly saved Userlibrary gets saved correctly for the specific version code! */
@@ -20,15 +22,8 @@ public interface IFirebaseStorageMgr {
     interface DEFAULT {
         /** Default user library (local copy) so the user does not need to have an internet for opening
          * the app the first time. Prevents errors and bad usability. */
-        String LIB_JSON_DEFAULT = "{\n" +
-                "\t\"libId\":\"0HASH00jkldsjdfs\", \t\t\t\t\t\n" +
-                "\t\"libName\": \"Default quotes - English\",\t\t\n" +
-                "\t\"libLanguageCode\": \"en\", \t\t\t\t\t\n" +
-                "\t\"createdBy\": \"Kevin Riedl (WSDT)\",\t\t\t\n" +
-                "\t\"createdOn\": 1524668400,\t\t\t\t\t\n" +
-                "\t\"lastEditOn\": 1524668400,\t\t\t\t\t\n" +
-                "\n" +
-                "\t\"lines\": [\n" +
+        String DEFAULT_LIB_ID = "25549D349C057A7F8049FBC892BBFF46B708F0D42570E55957B5C74C1909FD05";
+        String JSONARR_EN_LINES = " [\n" +
                 "\t\t\"The way get started is to quit talking and begin doing. (Walt Disney)\",\n" +
                 "\t\t\"The pessimist sees difficulty in every opportunity. The optimist sees opportunity in every difficulty. (Winston Churchill)\",\n" +
                 "\t\t\"Don't let yesterday take up too much of today. (Will Rogers)\",\n" +
@@ -184,7 +179,71 @@ public interface IFirebaseStorageMgr {
                 "\t\t\"Let us dream of tomorrow where we can truly love from the soul, and know love as the ultimate truth at the heart of all creation. (Michael Jackson)\",\n" +
                 "\t\t\"You change your life by changing your heart. (Max Lucado)\",\n" +
                 "\t\t\"A champion is someone who gets up when he can't. (Jack Dempsey)\"\n" +
-                "\t]\n" +
-                "}";
+                "\t]\n";
+        String JSONARR_DE_LINES = "[\n" +
+                "\t\t\"Aller Anfang ist schwer.\",\n" +
+                "\t\t\"Des Teufels liebstes Möbelstück ist die lange Bank.\",\n" +
+                "\t\t\"Wer rastet, der rostet.\",\n" +
+                "\t\t\"Anfangen ist leicht, Beharren eine Kunst.\",\n" +
+                "\t\t\"Erst denken, dann handeln.\",\n" +
+                "\t\t\"Eile mit Weile.\",\n" +
+                "\t\t\"Kümmere dich nicht um ungelegte Eier.\",\n" +
+                "\t\t\"Krummes Holz gibt auch gerades Feuer.\",\n" +
+                "\t\t\"Man muss die Dinge nehmen, wie sie kommen.\",\n" +
+                "\t\t\"Morgenstund hat Gold im Mund.\",\n" +
+                "\t\t\"Selbst ist der Mann/die Frau.\",\n" +
+                "\t\t\"Taten sagen mehr als Worte.\",\n" +
+                "\t\t\"Übung macht den Meister.\",\n" +
+                "\t\t\"Wer zwei Hasen auf einmal jagt bekommt keinen.\",\n" +
+                "\t\t\"Wer A sagt, muss auch B sagen.\",\n" +
+                "\t\t\"Wenn der Reiter nichts taugt, ist das Pferd schuld.\",\n" +
+                "\t\t\"Dienst ist Dienst und Schnaps ist Schnaps.\",\n" +
+                "\t\t\"Aufklärung ist der Ausgang des Menschen aus seiner selbst verschuldeten Unmündigkeit. (Immanuel Kant)\",\n" +
+                "\t\t\"Eine Wahrheit kann erst wirken, wenn der Empfänger für sie reif ist. (Christian Morgenstern)\",\n" +
+                "\t\t\"Die beste und sicherste Tarnung ist immer noch die blanke und nackte Wahrheit. Die glaubt niemand! (Max Frisch)\",\n" +
+                "\t\t\"Die Strafe des Lügners ist nicht, dass ihm niemand mehr glaubt, sondern dass er selbst Niemandem mehr glauben kann. (George Bernard Shaw)\",\n" +
+                "\t\t\"Mancher Mensch hat ein großes Feuer in seiner Seele, und niemand kommt, um sich daran zu wärmen. (Vincent van Gogh)\",\n" +
+                "\t\t\"Wer sich den Gesetzen nicht fügen will, muss die Gegen verlassen, wo sie gelten. (Johann Wolfgang von Goethe)\",\n" +
+                "\t\t\"Jeder kann wütend werden, das ist einfach. Aber wütend auf den Richtigen zu sein, im richtigen Maß, zur richtigen Zeit, zum richtigen Zweck und auf die richtige Art, das ist schwer. (Aristoteles)\",\n" +
+                "\t\t\"Der Tod eines Mannes ist eine Tragödie, aber der Tod von Millionen nur eine Statistik. (Josef Stalin)\",\n" +
+                "\t\t\"Der Gescheitere gibt nach! Eine traurige Wahrheit, sie begründet die Weltherrschaft der Dummheit. (Marie von Ebner-Eschenbach)\",\n" +
+                "\t\t\"Fallen ist weder gefährlich noch eine Schande. Liegenbleiben ist beides. (Konrad Adenauer)\",\n" +
+                "\t\t\"Alle Revolutionen haben bisher nur eines bewiesen, nämlich, dass sich vieles ändern lässt, bloß nicht die Menschen. (Karl Marx)\",\n" +
+                "\t\t\"Die Lüge ist wie ein Schneeball: Je länger man ihn wälzt, desto größer wird er. (Martin Luther)\",\n" +
+                "\t\t\"Der große Jammer mit den Menschen ist, dass sie so genau wissen, was man ihnen schuldet, und so wenig Empfindungen dafür haben, was sie anderen schulden. (Franz von Sales)\",\n" +
+                "\t\t\"Dem Kapitalismus wohnt ein Laster inne: Die ungleiche Verteilung der Güter. Dem Sozialismus hingegen wohnt eine Tugend inne: Die gleichmäßige Verteilung des Elends. (Winston Churchill)\",\n" +
+                "\t\t\"Unser größter Ruhm ist nicht, niemals zu fallen, sondern jedes Mal wieder aufzustehen. (Nelson Mandela)\",\n" +
+                "\t\t\"Die Freiheit des Menschen liegt nicht darin, dass er tun kann, was er will, sondern, dass er nicht tun muss, was er nicht will. (Jean-Jacques Rousseau)\",\n" +
+                "\t\t\"Wahlen allein machen noch keine Demokratie. (Barack Obama)\",\n" +
+                "\t\t\"Nachrichtensprecher fangen stets mit 'Guten Abend' an und brauchen dann 15 Minuten, um zu erklären, dass es kein guter Abend ist. (Rudi Carrell)\",\n" +
+                "\t\t\"Anmut ist ein Ausströmen der inneren Harmonie. (Marie von Ebner-Eschenbach)\",\n" +
+                "\t\t\"Das Ärgerliche am Ärger ist, dass man sich schadet, ohne anderen zu nützen. (Kurt Tucholsky)\",\n" +
+                "\t\t\"Vermutlich hat Gott die Frau erschaffen, um den Mann kleinzukriegen. (Voltaire)\",\n" +
+                "\t\t\"Keinem vernünftigen Menschen wird es einfallen, Tintenflecken mit Tinte, Ölflecken mit Öl wegwaschen zu wollen. Nur Blut soll immer wieder mit Blut abgewaschen werden. (Bertha von Suttner)\",\n" +
+                "\t\t\"Bescheiden können nur die Menschen sein, die genug Selbstbewusstsein haben. (Gabriel Laub)\",\n" +
+                "\t\t\"Die Öffentlich-Rechtlichen machen sich in jede Hose, die man ihnen hinhält, und die Privaten senden das, was darin ist. (Dieter Hildebrandt)\",\n" +
+                "\t\t\"Wer nicht kann, was er will, muss wollen, was er kann. Denn das zu wollen, was er nicht kann, wäre töricht. (Leonardo da Vinci)\",\n" +
+                "\t\t\"Suche nicht nach Fehlern, suche nach Lösungen. (Henry Ford)\",\n" +
+                "\t\t\"Gott würfelt nicht. (Albert Einstein)\",\n" +
+                "\t\t\"Die größten Enttäuschungen haben ihren Ursprung in zu großen Erwartungen. (Ernst Ferstl)\",\n" +
+                "\t\t\"Niemand wird mit dem Hass auf andere Menschen wegen ihrer Hautfarbe, ethnischen Herkunft oder Religion geboren. Hass wird gelernt. Und wenn man Hass lernen kann, kann man auch lernen zu lieben. Denn Liebe ist ein viel natürlicheres Empfinden im Herzen eines Menschen als ihr Gegenteil. (Nelson Mandela)\",\n" +
+                "\t\t\"Die Leute hatten die Gewohnheit, mich anzuschauen, als sei ich eine Art Spiegel und keine Person. Sie sahen nicht mich, sondern ihre eigenen lüsternen Gedanken und dann spielten sie selbst die Unschuldigen, indem sie mich als lüstern bezeichneten. (Marilyn Monroe)\",\n" +
+                "\t\t\"Man löst keine Probleme, indem man sie auf Eis legt. (Winston Churchill)\",\n" +
+                "\t\t\"Die ganze Mannigfaltigkeit, der ganze Reiz und die ganze Schönheit des Lebens setzten sich aus Licht und Schatten zusammen. (Leo Tolstoi)\",\n" +
+                "\t\t\"Freundschaft ist nicht nur ein köstliches Geschenk, sondern auch eine dauernde Aufgabe. (Ernst Zacharias)\",\n" +
+                "\t\t\"Wenn wir alt werden, so beginnen wir zu disputieren, wollen klug sein und doch sind wir die größten Narren. (Martin Luther)\",\n" +
+                "\t\t\"Der große Sport fängt da an, wo er längst aufgehört hat, gesund zu sein. (Bertolt Brecht)\",\n" +
+                "\t\t\"Der Sport ist ein sehr vernünftiger Versuch des modernen Zivilisationsmenschen, sich die Strapaze künstlich zu verschaffen. (Peter Bamm)\",\n" +
+                "\t\t\"Sport: Opium für das Volk. (Percy Clummings)\",\n" +
+                "\t\t\"Es gibt tausend Krankheiten, aber nur eine Gesundheit. (Ludwig Börne)\",\n" +
+                "\t\t\"Seien Sie vorsichtig mit Gesundheitsbüchern - Sie könnten an einem Druckfehler sterben. (Mark Twain)\",\n" +
+                "\t\t\"Wer nicht jeden Tag etwas für seine Gesundheit aufbringt, muss eines Tages sehr viel Zeit für die Krankheit opfern. (Sebastian Kneipp)\",\n" +
+                "\t\t\"Ein leidenschaftlicher Raucher, der immer von der Gefahr des Rauchens für die Gesundheit liest, hört in den meisten Fällen auf zu lesen. (Winston Churchill)\",\n" +
+                "\t\t\"Glück, das ist einfach eine gute Gesundheit und ein schlechtes Gedächtnis. (Ernest Hemmingway)\",\n" +
+                "\t\t\"Ich bin körperlich und physisch topfit. (Thomas Häßler)\",\n" +
+                "\t\t\"Ein ungeübtes Gehirn ist schädlicher für die Gesundheit als ein ungeübter Körper. (George Bernard Shaw)\",\n" +
+                "\t\t\"Die Ehefrau ist das beste Trainingslager. (Otto Rehhagel)\",\n" +
+                "\t\t\"Ich messe den Erfolg nicht an meinen Siegen, sondern daran, ob ich jedes Jahr besser werde. (Tiger Woods)\"\n" +
+                "\t]";
     }
 }

@@ -12,6 +12,7 @@ import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Index;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.greendao_orm.DaoApp;
@@ -20,6 +21,8 @@ import kevkevin.wsdt.tagueberstehen.classes.services.Kickstarter_BootAndGeneralR
 import kevkevin.wsdt.tagueberstehen.classes.services.ServiceMgr;
 
 import org.greenrobot.greendao.annotation.Generated;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import static kevkevin.wsdt.tagueberstehen.classes.services.interfaces.IKickstart_BootAndGeneralReceiver.BROADCASTRECEIVER_ACTION_RESTART_ALL_SERVICES;
 
@@ -39,12 +42,23 @@ public class ZT_UserLibraryLanguagePack {
     private long libCreatedDateTime;
     private long libLastEditDateTime;
 
-    public ZT_UserLibraryLanguagePack(String libId, String lpKuerzel, List<String> lines, long libCreatedDateTime, long libLastEditDateTime) {
-        this.libId = libId;
-        this.lpKuerzel = lpKuerzel;
-        this.lines = lines;
-        this.libCreatedDateTime = libCreatedDateTime;
-        this.libLastEditDateTime = libLastEditDateTime;
+
+    public ZT_UserLibraryLanguagePack(String libId, String lpKuerzel, @NonNull JSONArray lines, long libCreatedDateTime, long libLastEditDateTime) {
+        this.setLibId(libId);
+        this.setLpKuerzel(lpKuerzel);
+        this.setLibCreatedDateTime(libCreatedDateTime);
+        this.setLibLastEditDateTime(libLastEditDateTime);
+
+        List<String> listLines = new ArrayList<>();
+        for (int i = 0;i<lines.length();i++) {
+            try {
+                listLines.add(lines.getString(i));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        this.setLines(listLines);
     }
 
 
