@@ -10,7 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
-import android.widget.GridLayout;
+import android.support.v7.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -27,11 +27,6 @@ public class CreditsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_credits);
 
-        //Ads - START
-        AdMgr adMgr = new AdMgr(this);
-        adMgr.loadBannerAd((RelativeLayout) findViewById(R.id.wrappingRLForAds));
-        //Ads - END
-
         final Resources res = getResources();
         FloatingActionButton fab = findViewById(R.id.contactMe);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -45,16 +40,6 @@ public class CreditsActivity extends AppCompatActivity {
                 startActivity(Intent.createChooser(emailDeveloper, res.getString(R.string.creditsActivity_floatingButton_contactAppOwnerMailIntent_mail_intentTitle)));
             }
         });
-
-        //So the html gets interpretet
-        TextView introduction = (findViewById(R.id.creditsText));
-        //Makes links etc. clickable
-        if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            introduction.setText(Html.fromHtml(getString(R.string.creditsActivity_creditsIntroductionText), Html.FROM_HTML_MODE_LEGACY)); //deprecated for newer versions
-        } else {
-            introduction.setText(Html.fromHtml(getString(R.string.creditsActivity_creditsIntroductionText)));
-        }
-        introduction.setMovementMethod(LinkMovementMethod.getInstance());
 
         //add all icons to view
         addAllIconCreditsToView();
@@ -87,6 +72,7 @@ public class CreditsActivity extends AppCompatActivity {
 
         newTextView.setMovementMethod(LinkMovementMethod.getInstance());
         newTextView.setTextColor(getResources().getColor(R.color.colorDark_111));
+        newTextView.setLinkTextColor(getResources().getColor(R.color.color_for_links));
 
         creditList.addView(newImageButton);
         creditList.addView(newTextView);

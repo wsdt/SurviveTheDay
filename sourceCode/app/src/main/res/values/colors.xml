@@ -31,4 +31,7 @@
     <color name="colorState05">#ff000d</color>
     <color name="colorState06">#7b0006</color>
 
+    <!-- credits color -->
+    <color name="color_for_links">#53b5e5</color>
+
 </resources>
