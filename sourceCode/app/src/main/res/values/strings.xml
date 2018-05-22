@@ -191,15 +191,18 @@
     <string name="creditsActivity_creditsIntroductionText">
         <!-- CDATA FOR HTML SUPPORT -->
         <![CDATA[
-        "<h4>SurviveTheDay</h4>"
+        "<h3>SurviveTheDay</h3>"
         "<p><b>© Riedl Kevin, 2018</b><br />"
         "Business: <a href='mailto:kevin.riedl.privat@gmail.com'>kevin.riedl.privat@gmail.com</a></p>"
+        "<p><b>© Jori Christof, 2018</b><br />"
+        "Business: <a href='mailto:cjori49@gmail.com'>cjori49@gmail.com</a></p>"
         "<p>Special thanks to following external authors:</p>"
         "[1]: Generic quotes from <a href="https://www.briantracy.com/blog/personal-success/26-motivational-quotes-for-success/">Briantracy.com, Motivational quotes</a> (last seen: 2018-01-06)<br />"
         "[2]: Generic quotes from <a href="https://www.brainyquote.com/topics/inspirational">Brainyquote.com, Inspirational Quotes</a> (last seen: 2018-01-06)<br />"
         "[3]: German proverbs from <a href="https://www.fluentu.com/blog/german/learn-german-proverbs/">Fluentu.com, German proverbs</a> (last seen: 2018-02-18)<br />"
         "[4]: Generic quotes from <a href="http://zitate.net">Zitate.net</a> (last seen: 2018-02-18)<br /><br />"
-        "<b>Searching contributors!</b> <br />Contact me if you want to help translating <br />this app into other languages or when <br />you want to program with me :)"
+        "<b>Searching contributors!</b> <br />We're still seeking for members, if you're interested <br />"
+        "don't hesitate contacting us! :-)<br />"
         ]]>
     </string>
     <!-- IMPORTANT: Following two arrays must be the same size and order!! -->
