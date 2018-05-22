@@ -8,6 +8,6 @@
 			"libName":"Default quotes",
 			"libDescription":"This package contains our default quotes."
 		},
-		"createdBy": "WSDT"
+		"libCreator": "WSDT"
 	}
 ]

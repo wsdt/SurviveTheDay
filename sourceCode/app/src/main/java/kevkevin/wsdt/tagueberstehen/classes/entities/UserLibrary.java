@@ -31,51 +31,26 @@ public class UserLibrary {
     /** Important for libName, libDescription*/
     private String libName;
     private String libDescription;
-    @ToMany
-    @JoinEntity(entity = ZT_UserLibraryLanguageCode.class,
-            sourceProperty = "libId", targetProperty = "lcKuerzel") //for N:M
-    private List<LanguageCode> libLanguageCodes;
+
+    /** No own object, bc. we can get of this languageCode (e.g. en, de) a Locale-Obj which as many
+     * available options. e.g. getLanguageName or similar for English, German etc. */
+    @Convert(converter = GreenDaoConverter.class,columnType = String.class)
+    private List<String> libLanguageCodes;
     private String libCreator;
-    private long libCreatedDateTime;
-    private long libLastEditDateTime;
-    /** Used to resolve relations */
-    @Generated(hash = 2040040024)
-    private transient DaoSession daoSession;
-    /** Used for active entity operations. */
-    @Generated(hash = 1814500198)
-    private transient UserLibraryDao myDao;
-
-
     //For mapping from FirebaseStorMgr to Obj
-    public UserLibrary(String libId, String libName, String libDescription, List<LanguageCode> libLanguageCodes, String libCreator, long libCreatedDateTime, long libLastEditDateTime, JSONArray lines) {
+    @Keep
+    public UserLibrary(@NonNull String libId, String libName, String libDescription, List<String> libLanguageCodes, String libCreator) {
         this.setLibId(libId);
         this.setLibDescription(libDescription);
         this.setLibName(libName);
         this.setLibLanguageCode(libLanguageCodes);
         this.setLibCreator(libCreator);
-        this.setLibCreatedDateTime(libCreatedDateTime);
-        this.setLibLastEditDateTime(libLastEditDateTime);
     }
 
-   
 
     @Generated(hash = 559680945)
     public UserLibrary() {
     }
-
-
-
-    @Generated(hash = 798238638)
-    public UserLibrary(String libId, String libName, String libDescription, String libCreator, long libCreatedDateTime, long libLastEditDateTime) {
-        this.libId = libId;
-        this.libName = libName;
-        this.libDescription = libDescription;
-        this.libCreator = libCreator;
-        this.libCreatedDateTime = libCreatedDateTime;
-        this.libLastEditDateTime = libLastEditDateTime;
-    }
-
-    
 
     //GETTER/SETTER -------------------------
     public String getLibName() {
@@ -86,31 +61,11 @@ public class UserLibrary {
         this.libName = libName;
     }
 
-    /**
-     * To-many relationship, resolved on first access (and after reset).
-     * Changes to to-many relations are not persisted, make changes to the target entity.
-     */
-    @Generated(hash = 569254064)
-    public List<LanguageCode> getLibLanguageCodes() {
-        if (libLanguageCodes == null) {
-            final DaoSession daoSession = this.daoSession;
-            if (daoSession == null) {
-                throw new DaoException("Entity is detached from DAO context");
-            }
-            LanguageCodeDao targetDao = daoSession.getLanguageCodeDao();
-            List<LanguageCode> libLanguageCodesNew = targetDao._queryUserLibrary_LibLanguageCodes(libId);
-            synchronized (this) {
-                if (libLanguageCodes == null) {
-                    libLanguageCodes = libLanguageCodesNew;
-                }
-            }
-        }
-        return libLanguageCodes;
+    public List<String> getLibLanguageCodes() {
+        return this.libLanguageCodes;
     }
 
-
-
-    public void setLibLanguageCode(List<LanguageCode> libLanguageCodes) {
+    public void setLibLanguageCode(List<String> libLanguageCodes) {
         this.libLanguageCodes = libLanguageCodes;
     }
 
@@ -120,22 +75,6 @@ public class UserLibrary {
 
     public void setLibCreator(String libCreator) {
         this.libCreator = libCreator;
-    }
-
-    public long getLibCreatedDateTime() {
-        return libCreatedDateTime;
-    }
-
-    public void setLibCreatedDateTime(long libCreatedDateTime) {
-        this.libCreatedDateTime = libCreatedDateTime;
-    }
-
-    public long getLibLastEditDateTime() {
-        return libLastEditDateTime;
-    }
-
-    public void setLibLastEditDateTime(long libLastEditDateTime) {
-        this.libLastEditDateTime = libLastEditDateTime;
     }
 
     public String getLibId() {
@@ -195,60 +134,7 @@ public class UserLibrary {
 
 
 
-    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
-    @Generated(hash = 761314390)
-    public synchronized void resetLibLanguageCodes() {
-        libLanguageCodes = null;
-    }
-
-
-
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 128553479)
-    public void delete() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.delete(this);
-    }
-
-
-
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 1942392019)
-    public void refresh() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.refresh(this);
-    }
-
-
-
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 713229351)
-    public void update() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.update(this);
-    }
-
-
-
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1654970760)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getUserLibraryDao() : null;
+    public void setLibLanguageCodes(List<String> libLanguageCodes) {
+        this.libLanguageCodes = libLanguageCodes;
     }
 }

@@ -20,15 +20,14 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
 import kevkevin.wsdt.tagueberstehen.R;
-import kevkevin.wsdt.tagueberstehen.annotations.Bug;
-import kevkevin.wsdt.tagueberstehen.annotations.Enhance;
 import kevkevin.wsdt.tagueberstehen.annotations.Test;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
-import kevkevin.wsdt.tagueberstehen.classes.entities.LanguageCode;
 import kevkevin.wsdt.tagueberstehen.classes.entities.UserLibrary;
 import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IFirebaseStorageMgr;
@@ -166,8 +165,10 @@ public class FirebaseStorageMgr {
                         /** What to do with indexFile (showing or similar) */
                         if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
                             /** Get jsonObj from args [args[0] = StorageReference; args[1] = downloadedFile]
-                             * But do not provide storageReference to successMethod, bc. we don't need it there. */
-                            executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true(parseJsonObjFromArgs((args != null && args.length > 1) ? args[1] : null));
+                             * Do not supply StorageReference of IndexFile as it is not needed. */
+                            executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true(
+                                    parseJsonObjFromArgs((args != null && args.length > 1) ? args[1] : null) //IndexFile as JsonObj
+                            );
                         }
                     }
 
@@ -185,21 +186,24 @@ public class FirebaseStorageMgr {
      * @param libId: e.g. '45sfd65sdf654sfd654' (Hash) -> Filename of Userlibrary, which is also the ID in the index-File. */
     private static void downloadUserLibrary(@NonNull final Context context,
                                             @NonNull final String creationMM_YYYY,
-                                            @NonNull final List<LanguageCode> languageCodes,
+                                            @NonNull final List<String> languageCodes,
                                             @NonNull final String libId,
-                                            @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
+                                            @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation saveUserLibrary,
+                                            @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation saveLanguagePack) {
 
         /** Now download meta data of userLib by downloading specific index-File*/
         downloadIndexFile(context, creationMM_YYYY, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
             public void success_is_true(@Nullable Object... args) {
-                /** Args[0] = JsonObject of IndexFile (no StorageReference supplied)*/
-                final JSONObject indexFile = parseJsonObjFromArgs((args != null && args.length > 0 ? args[0] : null));
+                /** Args[0] = JsonObject of IndexFile */
 
-                for (final LanguageCode languageCode : languageCodes) {
+                /** Save UserLibrary into Db if it does not exist yet. */
+                if (saveUserLibrary != null) {saveUserLibrary.success_is_true(args);}
+
+                for (final String languageCode : languageCodes) {
                     downloadFile(context,
                             /** e.g. v1/en/4sd65fs45df45sdf465s.json */
-                            IFirebaseStorageMgr.LIB_JSON_VERSION_FOLDER + "\\" + languageCode.toString() + "\\" + libId + "." + IFirebaseStorageMgr.RES_FILE_EXTENSION,
+                            IFirebaseStorageMgr.LIB_JSON_VERSION_FOLDER + "\\" + languageCode + "\\" + libId + "." + IFirebaseStorageMgr.RES_FILE_EXTENSION,
                             new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                                 @Override
                                 public void success_is_true(@Nullable final Object... args) {
@@ -207,8 +211,8 @@ public class FirebaseStorageMgr {
                                      * Args[1] = JsonArray of UserLibrary of languageCode */
 
                                     //Save languagepackLines to UserLibrary
-                                    if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
-                                        executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true(indexFile, args);
+                                    if (saveLanguagePack != null) {
+                                        saveLanguagePack.success_is_true(args);
                                     }
                                 }
 
@@ -218,24 +222,19 @@ public class FirebaseStorageMgr {
                                     Log.e(TAG, "downloadUserLibrary:failure_is_false: Could not download new package->\n* " + libId + "->" + languageCode.toString());
 
                                     /** Custom error procedure for specific userLibrary. */
-                                    if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
-                                        executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
+                                    if (saveLanguagePack != null) {
+                                        saveLanguagePack.failure_is_false();
                                     }
                                 }
                             });
-                }
-
-                /** Custom procedure for specific UserLibrary. */
-                if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
-                    executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true();
                 }
             }
 
             @Override
             public void failure_is_false(@Nullable Object... args) {
                 Log.e(TAG, "downloadUserLibrary: Could not download index of userLibrary: " + libId);
-                if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
-                    executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
+                if (saveUserLibrary != null) {
+                    saveUserLibrary.failure_is_false();
                 }
             }
         });
@@ -244,17 +243,20 @@ public class FirebaseStorageMgr {
     /** Save already downloaded Userlibrary. */
     public static void saveUserLibrary(@NonNull final Context context,
                                        @NonNull final String creationMM_YYYY,
-                                       @NonNull final List<LanguageCode> languageCodes,
+                                       @NonNull final List<String> languageCodes,
                                        @NonNull final String libId,
                                        @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
-        downloadUserLibrary(context,creationMM_YYYY,languageCodes,libId, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+        downloadUserLibrary(context, creationMM_YYYY, languageCodes, libId,
+            /** Will be executed once for this UserLibrary. */
+            new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
             public void success_is_true(@Nullable Object... args) {
                 /** args[0]: JsonObj of indexFile
-                 * args[1]: StorageReference of userLibFile (= lines) of specific languagePack
-                 * args[2]: JsonArray of userLib-Lines of specific Userlibrary languagepack. */
+                 *
+                 * IMPORTANT: This success_is_true() is called only once for saving the userLibrary. */
 
-                UserLibrary userLibrary = null; //TODO: mapJsonToUserLibraryObj(args);
+                /***/
+                UserLibrary userLibrary = extractUserLibraryFromIndexJsonObj(libId, parseJsonObjFromArgs((args != null && args.length > 0) ? args[0] : null));
                 if (userLibrary != null) {
                     userLibrary.save(context);
                     Log.d(TAG, "saveUserLibrary: Library has been saved.");
@@ -279,69 +281,56 @@ public class FirebaseStorageMgr {
                     Log.w(TAG, "downloadNewPackage:onFailure: Could not show failure dialog, because context is not an activity. Showing toast instead.");
                     Toast.makeText(context, failureMsgDescription, Toast.LENGTH_SHORT).show();
                 }
+            }
+        },
+        /** Will be executed for every languagePack of UserLibrary */
+        new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+            @Override
+            public void success_is_true(@Nullable Object... args) {
+                
+            }
 
+            @Override
+            public void failure_is_false(@Nullable Object... args) {
+                //TODO: Maybe display here also a dialogue? But what if multiple failed? Would be annoying. Maybe just a toast.
+                Log.e(TAG, "downloadNewPackage:onFailure: Could not download languagePack for userlibrary.");
             }
         });
     }
 
-    private static UserLibrary mapJsonToUserLibraryObj(@NonNull StorageReference storageReferenceUserLibraryFile, @Nullable JSONObject userLibraryFile, @Nullable JSONObject indexFile) {
-        Log.d(TAG, "mapJsonToUserLibraryObj: Trying to save userLibrary.");
+    /** Maps downloaded indexFile onto a UserLibrary by using the provided libId, otherwise we would have to map
+     * all downloaded UserLibs. */
+    private static UserLibrary extractUserLibraryFromIndexJsonObj(@NonNull String libId, @Nullable JSONObject indexFile) {
+        if (indexFile != null) {
+            try {
+                /* Extract available languageCodes from indexFile (which does not mean that they
+                * are installed!!) */
+                Iterator<?> languageCodes = indexFile.getJSONObject(libId).keys();
+                List<String> languageCodeList = new ArrayList<>();
+                while (languageCodes.hasNext()) {
+                    languageCodeList.add(languageCodes.next().toString());
+                }
 
-        /** Abort method if one is null. */
-        if (userLibraryFile == null || indexFile == null) {
-            return null;
+
+                /* Extract relevant part from indexFile to own JsonObj.
+                 * As we only need here our desired UserLibrary we use the libId to sort all userLibEntries out,
+                 * additionally we use our standard configured language (IGlobal) to decide in which language
+                 *
+                 * TODO: What if language does not exist? Currently we have English by default. */
+                JSONObject userLibEntry = indexFile.getJSONObject(libId).getJSONObject(IGlobal.GLOBAL.LOCALE.getLanguage());
+                return new UserLibrary(
+                       libId,
+                        userLibEntry.getString("libName"),
+                        userLibEntry.getString("libDescription"),
+                        languageCodeList,
+                        userLibEntry.getString("libCreator")
+                );
+            } catch (JSONException e) {
+                Log.e(TAG, "extractUserLibraryFromIndexJsonObj: Could not extract Userlibrary from json. Json malformed!");
+                e.printStackTrace();
+            }
         }
-
-        UserLibrary userLibrary = null;
-
-        try {
-            userLibrary = new UserLibrary(
-                    storageReferenceUserLibraryFile.getName(),
-                    indexFile.getJSONObject(storageReferenceUserLibraryFile.getName()).getString("libDescription"),
-                    indexFile.getJSONObject(storageReferenceUserLibraryFile.getName()).getString("libName"),
-                    storageReferenceUserLibraryFile.getPath().substring(
-                            (IFirebaseStorageMgr.LIB_JSON_VERSION_FOLDER+"\\").length()-1,
-                            (IFirebaseStorageMgr.LIB_JSON_VERSION_FOLDER+"\\").length()+1),
-                    indexFile.getJSONObject(storageReferenceUserLibraryFile.getName()).getString("createdBy"),
-                    storageReferenceUserLibraryFile.getMetadata().getResult().getCreationTimeMillis(),
-                    storageReferenceUserLibraryFile.getMetadata().getResult().getUpdatedTimeMillis(),
-                    userLibraryFile.getJSONArray("lines"));
-        } catch (JSONException e) {
-            Log.e(TAG, "mapJsonToUserLibraryObj: Could not extract Userlibrary from json. Json malformed!");
-            e.printStackTrace();
-        }
-
-        return userLibrary;
-    }
-
-    /** Following deprecated method only here for saving default userLib for following alphaReleases until everything works. */
-    @Deprecated
-    private static UserLibrary mapJsonToUserLibDEPRECATED(@Nullable JSONObject userLibraryFile) {
-        Log.d(TAG, "mapJsonToUserLibraryObj: Trying to save userLibrary.");
-
-        /** Abort method if one is null. */
-        if (userLibraryFile == null) {
-            return null;
-        }
-
-        UserLibrary userLibrary = null;
-
-        try {
-            userLibrary = new UserLibrary(
-                    userLibraryFile.getString("libId"),
-                    userLibraryFile.getString("libDescription"),
-                    userLibraryFile.getString("libName"),
-                    userLibraryFile.getString("libLanguageCode"),
-                    userLibraryFile.getString("createdBy"),
-                    userLibraryFile.getLong("createdOn"),
-                    userLibraryFile.getLong("lastEditOn"),
-                    userLibraryFile.getJSONArray("lines"));
-        } catch (JSONException e) {
-            Log.e(TAG, "mapJsonToUserLibraryObj: Could not extract Userlibrary from json. Json malformed!");
-            e.printStackTrace();
-        }
-
-        return userLibrary;
+        return null;
     }
 
 
@@ -350,7 +339,7 @@ public class FirebaseStorageMgr {
         //This method has no validation whether default user lib was already downloaded!
         UserLibrary userLibrary = null;
         try {
-            userLibrary = FirebaseStorageMgr.mapJsonToUserLibDEPRECATED(new JSONObject(IFirebaseStorageMgr.DEFAULT.LIB_JSON_DEFAULT));
+            userLibrary = null; //TODO: FirebaseStorageMgr.mapJsonToUserLibDEPRECATED(new JSONObject(IFirebaseStorageMgr.DEFAULT.LIB_JSON_DEFAULT));
             if (userLibrary != null) {
                 userLibrary.save(context);
             } else {

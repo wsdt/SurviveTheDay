@@ -23,14 +23,18 @@ public class ZT_UserLibraryLanguageCode {
     //Contains e.g. all quotes/jokes etc.
     @Convert(converter = GreenDaoConverter.class,columnType = String.class)
     private List<String> lines; //for null if in dbmgr
+    private long libCreatedDateTime;
+    private long libLastEditDateTime;
 
-    @Generated(hash = 1453036458)
+    @Generated(hash = 1094874426)
     public ZT_UserLibraryLanguageCode(long zullcPk, String libId, String lcKuerzel,
-            List<String> lines) {
+            List<String> lines, long libCreatedDateTime, long libLastEditDateTime) {
         this.zullcPk = zullcPk;
         this.libId = libId;
         this.lcKuerzel = lcKuerzel;
         this.lines = lines;
+        this.libCreatedDateTime = libCreatedDateTime;
+        this.libLastEditDateTime = libLastEditDateTime;
     }
 
     @Generated(hash = 420750711)
@@ -68,5 +72,21 @@ public class ZT_UserLibraryLanguageCode {
 
     public void setLines(List<String> lines) {
         this.lines = lines;
+    }
+
+    public long getLibCreatedDateTime() {
+        return libCreatedDateTime;
+    }
+
+    public void setLibCreatedDateTime(long libCreatedDateTime) {
+        this.libCreatedDateTime = libCreatedDateTime;
+    }
+
+    public long getLibLastEditDateTime() {
+        return libLastEditDateTime;
+    }
+
+    public void setLibLastEditDateTime(long libLastEditDateTime) {
+        this.libLastEditDateTime = libLastEditDateTime;
     }
 }
