@@ -11,7 +11,7 @@
     <string name="spotlight_modifyCountdownActivity_target_untilDateTimeIcon_description">By clicking here you can set the end of your unpleasant activity.</string>
     <string name="spotlight_modifyCountdownActivity_target_exampleHelpBtn_title">Any questions?</string>
     <string name="spotlight_modifyCountdownActivity_target_exampleHelpBtn_description">Do you need help? Just click on one of these question marks and you will receive a short explanation.</string>
-    <string name="spotlight_modifyCountdownActivity_target_categoryNotificationColor_title">Don\'t you like green?</string>
+    <string name="spotlight_modifyCountdownActivity_target_categoryNotificationColor_title">Don\'t you like blue?</string>
     <string name="spotlight_modifyCountdownActivity_target_categoryNotificationColor_description">Click here to change the color of the small LED lamp on your phone. By default all motivating notifications will have a green-blinking color.</string>
     <string name="spotlight_modifyCountdownActivity_target_isActive_title">Get motivated!</string>
     <string name="spotlight_modifyCountdownActivity_target_isActive_description">By turning this option on you will receive motivating quotes or time-based notifications (such as \'Only 50 minutes to go!\')</string>

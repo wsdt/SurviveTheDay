@@ -8,7 +8,7 @@
     <string name="spotlight_modifyCountdownActivity_target_untilDateTimeIcon_description">Klicke hier, um das Ende der unerfreulichen Tätigkeit festzulegen.</string>
     <string name="spotlight_modifyCountdownActivity_target_exampleHelpBtn_title">Noch Fragen?</string>
     <string name="spotlight_modifyCountdownActivity_target_exampleHelpBtn_description">Brauchst du Hilfe? Mit Klicken auf eine dieser kleinen Fragezeichen wird dir eine kurze Erklärung angezeigt.</string>
-    <string name="spotlight_modifyCountdownActivity_target_categoryNotificationColor_title">Du magst kein Grün?</string>
+    <string name="spotlight_modifyCountdownActivity_target_categoryNotificationColor_title">Du magst kein Blau?</string>
     <string name="spotlight_modifyCountdownActivity_target_categoryNotificationColor_description">Klick hier, um die Benachrichtigungsfarbe der kleinen LED-Lampe deines Smartphones zu ändern. Wenn du motivierende Benachrichtigungen erhälst blinkt deine LED standardmäßig in grün.</string>
     <string name="spotlight_modifyCountdownActivity_target_isActive_title">Motivation gefällig?</string>
     <string name="spotlight_modifyCountdownActivity_target_isActive_description">Wenn aktiviert erhälst du motivierende Zitate sowie zeit-basierende Benachrichtigungen (wie z.B. \'Nur noch 50 Minuten! Fast geschafft.\')</string>

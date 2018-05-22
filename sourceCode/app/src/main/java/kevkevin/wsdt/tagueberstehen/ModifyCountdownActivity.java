@@ -461,14 +461,14 @@ public class ModifyCountdownActivity extends AppCompatActivity {
     private ArrayList<CheckBox> userLibraryCheckboxes = new ArrayList<>();
 
     private void loadLanguagePacksCheckboxes(@NonNull GridLayout superiorLayoutView) {
-        for (UserLibrary languagepack : UserLibrary.queryAll(this)) { //pre imkrement!
+        for (UserLibrary userLibrary : UserLibrary.queryAll(this)) { //pre imkrement!
             //Print Checkboxes etc.
             CheckBox languagePackCheckbox = new CheckBox(this);
-            languagePackCheckbox.setTag(languagepack.getLibId()); //en, de etc.
+            languagePackCheckbox.setTag(userLibrary.getLibId()); //en, de etc.
             this.userLibraryCheckboxes.add(languagePackCheckbox);
             superiorLayoutView.addView(languagePackCheckbox); //before text of checkbox
             TextView languagePackLbl = new TextView(this);
-            languagePackLbl.setText(String.format(getString(R.string.modifyCountdownActivity_countdown_userLibrary_lblCheckbox), languagepack.getLibName(), languagepack.getLines().size()));
+            languagePackLbl.setText(String.format(getString(R.string.modifyCountdownActivity_countdown_userLibrary_lblCheckbox), userLibrary.getLibName(), userLibrary.getAllLines(this).size()));
             superiorLayoutView.addView(languagePackLbl);
         }
         Log.d(TAG, "loadLanguagePacksCheckboxes: Tried to load all language packs.");
