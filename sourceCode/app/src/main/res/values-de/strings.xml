@@ -171,6 +171,7 @@
     <string name="modifyCountdownActivity_countdown_showLiveCountdown_label">Echtzeit-Countdown</string>
     <string name="modifyCountdownActivity_countdown_validation_UntilAfterStartDateTime">Das Bis-Datum muss NACH dem Von-Datum sein!</string>
     <string name="modifyCountdownActivity_countdown_validation_DateTimeNotValid">Zeitwert nicht gültig! Dies könnte ein interner Fehler sein.</string>
+    <string name="modifyCountdownActivity_countdown_validation_userLibrary_noSelected">Bitte wähle zumindest ein Userpaket aus.</string>
     <string name="modifyCountdownActivity_countdown_userLibrary_noInstalled">Es scheint so, als hättest du keine Userpakete installiert. Ich installiere nun meine lokale Beispielbibliothek.</string>
 
     <!-- CreditsActivity -->

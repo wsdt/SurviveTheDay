@@ -217,7 +217,7 @@ public class NotificationMgr { //one instance for every countdown or similar
     }
 
 
-    private int createNotification(Countdown countdown, String title, String text, int icon) {
+    private int createNotification(@NonNull Countdown countdown, String title, String text, int icon) {
         //Since broadcast this does not really increment but uses a random number, so a new instance of this class would not overwrite old notifications!
         incrementmNotificationId(); //because of new notification (but return old No. because index starts at 0!
 
