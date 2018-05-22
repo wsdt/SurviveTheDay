@@ -175,6 +175,7 @@
     <string name="modifyCountdownActivity_countdown_showLiveCountdown_label">Live countdown</string>
     <string name="modifyCountdownActivity_countdown_validation_UntilAfterStartDateTime">UntilDateTime needs to be AFTER StartDateTime!</string>
     <string name="modifyCountdownActivity_countdown_validation_DateTimeNotValid">DateTime is not valid! This might be an internal error.</string>
+    <string name="modifyCountdownActivity_countdown_validation_userLibrary_noSelected">You have to select at least one user library.</string>
     <string name="modifyCountdownActivity_countdown_userLibrary_noInstalled">It seems that you haven\'t installed any user libraries. I am installing now my default user library and select it.</string>
     <string name="modifyCountdownActivity_countdown_userLibrary_lblCheckbox">%1$s (%2$d)</string><!-- LibName (Libsize) -->
 

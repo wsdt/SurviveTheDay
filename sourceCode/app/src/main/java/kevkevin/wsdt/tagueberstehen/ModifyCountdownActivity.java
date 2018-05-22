@@ -42,6 +42,7 @@ import kevkevin.wsdt.tagueberstehen.classes.customviews.CustomEdittext;
 import kevkevin.wsdt.tagueberstehen.classes.customviews.DateTimePicker.DateTimePicker;
 import kevkevin.wsdt.tagueberstehen.classes.entities.Countdown;
 import kevkevin.wsdt.tagueberstehen.classes.entities.UserLibrary;
+import kevkevin.wsdt.tagueberstehen.classes.entities.ZT_CountdownUserlibrary;
 import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.InAppNotificationMgr;
@@ -280,6 +281,9 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         loadFormValues();
         if (areFormValuesValid()) {
             this.getNewEditedCountdown().save(this);
+            for (UserLibrary selectedUserLib : this.getNewEditedCountdown().getCouSelectedUserLibraries()) {
+                new ZT_CountdownUserlibrary(this.getNewEditedCountdown().getCouId(),selectedUserLib.getLibId()).save(this); //to save relation
+            }
 
             Log.d(TAG, "onSaveClick: Tried to save new countdown.");
             ModifyCountdownActivity.this.finish(); //go back to main
@@ -330,15 +334,23 @@ public class ModifyCountdownActivity extends AppCompatActivity {
         }
 
         if (this.getNewEditedCountdown().getCouSelectedUserLibraries().size() <= 0) {
-            //Toast is done somewhere else so just block user from saving
-            Log.w(TAG, "areFormValuesValid: User has no userLibraries selected and installed.");
-            //install has to be currently here :( otherwise it could be executed twice when countdown was not valid.
-            Toast.makeText(this, R.string.modifyCountdownActivity_countdown_userLibrary_noInstalled, Toast.LENGTH_SHORT).show();
-            UserLibrary defaultUserLib = FirebaseStorageMgr.installDefaultData(this);
-            this.getNewEditedCountdown().getCouSelectedUserLibraries().add(defaultUserLib); //install local user lib
+            List<UserLibrary> allUserLibs = UserLibrary.queryAll(this);
 
-            Log.d(TAG, "loadSelectedUserLibrariesFromCheckboxes: Used default user lib.");
-            //return false; --> we install it now so we don't have to return false (remove this later if userLibs are in an own activity)
+            if (allUserLibs == null || allUserLibs.size() <= 0) {
+                //Toast is done somewhere else so just block user from saving
+                Log.w(TAG, "areFormValuesValid: User has no userLibraries selected and installed.");
+                //install has to be currently here :( otherwise it could be executed twice when countdown was not valid.
+                Toast.makeText(this, R.string.modifyCountdownActivity_countdown_userLibrary_noInstalled, Toast.LENGTH_SHORT).show();
+                UserLibrary defaultUserLib = FirebaseStorageMgr.installDefaultData(this);
+                this.getNewEditedCountdown().getCouSelectedUserLibraries().add(defaultUserLib); //install local user lib
+
+                Log.d(TAG, "loadSelectedUserLibrariesFromCheckboxes: Used default user lib.");
+                //we install it now so we don't have to return false (remove this later if userLibs are in an own activity)
+            } else {
+                //Force user to select a lib, bc. one is installed.
+                Toast.makeText(this, R.string.modifyCountdownActivity_countdown_validation_userLibrary_noSelected, Toast.LENGTH_SHORT).show();
+                return false;
+            }
         }
 
         //TODO: ADD HERE FURTHER VALIDATIONS (also make them seeable in CustomEdittext (if one used))
@@ -347,7 +359,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
     private void setFormValues(Long countdownId) {
         Log.d(TAG, "setFormValues: Trying to load countdown from db and set values.");
-        this.setNewEditedCountdown(Countdown.query(this, countdownId.intValue()));
+        this.setNewEditedCountdown(Countdown.query(this, countdownId));
 
         ((CustomEdittext) findViewById(R.id.countdownTitleValue)).setText(this.getNewEditedCountdown().getCouTitle());
         ((CustomEdittext) findViewById(R.id.countdownDescriptionValue)).setText(this.getNewEditedCountdown().getCouDescription());

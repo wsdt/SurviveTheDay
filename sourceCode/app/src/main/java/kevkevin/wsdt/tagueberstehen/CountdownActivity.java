@@ -31,7 +31,7 @@ import kevkevin.wsdt.tagueberstehen.classes.manager.ShareMgr;
 import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.INotificationMgr.*;
 
 public class CountdownActivity extends AppCompatActivity {
-    private int countdownId = (-1);
+    private Long countdownId = (-1L);
     private Countdown countdown;
     private static final String TAG = "CountdownActivity";
     private Intent lastIntent;
@@ -60,7 +60,7 @@ public class CountdownActivity extends AppCompatActivity {
 
         //ACTIVITY OPENED BY OTHER ACTIVITY: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         this.setLastIntent(getIntent());
-        this.countdownId = this.getLastIntent().getIntExtra(IDENTIFIER_COUNTDOWN_ID, -1);
+        this.countdownId = this.getLastIntent().getLongExtra(IDENTIFIER_COUNTDOWN_ID, -1);
         //maybe by main menu or notification, but we get the same Extra: COUNTDOWN_ID with the ID
         if (this.getCountdown() == null) {this.setCountdown(Countdown.query(this, this.countdownId));} //load countdown if not already loaded by actionbar menu
         initializeCountdownDataSwipeLayout(); //to restore current bottom view if surface view would get updated (preventing it)
