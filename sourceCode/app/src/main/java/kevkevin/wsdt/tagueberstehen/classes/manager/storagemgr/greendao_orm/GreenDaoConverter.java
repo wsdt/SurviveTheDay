@@ -8,7 +8,7 @@ import java.util.List;
 /** This class is used for converting primitive values (like String lists or similar) to save
  * and retrieve it from greendao orm easily.*/
 public class GreenDaoConverter implements PropertyConverter<List<String>, String>{
-    private final static String DB_SEPARATOR = "S#+,*"; //unique separator for avoiding problems (so we might have to escape this when user inputs new quotes etc.)
+    private final static String DB_SEPARATOR = "#__##"; //TODO: unique separator for avoiding problems (so we might have to escape this when user inputs new quotes etc.)
 
     @Override
     public List<String> convertToEntityProperty(String databaseValue) {

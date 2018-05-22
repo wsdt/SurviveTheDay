@@ -1,14 +1,4 @@
-{
-	/* Remove all commented params see ->
-	
-	"libId":"0HASH00jkldsjdfs", 									-> get from fileName (so instead of quotes.json use {hash of timestamp and user and libLanguageCode}.json)
-	"libName": "Default quotes - English",		-> get from index file (correlating from libId (which is filename here and libId as objectname within index array)
-	"libLanguageCode": "en", 					-> get out of folder paths
-	"createdBy": "Kevin Riedl (WSDT)",			-> get from index file --//--
-	"createdOn": 1615561155,					-> get from StorageReference 
-	"lastEditOn": 45465465456,					-> get from StorageReference */		
-
-	"lines": [
+ [
 		"The way get started is to quit talking and begin doing. (Walt Disney)",
 		"The pessimist sees difficulty in every opportunity. The optimist sees opportunity in every difficulty. (Winston Churchill)",
 		"Don't let yesterday take up too much of today. (Will Rogers)",
@@ -165,4 +155,3 @@
 		"You change your life by changing your heart. (Max Lucado)",
 		"A champion is someone who gets up when he can't. (Jack Dempsey)"
 	]
-}
