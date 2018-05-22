@@ -20,6 +20,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Scanner;
 
 import kevkevin.wsdt.tagueberstehen.R;
@@ -27,6 +28,7 @@ import kevkevin.wsdt.tagueberstehen.annotations.Bug;
 import kevkevin.wsdt.tagueberstehen.annotations.Enhance;
 import kevkevin.wsdt.tagueberstehen.annotations.Test;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
+import kevkevin.wsdt.tagueberstehen.classes.entities.LanguageCode;
 import kevkevin.wsdt.tagueberstehen.classes.entities.UserLibrary;
 import kevkevin.wsdt.tagueberstehen.classes.manager.DialogMgr;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.interfaces.IFirebaseStorageMgr;
@@ -44,14 +46,16 @@ public class FirebaseStorageMgr {
     /**
      * Helpermethod for extracting downloadedJsonObj from var args.
      * When you want to extract multiple indizes, then write one by yourself.
+     *
+     * DownloadFile() typically returns StorageReference in args[0] and JsonObj in args[1]
      */
-    private static JSONObject parseJsonObjFromArgs(@Nullable Object... args) {
+    private static JSONObject parseJsonObjFromArgs(@Nullable Object arg) {
         JSONObject dowloadedIndexFile = null;
-        if (args != null && args[0] instanceof JSONObject) {
+        if (arg != null && arg instanceof JSONObject) {
             //if not null at least one param has to be supplied, so no length validation
-            dowloadedIndexFile = (JSONObject) args[0]; //if you want to use indexFile then you can do it here (otherwise it will be used in nested successTrue().
+            dowloadedIndexFile = (JSONObject) arg; //if you want to use indexFile then you can do it here (otherwise it will be used in nested successTrue().
         } else {
-            Log.e(TAG, "downloadIndexFile: Provided args might be null or wrong parsed-->" + args); //Implicit toString call to avoid nullPointer
+            Log.e(TAG, "downloadIndexFile: Provided args might be null or wrong parsed-->" + arg); //Implicit toString call to avoid nullPointer
         }
         return dowloadedIndexFile;
     }
@@ -80,8 +84,10 @@ public class FirebaseStorageMgr {
      * ##########################################################################################################*/
 
     /** Generic Method for downloading files from firebase. */
-    private static void downloadFile(@NonNull Context context, @NonNull String storageReference, @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
-        getStorageReference(context).child(storageReference)
+    private static void downloadFile(@NonNull Context context, @NonNull String strStorageReference, @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
+        final StorageReference storageReference = getStorageReference(context);
+
+        storageReference.child(strStorageReference)
                 .getStream().addOnSuccessListener(new OnSuccessListener<StreamDownloadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(StreamDownloadTask.TaskSnapshot taskSnapshot) {
@@ -103,7 +109,7 @@ public class FirebaseStorageMgr {
 
                             /** Execute successMethod with downloadedJson. (don't forget to validate whether it is null or valid) */
                             if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
-                                executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true(new JSONObject(jsonStr.toString()));
+                                executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true(storageReference, new JSONObject(jsonStr.toString()));
                             }
 
                         } catch (JSONException e) {
@@ -143,15 +149,14 @@ public class FirebaseStorageMgr {
      * users can the language filtering causes also a performance improvement bc. less index-files need
      * to be downloaded.
      *
-     * @param languageCode:                                             e.g. "en", "de" or similar [needs to be equal to the folder-name on Firebase!
+     * @param creationMM_YYYY: In which month and year the userLibraries were created. (MM_YYYY --> 02_2018)
      * @param executeIfTrueSuccess_or_ifFalseFailure_afterCompletation: After file has be downloaded what do you want to do additionally to regular index procedures?
      */
-    public static void downloadIndexFile(@NonNull Context context, @NonNull String languageCode, @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
+    public static void downloadIndexFile(@NonNull Context context, @NonNull String creationMM_YYYY, @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
         /** Nesting provided ExecuteIfTrueSuccess_OR_IfFalseFailure into new interface, bc. so we can merge custom indexFile-Procedures with provided ones.*/
         downloadFile(context,
                 IFirebaseStorageMgr.LIB_JSON_VERSION_FOLDER +"\\"+
-				languageCode +"\\"+
-				IFirebaseStorageMgr.INDEX_FILES.FILENAME +"\\"+
+				IFirebaseStorageMgr.INDEX_FILES.FILENAME + creationMM_YYYY+"\\"+ /* e.g. __index_02_2018 */
 				IFirebaseStorageMgr.RES_FILE_EXTENSION, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
                     public void success_is_true(@Nullable Object... args) {
@@ -160,7 +165,9 @@ public class FirebaseStorageMgr {
 
                         /** What to do with indexFile (showing or similar) */
                         if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
-                            executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true(parseJsonObjFromArgs(args));
+                            /** Get jsonObj from args [args[0] = StorageReference; args[1] = downloadedFile]
+                             * But do not provide storageReference to successMethod, bc. we don't need it there. */
+                            executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true(parseJsonObjFromArgs((args != null && args.length > 1) ? args[1] : null));
                         }
                     }
 
@@ -174,49 +181,59 @@ public class FirebaseStorageMgr {
     }
 
     /** Download userLibrary from firebase
-     * @param languageCode: e.g. 'en', 'de' -> Will be used to determine superior language folder.
-     * @param supFolder: e.g. 'quotes', 'jokes', etc. -> Generic superior category.
-     * @param fileName: e.g. '45sfd65sdf654sfd654' (Hash) -> Filename of Userlibrary, which is also the ID in the index-File. */
+     * @param creationMM_YYYY: e.g. '02_2018' etc. to determine indexFile.
+     * @param libId: e.g. '45sfd65sdf654sfd654' (Hash) -> Filename of Userlibrary, which is also the ID in the index-File. */
     private static void downloadUserLibrary(@NonNull final Context context,
-                                            @NonNull final String languageCode,
-                                            @NonNull String supFolder,
-                                            @NonNull String fileName,
+                                            @NonNull final String creationMM_YYYY,
+                                            @NonNull final List<LanguageCode> languageCodes,
+                                            @NonNull final String libId,
                                             @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
 
-        final String userLibraryToDownload = IFirebaseStorageMgr.LIB_JSON_VERSION_FOLDER +"\\"+
-                languageCode +"\\"+
-                supFolder +"\\"+
-                fileName +"\\"+
-                IFirebaseStorageMgr.RES_FILE_EXTENSION;
-
-        downloadFile(context, userLibraryToDownload, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+        /** Now download meta data of userLib by downloading specific index-File*/
+        downloadIndexFile(context, creationMM_YYYY, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
-            public void success_is_true(@Nullable final Object... userLibraryFile) {
-                /** Now download meta data of userLib by downloading specific index-File*/
-                downloadIndexFile(context, languageCode, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
-                    @Override
-                    public void success_is_true(@Nullable Object... indexFile) {
-                        /** Custom procedure for specific UserLibrary. */
-                        if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
-                            executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true(parseJsonObjFromArgs(userLibraryFile,indexFile));
-                        }
-                    }
+            public void success_is_true(@Nullable Object... args) {
+                /** Args[0] = JsonObject of IndexFile (no StorageReference supplied)*/
+                final JSONObject indexFile = parseJsonObjFromArgs((args != null && args.length > 0 ? args[0] : null));
 
-                    @Override
-                    public void failure_is_false(@Nullable Object... args) {
-                        Log.e(TAG, "downloadUserLibrary: Could not download userLibrary: "+userLibraryToDownload);
-                        if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
-                            executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
-                        }
-                    }
-                });
+                for (final LanguageCode languageCode : languageCodes) {
+                    downloadFile(context,
+                            /** e.g. v1/en/4sd65fs45df45sdf465s.json */
+                            IFirebaseStorageMgr.LIB_JSON_VERSION_FOLDER + "\\" + languageCode.toString() + "\\" + libId + "." + IFirebaseStorageMgr.RES_FILE_EXTENSION,
+                            new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                                @Override
+                                public void success_is_true(@Nullable final Object... args) {
+                                    /** Args[0] = StorageReference of File
+                                     * Args[1] = JsonArray of UserLibrary of languageCode */
+
+                                    //Save languagepackLines to UserLibrary
+                                    if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
+                                        executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true(indexFile, args);
+                                    }
+                                }
+
+
+                                @Override
+                                public void failure_is_false(@Nullable Object... args) {
+                                    Log.e(TAG, "downloadUserLibrary:failure_is_false: Could not download new package->\n* " + libId + "->" + languageCode.toString());
+
+                                    /** Custom error procedure for specific userLibrary. */
+                                    if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
+                                        executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
+                                    }
+                                }
+                            });
+                }
+
+                /** Custom procedure for specific UserLibrary. */
+                if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
+                    executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true();
+                }
             }
 
             @Override
             public void failure_is_false(@Nullable Object... args) {
-                Log.e(TAG, "downloadUserLibrary:failure_is_false: Could not download new package->\n* " + userLibraryToDownload);
-
-                /** Custom error procedure for specific userLibrary. */
+                Log.e(TAG, "downloadUserLibrary: Could not download index of userLibrary: " + libId);
                 if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
                     executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.failure_is_false();
                 }
@@ -226,13 +243,17 @@ public class FirebaseStorageMgr {
 
     /** Save already downloaded Userlibrary. */
     public static void saveUserLibrary(@NonNull final Context context,
-                                       @NonNull final String languageCode,
-                                       @NonNull final String supFolder,
-                                       @NonNull final String fileName,
+                                       @NonNull final String creationMM_YYYY,
+                                       @NonNull final List<LanguageCode> languageCodes,
+                                       @NonNull final String libId,
                                        @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation executeIfTrueSuccess_or_ifFalseFailure_afterCompletation) {
-        downloadUserLibrary(context,languageCode,supFolder,fileName, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+        downloadUserLibrary(context,creationMM_YYYY,languageCodes,libId, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
             public void success_is_true(@Nullable Object... args) {
+                /** args[0]: JsonObj of indexFile
+                 * args[1]: StorageReference of userLibFile (= lines) of specific languagePack
+                 * args[2]: JsonArray of userLib-Lines of specific Userlibrary languagepack. */
+
                 UserLibrary userLibrary = null; //TODO: mapJsonToUserLibraryObj(args);
                 if (userLibrary != null) {
                     userLibrary.save(context);
@@ -250,7 +271,7 @@ public class FirebaseStorageMgr {
                 /** Show following error msgs for all failures for all userLibraries.*/
                 //Show error dialog, if context is not an activity we will only show a toast as error msg.
                 Resources res = context.getResources();
-                String failureMsgDescription = String.format(res.getString(R.string.firebaseStorageMgr_install_userlibrary_failuremsg_description), languageCode+"\\"+supFolder+"\\"+fileName);
+                String failureMsgDescription = String.format(res.getString(R.string.firebaseStorageMgr_install_userlibrary_failuremsg_description), libId);
                 if (context instanceof Activity) {
                     (new DialogMgr((Activity) context)).showDialog_Generic(res.getString(R.string.firebaseStorageMgr_install_userlibrary_failuremsg_title),
                             failureMsgDescription, null, "", -1, null);
@@ -276,12 +297,12 @@ public class FirebaseStorageMgr {
         try {
             userLibrary = new UserLibrary(
                     storageReferenceUserLibraryFile.getName(),
-                    indexFile.getString("libDescription"),
-                    indexFile.getString("libName"),
+                    indexFile.getJSONObject(storageReferenceUserLibraryFile.getName()).getString("libDescription"),
+                    indexFile.getJSONObject(storageReferenceUserLibraryFile.getName()).getString("libName"),
                     storageReferenceUserLibraryFile.getPath().substring(
                             (IFirebaseStorageMgr.LIB_JSON_VERSION_FOLDER+"\\").length()-1,
                             (IFirebaseStorageMgr.LIB_JSON_VERSION_FOLDER+"\\").length()+1),
-                    indexFile.getString("createdBy"),
+                    indexFile.getJSONObject(storageReferenceUserLibraryFile.getName()).getString("createdBy"),
                     storageReferenceUserLibraryFile.getMetadata().getResult().getCreationTimeMillis(),
                     storageReferenceUserLibraryFile.getMetadata().getResult().getUpdatedTimeMillis(),
                     userLibraryFile.getJSONArray("lines"));

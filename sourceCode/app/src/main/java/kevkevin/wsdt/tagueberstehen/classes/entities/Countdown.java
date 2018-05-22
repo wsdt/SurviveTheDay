@@ -416,7 +416,8 @@ public class Countdown {
         UserLibrary randomUserLibrary = this.getCouSelectedUserLibraries().get(HelperClass.getRandomInt(0, this.getCouSelectedUserLibraries().size() - 1));
 
         //get random userLibraryLine of userLib
-        return randomUserLibrary.getLines().get(HelperClass.getRandomInt(0, randomUserLibrary.getLines().size() - 1));
+        //TODO: We don't want simply return first languagepack
+        return randomUserLibrary.getLibLanguageCodes().get(0).getLines().get(HelperClass.getRandomInt(0, randomUserLibrary.getLibLanguageCodes().get(0).getLines().size() - 1));
     }
 
     /**

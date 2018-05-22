@@ -1,0 +1,13 @@
+[
+	"25549D349C057A7F8049FBC892BBFF46B708F0D42570E55957B5C74C1909FD05" : {
+		"de": {
+			"libName":"Standardzitate",
+			"libDescription":"Dieses Paket enthält Standardzitate."
+		},
+		"en": {
+			"libName":"Default quotes",
+			"libDescription":"This package contains our default quotes."
+		},
+		"createdBy": "WSDT"
+	}
+]
