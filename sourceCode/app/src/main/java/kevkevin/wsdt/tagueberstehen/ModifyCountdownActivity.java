@@ -359,7 +359,7 @@ public class ModifyCountdownActivity extends AppCompatActivity {
 
     private void setFormValues(Long countdownId) {
         Log.d(TAG, "setFormValues: Trying to load countdown from db and set values.");
-        this.setNewEditedCountdown(Countdown.query(this, countdownId.intValue()));
+        this.setNewEditedCountdown(Countdown.query(this, countdownId));
 
         ((CustomEdittext) findViewById(R.id.countdownTitleValue)).setText(this.getNewEditedCountdown().getCouTitle());
         ((CustomEdittext) findViewById(R.id.countdownDescriptionValue)).setText(this.getNewEditedCountdown().getCouDescription());

@@ -27,9 +27,9 @@ public class NotificationBroadcastMgr extends BroadcastReceiver {
         Log.d(TAG, "onReceive: Fired broadcast.");
         //get countdown directly form storagemgr, because countdown could have been changed
         Countdown currCountdown = null;
-        int alarmId = (-1);
+        Long alarmId = (-1L);
         try {
-            alarmId = intent.getIntExtra(IDENTIFIER_COUNTDOWN_ID,-1);
+            alarmId = intent.getLongExtra(IDENTIFIER_COUNTDOWN_ID,-1L);
             currCountdown = Countdown.query(context, alarmId);
         } catch (Exception e) {
             Log.e(TAG, "onReceive: Could not load countdown from countdown id.");
@@ -64,16 +64,16 @@ public class NotificationBroadcastMgr extends BroadcastReceiver {
         }
     }
 
-    private static void deleteAlarmService(@NonNull Context context, int alarmId) throws NullPointerException {
+    private static void deleteAlarmService(@NonNull Context context, Long alarmId) throws NullPointerException {
         //throws ok because called in deleteAllAlarmServices.
-        ((AlarmManager) context.getSystemService(Context.ALARM_SERVICE)).cancel(PendingIntent.getBroadcast(context, alarmId, new Intent(context, NotificationBroadcastMgr.class), 0));
+        ((AlarmManager) context.getSystemService(Context.ALARM_SERVICE)).cancel(PendingIntent.getBroadcast(context, alarmId.intValue(), new Intent(context, NotificationBroadcastMgr.class), 0));
     }
 
     public static void deleteAllAlarmServices(@NonNull Context context) {
         List<Countdown> allCountdowns = Countdown.queryMotivationOn(context);
         for (int i=0;i<allCountdowns.size();i++) {
             try {
-                deleteAlarmService(context,allCountdowns.get(i).getCouId().intValue());
+                deleteAlarmService(context,allCountdowns.get(i).getCouId());
                 Log.d(TAG, "deleteAllAlarmServices: Deleted broadcast for countdown: "+allCountdowns.get(i).getCouId());
             } catch (NullPointerException e) {
                 Log.e(TAG, "deleteAllAlarmServices: Could not delete alarmservice of countdown: "+allCountdowns.get(i).getCouId());
