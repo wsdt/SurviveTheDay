@@ -200,20 +200,23 @@ public class FirebaseStorageMgr {
             @Override
             public void success_is_true(@Nullable Object... args) {
                 /** Args[0] = JsonObject of IndexFile */
+                Log.d(TAG, "downloadUserLibrary:success_is_true: Starting to download indexFile.");
 
                 /** Save UserLibrary into Db if it does not exist yet. */
                 if (saveUserLibrary != null) {
                     saveUserLibrary.success_is_true(args);
                 }
-
                 //LanguagePacks are provided by saveUserLib() so user can decide which ones to download
                 for (final LanguagePack languagePack : languagePacks) {
+                    Log.d(TAG, "downloadUserLibrary:success_is_true: Starting to download languagePack-> "+languagePack.getLpKuerzel());
                     downloadFile(context,
                             /** e.g. v1/en/4sd65fs45df45sdf465s.json */
                             IFirebaseStorageMgr.LIB_JSON_VERSION_FOLDER + "/" + languagePack.toString() + "/" + libId + "." + IFirebaseStorageMgr.RES_FILE_EXTENSION,
                             new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                                 @Override
                                 public void success_is_true(@Nullable final Object... args) {
+                                    Log.d(TAG, "downloadUserLibrary:success_is_true: Starting to save languagepack-> "+args);
+
                                     /** Args[0] = StorageReference of File
                                      * Args[1] = JsonStr of UserLibrary of languageCode */
 
@@ -305,8 +308,11 @@ public class FirebaseStorageMgr {
                 new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
                     @Override
                     public void success_is_true(@Nullable Object... args) {
-                        /** Args[0] = StorageReference of File
-                         * Args[1] = JsonArray of UserLibrary of languageCode */
+                        Log.d(TAG, "saveUserLibrary->Languagepack: Trying to map languagePackJson and save it.");
+
+                        /** Args[0] = LanguagePack
+                         * Args[1] = StorageReference of File
+                         * Args[2] = JsonArray of UserLibrary of languageCode*/
 
                         /* When this method is called a new languagePack should be inserted into db. */
                         extractULibLanguagePackFromLibJsonObj(context,
@@ -326,6 +332,8 @@ public class FirebaseStorageMgr {
 
     private static void extractULibLanguagePackFromLibJsonObj(@NonNull final Context context, @Nullable final LanguagePack languageCode, @Nullable final StorageReference storageReferenceOfLibFile, @Nullable final JSONArray libLanguageLines) {
         if (storageReferenceOfLibFile != null && libLanguageLines != null && languageCode != null) {
+            Log.d(TAG, "extractULibLanguagePackFromLibJsonObj: Trying to start saving new languagepack to userLibrary.");
+
             storageReferenceOfLibFile.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
                 @Override
                 public void onSuccess(StorageMetadata storageMetadata) {
@@ -336,6 +344,14 @@ public class FirebaseStorageMgr {
                             storageMetadata.getCreationTimeMillis(),
                             storageMetadata.getUpdatedTimeMillis()
                     ).save(context);
+
+                    Log.d(TAG, "extractULibLanguagePackFromLibJsonObj: Saved new languagepack to userLibrary.");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG, "extractULibLanguagePackFromLibJsonObj: Could not save new languagepack.");
+                    e.printStackTrace();
                 }
             });
         } else {
@@ -359,7 +375,7 @@ public class FirebaseStorageMgr {
                 Iterator<?> languageCodes = indexFile.getJSONObject(0).getJSONObject(libId).keys();
                 List<LanguagePack> languageCodeList = new ArrayList<>();
                 while (languageCodes.hasNext()) {
-                    languageCodeList.add(new LanguagePack(languageCodes.next().toString()));
+                    languageCodeList.add(new LanguagePack(languageCodes.next().toString())); //TODO: Why libCreator given?
                 }
 
 

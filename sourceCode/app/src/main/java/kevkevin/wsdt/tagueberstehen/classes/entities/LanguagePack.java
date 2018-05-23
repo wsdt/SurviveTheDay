@@ -12,6 +12,7 @@ import org.greenrobot.greendao.annotation.Transient;
 
 import java.util.List;
 
+import kevkevin.wsdt.tagueberstehen.annotations.Enhance;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.greendao_orm.DaoApp;
 
 /**
@@ -56,7 +57,7 @@ public class LanguagePack {
 
     public void setLpKuerzel(@NonNull String lpKuerzel) {
         if (lpKuerzel.length() != 2) {
-            Log.e(TAG, "setLpKuerzel: LanguageId has been set, BUT it is INVALID. Please check, errors might occur.");
+            Log.e(TAG, "setLpKuerzel: LanguageId has been set, BUT it is INVALID. Please check, errors might occur-> "+lpKuerzel);
         }
         this.lpKuerzel = lpKuerzel.toLowerCase(); //save everything in lowerCase.
     }
