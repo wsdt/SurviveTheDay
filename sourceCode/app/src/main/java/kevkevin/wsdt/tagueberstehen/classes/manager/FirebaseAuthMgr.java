@@ -2,6 +2,7 @@ package kevkevin.wsdt.tagueberstehen.classes.manager;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -11,7 +12,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import kevkevin.wsdt.tagueberstehen.annotations.Bug;
-import kevkevin.wsdt.tagueberstehen.annotations.Test;
+import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 
 public class FirebaseAuthMgr {
     private static final String TAG = "FirebaseAuthMgr";
@@ -22,27 +23,49 @@ public class FirebaseAuthMgr {
      * Login anonymously to read firebase data.
      * Later we need to add fireBase Login UI for uploading data.
      */
-    @Bug(message = "Developer credentials required.")
-    public static void anonymousLogin(@NonNull Activity activity) {
-        FirebaseUser user = firebaseAuth.getCurrentUser();
+    @Bug(message = "Developer credentials required. API has to be enabled: --> IS ENABLED NOW" +
+            "https://console.developers.google.com/apis/api/identitytoolkit.googleapis.com/overview?project=survivetheday-12862")
+    public static void anonymousLogin(@NonNull Activity activity, @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation afterLogin) {
+        FirebaseUser user = getFirebaseAuth().getCurrentUser();
         if (user == null) {
-            firebaseAuth.signInAnonymously()
+            getFirebaseAuth().signInAnonymously()
                     .addOnSuccessListener(activity, new OnSuccessListener<AuthResult>() {
                         @Override
                         public void onSuccess(AuthResult authResult) {
+                            setFirebaseUser(authResult.getUser());
+                            if (afterLogin != null) {afterLogin.success_is_true();}
                             Log.d(TAG, "anonymousLogin: User logged in anonymously.");
-                            firebaseUser = authResult.getUser();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
+                            if (afterLogin != null) {afterLogin.failure_is_false();}
                             Log.e(TAG, "anonymousLogin: Could not sign in anonymously-> " + e);
                         }
                     });
         } else {
-            firebaseUser = user;
-            Log.w(TAG, "anonymousLogin: User already logged in-> "+firebaseUser.getDisplayName());
+            setFirebaseUser(user);
+            if (afterLogin != null) {afterLogin.success_is_true();}
+            Log.w(TAG, "anonymousLogin: User already logged in-> "+ getFirebaseUser().getDisplayName());
         }
+    }
+
+
+    //GETTER / SETTER -------------------------------------------------------------
+    public static FirebaseAuth getFirebaseAuth() {
+        return firebaseAuth;
+    }
+
+    public static void setFirebaseAuth(FirebaseAuth firebaseAuth) {
+        FirebaseAuthMgr.firebaseAuth = firebaseAuth;
+    }
+
+    public static FirebaseUser getFirebaseUser() {
+        return firebaseUser;
+    }
+
+    public static void setFirebaseUser(FirebaseUser firebaseUser) {
+        FirebaseAuthMgr.firebaseUser = firebaseUser;
     }
 }

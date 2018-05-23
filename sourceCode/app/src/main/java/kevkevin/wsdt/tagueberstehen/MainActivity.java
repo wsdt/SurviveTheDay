@@ -53,27 +53,35 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
 
 
-    @Test(message = "REMOVE AFTER TESTED")
+    @Test(message = "REMOVE AFTER TESTED, JUST FOR TESTING PURPOSES")
     public void runDownload(View v) {
-        FirebaseAuthMgr.anonymousLogin(this);
+        FirebaseAuthMgr.anonymousLogin(this, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+            @Override
+            public void success_is_true(@Nullable Object... args) {
+                List<LanguagePack> lpList = new ArrayList<>();
+                lpList.add(new LanguagePack("de"));
 
-        List<LanguagePack> lpList = new ArrayList<>();
-        lpList.add(new LanguagePack("de"));
+                FirebaseStorageMgr.saveUserLibrary(MainActivity.this,
+                        "25549D349C057A7F8049FBC892BBFF46B708F0D42570E55957B5C74C1909FD05",
+                        "05_2018", lpList, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
+                            @Override
+                            public void success_is_true(@Nullable Object... args) {
+                                Log.d(TAG, "RUNDOWNLOAD->SUCCESS");
+                            }
 
-        FirebaseStorageMgr.saveUserLibrary(this,
-                "25549D349C057A7F8049FBC892BBFF46B708F0D42570E55957B5C74C1909FD05",
-                "05_2018", lpList, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
-                    @Override
-                    public void success_is_true(@Nullable Object... args) {
-                        Log.d(TAG, "RUNDOWNLOAD->SUCCESS");
-                    }
+                            @Override
+                            public void failure_is_false(@Nullable Object... args) {
+                                Log.d(TAG, "RUNDOWNLOAD->FAILURE");
+                            }
+                        });
+                Log.d(TAG, "RUNDOWNLOAD->Tried to start");
+            }
 
-                    @Override
-                    public void failure_is_false(@Nullable Object... args) {
-                        Log.d(TAG, "RUNDOWNLOAD->FAILURE");
-                    }
-                });
-        Log.d(TAG, "RUNDOWNLOAD->Tried to start");
+            @Override
+            public void failure_is_false(@Nullable Object... args) {
+                Log.e(TAG, "runDownload: FAILED, because user could not be signed in.");
+            }
+        });
     }
 
     @Override
