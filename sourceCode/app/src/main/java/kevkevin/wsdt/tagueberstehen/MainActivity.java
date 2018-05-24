@@ -12,14 +12,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.daimajia.swipe.SwipeLayout;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,20 +112,11 @@ public class MainActivity extends AppCompatActivity {
         //Start foreground service
         startService(new Intent(this, LiveCountdown_ForegroundService.class));
 
-        Button testbutton = findViewById(R.id.testbutton);
-        testbutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openFeelingActivity();
-            }
-        });
-
-
         //Set up onRefresh for pulling down
         initializePullForRefresh();
     }
 
-    public void openFeelingActivity() {
+    public void openFeelingActivity(View v) {
         startActivity(new Intent(MainActivity.this, TodaysFeelingsActivity.class));
     }
 
