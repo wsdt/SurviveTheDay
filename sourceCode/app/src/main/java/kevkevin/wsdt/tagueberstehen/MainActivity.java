@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -34,6 +35,7 @@ import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.FirebaseStorageMg
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.services.LiveCountdown_ForegroundService;
 import kevkevin.wsdt.tagueberstehen.classes.services.ServiceMgr;
+import kevkevin.wsdt.tagueberstehen.util.LoginInFirebaseActivity;
 import kevkevin.wsdt.tagueberstehen.util.TodaysFeelingsActivity;
 
 import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IInAppPurchaseMgr.INAPP_PRODUCTS;
@@ -105,6 +107,15 @@ public class MainActivity extends AppCompatActivity {
         //Create for each saved countdown one node
         loadAddNodes();
 
+        //TODO testbutton for firebase login, remove if done and add (f.e) to the menu!
+        Button button = (Button) findViewById(R.id.button);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(MainActivity.this, LoginInFirebaseActivity.class));
+                }
+            });
+
 
         //IMPORTANT: IF ELSE so NOT BOTH get started !!
         //Start background service is forward compatibility off/false OR startBroadcast Receivers if ON
@@ -115,11 +126,6 @@ public class MainActivity extends AppCompatActivity {
         //Set up onRefresh for pulling down
         initializePullForRefresh();
     }
-
-    public void openFeelingActivity(View v) {
-        startActivity(new Intent(MainActivity.this, TodaysFeelingsActivity.class));
-    }
-
 
     @Override
     protected void onRestart() {

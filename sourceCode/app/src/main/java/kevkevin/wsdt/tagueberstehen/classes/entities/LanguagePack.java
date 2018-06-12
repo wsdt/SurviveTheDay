@@ -12,7 +12,6 @@ import org.greenrobot.greendao.annotation.Transient;
 
 import java.util.List;
 
-import kevkevin.wsdt.tagueberstehen.annotations.Enhance;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.greendao_orm.DaoApp;
 
 /**
