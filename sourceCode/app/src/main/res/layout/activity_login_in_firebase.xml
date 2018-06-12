@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.widget.RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/firebase_login_background"
+    tools:context=".util.LoginInFirebaseActivity"
+    android:animateLayoutChanges="true">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+        <ImageView
+            android:id="@+id/firebaseImg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/firebase"
+            android:layout_marginTop="30dp"
+            android:layout_centerHorizontal="true"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"/>
+
+
+    <RelativeLayout
+        android:id="@+id/relLay1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/firebaseImg"
+        android:animateLayoutChanges="true"
+        android:visibility="gone">
+
+        <!-- made visibility gone for animation latest -->
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textSize="20sp"
+            android:textColor="@color/colorWhite_fff"
+            android:layout_marginTop="15dp"
+            app:fontFamily="serif-monospace"
+            android:text="Your Quotes - Their Motivation" />
+
+        <TextView
+            android:id="@+id/title2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textSize="20sp"
+            android:textColor="@color/colorWhite_fff"
+            android:layout_marginTop="15dp"
+            app:fontFamily="serif-monospace"
+            android:layout_below="@+id/title"
+            android:text="Login and share with us!" />
+
+        <TextView
+            android:id="@+id/usernameLbl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Username"
+            android:textColor="@color/colorWhite_fff"
+            android:textAllCaps="true"
+            android:layout_marginTop="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            app:fontFamily="monospace"
+            android:layout_below="@+id/title2"/>
+
+        <TextView
+            android:id="@+id/passwordLbl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Password"
+            android:textColor="@color/colorWhite_fff"
+            android:textAllCaps="true"
+            app:fontFamily="monospace"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="10dp"
+            android:layout_below="@+id/usernameLbl"/>
+
+        <EditText
+            android:id="@+id/usernameField"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_alignBaseline="@+id/usernameLbl"
+            android:textAlignment="center"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/firebase_login_edittext"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/passwordField"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_alignBaseline="@+id/passwordLbl"
+            android:layout_centerHorizontal="true"
+            android:textAlignment="center"
+            android:background="@drawable/firebase_login_edittext"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/loginBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/passwordField"
+            android:text="LOGIN"
+            android:textColor="@color/colorWhite_fff"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/firebase_login_edittext"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:text="Sign up now"
+            android:layout_marginLeft="15dp"
+            android:textColor="@color/colorWhite_fff"
+            app:fontFamily="sans-serif-smallcaps" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:text="Forgot Password?"
+            android:layout_marginRight="15dp"
+            android:textColor="@color/colorWhite_fff"
+            app:fontFamily="sans-serif-smallcaps" />
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+</android.widget.RelativeLayout>

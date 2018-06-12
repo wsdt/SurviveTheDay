@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Locale;
 
 import kevkevin.wsdt.tagueberstehen.R;
-import kevkevin.wsdt.tagueberstehen.annotations.Enhance;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.greendao_orm.DaoApp;
 import kevkevin.wsdt.tagueberstehen.classes.services.Kickstarter_BootAndGeneralReceiver;
