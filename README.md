@@ -3,6 +3,7 @@ Android App - Countdown for bad things
 
 ## Issue handling
 ### How to add an issue
+1. **Mark relating code with a relevant annotation (relating to your labels).** E.g. @Bug(params), @Enhance(params)
 1. **Please assign your new issue to a relevant project (e.g. Alpha, Beta or Production).** Normally you want to assign new issues to the Alpha project, because you want to have the relating code in all version layers above (Alpha > Beta > Production). Only assign new issues to e.g. Beta if you know that the issue is only in the Beta-Version or layers above (e.g. Production) and isn't solved/isn't necessary to be solved in the Alpha Version. If you don't assign your issue to a project then it is dangling and won't show up in the projects overview. 
 1. **Assign relevant labels to your issue.** If you want to report a bug, then add the bug label. For new features there is a creation label, so as for smaller changes we have introduced the enhancement label. You can also assign multiple labels to one issue. 
 1. **Add a good title to your issue.** Please use a concise and precise title. 
