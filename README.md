@@ -16,4 +16,5 @@ Android App - Countdown for bad things
 - {Describe a possible solution to that problem, feature or desired code}
 - {Add a list of classes which might need to be changed in order to implement the new feature/solve the bug. Please append the class filetype (Human.class) so we can avoid confusions. If a class hasn't been created yet, then you can use a recommended name by adding the [N] cue to it. (e.g.: Human.class[N])}
 - {Maybe also add videos/pictures} *(OPTIONAL)*
+
 ########## EXAMPLE ISSUE - END ##########
