@@ -10,10 +10,10 @@ Android App - Countdown for bad things
   * *GOOD*: "Redesign/Improve ServiceMgr"
 1. **Add a good description to your issue.** Your description doesn't need to be concise, but should be clear/understandable and provide enough information for other contributors to solve the issue. *Your issue description SHOULD/MUST look like the following: *
 
-############################################### EXAMPLE ISSUE - START #########################################################
+########## EXAMPLE ISSUE - START ##########
 - {Short description in 1-3 sentences}
 - {Describe the problem, new feature or what you want to change}
 - {Describe a possible solution to that problem, feature or desired code}
 - {Add a list of classes which might need to be changed in order to implement the new feature/solve the bug. Please append the class filetype (Human.class) so we can avoid confusions. If a class hasn't been created yet, then you can use a recommended name by adding the [N] cue to it. (e.g.: Human.class[N])}
 - {Maybe also add videos/pictures} *(OPTIONAL)*
-############################################### EXAMPLE ISSUE - END ###########################################################
+########## EXAMPLE ISSUE - END ##########
