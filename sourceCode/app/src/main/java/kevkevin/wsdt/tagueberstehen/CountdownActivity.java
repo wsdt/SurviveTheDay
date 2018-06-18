@@ -21,6 +21,8 @@ import android.widget.ViewSwitcher;
 
 import com.daimajia.swipe.SwipeLayout;
 
+import java.text.DecimalFormat;
+
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
 import kevkevin.wsdt.tagueberstehen.classes.manager.AdMgr;
 import kevkevin.wsdt.tagueberstehen.classes.entities.Countdown;
@@ -310,7 +312,13 @@ public class CountdownActivity extends AppCompatActivity {
             Resources res = getResources();
             if (this.getCountdown() != null) {
                 Log.d(TAG, "refreshShareIntent: Trying to refresh message (reset extras).");
-                shareIntent = ShareMgr.getSimpleShareIntent(null, res.getString(R.string.app_name), String.format(res.getString(R.string.actionBar_countdownActivity_menu_shareCountdown_shareContent_text), this.getCountdown().getTotalSecondsNoScientificNotation(this), this.getCountdown().getCouTitle(), this.getCountdown().getCouDescription()));
+                shareIntent = ShareMgr.getSimpleShareIntent(null, res.getString(R.string.app_name),
+                        String.format(res.getString(R.string.actionBar_countdownActivity_menu_shareCountdown_shareContent_text_extended),
+                                String.valueOf(new DecimalFormat("0.00").format(this.getCountdown().getTotalHoursValue(this))),
+                                String.valueOf(new DecimalFormat("0.00").format(this.getCountdown().getTotalMinutesValue(this))),
+                                String.valueOf(new DecimalFormat("0").format(this.getCountdown().getTotalSecondsValue(this))),
+
+                                this.getCountdown().getCouTitle(), this.getCountdown().getCouDescription()));
             } else {
                 Log.e(TAG, "refreshShareIntent: ShareIntent or/and Countdown is NULL! Cannot set/refresh share content. ");
                 shareIntent = ShareMgr.getSimpleShareIntent(null, res.getString(R.string.app_name), res.getString(R.string.error_contactAdministrator));
