@@ -41,6 +41,7 @@
     <!-- ACTIONBAR MENUS:COUNTDOWNACTIVITY -->
     <string name="actionBar_countdownActivity_menu_shareCountdown_title">Share</string>
     <string name="actionBar_countdownActivity_menu_shareCountdown_shareContent_text">The moment you just have %1$s seconds for %2$s (%3$s)! Do you also need motivation? SurviveTheDay is now available on Playstore for free!</string>
+    <string name="actionBar_countdownActivity_menu_shareCountdown_shareContent_text_extended">The moment you just have %1$s hours or %2$s minutes or %3$s seconds for %4$s (%5$s)! Do you also need motivation? SurviveTheDay is now available on Playstore for free!</string>
 
     <!-- BUTTONS -->
     <string name="button_save">Save</string>

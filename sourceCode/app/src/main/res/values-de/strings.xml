@@ -39,6 +39,7 @@
     <!-- ACTIONBAR MENUS:COUNTDOWNACTIVITY -->
     <string name="actionBar_countdownActivity_menu_shareCountdown_title">Teilen</string>
     <string name="actionBar_countdownActivity_menu_shareCountdown_shareContent_text">Der Moment in dem du nur noch %1$s Sekunden für %2$s (%3$s) hast! Möchtest du deinen Alltag auch motivierter angehen? SurviveTheDay jetzt kostenlos in deinem Playstore!</string>
+    <string name="actionBar_countdownActivity_menu_shareCountdown_shareContent_text_extended">Der Moment in dem du nur noch %1$s Stunden oder %2$s Minuten oder %3$s Sekunden für %4$s (%5$s) hast! Möchtest du deinen Alltag auch motivierter angehen? SurviveTheDay jetzt kostenlos in deinem Playstore!</string>
 
     <!-- BUTTONS -->
     <string name="button_save">Speichern</string>

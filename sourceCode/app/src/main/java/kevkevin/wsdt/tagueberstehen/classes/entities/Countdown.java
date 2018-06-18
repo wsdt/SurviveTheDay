@@ -209,6 +209,18 @@ public class Countdown {
         return decimalFormat.format(this.getTotalSeconds(context));
     }
 
+    public double getTotalSecondsValue(@NonNull Context context){
+        return this.getTotalSeconds(context);
+    }
+
+    public double getTotalMinutesValue(@NonNull Context context){
+        return this.getTotalSeconds(context) / 60;
+    }
+
+    public double getTotalHoursValue(@NonNull Context context){
+        return this.getTotalMinutesValue(context) / 60;
+    }
+
     public boolean isStartDateInThePast() {
         return (getDateTime(getCouStartDateTime()).before(getCurrentDateTime()));
         //Works but time comparison does not work properly: return (getDateTime(getCurrentDateTime()).compareTo(getCouStartDateTime()) > 0); //only if in the past or NOW
