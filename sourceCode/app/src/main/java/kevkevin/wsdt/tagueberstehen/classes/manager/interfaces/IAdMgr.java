@@ -3,6 +3,7 @@ package kevkevin.wsdt.tagueberstehen.classes.manager.interfaces;
 import kevkevin.wsdt.tagueberstehen.BuildConfig;
 
 public interface IAdMgr {
+    //TODO: REMOVE REAL INTERFACE AND ADMOB_USER_ID for openSource
     boolean USE_TEST_ADS = BuildConfig.BUILD_TYPE.equals("debug"); //if debug then true, otherwise false
     String ADMOB_USER_ID = "ca-app-pub-8160960481527784~1956004763";
     int NO_INTERNET_CONNECTION_MAX = 5; //after 5 ads which cannot be displayed notify user that this app gets financed by ads
