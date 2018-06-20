@@ -2,14 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 
 android {
-    signingConfigs {
-        STD {
-            keyAlias 'survivethedaykey'
-            keyPassword '459145914591'
-            storeFile file('C:/Users/kevin/Desktop/Android_PUBLICPRIVATE_KEYS/survivetheday.jks')
-            storePassword '459145914591'
-        }
-    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "kevkevin.wsdt.tagueberstehen"
