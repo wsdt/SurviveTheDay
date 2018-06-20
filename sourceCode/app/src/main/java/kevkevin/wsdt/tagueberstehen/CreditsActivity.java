@@ -41,6 +41,19 @@ public class CreditsActivity extends AppCompatActivity {
             }
         });
 
+        //Bad style, but hacking now
+        String credits = getResources().getString(R.string.creditsActivity_creditSourcesAndAuthors);
+        TextView newTextView = ((TextView) findViewById(R.id.quotesField2));
+        if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            newTextView.setText(Html.fromHtml(credits, Html.FROM_HTML_MODE_LEGACY)); //deprecated for newer versions
+        } else {
+            newTextView.setText(Html.fromHtml(credits));
+        }
+
+        newTextView.setMovementMethod(LinkMovementMethod.getInstance());
+        newTextView.setTextColor(getResources().getColor(R.color.colorDark_111));
+        newTextView.setLinkTextColor(getResources().getColor(R.color.color_for_links));
+
         //add all icons to view
         addAllIconCreditsToView();
     }

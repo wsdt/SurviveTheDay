@@ -21,7 +21,8 @@
 -renamesourcefileattribute SourceFile
 
 -keep class com.android.vending.billing.**
--keep class kevkevin.wsdt.tagueberstehen.classes.**
+-keep class kevkevin.wsdt.tagueberstehen.**
+-keep class com.google.android.gms.ads.**
 -keep class android.support.v7.widget.ShareActionProvider {*;}
 
 # Greendao -------------------------------

@@ -1,4 +1,4 @@
-package kevkevin.wsdt.tagueberstehen.util;
+package kevkevin.wsdt.tagueberstehen;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
