@@ -35,8 +35,6 @@ import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.FirebaseStorageMg
 import kevkevin.wsdt.tagueberstehen.classes.manager.storagemgr.GlobalAppSettingsMgr;
 import kevkevin.wsdt.tagueberstehen.classes.services.LiveCountdown_ForegroundService;
 import kevkevin.wsdt.tagueberstehen.classes.services.ServiceMgr;
-import kevkevin.wsdt.tagueberstehen.util.LoginInFirebaseActivity;
-import kevkevin.wsdt.tagueberstehen.util.TodaysFeelingsActivity;
 
 import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.IInAppPurchaseMgr.INAPP_PRODUCTS;
 import static kevkevin.wsdt.tagueberstehen.classes.manager.interfaces.INotificationMgr.IDENTIFIER_COUNTDOWN_ID;
@@ -53,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
 
 
-    @Test(message = "REMOVE AFTER TESTED, JUST FOR TESTING PURPOSES")
+    /*@Test(message = "REMOVE AFTER TESTED, JUST FOR TESTING PURPOSES")
     public void runDownload(View v) {
         FirebaseAuthMgr.anonymousLogin(this, new HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation() {
             @Override
@@ -82,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG, "runDownload: FAILED, because user could not be signed in.");
             }
         });
-    }
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,13 +106,13 @@ public class MainActivity extends AppCompatActivity {
         loadAddNodes();
 
         //TODO testbutton for firebase login, remove if done and add (f.e) to the menu!
-        Button button = (Button) findViewById(R.id.button);
+        /*Button button = (Button) findViewById(R.id.button);
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     startActivity(new Intent(MainActivity.this, LoginInFirebaseActivity.class));
                 }
-            });
+            });*/
 
 
         //IMPORTANT: IF ELSE so NOT BOTH get started !!

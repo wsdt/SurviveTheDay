@@ -82,7 +82,7 @@
             android:noHistory="true"
             android:theme="@style/SplashTheme" />
         <activity android:name=".InAppPurchaseActivity" />
-        <activity android:name=".util.TodaysFeelingsActivity" />
+        <activity android:name=".TodaysFeelingsActivity" />
 
         <!-- BROADCAST RECEIVERS FOR REGULAR NOTIFICATIONS (maybe replacing background service in future) -->
         <receiver
@@ -110,7 +110,7 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".util.LoginInFirebaseActivity"></activity>
+        <activity android:name=".LoginInFirebaseActivity"></activity>
     </application>
 
 </manifest>

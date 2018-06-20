@@ -1,28 +1,17 @@
 package kevkevin.wsdt.tagueberstehen.classes.manager;
 
-import android.app.Activity;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.util.Log;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+public class FirebaseAuthMgr {}
 
-import kevkevin.wsdt.tagueberstehen.annotations.Bug;
-import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
-
-public class FirebaseAuthMgr {
+//COMMENTED, bc. aborted for current release
+    /*
     private static final String TAG = "FirebaseAuthMgr";
     private static FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private static FirebaseUser firebaseUser;
 
-    /**
      * Login anonymously to read firebase data.
      * Later we need to add fireBase Login UI for uploading data.
-     */
+     *
     @Bug(message = "Developer credentials required. API has to be enabled: --> IS ENABLED NOW" +
             "https://console.developers.google.com/apis/api/identitytoolkit.googleapis.com/overview?project=survivetheday-12862")
     public static void anonymousLogin(@NonNull Activity activity, @Nullable final HelperClass.ExecuteIfTrueSuccess_OR_IfFalseFailure_AfterCompletation afterLogin) {
@@ -69,3 +58,4 @@ public class FirebaseAuthMgr {
         FirebaseAuthMgr.firebaseUser = firebaseUser;
     }
 }
+*/

@@ -7,13 +7,21 @@ android {
         applicationId "kevkevin.wsdt.tagueberstehen"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 28
-        versionName "2.1.0" //{major}.{minor}.{bugfixes} auch mehrstellig
+        versionCode 29
+        versionName "2.2.0" //{major}.{minor}.{bugfixes} auch mehrstellig
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
+        debugMini {
+            initWith debug
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            matchingFallbacks = ['debug']
+        }
         release {
+            //TURNED OFF, bc. for last release we didn't want too much effort for debugging it
             /*Making the app smaller, BUT could be also the source of errors!*/
             shrinkResources true /*shrinks unused res (drawables etc.)*/
             minifyEnabled true /*same as shrinkResources but for code itself*/
@@ -73,7 +81,8 @@ dependencies {
     //swipelayout for nodes etc.
     implementation 'com.github.yukuku:ambilwarna:2.0.1'
     //Color picker
-    implementation 'com.google.firebase:firebase-ads:15.0.1'
+    //implementation 'com.google.firebase:firebase-ads:15.0.1'
+    implementation 'com.google.android.gms:play-services-ads:15.0.1'
     //implementation 'com.appeaser.sublimepickerlibrary:sublimepickerlibrary:2.1.1' //for datetimerecurrence picker TODO: for compatibility add library manually as zip and edit gradle gridlayout library to 27.1
     implementation 'com.kovachcode:timePickerWithSeconds:1.0.1'
     //For time picker with seconds
@@ -81,13 +90,13 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
     /*Firebase*/
-    implementation 'com.google.firebase:firebase-auth:15.1.0'
-    implementation 'com.google.firebase:firebase-core:15.0.2'
-    implementation 'com.google.firebase:firebase-storage:15.0.2'
+    //implementation 'com.google.firebase:firebase-auth:16.0.2'
+    //implementation 'com.google.firebase:firebase-core:16.0.1'
+    //implementation 'com.google.firebase:firebase-storage:16.0.1'
     implementation 'com.android.support:support-v4:27.1.1'
     //needed for swipelayout and many other things
     implementation 'com.android.support:support-vector-drawable:27.1.1'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

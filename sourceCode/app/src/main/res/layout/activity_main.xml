@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     tools:context="kevkevin.wsdt.tagueberstehen.MainActivity">
 
-    <!-- TODO: Testbtns start (to remove in production mode)-->
+    <!-- TODO: Testbtns start (to remove in production mode)-
 
     <Button
         android:id="@+id/testbutton_firebase"
@@ -19,7 +19,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:text="Start download" />
-    <!-- TODO: Testbtns end (to remove in production mode)-->
+    - TODO: Testbtns end (to remove in production mode)-->
 
     <TextView
         android:id="@+id/MainActivity_TextView_NoCountdownsFound"
@@ -54,13 +54,13 @@
         </ScrollView>
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <Button
+    <!--<Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="174dp"
-        android:text="Contribute to Firebase (test button)" />
+        android:text="Contribute to Firebase (test button)" />-->
 
 </RelativeLayout>
