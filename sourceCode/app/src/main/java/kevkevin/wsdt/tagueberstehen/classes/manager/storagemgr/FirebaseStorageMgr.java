@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import kevkevin.wsdt.tagueberstehen.R;
+import kevkevin.wsdt.tagueberstehen.annotations.Bug;
 import kevkevin.wsdt.tagueberstehen.annotations.Enhance;
 import kevkevin.wsdt.tagueberstehen.annotations.Test;
 import kevkevin.wsdt.tagueberstehen.classes.HelperClass;
@@ -111,7 +112,7 @@ public class FirebaseStorageMgr {
                                 jsonStr.append(sc.nextLine());
                             }
 
-                            /** Execute successMethod with downloadedJson. (don't forget to validate whether it is null or valid) */
+                            /* Execute successMethod with downloadedJson. (don't forget to validate whether it is null or valid) */
                             if (executeIfTrueSuccess_or_ifFalseFailure_afterCompletation != null) {
                                 executeIfTrueSuccess_or_ifFalseFailure_afterCompletation.success_is_true(storageReference, jsonStr.toString());
                             }
@@ -310,7 +311,7 @@ public class FirebaseStorageMgr {
                     public void success_is_true(@Nullable Object... args) {
                         Log.d(TAG, "saveUserLibrary->Languagepack: Trying to map languagePackJson and save it.");
 
-                        /** Args[0] = LanguagePack
+                        /* Args[0] = LanguagePack
                          * Args[1] = StorageReference of File
                          * Args[2] = JsonArray of UserLibrary of languageCode*/
 
@@ -330,9 +331,11 @@ public class FirebaseStorageMgr {
                 });
     }
 
+    @Bug(message = "Metadata won't be downloaded, developer credentials error shown")
     private static void extractULibLanguagePackFromLibJsonObj(@NonNull final Context context, @Nullable final LanguagePack languageCode, @Nullable final StorageReference storageReferenceOfLibFile, @Nullable final JSONArray libLanguageLines) {
         if (storageReferenceOfLibFile != null && libLanguageLines != null && languageCode != null) {
             Log.d(TAG, "extractULibLanguagePackFromLibJsonObj: Trying to start saving new languagepack to userLibrary.");
+
 
             storageReferenceOfLibFile.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
                 @Override
