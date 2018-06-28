@@ -1,5 +1,6 @@
 # SurviveTheDay
 Android App - Countdown for bad things 
+## Playstore: https://play.google.com/store/apps/details?id=kevkevin.wsdt.tagueberstehen
 
 ## Issue handling
 ### How to add an issue
