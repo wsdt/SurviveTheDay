@@ -1,3 +1,8 @@
+# Sensitive data
+sourceCode/app/src/main/java/kevkevin/wsdt/tagueberstehen/classes/manager/interfaces/IInAppPurchaseMgr.java
+
+sourceCode/app/src/main/java/kevkevin/wsdt/tagueberstehen/classes/manager/interfaces/IAdMgr.java
+
 # Built application files
 *.apk
 *.ap_
