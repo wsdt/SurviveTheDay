@@ -1,4 +1,7 @@
-# SurviveTheDay
+
+
+
+# SurviveTheDay  [![Maintenance](https://img.shields.io/badge/Maintained%3F-no-red.svg)](https://bitbucket.org/lbesson/ansi-colors) [![GitHub license](https://img.shields.io/github/license/wsdt/SurviveTheDay.svg)](https://github.com/wsdt/SurviveTheDay/blob/master/LICENSE) [![Generic badge](https://img.shields.io/badge/In-Java-RED.svg)](https://www.java.com/)
 Android App - Countdown for bad things 
 
 ## Issue handling
