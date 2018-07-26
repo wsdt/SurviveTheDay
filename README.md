@@ -4,6 +4,13 @@
 # SurviveTheDay  [![Maintenance](https://img.shields.io/badge/Maintained%3F-no-red.svg)](https://bitbucket.org/lbesson/ansi-colors) [![GitHub license](https://img.shields.io/github/license/wsdt/SurviveTheDay.svg)](https://github.com/wsdt/SurviveTheDay/blob/master/LICENSE) [![Generic badge](https://img.shields.io/badge/In-Java-RED.svg)](https://www.java.com/)
 Android App - Countdown for bad things 
 
+## Playstore
+You can find this app on PlayStore. 
+- FREEMIUM: https://play.google.com/store/apps/details?id=kevkevin.wsdt.tagueberstehen
+- PREMIUM: https://play.google.com/store/apps/details?id=kevkevin.wsdt.tagueberstehen.paid
+
+_All (senseful) contributions/pull-requests, which have been examined, might get published on both of these versions on Playstore. (if you want)._
+
 ## Issue handling
 ### How to add an issue
 1. **Mark relating code with a relevant annotation (relating to your labels).** E.g. @Bug(params), @Enhance(params)
