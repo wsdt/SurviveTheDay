@@ -6,10 +6,12 @@ Android App - Countdown for bad things
 
 ## Playstore
 You can find this app on PlayStore. 
-- FREEMIUM: https://play.google.com/store/apps/details?id=kevkevin.wsdt.tagueberstehen
-- PREMIUM: https://play.google.com/store/apps/details?id=kevkevin.wsdt.tagueberstehen.paid
+- [FREEMIUM](https://play.google.com/store/apps/details?id=kevkevin.wsdt.tagueberstehen)
+- [PREMIUM](https://play.google.com/store/apps/details?id=kevkevin.wsdt.tagueberstehen.paid)
 
-_All (senseful) contributions/pull-requests, which have been examined, might get published on both of these versions on Playstore. (if you want)._
+<img src="https://github.com/wsdt/SurviveTheDay/blob/master/_DEVELOPERS/someScreenshots/english/Screenshot_20180316-214200.png?raw=true" style="width:100px" />
+<img src="https://github.com/wsdt/SurviveTheDay/blob/master/_DEVELOPERS/someScreenshots/english/Screenshot_20180316-214209.png?raw=true" style="width:100px" />
+<img src="https://github.com/wsdt/SurviveTheDay/blob/master/_DEVELOPERS/someScreenshots/english/Screenshot_20180316-214216.png?raw=true" style="width:100px" />
 
 ## Issue handling
 ### How to add an issue
